@@ -1,0 +1,143 @@
+<app-shared-header
+  [title]="'nav.pokedex' | translate"
+  [subtitle]="'home.subtitle' | translate"
+  currentPage="home">
+</app-shared-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Header transparente para mobile -->
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'nav.pokedex' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Barra de busca -->
+  <div class="search-container">
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      [placeholder]="'search.placeholder' | translate"
+      (ionInput)="onSearchChange($event)"
+      (ionClear)="clearSearch()"
+      show-clear-button="focus"
+      debounce="200"
+      class="modern-search">
+    </ion-searchbar>
+
+    <!-- Filtros rápidos -->
+    <div class="quick-filters" *ngIf="!isLoading">
+      <div class="filters-header">
+        <h4>{{ 'filters.title' | translate }}</h4>
+        <span class="results-count" *ngIf="searchTerm || hasActiveFilters()">
+          {{ filteredPokemon.length }} {{ 'home.totalFound' | translate }}
+        </span>
+      </div>
+
+      <div class="filters-grid">
+        <ion-chip
+          *ngFor="let filter of quickFilters"
+          [color]="filter.active ? 'primary' : ''"
+          (click)="toggleFilter(filter)"
+          class="filter-chip"
+          [class.active]="filter.active">
+          <ion-icon [name]="filter.icon"></ion-icon>
+          <ion-label>{{ filter.label | translate }}</ion-label>
+        </ion-chip>
+      </div>
+
+      <!-- Botão limpar filtros -->
+      <ion-button
+        fill="clear"
+        size="small"
+        (click)="clearAllFilters()"
+        *ngIf="hasActiveFilters()"
+        class="clear-filters-btn">        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+        {{ 'filters.clearAll' | translate }}
+      </ion-button>
+    </div>
+  </div>  <!-- Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
+    <ion-refresher-content
+      refreshing-spinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading inicial -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="pokeball-loader">
+      <div class="pokeball-top"></div>
+      <div class="pokeball-center"></div>
+      <div class="pokeball-bottom"></div>
+    </div>
+    <h3>{{ 'loading.title' | translate }}</h3>
+    <p>{{ 'loading.subtitle' | translate }}</p>
+    <p><small>Debug: {{ pokemons.length }} {{ 'nav.pokedex' | translate }}</small></p>
+  </div>
+
+  <!-- Lista de Pokémons -->
+  <div class="pokemon-section">
+    <!-- Indicador de filtros ativos -->
+    <div class="active-filters-indicator" *ngIf="hasActiveFilters() || searchTerm">
+      <div class="indicator-content">
+        <ion-icon name="funnel-outline"></ion-icon>
+        <span>
+          {{ filteredPokemon.length }} de {{ allLoadedPokemon.length }} Pokémons
+          <span *ngIf="hasActiveFilters()"> • {{ 'filters.active' | translate }}</span>
+          <span *ngIf="searchTerm"> • {{ 'search.resultsFor' | translate }}: "{{ searchTerm }}"</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="pokemon-grid" *ngIf="!isLoading && filteredPokemon.length > 0">
+      <app-pokemon-card
+        *ngFor="let pokemon of filteredPokemon; trackBy: trackByPokemonId"
+        [pokemon]="pokemon"
+        [localizedName]="getLocalizedPokemonName(pokemon)"
+        [isFavorite]="isFavorite(pokemon.id)"
+        [showFavoriteButton]="true"
+        (cardClick)="goToDetails($event)"
+        (favoriteToggle)="toggleFavorite($event)">
+      </app-pokemon-card>
+    </div>
+  </div>  <!-- Estado vazio -->
+  <div class="empty-state" *ngIf="!isLoading && filteredPokemon.length === 0">
+    <div class="empty-animation">
+      <div class="empty-pokeball">
+        <div class="pokeball-bounce">🔴</div>
+      </div>
+    </div>
+    <h3>{{ searchTerm ? ('search.noResults' | translate) : ('error.loadingData' | translate) }}</h3>
+    <p *ngIf="searchTerm" class="search-text">
+      {{ 'search.tryDifferentTerm' | translate }}
+    </p>
+    <p *ngIf="!searchTerm" class="error-text">
+      {{ 'error.tryAgain' | translate }}
+    </p>
+    <div class="empty-actions">
+      <ion-button
+        fill="outline"
+        (click)="clearSearch()"
+        *ngIf="searchTerm"
+        class="action-button">
+        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+        {{ 'search.clearSearch' | translate }}
+      </ion-button>
+      <ion-button
+        fill="solid"
+        (click)="refreshList()"
+        *ngIf="!searchTerm"
+        class="action-button">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        {{ 'common.retry' | translate }}
+      </ion-button>
+    </div>
+  </div>  <!-- Infinite Scroll -->
+  <ion-infinite-scroll
+    threshold="100px"
+    (ionInfinite)="loadMore($event)"
+    *ngIf="hasMore && !isSearching">
+    <ion-infinite-scroll-content
+      loading-spinner="bubbles">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
