@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!-- Botão voltar (quando necessário) -->
+    <ion-buttons slot="start" *ngIf="showBackButton">
+      <ion-button fill="clear" (click)="goBack()" [attr.aria-label]="'nav.back' | translate">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span class="back-text">{{ 'nav.back' | translate }}</span>
+      </ion-button>
+    </ion-buttons>
+
+    <!-- Título principal -->
+    <ion-title>
+      <div class="header-brand" *ngIf="!showBackButton">
+        <div class="logo">🔥</div>
+        <div class="brand-text">
+          <h1>{{ title }}</h1>
+          <p *ngIf="subtitle">{{ subtitle }}</p>
+        </div>
+      </div>
+      <!-- Título simples para páginas internas -->
+      <div class="simple-title" *ngIf="showBackButton">
+        {{ title }}
+      </div>
+    </ion-title>
+
+    <!-- Conteúdo customizado do slot end -->
+    <ng-content select="[slot=end]"></ng-content>
+
+    <!-- Menu de navegação principal (só na home) -->
+    <ion-buttons slot="end" class="nav-buttons" *ngIf="!showBackButton"><!-- Home/Pokédex -->
+      <ion-button
+        fill="clear"
+        (click)="navigateTo('home')"
+        class="nav-btn"
+        [class.active]="currentPage === 'home'">
+        <ion-icon name="library-outline"></ion-icon>
+        <span class="nav-label">{{ 'nav.pokedex' | translate }}</span>
+      </ion-button>
+
+      <!-- Favoritos -->
+      <ion-button
+        fill="clear"
+        (click)="navigateTo('favorites')"
+        class="nav-btn favorites-btn"
+        [class.active]="currentPage === 'favorites'"
+        [class.has-favorites]="getFavoritesCount() > 0">
+        <ion-icon name="heart-outline"></ion-icon>
+        <span class="nav-label">{{ 'nav.favorites' | translate }}</span>
+        <ion-badge color="danger" *ngIf="getFavoritesCount() > 0">
+          {{ getFavoritesCount() }}
+        </ion-badge>
+      </ion-button>
+
+      <!-- Configurações -->
+      <ion-button
+        fill="clear"
+        (click)="navigateTo('settings')"
+        class="nav-btn"        [class.active]="currentPage === 'settings'">
+        <ion-icon name="settings-outline"></ion-icon>
+        <span class="nav-label">{{ 'nav.settings' | translate }}</span>
+      </ion-button>
+
+      <!-- Scroll to top (apenas na home) -->
+      <ion-button
+        fill="clear"
+        (click)="scrollToTop()"
+        class="nav-btn"
+        *ngIf="currentPage === 'home'">
+        <ion-icon name="arrow-up-outline"></ion-icon>
+      </ion-button>      <!-- Mini Audio Player -->
+      <ion-button
+        fill="clear"
+        (click)="toggleAudio()"
+        class="nav-btn audio-btn"
+        [color]="isAudioPlaying ? 'primary' : 'medium'"
+        *ngIf="isAudioEnabled">
+        <ion-icon [name]="isAudioPlaying ? 'volume-high-outline' : 'volume-mute-outline'"></ion-icon>
+      </ion-button>
+
+      <!-- Seletor de idioma -->
+      <ion-button
+        fill="clear"
+        (click)="toggleLanguage()"
+        class="nav-btn lang-btn">
+        <ion-icon name="language-outline"></ion-icon>
+        <span>{{ currentLanguage.toUpperCase() }}</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>

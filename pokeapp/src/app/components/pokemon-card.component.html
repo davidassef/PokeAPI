@@ -1,0 +1,96 @@
+<div class="modern-pokemon-card"
+     (click)="onCardClick()"
+     [attr.data-type]="getPrimaryTypeName()"
+     [style.--primary-color]="getPrimaryTypeColor()">
+
+  <!-- Background Pattern -->
+  <div class="card-background">
+    <div class="pattern-overlay"></div>
+    <div class="gradient-overlay"></div>
+  </div>
+
+  <!-- Card Content -->
+  <div class="card-content">
+    <!-- Header Section -->
+    <div class="card-header">
+      <div class="pokemon-id-badge">
+        <span>#{{ pokemon.id.toString().padStart(3, '0') }}</span>
+      </div>
+      <button
+        *ngIf="showFavoriteButton"
+        class="favorite-button"
+        [class.is-favorite]="isFavorite"
+        (click)="onFavoriteClick($event)"
+        [attr.aria-label]="isFavorite ? ('favorites.removeFromFavorites' | translate) : ('favorites.addToFavorites' | translate)">
+        <div class="heart-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path [attr.fill]="isFavorite ? '#ff4757' : 'none'"
+                  [attr.stroke]="isFavorite ? '#ff4757' : '#666'"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+            </path>
+          </svg>
+        </div>
+      </button>
+    </div>
+
+    <!-- Pokemon Image -->
+    <div class="pokemon-image-section">
+      <div class="image-container">
+        <img
+          [src]="getPokemonImageUrl()"
+          [alt]="pokemon.name"
+          class="pokemon-image"
+          loading="lazy"
+          (error)="onImageError($event)">
+        <div class="image-glow"></div>
+      </div>
+    </div>
+
+    <!-- Pokemon Info -->
+    <div class="pokemon-info">
+      <h3 class="pokemon-name">{{ getFormattedName() }}</h3>
+
+      <!-- Types -->
+      <div class="pokemon-types">
+        <span
+          *ngFor="let type of pokemon.types; let first = first"
+          class="type-badge"
+          [attr.data-type]="type.type.name"
+          [style.background-color]="getTypeColor(type.type.name)">
+          <span class="type-icon">{{ getTypeIcon(type.type.name) }}</span>
+          <span class="type-name">{{ getLocalizedTypeName(type.type.name) }}</span>
+        </span>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="quick-stats" *ngIf="pokemon.stats && pokemon.stats.length > 0">
+        <div class="stat-item">
+          <span class="stat-icon">⚡</span>
+          <span class="stat-value">{{ getStatValue('speed') }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">⚔️</span>
+          <span class="stat-value">{{ getStatValue('attack') }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">🛡️</span>
+          <span class="stat-value">{{ getStatValue('defense') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Elements -->
+    <div class="card-actions">
+      <div class="action-hint">
+        <span>{{ 'actions.tapToExplore' | translate }}</span>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</div>
