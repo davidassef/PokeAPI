@@ -1,0 +1,55 @@
+<app-shared-header
+  [title]="'nav.favorites' | translate"
+  currentPage="favorites">
+</app-shared-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Header transparente para mobile -->
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'nav.favorites' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>{{ 'loading.data' | translate }}</p>
+  </div>
+
+  <!-- Lista de favoritos -->
+  <div class="pokemon-grid" *ngIf="!isLoading && favorites.length > 0">
+    <div class="favorite-item" *ngFor="let favorite of favorites; trackBy: trackByFavoriteId">
+      <app-pokemon-card
+        [pokemon]="convertToPokemon(favorite)"
+        [isFavorite]="true"
+        [showFavoriteButton]="true"
+        (cardClick)="goToDetails(favorite)"
+        (favoriteToggle)="removeFavorite(favorite)">
+      </app-pokemon-card>
+
+      <div class="favorite-date">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>Adicionado em {{ formatDate(favorite.dateAdded) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vazio -->
+  <div class="empty-state" *ngIf="!isLoading && favorites.length === 0">
+    <div class="empty-icon-container">
+      <ion-icon name="heart-outline" class="empty-icon"></ion-icon>
+    </div>
+    <h2>{{ 'favorites.empty' | translate }}</h2>
+    <p>
+      {{ 'favorites.emptySubtitle' | translate }}
+    </p>
+    <ion-button
+      fill="outline"
+      color="secondary"
+      [routerLink]="['/tabs/tab1']">
+      <ion-icon name="library-outline" slot="start"></ion-icon>
+      {{ 'nav.pokedex' | translate }}
+    </ion-button>
+  </div>
+</ion-content>
