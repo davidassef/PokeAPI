@@ -107,6 +107,10 @@ export class LocalizationService {
       'filters.steel': 'Metal',
       'filters.fairy': 'Fada',
       'filters.normal': 'Normal',
+      'filters.noResults': 'Nenhum resultado encontrado',
+      'filters.noResultsMessage': 'Não há Pokémons que correspondam aos filtros selecionados.',
+      'filters.noResultsCombined': 'Nenhum resultado para esta busca e filtros',
+      'filters.tryDifferentCriteria': 'Tente termos diferentes ou ajuste os filtros.',
 
       // Pokémon Stats
       'stats.hp': 'PS',
@@ -331,6 +335,10 @@ export class LocalizationService {
       'filters.steel': 'Steel',
       'filters.fairy': 'Fairy',
       'filters.normal': 'Normal',
+      'filters.noResults': 'No results found',
+      'filters.noResultsMessage': 'No Pokémon match the selected filters.',
+      'filters.noResultsCombined': 'No results for this search and filters',
+      'filters.tryDifferentCriteria': 'Try different terms or adjust the filters.',
 
       // Pokémon Stats
       'stats.hp': 'HP',
@@ -556,6 +564,10 @@ export class LocalizationService {
       'filters.steel': 'Acero',
       'filters.fairy': 'Hada',
       'filters.normal': 'Normal',
+      'filters.noResults': 'Sin resultados encontrados',
+      'filters.noResultsMessage': 'No hay Pokémon que coincidan con los filtros seleccionados.',
+      'filters.noResultsCombined': 'Sin resultados para esta búsqueda y filtros',
+      'filters.tryDifferentCriteria': 'Prueba términos diferentes o ajusta los filtros.',
 
       // Estadísticas Pokémon
       'stats.hp': 'PS',
@@ -628,7 +640,7 @@ export class LocalizationService {
       'category.butterfly': 'Mariposa',
       'category.hairy-bug': 'Inseto Peludo',
       'category.poison-bee': 'Abeja Venenosa',
-      'category.tiny-bird': 'Pájaro Pequeño',
+      'category.tiny-bird': 'Pájaro Pequeno',
       'category.bird': 'Pájaro',
       'category.mouse': 'Ratón',
       'category.beak': 'Pico',

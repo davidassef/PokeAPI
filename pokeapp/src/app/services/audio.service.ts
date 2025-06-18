@@ -103,19 +103,30 @@ export class AudioService {
     this.audio.load();
   }
 
+  /**
+   * Pausa o áudio
+   */
+  public pause(): void {
+    if (this.audio) {
+      this.audio.pause();
+      this.isPlayingSubject.next(false);
+    }
+  }
+
+  /**
+   * Retoma/inicia a reprodução
+   */
   public play(): void {
     if (this.audio && this.isEnabledSubject.value) {
       this.audio.play().catch(error => {
-        console.warn('Audio play failed:', error);
+        console.warn('Erro ao reproduzir áudio:', error);
       });
     }
   }
 
-  public pause(): void {
-    if (this.audio) {
-      this.audio.pause();
-    }
-  }
+  /**
+   * Alterna entre play/pause
+   */
   public toggle(): void {
     if (this.isPlayingSubject.value) {
       this.pause();

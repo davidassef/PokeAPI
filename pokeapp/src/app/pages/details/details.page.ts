@@ -10,13 +10,14 @@ import { FavoritesService } from '../../services/favorites.service';
 import { PokemonTranslationService } from '../../services/pokemon-translation.service';
 import { LocalizationService } from '../../services/localization.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { SharedHeaderComponent } from '../../components/shared-header.component';
 import { Pokemon, PokemonSpecies, FlavorTextEntry } from '../../models/pokemon.model';
 
 @Component({
   selector: 'app-details',
   templateUrl: './details.page.html',
   styleUrls: ['./details.page.scss'],  standalone: true,
-  imports: [CommonModule, IonicModule, TranslatePipe]
+  imports: [CommonModule, IonicModule, TranslatePipe, SharedHeaderComponent]
 })
 export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
   species: PokemonSpecies | null = null;

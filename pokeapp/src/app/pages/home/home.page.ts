@@ -14,6 +14,7 @@ import { PokemonCardComponent } from '../../components/pokemon-card.component';
 import { SharedHeaderComponent } from '../../components/shared-header.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Pokemon, FavoritePokemon } from '../../models/pokemon.model';
+import { POKEMON_TYPES, getTypeColor, getContrastColor } from '../../utils/pokemon-types.util';
 
 // Interface para filtros rápidos
 interface QuickFilter {
@@ -22,6 +23,9 @@ interface QuickFilter {
   icon: string;
   active: boolean;
   filterFn: (pokemon: Pokemon) => boolean;
+  color?: string;
+  backgroundColor?: string;
+  textColor?: string;
 }
 
 @Component({
@@ -53,50 +57,8 @@ export class HomePage implements OnInit {
   filteredPokemon: Pokemon[] = [];
   allLoadedPokemon: Pokemon[] = [];
   isSearching = false;
-  searchTimeout: any;  quickFilters: QuickFilter[] = [
-    {
-      id: 'favorites',
-      label: 'filters.favorites',
-      icon: 'heart',
-      active: false,
-      filterFn: (pokemon: Pokemon) => this.favoritesService.isFavorite(pokemon.id)
-    },
-    {
-      id: 'legendary',
-      label: 'filters.legendary',
-      icon: 'star',
-      active: false,
-      filterFn: (pokemon: Pokemon) => this.isLegendaryPokemon(pokemon.id)
-    },
-    {
-      id: 'generation1',
-      label: 'filters.gen1',
-      icon: 'flame',
-      active: false,
-      filterFn: (pokemon: Pokemon) => pokemon.id <= 151
-    },
-    {
-      id: 'fire',
-      label: 'filters.fire',
-      icon: 'flame-outline',
-      active: false,
-      filterFn: (pokemon: Pokemon) => this.hasType(pokemon, 'fire')
-    },
-    {
-      id: 'water',
-      label: 'filters.water',
-      icon: 'water-outline',
-      active: false,
-      filterFn: (pokemon: Pokemon) => this.hasType(pokemon, 'water')
-    },
-    {
-      id: 'grass',
-      label: 'filters.grass',
-      icon: 'leaf-outline',
-      active: false,
-      filterFn: (pokemon: Pokemon) => this.hasType(pokemon, 'grass')
-    }
-  ];
+  searchTimeout: any;  quickFilters: QuickFilter[] = [];
+
   constructor(
     private pokemonApi: PokemonApiService,
     private favoritesService: FavoritesService,
@@ -107,10 +69,7 @@ export class HomePage implements OnInit {
     private toastController: ToastController
   ) {
     this.currentLanguage = this.localizationService.getCurrentLanguage();
-  }
-  ngOnInit(): void {
-    console.log('🚀 HomePage ngOnInit chamado');
-    this.initializePage();
+    this.initializeFilters();
   }
   /**
    * Inicializa a página carregando dados
@@ -579,13 +538,102 @@ export class HomePage implements OnInit {
   clearAllFilters(): void {
     console.log('🧹 Limpando todos os filtros');
     this.quickFilters.forEach(filter => filter.active = false);
-    this.applyFilters();
-  }
+    this.applyFilters();  }
 
   /**
    * Obtém nome traduzido de um Pokémon
    */
   getTranslatedPokemonName(pokemon: Pokemon): string {
     return this.pokemonTranslationService.getTranslatedName(pokemon.name, this.currentLanguage);
+  }
+
+  /**
+   * Inicializa os filtros dinâmicos
+   */
+  private initializeFilters(): void {
+    // Filtros especiais
+    this.quickFilters = [
+      {
+        id: 'favorites',
+        label: 'filters.favorites',
+        icon: 'heart',
+        active: false,
+        filterFn: (pokemon: Pokemon) => this.favoritesService.isFavorite(pokemon.id),
+        color: '#e74c3c',
+        backgroundColor: '#ffebee',
+        textColor: '#c62828'
+      },
+      {
+        id: 'legendary',
+        label: 'filters.legendary',
+        icon: 'star',
+        active: false,
+        filterFn: (pokemon: Pokemon) => this.isLegendaryPokemon(pokemon.id),
+        color: '#f39c12',
+        backgroundColor: '#fff8e1',
+        textColor: '#f57f17'
+      },
+      {
+        id: 'generation1',
+        label: 'filters.gen1',
+        icon: 'flame',
+        active: false,
+        filterFn: (pokemon: Pokemon) => pokemon.id <= 151,
+        color: '#9b59b6',
+        backgroundColor: '#f3e5f5',
+        textColor: '#7b1fa2'
+      }
+    ];
+
+    // Adiciona filtros por tipo de Pokémon
+    POKEMON_TYPES.slice(0, 6).forEach(type => { // Limita a 6 tipos principais
+      const typeColor = getTypeColor(type);
+      const lightColor = getTypeColor(type, true);
+      const textColor = getContrastColor(typeColor);
+
+      this.quickFilters.push({
+        id: type,
+        label: `filters.${type}`,
+        icon: this.getTypeIcon(type),
+        active: false,
+        filterFn: (pokemon: Pokemon) => this.hasType(pokemon, type),
+        color: typeColor,
+        backgroundColor: lightColor,
+        textColor: textColor === '#FFFFFF' ? typeColor : textColor
+      });
+    });
+  }
+
+  /**
+   * Retorna ícone apropriado para cada tipo
+   */
+  private getTypeIcon(type: string): string {
+    const typeIcons: { [key: string]: string } = {
+      'fire': 'flame-outline',
+      'water': 'water-outline',
+      'grass': 'leaf-outline',
+      'electric': 'flash-outline',
+      'psychic': 'eye-outline',
+      'ice': 'snow-outline',
+      'dragon': 'logo-dragon',
+      'dark': 'moon-outline',
+      'fighting': 'fitness-outline',
+      'poison': 'flask-outline',
+      'ground': 'earth-outline',
+      'flying': 'airplane-outline',
+      'bug': 'bug-outline',
+      'rock': 'diamond-outline',
+      'ghost': 'skull-outline',
+      'steel': 'hardware-chip-outline',
+      'fairy': 'heart-outline',
+      'normal': 'ellipse-outline'
+    };
+
+    return typeIcons[type] || 'help-outline';
+  }
+
+  ngOnInit(): void {
+    console.log('🚀 HomePage ngOnInit chamado');
+    this.initializePage();
   }
 }

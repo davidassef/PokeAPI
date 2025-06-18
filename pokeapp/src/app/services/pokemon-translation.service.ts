@@ -41,13 +41,13 @@ export class PokemonTranslationService {
   private translationCache = new Map<string, any>();
 
   // Mapeamento manual para os primeiros 151 Pokémons (Geração 1)
-  private pokemonNames: { [key: string]: { [key: string]: string } } = {
+  private readonly pokemonNames: Record<string, Record<string, string>> = {
     pt: {
       'bulbasaur': 'Bulbassauro',
-      'ivysaur': 'Ivysaur',
-      'venusaur': 'Venusaur',
+      'ivysaur': 'Ivysauro',
+      'venusaur': 'Venussauro',
       'charmander': 'Charmander',
-      'charmeleon': 'Charmeleon',
+      'charmeleon': 'Charmeleão',
       'charizard': 'Charizard',
       'squirtle': 'Squirtle',
       'wartortle': 'Wartortle',
@@ -95,7 +95,7 @@ export class PokemonTranslationService {
       'diglett': 'Diglett',
       'dugtrio': 'Dugtrio',
       'meowth': 'Meowth',
-      'persian': 'Persian',
+      'persian': 'Persa',
       'psyduck': 'Psyduck',
       'golduck': 'Golduck',
       'mankey': 'Mankey',
@@ -164,7 +164,7 @@ export class PokemonTranslationService {
       'seaking': 'Seaking',
       'staryu': 'Staryu',
       'starmie': 'Starmie',
-      'mr-mime': 'Mr. Mime',
+      'mr-mime': 'Sr. Mime',
       'scyther': 'Scyther',
       'jynx': 'Jynx',
       'electabuzz': 'Electabuzz',
@@ -174,7 +174,7 @@ export class PokemonTranslationService {
       'magikarp': 'Magikarp',
       'gyarados': 'Gyarados',
       'lapras': 'Lapras',
-      'ditto': 'Ditto',
+      'ditto': 'Metamon',
       'eevee': 'Eevee',
       'vaporeon': 'Vaporeon',
       'jolteon': 'Jolteon',
