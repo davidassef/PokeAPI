@@ -18,12 +18,13 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 export class SharedHeaderComponent implements OnInit, OnDestroy {
   @Input() title: string = 'PokéDex';
   @Input() subtitle?: string = 'Explore & Discover';
-  @Input() currentPage: 'home' | 'favorites' | 'settings' = 'home';
+  @Input() currentPage: 'home' | 'favorites' | 'settings' | 'details' = 'home';
   @Input() showBackButton: boolean = false;
-
-  currentLanguage = 'pt';
-  isAudioEnabled = false;
+  currentLanguage = 'pt';  isAudioEnabled = false;
   isAudioPlaying = false;
+  isMuted = false;
+  currentVolume = 0.5;
+  audioVolume = 50; // Volume em porcentagem (0-100)
 
   private subscriptions = new Subscription();
 
@@ -35,7 +36,6 @@ export class SharedHeaderComponent implements OnInit, OnDestroy {
   ) {
     this.currentLanguage = this.localizationService.getCurrentLanguage();
   }
-
   ngOnInit() {
     // Subscribe to audio state changes
     this.subscriptions.add(
@@ -47,6 +47,13 @@ export class SharedHeaderComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.audioService.isPlaying$.subscribe(playing => {
         this.isAudioPlaying = playing;
+      })
+    );
+
+    this.subscriptions.add(
+      this.audioService.volume$.subscribe(volume => {
+        this.currentVolume = volume;
+        this.isMuted = volume === 0;
       })
     );
   }
@@ -88,12 +95,81 @@ export class SharedHeaderComponent implements OnInit, OnDestroy {
     this.currentLanguage = languages[nextIndex];
     this.localizationService.setLanguage(this.currentLanguage);
   }
-
   /**
    * Alterna reprodução de áudio
    */
   toggleAudio(): void {
     this.audioService.toggle();
+  }
+
+  /**
+   * Alterna play/pause do áudio
+   */
+  togglePlayPause(): void {
+    if (this.isAudioPlaying) {
+      this.audioService.pause();
+    } else {
+      this.audioService.play();
+    }
+  }
+
+  /**
+   * Alterna mute do áudio
+   */
+  toggleMute(): void {
+    if (this.isMuted) {
+      this.audioService.setVolume(this.currentVolume > 0 ? this.currentVolume : 0.5);
+    } else {
+      this.audioService.setVolume(0);
+    }
+  }  /**
+   * Define o volume do áudio via slider
+   */
+  setVolume(event: any): void {
+    const volume = event.detail.value / 100; // Converte de 0-100 para 0-1
+    this.audioVolume = event.detail.value;
+    this.currentVolume = volume;
+    this.audioService.setVolume(volume);
+  }
+
+  /**
+   * Aumenta o volume em 10%
+   */
+  increaseVolume(): void {
+    const newVolume = Math.min(this.audioVolume + 10, 100);
+    this.audioVolume = newVolume;
+    this.currentVolume = newVolume / 100;
+    this.audioService.setVolume(this.currentVolume);
+  }
+
+  /**
+   * Diminui o volume em 10%
+   */
+  decreaseVolume(): void {
+    const newVolume = Math.max(this.audioVolume - 10, 0);
+    this.audioVolume = newVolume;
+    this.currentVolume = newVolume / 100;
+    this.audioService.setVolume(this.currentVolume);
+  }
+
+  /**
+   * Reinicia o áudio
+   */
+  restartAudio(): void {
+    this.audioService.restart();
+  }
+
+  /**
+   * Retorna ícone apropriado para mute
+   */
+  getMuteIcon(): string {
+    if (this.isMuted) {
+      return 'volume-mute-outline';
+    } else if (this.currentVolume > 0.5) {
+      return 'volume-high-outline';
+    } else {
+      return 'volume-low-outline';
+    }
   }
 
   /**

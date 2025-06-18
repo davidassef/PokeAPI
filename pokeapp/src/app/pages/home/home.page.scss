@@ -200,38 +200,64 @@
       justify-content: flex-start;
       flex-wrap: wrap;
       margin-bottom: 8px;
-    }
-
-    .filter-chip {
-      --background: white;
-      --color: var(--ion-color-medium);
+    }    .filter-chip {
+      --background: var(--chip-background, white);
+      --color: var(--chip-text-color, var(--ion-color-medium));
       transition: all 0.3s ease;
       cursor: pointer;
-      border: 1px solid var(--ion-color-step-200);
+      border: 1px solid var(--chip-color, var(--ion-color-step-200));
       min-height: 36px;
+      position: relative;
+      overflow: hidden;
 
-      &[color="primary"], &.active {
-        --background: var(--ion-color-primary);
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--chip-color, var(--ion-color-primary));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+      }
+
+      &.active {
+        --background: var(--chip-color, var(--ion-color-primary));
         --color: white;
         transform: scale(1.05);
-        border-color: var(--ion-color-primary);
-        box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.3);
+        border-color: var(--chip-color, var(--ion-color-primary));
+        box-shadow: 0 2px 12px rgba(var(--chip-color, var(--ion-color-primary-rgb)), 0.4);
+
+        &::before {
+          opacity: 1;
+        }
       }
 
       &:hover:not(.active) {
-        --background: var(--ion-color-step-50);
+        --background: var(--chip-background, var(--ion-color-step-50));
         transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-color: var(--chip-color, var(--ion-color-primary));
+
+        &::before {
+          opacity: 0.1;
+        }
       }
 
       ion-icon {
         margin-right: 4px;
         font-size: 1rem;
+        position: relative;
+        z-index: 1;
       }
 
       ion-label {
         font-weight: 500;
         font-size: 0.85rem;
+        position: relative;
+        z-index: 1;
       }
     }
 

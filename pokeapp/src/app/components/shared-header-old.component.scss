@@ -1,0 +1,258 @@
+// Header compartilhado
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .logo {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  .brand-text {
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #3880ff, #5260ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: var(--ion-color-medium);
+      font-weight: 500;
+    }
+  }
+}
+
+// Título simples para páginas internas
+.simple-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+// Botão de voltar estilizado
+ion-buttons[slot="start"] {
+  ion-button {
+    --color: var(--ion-color-primary);
+    --padding-start: 8px;
+    --padding-end: 8px;
+
+    .back-text {
+      margin-left: 4px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    &:hover {
+      --background: rgba(var(--ion-color-primary-rgb), 0.1);
+    }
+  }
+}
+
+// Menu de navegação principal - REMOVIDO (agora usa tabs no footer)
+// Player de Música Completo
+.audio-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border-radius: 20px;
+  margin-right: 8px;
+  transition: all 0.3s ease;
+
+  .player-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .music-icon {
+      font-size: 1.2rem;
+      color: var(--ion-color-primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .track-info {
+      display: flex;
+      flex-direction: column;
+      
+      .track-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ion-color-dark);
+        line-height: 1;
+      }
+
+      .track-status {
+        font-size: 0.65rem;
+        color: var(--ion-color-medium);
+        line-height: 1;
+        margin-top: 2px;
+      }
+    }
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .control-btn {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      --border-radius: 12px;
+      min-width: 32px;
+      height: 32px;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+
+      &.play-btn {
+        --background: var(--ion-color-primary);
+        --color: white;
+        
+        &:hover {
+          --background: var(--ion-color-primary-shade);
+        }
+      }
+
+      &.restart-btn, &.mute-btn {
+        --color: var(--ion-color-medium);
+        
+        &:hover {
+          --background: rgba(var(--ion-color-primary-rgb), 0.1);
+          --color: var(--ion-color-primary);
+        }
+      }
+    }
+  }
+
+  &:hover {
+    background: rgba(var(--ion-color-primary-rgb), 0.15);
+    transform: scale(1.02);
+  }
+}
+
+// Botão de idioma
+.lang-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+
+  span {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &:hover {
+    --background: rgba(var(--ion-color-primary-rgb), 0.1);
+  }
+}
+      transform: scale(1.05);
+    }
+
+    ion-icon {
+      font-size: 1.1rem;
+      margin-bottom: 2px;
+    }
+
+    .nav-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    &.favorites-btn {
+      ion-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 0.6rem;
+        font-weight: 600;
+      }
+
+      &.has-favorites {
+        animation: heartbeat 2s ease-in-out infinite;
+      }
+    }
+
+    &.lang-btn {
+      flex-direction: row;
+      gap: 4px;
+      min-width: auto;
+
+      span {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .nav-label {
+        display: none;
+      }
+    }
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .nav-buttons {
+    gap: 1px;
+
+    .nav-btn {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      min-width: 40px;
+
+      .nav-label {
+        font-size: 0.65rem;
+      }
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .header-brand {
+    .brand-text {
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      p {
+        font-size: 0.7rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-buttons {
+    .nav-btn .nav-label {
+      display: none; // Esconde labels em telas muito pequenas
+    }
+
+    .nav-btn {
+      min-width: 36px;
+    }
+  }
+}
