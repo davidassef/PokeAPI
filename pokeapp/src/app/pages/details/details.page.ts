@@ -2,24 +2,41 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
 
 import { PokemonApiService } from '../../services/pokemon-api.service';
-import { FavoritesService } from '../../services/favorites.service';
+import { PokemonFavoritesService } from '../../services/pokemon-favorites.service';
 import { PokemonTranslationService } from '../../services/pokemon-translation.service';
 import { LocalizationService } from '../../services/localization.service';
+import { FeedbackToastService } from '../../components/feedback-toast.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { SharedHeaderComponent } from '../../components/shared-header.component';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../components/breadcrumb.component';
+import { PokemonLoadingComponent } from '../../components/pokemon-loading.component';
 import { Pokemon, PokemonSpecies, FlavorTextEntry } from '../../models/pokemon.model';
+import { AppPages } from '../../enums/app.enums';
 
 @Component({
   selector: 'app-details',
   templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],  standalone: true,
-  imports: [CommonModule, IonicModule, TranslatePipe, SharedHeaderComponent]
+  styleUrls: ['./details.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonicModule,
+    TranslatePipe,
+    SharedHeaderComponent,
+    BreadcrumbComponent,
+    PokemonLoadingComponent,
+  ],
 })
-export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
+export class DetailsPage implements OnInit {
+  // 📱 Enums para templates
+  readonly appPages = AppPages;
+
+  pokemon: Pokemon | null = null;
+  breadcrumbItems: BreadcrumbItem[] = [];
   species: PokemonSpecies | null = null;
   pokemonId: number = 0;
   isLoading = true;
@@ -31,16 +48,18 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
   // Dados processados para exibição
   descriptions: string[] = [];
   imageUrls: string[] = [];
-  stats: { name: string; value: number; max: number }[] = [];
+  stats: { name: string; value: number; max: number }[] = [];  /**
+   * Injeta o serviço de favoritos dedicado
+   */
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private pokemonApi: PokemonApiService,
-    private favoritesService: FavoritesService,
+    private pokemonFavoritesService: PokemonFavoritesService,
     private pokemonTranslationService: PokemonTranslationService,
     private localizationService: LocalizationService,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private feedbackToast: FeedbackToastService,
   ) {
     this.currentLanguage = this.localizationService.getCurrentLanguage();
   }
@@ -69,7 +88,7 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
   private async loadPokemonDetails(): Promise<void> {
     const loading = await this.loadingController.create({
       message: this.localizationService.translate('loading.details'),
-      duration: 0
+      duration: 0,
     });
 
     await loading.present();
@@ -79,14 +98,13 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
       // Carrega dados do Pokémon e espécie em paralelo
       const [pokemon, species] = await forkJoin([
         this.pokemonApi.getPokemonDetails(this.pokemonId),
-        this.pokemonApi.getPokemonSpecies(this.pokemonId)
-      ]).toPromise() ?? [null, null];
-
-      if (pokemon && species) {
+        this.pokemonApi.getPokemonSpecies(this.pokemonId),
+      ]).toPromise() ?? [null, null];      if (pokemon && species) {
         this.pokemon = pokemon;
         this.species = species;
         this.processDataForDisplay();
         this.checkFavoriteStatus();
+        this.setupBreadcrumbs(); // Configura breadcrumbs após carregar dados
       } else {
         throw new Error('Dados não encontrados');
       }
@@ -200,7 +218,7 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
     this.stats = this.pokemon.stats.map(stat => ({
       name: this.formatStatName(stat.stat.name),
       value: stat.base_stat,
-      max: 255 // Valor máximo teórico para stats
+      max: 255, // Valor máximo teórico para stats
     }));
   }
 
@@ -214,7 +232,7 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
       'defense': 'Defesa',
       'special-attack': 'Atq. Esp.',
       'special-defense': 'Def. Esp.',
-      'speed': 'Velocidade'
+      'speed': 'Velocidade',
     };
 
     return statNames[statName] || statName;
@@ -224,33 +242,15 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
    * Verifica status de favorito
    */
   private checkFavoriteStatus(): void {
-    this.isFavorite = this.favoritesService.isFavorite(this.pokemonId);
+    this.isFavorite = this.pokemonFavoritesService.isFavorite(this.pokemonId);
   }
 
   /**
-   * Alterna favorito
+   * Alterna favorito para o Pokémon atual
    */
-  async toggleFavorite(): Promise<void> {
-    if (!this.pokemon) return;
-
-    const imageUrl = this.pokemonApi.getPokemonImageUrl(this.pokemon.id);
-
-    try {
-      const success = await this.favoritesService.toggleFavorite({
-        id: this.pokemon.id,
-        name: this.pokemon.name,
-        imageUrl
-      });
-
-      if (success) {
-        this.isFavorite = !this.isFavorite;        const message = this.isFavorite
-          ? `${this.getFormattedName()} ${this.localizationService.translate('favorites.added')}`
-          : `${this.getFormattedName()} ${this.localizationService.translate('favorites.removed')}`;
-
-        await this.showSuccessToast(message);
-      }
-    } catch (error) {
-      await this.showErrorToast(this.localizationService.translate('error.changeFavorite'));
+  toggleFavorite(): void {
+    if (this.pokemon) {
+      this.pokemonFavoritesService.toggleFavorite(this.pokemon.id);
     }
   }
 
@@ -268,11 +268,11 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
     if (this.pokemon) {
       this.translatedName = this.pokemonTranslationService.getTranslatedName(
         this.pokemon.name,
-        this.currentLanguage
+        this.currentLanguage,
       );
       this.translatedDescription = this.pokemonTranslationService.getTranslatedDescription(
         this.pokemon.name,
-        this.currentLanguage
+        this.currentLanguage,
       );
     }
   }
@@ -336,7 +336,7 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
       dragon: '#7038F8',
       dark: '#705848',
       steel: '#B8B8D0',
-      fairy: '#EE99AC'
+      fairy: '#EE99AC',
     };
 
     return typeColors[type] || '#68A090';
@@ -362,30 +362,35 @@ export class DetailsPage implements OnInit {  pokemon: Pokemon | null = null;
   getPokemonMainImageUrl(): string {
     return this.pokemon ? this.pokemonApi.getPokemonImageUrl(this.pokemon.id) : '';
   }
-
   /**
    * Exibe toast de sucesso
    */
   private async showSuccessToast(message: string): Promise<void> {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color: 'success',
-      position: 'bottom'
-    });
-    await toast.present();
+    await this.feedbackToast.showSuccess(message);
   }
 
   /**
    * Exibe toast de erro
    */
   private async showErrorToast(message: string): Promise<void> {
-    const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      color: 'danger',
-      position: 'bottom'
-    });
-    await toast.present();
+    await this.feedbackToast.showError(message);
+  }
+
+  /**
+   * Configura breadcrumbs
+   */
+  private setupBreadcrumbs(): void {
+    this.breadcrumbItems = [
+      {
+        label: 'nav.pokedex',
+        route: '/tabs/tab1',
+        icon: 'apps',
+      },
+      {
+        label: this.getFormattedName(),
+        icon: 'information-circle',
+        isActive: true,
+      },
+    ];
   }
 }

@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError, map } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import {
   Pokemon,
   PokemonListResponse,
-  PokemonSpecies
+  PokemonSpecies,
 } from '../models/pokemon.model';
+import { API_URLS, PAGINATION } from '../constants/app.constants';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PokemonApiService {
-  private readonly baseUrl = 'https://pokeapi.co/api/v2';
-  private readonly itemsPerPage = 20;
+  private readonly baseUrl = API_URLS.BASE_URL;
+  private readonly itemsPerPage = PAGINATION.ITEMS_PER_PAGE;
 
   constructor(private http: HttpClient) {}
 
@@ -21,12 +22,12 @@ export class PokemonApiService {
    */
   getPokemonList(
     offset: number = 0,
-    limit: number = this.itemsPerPage
+    limit: number = this.itemsPerPage,
   ): Observable<PokemonListResponse> {
     const url = `${this.baseUrl}/pokemon?offset=${offset}&limit=${limit}`;
 
     return this.http.get<PokemonListResponse>(url).pipe(
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
@@ -37,7 +38,7 @@ export class PokemonApiService {
     const url = `${this.baseUrl}/pokemon/${id}`;
 
     return this.http.get<Pokemon>(url).pipe(
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
@@ -46,7 +47,7 @@ export class PokemonApiService {
    */
   getPokemonDetailsByUrl(url: string): Observable<Pokemon> {
     return this.http.get<Pokemon>(url).pipe(
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
@@ -57,7 +58,7 @@ export class PokemonApiService {
     const url = `${this.baseUrl}/pokemon-species/${id}`;
 
     return this.http.get<PokemonSpecies>(url).pipe(
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
@@ -68,7 +69,7 @@ export class PokemonApiService {
     const url = `${this.baseUrl}/pokemon/${name.toLowerCase()}`;
 
     return this.http.get<Pokemon>(url).pipe(
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 

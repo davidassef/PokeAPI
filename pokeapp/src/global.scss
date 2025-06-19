@@ -35,3 +35,211 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/**
+ * Design System - Tokens e Mixins
+ * -----------------------------------------------------
+ * Sistema centralizado de design para consistência visual
+ */
+@import 'styles/design-tokens.scss';
+@import 'styles/mixins.scss';
+@import 'styles/skeleton.scss';
+@import 'styles/micro-interactions.scss';
+@import 'styles/toast-styles.scss';
+
+/**
+ * Toast Notifications Styling
+ * -----------------------------------------------------
+ */
+.toast-success {
+  --background: var(--ion-color-success);
+  --color: var(--ion-color-success-contrast);
+  --border: 2px solid var(--ion-color-success-shade);
+}
+
+.toast-error {
+  --background: var(--ion-color-danger);
+  --color: var(--ion-color-danger-contrast);
+  --border: 2px solid var(--ion-color-danger-shade);
+}
+
+.toast-warning {
+  --background: var(--ion-color-warning);
+  --color: var(--ion-color-warning-contrast);
+  --border: 2px solid var(--ion-color-warning-shade);
+}
+
+.toast-info {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+  --border: 2px solid var(--ion-color-primary-shade);
+}
+
+/**
+ * Accessibility Improvements
+ * -----------------------------------------------------
+ */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-links {
+  position: absolute;
+  top: -1000px;
+  left: 0;
+  z-index: 9999;
+
+  .skip-link {
+    position: absolute;
+    top: 1000px;
+    left: 10px;
+    padding: 8px 16px;
+    background: var(--ion-color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+
+    &:focus {
+      top: 10px;
+    }
+  }
+}
+
+.keyboard-focus {
+  outline: 3px solid var(--ion-color-primary) !important;
+  outline-offset: 2px !important;
+}
+
+.keyboard-navigation {
+  * {
+    &:focus-visible {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+/**
+ * High Contrast Theme
+ * -----------------------------------------------------
+ */
+.high-contrast {
+  --ion-color-primary: #0066cc;
+  --ion-color-secondary: #cc6600;
+  --ion-color-tertiary: #6600cc;
+  --ion-color-success: #009900;
+  --ion-color-warning: #ffcc00;
+  --ion-color-danger: #cc0000;
+  --ion-color-dark: #000000;
+  --ion-color-medium: #333333;
+  --ion-color-light: #ffffff;
+
+  filter: contrast(150%) brightness(110%);
+}
+
+/**
+ * Reduced Motion Support
+ * -----------------------------------------------------
+ */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/**
+ * Offline Mode Styling
+ * -----------------------------------------------------
+ */
+.offline {
+  .offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--ion-color-warning);
+    color: var(--ion-color-warning-contrast);
+    text-align: center;
+    padding: 8px;
+    font-weight: 600;
+    z-index: 10000;
+  }
+}
+
+/**
+ * PWA Install Banner
+ * -----------------------------------------------------
+ */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: var(--ion-color-primary);
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 9998;
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .banner-text {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 4px 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  }
+
+  .banner-actions {
+    display: flex;
+    gap: 8px;
+
+    ion-button {
+      --color: white;
+      --border-color: white;
+    }
+  }
+}
+
+/**
+ * Performance Optimizations
+ * -----------------------------------------------------
+ */
+.performance-mode {
+  * {
+    will-change: auto !important;
+  }
+
+  img {
+    image-rendering: optimizeSpeed;
+  }
+
+  .pokemon-grid {
+    contain: layout style paint;
+  }
+}

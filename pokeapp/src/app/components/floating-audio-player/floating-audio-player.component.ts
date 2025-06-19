@@ -9,7 +9,7 @@ import { AudioService } from '../../services/audio.service';
   templateUrl: './floating-audio-player.component.html',
   styleUrls: ['./floating-audio-player.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonicModule],
 })
 export class FloatingAudioPlayerComponent implements OnInit, OnDestroy {
   isAudioEnabled = false;
@@ -27,20 +27,20 @@ export class FloatingAudioPlayerComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.audioService.isEnabled$.subscribe(enabled => {
         this.isAudioEnabled = enabled;
-      })
+      }),
     );
 
     this.subscriptions.add(
       this.audioService.isPlaying$.subscribe(playing => {
         this.isAudioPlaying = playing;
-      })
+      }),
     );
 
     this.subscriptions.add(
       this.audioService.volume$.subscribe(volume => {
         this.currentVolume = volume;
         this.isMuted = volume === 0;
-      })
+      }),
     );
   }
 

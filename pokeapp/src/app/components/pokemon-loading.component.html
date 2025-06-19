@@ -1,0 +1,60 @@
+<div class="pokemon-loading-container" *ngIf="isVisible" [ngClass]="getAnimationClass()">
+  <!-- 🔴 Pokeball Loading -->
+  <div *ngIf="config.type === 'pokeball'" class="pokeball-loader">
+    <div class="pokeball">
+      <div class="pokeball-top"></div>
+      <div class="pokeball-center">
+        <div class="pokeball-button"></div>
+      </div>
+      <div class="pokeball-bottom"></div>
+    </div>
+    <div class="pokeball-shadow"></div>
+  </div>
+
+  <!-- ⚡ Pikachu Loading -->
+  <div *ngIf="config.type === 'pikachu'" class="pikachu-loader">
+    <div class="pikachu">
+      <div class="pikachu-ear left"></div>
+      <div class="pikachu-ear right"></div>
+      <div class="pikachu-head">
+        <div class="pikachu-eye left"></div>
+        <div class="pikachu-eye right"></div>
+        <div class="pikachu-cheek left"></div>
+        <div class="pikachu-cheek right"></div>
+        <div class="pikachu-mouth"></div>
+      </div>
+      <div class="pikachu-body">
+        <div class="lightning" [class.show]="showSecondaryAnimation">⚡</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔍 Generic Loading -->
+  <div *ngIf="config.type === 'loading' || config.type === 'search' || config.type === 'favorite'"
+       class="generic-loader">
+    <div class="spinner-container">
+      <ion-spinner name="crescent" class="main-spinner"></ion-spinner>
+      <ion-icon [name]="getLoadingIcon()" class="center-icon"></ion-icon>
+    </div>
+  </div>
+
+  <!-- 📝 Loading Text -->
+  <div class="loading-text">
+    <h3 class="main-message">{{ currentPhrase }}</h3>
+    <p class="sub-message" *ngIf="config.subMessage">{{ config.subMessage }}</p>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" *ngIf="config.showProgress">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="config.progress || 0"></div>
+      </div>
+      <span class="progress-text">{{ config.progress || 0 }}%</span>
+    </div>
+  </div>
+
+  <!-- 🌟 Decorative Elements -->
+  <div class="floating-stars">
+    <div class="star" *ngFor="let star of [1,2,3,4,5]; let i = index"
+         [style.animation-delay]="i * 0.2 + 's'">✨</div>
+  </div>
+</div>

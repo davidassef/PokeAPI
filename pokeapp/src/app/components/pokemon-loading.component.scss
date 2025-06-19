@@ -1,0 +1,495 @@
+// 🎮 Pokemon Loading Component Styles
+// Animações temáticas e loading states modernos
+
+@import '../../styles/design-tokens.scss';
+@import '../../styles/mixins.scss';
+
+.pokemon-loading-container {
+  @include flex-center;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-3xl) var(--space-lg);
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+
+  // 🔴 Pokeball Loader
+  .pokeball-loader {
+    position: relative;
+    @include flex-center;
+    flex-direction: column;
+    gap: var(--space-md);
+
+    .pokeball {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      animation: pokeballBounce 1.5s ease-in-out infinite;
+
+      .pokeball-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(135deg, #ff6b6b, #e74c3c);
+        border-radius: 40px 40px 0 0;
+        border: 3px solid #2c3e50;
+        border-bottom: none;
+      }
+
+      .pokeball-bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+        border-radius: 0 0 40px 40px;
+        border: 3px solid #2c3e50;
+        border-top: none;
+      }
+
+      .pokeball-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 10px;
+        background: #2c3e50;
+        z-index: 2;
+        @include flex-center;
+
+        .pokeball-button {
+          width: 20px;
+          height: 20px;
+          background: radial-gradient(circle, #ecf0f1, #bdc3c7);
+          border: 3px solid #2c3e50;
+          border-radius: 50%;
+          animation: buttonPulse 1s ease-in-out infinite;
+        }
+      }
+    }
+
+    .pokeball-shadow {
+      width: 60px;
+      height: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      animation: shadowPulse 1.5s ease-in-out infinite;
+    }
+  }
+
+  // ⚡ Pikachu Loader
+  .pikachu-loader {
+    position: relative;
+    @include flex-center;
+
+    .pikachu {
+      position: relative;
+      width: 100px;
+      height: 120px;
+      animation: pikachuBounce 2s ease-in-out infinite;
+
+      .pikachu-ear {
+        position: absolute;
+        width: 20px;
+        height: 30px;
+        background: #f1c40f;
+        border: 2px solid #f39c12;
+        border-radius: 15px 15px 0 0;
+        top: -10px;
+
+        &.left {
+          left: 20px;
+          transform: rotate(-20deg);
+
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 5px;
+            width: 8px;
+            height: 12px;
+            background: #2c3e50;
+            border-radius: 50%;
+          }
+        }
+
+        &.right {
+          right: 20px;
+          transform: rotate(20deg);
+
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 5px;
+            width: 8px;
+            height: 12px;
+            background: #2c3e50;
+            border-radius: 50%;
+          }
+        }
+      }
+
+      .pikachu-head {
+        width: 70px;
+        height: 60px;
+        background: #f1c40f;
+        border: 2px solid #f39c12;
+        border-radius: 50%;
+        position: relative;
+        margin: 15px auto 0;
+
+        .pikachu-eye {
+          position: absolute;
+          width: 8px;
+          height: 12px;
+          background: #2c3e50;
+          border-radius: 50%;
+          top: 18px;
+
+          &.left {
+            left: 18px;
+          }
+
+          &.right {
+            right: 18px;
+          }
+        }
+
+        .pikachu-cheek {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          background: #e74c3c;
+          border-radius: 50%;
+          top: 25px;
+          animation: cheekGlow 1.5s ease-in-out infinite;
+
+          &.left {
+            left: 8px;
+          }
+
+          &.right {
+            right: 8px;
+          }
+        }
+
+        .pikachu-mouth {
+          position: absolute;
+          bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 6px;
+          height: 4px;
+          background: #2c3e50;
+          border-radius: 0 0 50% 50%;
+        }
+      }
+
+      .pikachu-body {
+        width: 50px;
+        height: 40px;
+        background: #f1c40f;
+        border: 2px solid #f39c12;
+        border-radius: 25px;
+        margin: 5px auto;
+        position: relative;
+
+        .lightning {
+          position: absolute;
+          top: -20px;
+          right: -15px;
+          font-size: 16px;
+          animation: lightningFlash 0.5s ease-in-out;
+          opacity: 0;
+
+          &.show {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+
+  // 🔄 Generic Loader
+  .generic-loader {
+    position: relative;
+    @include flex-center;
+
+    .spinner-container {
+      position: relative;
+      @include flex-center;
+
+      .main-spinner {
+        width: 60px;
+        height: 60px;
+        --color: var(--ion-color-primary);
+      }
+
+      .center-icon {
+        position: absolute;
+        font-size: 24px;
+        color: var(--ion-color-primary);
+        animation: iconPulse 2s ease-in-out infinite;
+      }
+    }
+  }
+
+  // 📝 Loading Text
+  .loading-text {
+    text-align: center;
+    max-width: 300px;
+
+    .main-message {
+      @extend .text-lg;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+      margin: 0 0 var(--space-sm) 0;
+      animation: textFade 2s ease-in-out infinite;
+    }
+
+    .sub-message {
+      @extend .text-sm;
+      color: var(--ion-color-medium);
+      margin: 0 0 var(--space-md) 0;
+    }
+
+    .progress-container {
+      @include flex-center;
+      flex-direction: column;
+      gap: var(--space-sm);
+
+      .progress-bar {
+        width: 200px;
+        height: 6px;
+        background: var(--ion-color-light);
+        border-radius: 3px;
+        overflow: hidden;
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg,
+            var(--ion-color-primary),
+            var(--ion-color-secondary)
+          );
+          border-radius: 3px;
+          transition: width 0.3s ease;
+          animation: progressShimmer 2s ease-in-out infinite;
+        }
+      }
+
+      .progress-text {
+        @extend .text-sm;
+        font-weight: 600;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  // 🌟 Floating Stars
+  .floating-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+
+    .star {
+      position: absolute;
+      font-size: 12px;
+      opacity: 0.6;
+      animation: starFloat 3s ease-in-out infinite;
+
+      &:nth-child(1) {
+        top: 20%;
+        left: 10%;
+      }
+
+      &:nth-child(2) {
+        top: 15%;
+        right: 15%;
+      }
+
+      &:nth-child(3) {
+        bottom: 25%;
+        left: 15%;
+      }
+
+      &:nth-child(4) {
+        bottom: 20%;
+        right: 20%;
+      }
+
+      &:nth-child(5) {
+        top: 50%;
+        left: 5%;
+      }
+    }
+  }
+}
+
+// 🎭 Animações
+
+@keyframes pokeballBounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(0) rotate(180deg);
+  }
+  75% {
+    transform: translateY(-5px) rotate(270deg);
+  }
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(236, 240, 241, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(236, 240, 241, 0);
+  }
+}
+
+@keyframes shadowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.1;
+  }
+}
+
+@keyframes pikachuBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes cheekGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(231, 76, 60, 0);
+  }
+}
+
+@keyframes lightningFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+}
+
+@keyframes textFade {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes progressShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes starFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.4;
+  }
+  33% {
+    transform: translateY(-10px) rotate(120deg);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translateY(5px) rotate(240deg);
+    opacity: 0.6;
+  }
+}
+
+// 🌙 Dark Theme
+@media (prefers-color-scheme: dark) {
+  .pokemon-loading-container {
+    .loading-text .main-message {
+      color: var(--ion-color-light);
+    }
+  }
+}
+
+// 📱 Responsividade
+@media (max-width: 480px) {
+  .pokemon-loading-container {
+    padding: var(--space-xl) var(--space-md);
+
+    .pokeball-loader .pokeball {
+      width: 60px;
+      height: 60px;
+    }
+
+    .pikachu-loader .pikachu {
+      width: 80px;
+      height: 100px;
+    }
+
+    .loading-text {
+      max-width: 250px;
+
+      .main-message {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+// 🎯 Acessibilidade
+@media (prefers-reduced-motion: reduce) {
+  .pokemon-loading-container {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

@@ -1,0 +1,285 @@
+// 🧭 Breadcrumb Component Styles
+// Navegação hierárquica com design moderno
+
+@import '../../styles/design-tokens.scss';
+@import '../../styles/mixins.scss';
+
+.breadcrumb-nav {
+  background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-color-light-shade);
+  padding: var(--space-sm) var(--space-md);
+
+  @media (prefers-color-scheme: dark) {
+    background: var(--ion-color-dark);
+    border-bottom: 1px solid var(--ion-color-dark-shade);
+  }
+
+  .breadcrumb-list {
+    @include flex-center;
+    justify-content: flex-start;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-wrap: wrap;
+
+    .breadcrumb-item {
+      @include flex-center;
+      gap: var(--space-xs);
+      position: relative;
+
+      // 🔗 Breadcrumb Link
+      .breadcrumb-link {
+        @include button-base;
+        @include flex-center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-sm);
+        color: var(--ion-color-primary);
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-fast);
+        cursor: pointer;
+        min-height: 32px;
+
+        &:hover {
+          background: var(--ion-color-primary-tint);
+          color: var(--ion-color-primary-shade);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+          background: var(--ion-color-primary-shade);
+          color: var(--ion-color-primary-contrast);
+        }
+
+        &:focus {
+          @include focus-outline;
+        }
+
+        .breadcrumb-icon {
+          font-size: 16px;
+          transition: transform var(--transition-fast);
+        }
+
+        &:hover .breadcrumb-icon {
+          transform: scale(1.1);
+        }
+      }
+
+      // 📍 Current Page
+      .breadcrumb-current {
+        @include flex-center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: var(--ion-color-primary);
+        color: var(--ion-color-primary-contrast);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 600;
+        min-height: 32px;
+        @extend .shadow-sm;
+
+        .breadcrumb-icon {
+          font-size: 16px;
+        }
+      }
+
+      // ➡️ Separator
+      .breadcrumb-separator {
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        margin: 0 4px;
+        opacity: 0.6;
+      }
+
+      // 🚫 Disabled State
+      &.disabled {
+        .breadcrumb-link,
+        .breadcrumb-current {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
+
+      // ✨ Active State
+      &.active {
+        .breadcrumb-current {
+          animation: activeGlow 2s ease-in-out infinite;
+        }
+      }
+    }
+  }
+}
+
+// 🎭 Animações
+@keyframes activeGlow {
+  0%, 100% {
+    box-shadow: 0 2px 4px rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 8px rgba(var(--ion-color-primary-rgb), 0.5);
+  }
+}
+
+// 📱 Responsividade
+@media (max-width: 480px) {
+  .breadcrumb-nav {
+    padding: var(--space-xs) var(--space-sm);
+
+    .breadcrumb-list {
+      .breadcrumb-item {
+        .breadcrumb-link,
+        .breadcrumb-current {
+          padding: 4px 8px;
+          font-size: 13px;
+          min-height: 28px;
+
+          .breadcrumb-icon {
+            font-size: 14px;
+          }
+        }
+
+        .breadcrumb-separator {
+          font-size: 12px;
+          margin: 0 2px;
+        }
+      }
+    }
+  }
+}
+
+// 🌟 Tablet e Desktop
+@media (min-width: 768px) {
+  .breadcrumb-nav {
+    padding: var(--space-md) var(--space-lg);
+
+    .breadcrumb-list {
+      gap: var(--space-sm);
+
+      .breadcrumb-item {
+        .breadcrumb-link,
+        .breadcrumb-current {
+          padding: 8px 16px;
+          font-size: 15px;
+          min-height: 36px;
+
+          .breadcrumb-icon {
+            font-size: 18px;
+          }
+        }
+
+        .breadcrumb-separator {
+          font-size: 16px;
+          margin: 0 6px;
+        }
+      }
+    }
+  }
+}
+
+// 🎯 Acessibilidade
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb-nav {
+    .breadcrumb-list {
+      .breadcrumb-item {
+        .breadcrumb-link {
+          transition: none;
+
+          &:hover {
+            transform: none;
+          }
+
+          .breadcrumb-icon {
+            transition: none;
+
+            &:hover {
+              transform: none;
+            }
+          }
+        }
+
+        &.active .breadcrumb-current {
+          animation: none;
+        }
+      }
+    }
+  }
+}
+
+// 🌙 Dark Theme Enhancements
+@media (prefers-color-scheme: dark) {
+  .breadcrumb-nav {
+    .breadcrumb-list {
+      .breadcrumb-item {
+        .breadcrumb-link {
+          &:hover {
+            background: rgba(var(--ion-color-primary-rgb), 0.1);
+          }
+
+          &:active {
+            background: rgba(var(--ion-color-primary-rgb), 0.2);
+          }
+        }
+      }
+    }
+  }
+}
+
+// 🎨 Variants
+
+// Compact variant
+.breadcrumb-nav.compact {
+  padding: var(--space-xs) var(--space-sm);
+
+  .breadcrumb-list {
+    .breadcrumb-item {
+      .breadcrumb-link,
+      .breadcrumb-current {
+        padding: 4px 8px;
+        font-size: 12px;
+        min-height: 24px;
+
+        .breadcrumb-icon {
+          font-size: 12px;
+        }
+      }
+
+      .breadcrumb-separator {
+        font-size: 10px;
+        margin: 0 2px;
+      }
+    }
+  }
+}
+
+// Large variant
+.breadcrumb-nav.large {
+  padding: var(--space-lg) var(--space-xl);
+
+  .breadcrumb-list {
+    gap: var(--space-md);
+
+    .breadcrumb-item {
+      .breadcrumb-link,
+      .breadcrumb-current {
+        padding: 10px 20px;
+        font-size: 16px;
+        min-height: 40px;
+
+        .breadcrumb-icon {
+          font-size: 20px;
+        }
+      }
+
+      .breadcrumb-separator {
+        font-size: 18px;
+        margin: 0 8px;
+      }
+    }
+  }
+}

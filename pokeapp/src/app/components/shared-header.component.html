@@ -24,56 +24,11 @@
     </ion-title>
 
     <!-- Conteúdo customizado do slot end -->
-    <ng-content select="[slot=end]"></ng-content>    <!-- Menu de navegação principal centralizado (só na home) -->
-    <div class="nav-center" *ngIf="!showBackButton">
-      <ion-buttons class="nav-buttons">
-        <!-- Home/Pokédex -->
-        <ion-button
-          fill="clear"
-          (click)="navigateTo('home')"
-          class="nav-btn"
-          [class.active]="currentPage === 'home'">
-          <ion-icon name="library-outline"></ion-icon>
-          <span class="nav-label">{{ 'nav.pokedex' | translate }}</span>
-        </ion-button>
+    <ng-content select="[slot=end]"></ng-content>
 
-        <!-- Favoritos -->
-        <ion-button
-          fill="clear"
-          (click)="navigateTo('favorites')"
-          class="nav-btn favorites-btn"
-          [class.active]="currentPage === 'favorites'"
-          [class.has-favorites]="getFavoritesCount() > 0">
-          <ion-icon name="heart-outline"></ion-icon>
-          <span class="nav-label">{{ 'nav.favorites' | translate }}</span>
-          <ion-badge color="danger" *ngIf="getFavoritesCount() > 0">
-            {{ getFavoritesCount() }}
-          </ion-badge>
-        </ion-button>
-
-        <!-- Configurações -->
-        <ion-button
-          fill="clear"
-          (click)="navigateTo('settings')"
-          class="nav-btn"
-          [class.active]="currentPage === 'settings'">
-          <ion-icon name="settings-outline"></ion-icon>
-          <span class="nav-label">{{ 'nav.settings' | translate }}</span>
-        </ion-button>
-
-        <!-- Scroll to top (apenas na home) -->
-        <ion-button
-          fill="clear"
-          (click)="scrollToTop()"
-          class="nav-btn"
-          *ngIf="currentPage === 'home'">
-          <ion-icon name="arrow-up-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </div>
-
-    <!-- Conteúdo do slot end (player + idioma) -->
-    <ion-buttons slot="end" class="end-buttons" *ngIf="!showBackButton">      <!-- Player de Música Minimalista -->
+    <!-- Utilitários do header (player + idioma) apenas em desktop -->
+    <ion-buttons slot="end" class="header-utilities" [class.desktop-only]="!showBackButton">
+      <!-- Player de Música Minimalista -->
       <div class="audio-player-minimal" *ngIf="isAudioEnabled" aria-label="Player de música da Pokédex">
         <!-- Botão Play/Pause -->
         <button
@@ -102,7 +57,9 @@
         <div class="playing-indicator" *ngIf="isAudioPlaying">
           <div class="pulse">🎵</div>
         </div>
-      </div><!-- Seletor de idioma -->
+      </div>
+
+      <!-- Seletor de idioma -->
       <ion-button
         fill="clear"
         (click)="toggleLanguage()"

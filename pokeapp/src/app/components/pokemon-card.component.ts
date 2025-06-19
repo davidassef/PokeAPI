@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Pokemon } from '../models/pokemon.model';
 import { PokemonTranslationService } from '../services/pokemon-translation.service';
 import { LocalizationService } from '../services/localization.service';
+import { IntersectionObserverService } from '../services/intersection-observer.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { Subscription } from 'rxjs';
 
@@ -11,7 +12,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-pokemon-card',
   templateUrl: './pokemon-card.component.html',
   styleUrls: ['./pokemon-card.component.scss'],  standalone: true,
-  imports: [CommonModule, IonicModule, TranslatePipe]
+  imports: [CommonModule, IonicModule, TranslatePipe],
 })
 export class PokemonCardComponent implements OnInit, OnDestroy {
   @Input() pokemon!: Pokemon;
@@ -23,8 +24,11 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
   @Output() cardClick = new EventEmitter<Pokemon>();
   @Output() favoriteToggle = new EventEmitter<Pokemon>();
 
+  @ViewChild('pokemonCard', { static: true }) cardElement!: ElementRef;
+
   currentLanguage = 'pt';
   translatedName = '';
+  isInView = false;
   private subscription = new Subscription();
 
   // Type icons mapping
@@ -46,7 +50,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     dragon: '🐉',
     dark: '🌙',
     steel: '⚙️',
-    fairy: '🧚'
+    fairy: '🧚',
   };
 
   // Localized type names
@@ -56,41 +60,59 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
       grass: 'Grama', ice: 'Gelo', fighting: 'Lutador', poison: 'Veneno',
       ground: 'Terra', flying: 'Voador', psychic: 'Psíquico', bug: 'Inseto',
       rock: 'Pedra', ghost: 'Fantasma', dragon: 'Dragão', dark: 'Sombrio',
-      steel: 'Metal', fairy: 'Fada'
+      steel: 'Metal', fairy: 'Fada',
     },
     en: {
       normal: 'Normal', fire: 'Fire', water: 'Water', electric: 'Electric',
       grass: 'Grass', ice: 'Ice', fighting: 'Fighting', poison: 'Poison',
       ground: 'Ground', flying: 'Flying', psychic: 'Psychic', bug: 'Bug',
       rock: 'Rock', ghost: 'Ghost', dragon: 'Dragon', dark: 'Dark',
-      steel: 'Steel', fairy: 'Fairy'
+      steel: 'Steel', fairy: 'Fairy',
     },
     es: {
       normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
       grass: 'Hierba', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno',
       ground: 'Tierra', flying: 'Volador', psychic: 'Psíquico', bug: 'Bicho',
       rock: 'Roca', ghost: 'Fantasma', dragon: 'Dragón', dark: 'Siniestro',
-      steel: 'Acero', fairy: 'Hada'
-    }
+      steel: 'Acero', fairy: 'Hada',
+    },
   };
-
   constructor(
     private pokemonTranslationService: PokemonTranslationService,
-    private localizationService: LocalizationService
+    private localizationService: LocalizationService,
+    private intersectionObserverService: IntersectionObserverService,
   ) {
     this.currentLanguage = this.localizationService.getCurrentLanguage();
-  }
-
-  ngOnInit() {
+  }  ngOnInit() {
     // Subscribe to language changes
     this.subscription.add(
       this.localizationService.currentLanguage$.subscribe(language => {
         this.currentLanguage = language;
         this.updateTranslatedName();
-      })
+      }),
     );
 
     this.updateTranslatedName();
+    this.setupIntersectionObserver();
+  }
+
+  private setupIntersectionObserver() {
+    if (this.cardElement) {
+      const observerId = 'pokemon-card-lazy';
+
+      // Criar o observer para lazy loading
+      this.subscription.add(
+        this.intersectionObserverService.createLazyLoadObserver(0.1, '50px')
+          .subscribe(entry => {
+            if (entry.element === this.cardElement.nativeElement) {
+              this.isInView = entry.isIntersecting;
+            }
+          }),
+      );
+
+      // Observar o elemento
+      this.intersectionObserverService.observe(this.cardElement.nativeElement, observerId);
+    }
   }
 
   ngOnDestroy() {
@@ -101,7 +123,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     if (this.pokemon) {
       this.translatedName = this.pokemonTranslationService.getTranslatedName(
         this.pokemon.name,
-        this.currentLanguage
+        this.currentLanguage,
       );
     }
   }
@@ -157,8 +179,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
    * Retorna nome localizado do tipo
    */
   getLocalizedTypeName(typeName: string): string {
-    const currentLang = localStorage.getItem('selectedLanguage') || 'pt';
-    return this.typeNames[currentLang]?.[typeName] || typeName;
+    return this.typeNames[this.currentLanguage]?.[typeName] || typeName;
   }
 
   /**
@@ -209,7 +230,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
       dragon: '#7038F8',
       dark: '#705848',
       steel: '#B8B8D0',
-      fairy: '#EE99AC'
+      fairy: '#EE99AC',
     };
 
     return typeColors[type] || '#68A090';

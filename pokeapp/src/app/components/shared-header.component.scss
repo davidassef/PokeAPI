@@ -1,8 +1,13 @@
-// Header compartilhado
+// 📱 Shared Header Component - Refatorado
+// Usando sistema de design tokens e mixins para consistência
+
+@import '../../styles/design-tokens.scss';
+@import '../../styles/mixins.scss';
+
+// 🏠 Header Brand
 .header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  @include flex-start;
+  gap: var(--space-md);
 
   .logo {
     font-size: 1.8rem;
@@ -12,9 +17,9 @@
   .brand-text {
     h1 {
       margin: 0;
-      font-size: 1.4rem;
+      @extend .text-xl;
       font-weight: 700;
-      background: linear-gradient(45deg, #3880ff, #5260ff);
+      background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -22,30 +27,32 @@
 
     p {
       margin: 0;
-      font-size: 0.75rem;
+      @extend .text-sm;
       color: var(--ion-color-medium);
       font-weight: 500;
     }
   }
 }
 
-// Título simples para páginas internas
+// 📝 Simple Title (internal pages)
 .simple-title {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
   font-weight: 600;
   color: var(--ion-color-primary);
 }
 
-// Botão de voltar estilizado
+// ⬅️ Back Button
 ion-buttons[slot="start"] {
   ion-button {
     --color: var(--ion-color-primary);
-    --padding-start: 8px;
-    --padding-end: 8px;
+    @include spacing(--padding-start, sm);
+    @include spacing(--padding-end, sm);
+    @include focus-outline;
 
     .back-text {
-      margin-left: 4px;
-      font-size: 0.9rem;
+      margin-left: var(--space-xs);
+      @extend .text-sm;
       font-weight: 500;
     }
 
@@ -55,11 +62,9 @@ ion-buttons[slot="start"] {
   }
 }
 
-// Header com menu centralizado
+// 🧭 Navigation Center
 ion-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @include flex-between;
 }
 
 .nav-center {
@@ -67,24 +72,23 @@ ion-toolbar {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
+  z-index: var(--z-fixed);
 }
 
-// Menu de navegação principal centralizado
+// 🗂️ Navigation Buttons
 .nav-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  @include flex-center;
+  gap: var(--space-sm);
 
   .nav-btn {
-    --padding-start: 8px;
-    --padding-end: 8px;
-    --border-radius: 16px;
-    position: relative;
-    transition: all 0.3s ease;
-    display: flex;
+    @include spacing(--padding-start, sm);
+    @include spacing(--padding-end, sm);
+    --border-radius: var(--radius-lg);
+    @extend .transition-normal;
+    @include flex-center;
     flex-direction: column;
     min-width: 48px;
+    @include focus-outline;
 
     &:hover {
       --background: rgba(var(--ion-color-primary-rgb), 0.1);
@@ -102,12 +106,13 @@ ion-toolbar {
     }
 
     .nav-label {
-      font-size: 0.7rem;
+      @extend .text-xs;
       font-weight: 500;
       line-height: 1;
       opacity: 0.9;
     }
 
+    // 💖 Favorites Button
     &.favorites-btn {
       ion-badge {
         position: absolute;
@@ -115,22 +120,24 @@ ion-toolbar {
         right: -2px;
         min-width: 16px;
         height: 16px;
-        font-size: 0.6rem;
+        @extend .text-xs;
         font-weight: 600;
       }
 
       &.has-favorites {
+        --color: var(--ion-color-danger);
         animation: heartbeat 2s ease-in-out infinite;
       }
     }
 
+    // 🌐 Language Button
     &.lang-btn {
       flex-direction: row;
-      gap: 4px;
+      gap: var(--space-xs);
       min-width: auto;
 
       span {
-        font-size: 0.75rem;
+        @extend .text-xs;
         font-weight: 600;
       }
 
@@ -141,264 +148,27 @@ ion-toolbar {
   }
 }
 
-// Botões do slot end (player + idioma)
-.end-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-// Audio Player Pokébola
-.audio-player {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 14px;
-  background: #fff;
-  border-radius: 22px;
-  border: 1.5px solid #e53935;
-  box-shadow: 0 2px 8px rgba(229,57,53,0.06);
-  min-width: 120px;
-
-  .player-btn {
-    height: 32px;
-    width: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background: none;
-    transition: background 0.18s, box-shadow 0.18s;
-    box-shadow: none;
-    margin: 0 2px;
-    cursor: pointer;
-
-    ion-icon {
-      font-size: 1.25rem;
-      color: #222 !important;
-      transition: color 0.18s;
-    }
-    &.play-btn {
-      background: #e53935;
-      box-shadow: 0 1px 4px rgba(229,57,53,0.10);
-      ion-icon { color: #fff !important; }
-      &:hover, &:focus {
-        background: #b71c1c;
-        ion-icon { color: #fff !important; }
-      }
-    }
-    &.volume-btn, &.restart-btn {
-      background: #fff;
-      border: 1.5px solid #e53935;
-      ion-icon { color: #e53935 !important; }
-      &:hover, &:focus {
-        background: #e53935;
-        ion-icon { color: #fff !important; }
-      }
-    }
-  }
-  .audio-status {
-    display: flex;
-    align-items: center;
-    margin-left: 2px;
-    .audio-waves {
-      display: flex;
-      align-items: flex-end;
-      gap: 1.5px;
-      .wave {
-        width: 2.5px;
-        background: #e53935;
-        border-radius: 2px;
-        animation: audioWave 1.5s ease-in-out infinite;
-        opacity: 0.7;
-        &.wave1 { height: 8px; animation-delay: 0s; }
-        &.wave2 { height: 13px; animation-delay: 0.2s; }
-        &.wave3 { height: 6px; animation-delay: 0.4s; }
-      }
-    }
-  }
-}
-
-@keyframes audioWave {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scaleY(0.5);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-}
-
-// Pokébola Player 3D Melhorado
-.pokeball-player {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 100px;
-  min-height: 70px;
-
-  .pokeball-3d {
-    position: relative;
-    width: 70px;
-    height: 70px;
-    aspect-ratio: 1/1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: linear-gradient(to bottom, #fff 50%, #e53935 50%);
-    border: 3px solid #222;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 1.5px 0 #b71c1c;
-    overflow: visible;
-
-    .pokeball-divider {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: #222;
-      transform: translateY(-50%);
-      z-index: 2;
-      border-radius: 2px;
-    }
-
-    .pokeball-center {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      .pokeball-btn.play-pause {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: #fff;
-        border: 3px solid #e53935;
-        box-shadow: 0 2px 8px rgba(229,57,53,0.10);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.7rem;
-        transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-
-        ion-icon {
-          color: #e53935 !important;
-          font-size: 1.7rem;
-          font-weight: bold;
-        }
-
-        &:hover, &:focus {
-          background: #e53935;
-          ion-icon { color: #fff !important; }
-          transform: scale(0.95);
-        }
-
-        &:active {
-          box-shadow: 0 1px 2px rgba(229,57,53,0.18);
-          transform: scale(0.92);
-        }
-      }
-
-      .audio-waves {
-        margin-top: 2px;
-        display: flex;
-        align-items: flex-end;
-        gap: 2px;
-
-        .wave {
-          width: 3px;
-          background: #e53935;
-          border-radius: 2px;
-          animation: audioWave 1.5s ease-in-out infinite;
-          opacity: 0.8;
-        }
-
-        .wave1 { height: 10px; animation-delay: 0s; }
-        .wave2 { height: 16px; animation-delay: 0.2s; }
-        .wave3 { height: 7px; animation-delay: 0.4s; }
-      }
-    }
-
-    .pokeball-actions {
-      position: absolute;
-      top: 50%;
-      left: 0; right: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 4;
-      pointer-events: none;
-
-      .pokeball-btn {
-        pointer-events: auto;
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: #fff;
-        border: 2px solid #222;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        transition: background 0.18s, box-shadow 0.18s, transform 0.1s;
-
-        ion-icon {
-          color: #222 !important;
-          font-size: 1.2rem;
-        }
-
-        &:hover, &:focus {
-          background: #e53935;
-          ion-icon { color: #fff !important; }
-          transform: scale(0.95);
-        }
-
-        &:active {
-          box-shadow: 0 1px 2px rgba(229,57,53,0.18);
-          transform: scale(0.92);
-        }
-      }
-    }
-  }
-}
-
-// Player de Música Minimalista
+// 🎵 Audio Player (Minimal)
 .audio-player-minimal {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  @include flex-center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background: rgba(56, 128, 255, 0.05);
-  border-radius: 20px;
+  @extend .rounded-lg;
   border: 1px solid rgba(56, 128, 255, 0.1);
-  position: relative;
 
   .player-btn {
-    border-radius: 50%;
+    @extend .rounded-full;
     padding: 6px;
     min-width: 32px;
     height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
-    line-height: 1;
+    @extend .transition-fast;
+    @extend .text-sm;
+    @include focus-outline;
+    @include touch-feedback;
 
     &.play-pause {
       background: #3880ff;
@@ -423,19 +193,19 @@ ion-toolbar {
   }
 
   .volume-control {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    @include flex-center;
+    gap: var(--space-xs);
     min-width: 80px;
 
     .volume-btn {
       background: transparent;
       border: none;
       cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      font-size: 12px;
-      transition: all 0.2s ease;
+      padding: var(--space-xs);
+      @extend .rounded-sm;
+      @extend .text-xs;
+      @extend .transition-fast;
+      @include focus-outline;
 
       &:hover {
         background: rgba(56, 128, 255, 0.1);
@@ -444,7 +214,7 @@ ion-toolbar {
     }
 
     .volume-display {
-      font-size: 11px;
+      @extend .text-xs;
       color: #92949c;
       min-width: 30px;
       text-align: center;
@@ -462,38 +232,33 @@ ion-toolbar {
     .pulse {
       width: 100%;
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
+      @include flex-center;
+      @extend .text-xs;
       animation: pulse 2s infinite;
     }
   }
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
+// 🎯 Animations
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
-// Responsividade
-@media (max-width: 768px) {
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(0.8); opacity: 1; }
+}
+
+// 📱 Responsive Design
+@include respond-to(tablet) {
   .nav-buttons {
     gap: 1px;
 
     .nav-btn {
-      --padding-start: 4px;
-      --padding-end: 4px;
+      @include spacing(--padding-start, xs);
+      @include spacing(--padding-end, xs);
       min-width: 40px;
 
       .nav-label {
@@ -505,56 +270,12 @@ ion-toolbar {
       }
     }
   }
-
-  .header-brand {
-    .brand-text {
-      h1 {
-        font-size: 1.2rem;
-      }
-
-      p {
-        font-size: 0.7rem;
-      }
+  .header-brand .brand-text {
+    h1 {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
     }
-  }
-
-  .audio-player {
-    gap: 6px;
-    padding: 2px 6px;
-    min-width: 0;
-
-    .player-btn {
-      height: 26px;
-      width: 26px;
-      ion-icon { font-size: 1rem; }
-    }
-
-    .audio-status {
-      .audio-waves .wave {
-        width: 1.5px;
-
-        &.wave1 { height: 5px; }
-        &.wave2 { height: 8px; }
-        &.wave3 { height: 3px; }
-      }
-    }
-  }
-
-  .pokeball-player .pokeball-3d {
-    width: 54px;
-    height: 54px;
-
-    .pokeball-center .pokeball-btn.play-pause {
-      width: 28px;
-      height: 28px;
-      font-size: 1.1rem;
-    }
-
-    .pokeball-actions .pokeball-btn {
-      width: 18px;
-      height: 18px;
-      font-size: 0.9rem;
-    }
+    p { font-size: 0.7rem; }
   }
 
   .audio-player-minimal {
@@ -564,10 +285,7 @@ ion-toolbar {
     .player-btn {
       min-width: 28px;
       height: 28px;
-
-      ion-icon {
-        font-size: 1rem;
-      }
+      ion-icon { font-size: 1rem; }
     }
 
     .volume-control {
@@ -575,72 +293,27 @@ ion-toolbar {
       max-width: 80px;
     }
   }
+}
 
-  .nav-center {
-    .nav-buttons {
-      gap: 4px;
+@include respond-to(mobile) {
+  .nav-buttons .nav-btn .nav-label {
+    display: none;
+  }
 
-      .nav-btn {
-        min-width: 40px;
-        --padding-start: 6px;
-        --padding-end: 6px;
+  .nav-btn {
+    min-width: 36px;
+  }
 
-        .nav-label {
-          font-size: 0.65rem;
-        }
-
-        ion-icon {
-          font-size: 1rem;
-        }
-      }
-    }
+  .audio-player-minimal .volume-control {
+    min-width: 50px;
+    max-width: 60px;
   }
 }
 
-@media (max-width: 480px) {
-  .nav-buttons {
-    .nav-btn .nav-label {
-      display: none; // Esconde labels em telas muito pequenas
-    }
-
-    .nav-btn {
-      min-width: 36px;
-    }
-  }
-
-  .pokeball-player .pokeball-3d {
-    width: 40px;
-    height: 40px;
-
-    .pokeball-center .pokeball-btn.play-pause {
-      width: 16px;
-      height: 16px;
-      font-size: 0.8rem;
-    }
-
-    .pokeball-actions .pokeball-btn {
-      width: 12px;
-      height: 12px;
-      font-size: 0.7rem;
-    }
-  }
-
+// 🌙 Dark Mode Support
+@include dark-mode {
   .audio-player-minimal {
-    .volume-control {
-      min-width: 50px;
-      max-width: 60px;
-    }
-  }
-
-  .nav-center {
-    .nav-buttons {
-      .nav-btn .nav-label {
-        display: none;
-      }
-
-      .nav-btn {
-        min-width: 36px;
-      }
-    }
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 }

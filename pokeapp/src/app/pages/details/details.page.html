@@ -2,7 +2,7 @@
 <app-shared-header
   [title]="pokemon ? getFormattedName() + ' #' + pokemon.id.toString().padStart(3, '0') : ('loading.details' | translate)"
   [showBackButton]="true"
-  currentPage="details">
+  [currentPage]="appPages.DETAILS">
   <!-- Slot para conteúdo customizado do header (botão favorito) -->
   <ion-buttons slot="end" *ngIf="pokemon">
     <ion-button (click)="toggleFavorite()" [disabled]="!pokemon" fill="clear">
@@ -15,12 +15,19 @@
   </ion-buttons>
 </app-shared-header>
 
+<!-- Breadcrumb Navigation -->
+<app-breadcrumb
+  [items]="breadcrumbItems"
+  *ngIf="breadcrumbItems.length > 0 && !isLoading">
+</app-breadcrumb>
+
 <ion-content [fullscreen]="true">
-  <!-- Loading -->
-  <div class="loading-container" *ngIf="isLoading">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>{{ 'loading.details' | translate }}</p>
-  </div>
+  <!-- Loading moderno -->
+  <app-pokemon-loading
+    *ngIf="isLoading"
+    [config]="{ type: 'pokeball', message: 'loading.details' | translate, subMessage: 'loading.pokemonData' | translate }"
+    [isVisible]="isLoading">
+  </app-pokemon-loading>
 
   <!-- Conteúdo principal -->
   <div class="pokemon-details" *ngIf="!isLoading && pokemon">
