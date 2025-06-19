@@ -1,0 +1,262 @@
+// ⭐ Pokemon Rating Component Styles
+// Design system integrado
+
+@import '../../styles/design-tokens.scss';
+@import '../../styles/mixins.scss';
+@import '../../styles/micro-interactions.scss';
+
+.pokemon-rating-component {
+  @include flex-center;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+
+  // 📝 Header
+  .rating-header {
+    @include flex-between;
+    width: 100%;
+    margin-bottom: var(--space-sm);
+
+    h4 {
+      margin: 0;
+      @extend .text-lg;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+
+    .current-rating {
+      @extend .text-sm;
+      color: var(--ion-color-medium);
+      font-weight: 500;
+      background: var(--ion-color-light);
+      padding: var(--space-xs) var(--space-sm);
+      @extend .rounded-md;
+    }
+  }
+
+  // ⭐ Stars Container
+  .rating-stars {
+    @include flex-center;
+    gap: var(--space-xs);
+
+    .star-button {
+      @include button-base;
+      position: relative;
+      width: 40px;
+      height: 40px;
+      @extend .rounded-sm;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      @include focus-outline;
+      @extend .transition-normal;
+
+      &:not(:disabled) {
+        @include micro-interaction(transform, 1.1);
+
+        &:hover .star-icon {
+          filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.4));
+        }
+
+        &:active {
+          transform: scale(0.9);
+        }
+      }
+
+      &:disabled {
+        cursor: default;
+        opacity: 0.7;
+      }
+
+      .star-icon {
+        width: 100%;
+        height: 100%;
+        @extend .transition-normal;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      }
+
+      // 🌊 Ripple Effect
+      .ripple-effect {
+        position: absolute;
+        inset: 0;
+        @extend .rounded-full;
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+        transform: scale(0);
+        @extend .transition-fast;
+      }
+
+      &:active .ripple-effect {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+
+      // Estados visuais
+      &.filled .star-icon {
+        filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.6));
+        transform: scale(1.05);
+      }
+
+      &.hovered .star-icon {
+        transform: scale(1.2);
+        filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.8));
+      }
+    }
+  }
+
+  // 💬 Feedback Section
+  .rating-feedback {
+    text-align: center;
+    width: 100%;
+
+    .feedback-text {
+      @extend .text-base;
+      font-weight: 600;
+      color: var(--ion-color-primary);
+      margin-bottom: var(--space-sm);
+      display: block;
+      min-height: 24px; // Evita layout shift
+    }
+
+    .feedback-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--ion-color-light);
+      @extend .rounded-full;
+      overflow: hidden;
+
+      .feedback-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #FFD700, #FFA500);
+        @extend .transition-normal;
+        @extend .rounded-full;
+      }
+    }
+  }
+
+  // 📊 Statistics
+  .rating-stats {
+    width: 100%;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--ion-color-step-200);
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+
+      .stat-item {
+        text-align: center;
+
+        .stat-label {
+          @extend .text-sm;
+          color: var(--ion-color-medium);
+          display: block;
+          margin-bottom: var(--space-xs);
+        }
+
+        .stat-value {
+          @extend .text-lg;
+          font-weight: 700;
+          color: var(--ion-color-primary);
+        }
+      }
+    }
+  }
+
+  // 🔒 Readonly State
+  &.readonly {
+    .rating-stars .star-button {
+      cursor: default;
+
+      &:hover .star-icon {
+        transform: none;
+        filter: none;
+      }
+    }
+  }
+
+  // 📏 Size Variants
+  &.rating-small {
+    .rating-stars .star-button {
+      width: 28px;
+      height: 28px;
+    }
+
+    .rating-header h4 {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+  }
+
+  &.rating-large {
+    .rating-stars .star-button {
+      width: 52px;
+      height: 52px;
+    }
+
+    .rating-header h4 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+  }
+}
+
+// 📱 Responsive Design
+@include respond-to(mobile) {
+  .pokemon-rating-component {
+    .rating-stars .star-button {
+      width: 36px;
+      height: 36px;
+    }
+
+    .rating-stats .stats-grid {
+      gap: var(--space-sm);
+    }
+  }
+}
+
+// 🌙 Dark Theme Support
+@include dark-mode {
+  .pokemon-rating-component {
+    .rating-header h4 {
+      color: var(--ion-color-dark-contrast);
+    }
+
+    .rating-feedback .feedback-text {
+      color: var(--ion-color-primary-tint);
+    }
+
+    .rating-stats {
+      border-top-color: var(--ion-color-step-600);
+
+      .stat-value {
+        color: var(--ion-color-primary-tint);
+      }
+    }
+  }
+}
+
+// 🎯 Accessibility
+@media (prefers-reduced-motion: reduce) {
+  .pokemon-rating-component {
+    .star-button,
+    .star-icon,
+    .feedback-fill,
+    .ripple-effect {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
+
+// 🎪 Animation keyframes
+@keyframes starGlow {
+  0% { filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.4)); }
+  50% { filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.8)); }
+  100% { filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.4)); }
+}
+
+.pokemon-rating-component .star-button.filled .star-icon {
+  animation: starGlow 2s ease-in-out infinite;
+}

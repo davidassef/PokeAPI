@@ -38,14 +38,14 @@ export const TYPE_COLORS: { [key: string]: string } = {
   'dragon-light': '#9366FF',
   'dark-light': '#998578',
   'steel-light': '#E0E0F0',
-  'fairy-light': '#F7C2D4'
+  'fairy-light': '#F7C2D4',
 };
 
 // Tipos de Pokémon disponíveis
 export const POKEMON_TYPES = [
   'normal', 'fire', 'water', 'electric', 'grass', 'ice',
   'fighting', 'poison', 'ground', 'flying', 'psychic',
-  'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
+  'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy',
 ];
 
 /**

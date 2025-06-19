@@ -1,0 +1,63 @@
+<div class="pokemon-rating-component" [class.readonly]="readonly">
+  <div class="rating-header" *ngIf="showTitle">
+    <h4>{{ title || ('rating.ratePokemon' | translate) }}</h4>
+    <span class="current-rating" *ngIf="currentRating > 0">
+      {{ currentRating }}/{{ maxRating }}
+    </span>
+  </div>
+
+  <div class="rating-stars"
+       [attr.aria-label]="'rating.ariaLabel' | translate"
+       role="radiogroup">
+
+    <button
+      *ngFor="let star of stars; let i = index"
+      type="button"
+      class="star-button"
+      [class.filled]="i < currentRating"
+      [class.hovered]="i < hoveredRating"
+      [disabled]="readonly"
+      [attr.aria-label]="'rating.starAriaLabel' | translate: {number: i + 1}"
+      (click)="setRating(i + 1)"
+      (mouseenter)="onStarHover(i + 1)"
+      (mouseleave)="onStarLeave()"
+      (focus)="onStarHover(i + 1)"
+      (blur)="onStarLeave()">
+
+      <!-- Ícone de estrela SVG -->
+      <svg viewBox="0 0 24 24" class="star-icon">
+        <path
+          [attr.fill]="getStarFill(i)"
+          [attr.stroke]="getStarStroke(i)"
+          stroke-width="1"
+          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+        </path>
+      </svg>
+
+      <!-- Efeito de ondulação -->
+      <div class="ripple-effect" *ngIf="!readonly"></div>
+    </button>
+  </div>
+
+  <!-- Feedback textual -->
+  <div class="rating-feedback" *ngIf="showFeedback && currentRating > 0">
+    <span class="feedback-text">{{ getRatingFeedback() }}</span>
+    <div class="feedback-bar">
+      <div class="feedback-fill" [style.width.%]="(currentRating / maxRating) * 100"></div>
+    </div>
+  </div>
+
+  <!-- Estatísticas (se disponível) -->
+  <div class="rating-stats" *ngIf="showStats && stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-label">{{ 'rating.average' | translate }}</span>
+        <span class="stat-value">{{ stats.average | number:'1.1-1' }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">{{ 'rating.total' | translate }}</span>
+        <span class="stat-value">{{ stats.total }}</span>
+      </div>
+    </div>
+  </div>
+</div>

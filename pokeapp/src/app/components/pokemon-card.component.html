@@ -1,4 +1,5 @@
 <div class="modern-pokemon-card"
+     #pokemonCard
      (click)="onCardClick()"
      [attr.data-type]="getPrimaryTypeName()"
      [style.--primary-color]="getPrimaryTypeColor()">
@@ -32,17 +33,20 @@
           </svg>
         </div>
       </button>
-    </div>
-
-    <!-- Pokemon Image -->
+    </div>    <!-- Pokemon Image -->
     <div class="pokemon-image-section">
       <div class="image-container">
         <img
+          *ngIf="isInView"
           [src]="getPokemonImageUrl()"
           [alt]="pokemon.name"
           class="pokemon-image"
           loading="lazy"
           (error)="onImageError($event)">
+
+        <!-- Skeleton loader when not in view -->
+        <div *ngIf="!isInView" class="image-skeleton"></div>
+
         <div class="image-glow"></div>
       </div>
     </div>

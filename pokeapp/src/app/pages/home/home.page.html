@@ -1,7 +1,7 @@
 <app-shared-header
   [title]="'nav.pokedex' | translate"
   [subtitle]="'home.subtitle' | translate"
-  currentPage="home">
+  [currentPage]="appPages.HOME">
 </app-shared-header>
 
 <ion-content [fullscreen]="true">
@@ -61,9 +61,8 @@
       refreshing-spinner="circles">
     </ion-refresher-content>
   </ion-refresher>
-
   <!-- Loading inicial -->
-  <div class="loading-container" *ngIf="isLoading">
+  <div class="loading-container" *ngIf="isLoading && pokemons.length === 0">
     <div class="pokeball-loader">
       <div class="pokeball-top"></div>
       <div class="pokeball-center"></div>
@@ -72,6 +71,13 @@
     <h3>{{ 'loading.title' | translate }}</h3>
     <p>{{ 'loading.subtitle' | translate }}</p>
     <p><small>Debug: {{ pokemons.length }} {{ 'nav.pokedex' | translate }}</small></p>
+  </div>
+
+  <!-- Skeleton Loading -->
+  <div class="skeleton-loading" *ngIf="isLoading && pokemons.length === 0">
+    <div class="pokemon-grid">
+      <div class="skeleton-card" *ngFor="let item of [1,2,3,4,5,6,7,8]"></div>
+    </div>
   </div>
 
   <!-- Lista de Pokémons -->
@@ -86,9 +92,8 @@
           <span *ngIf="searchTerm"> • {{ 'search.resultsFor' | translate }}: "{{ searchTerm }}"</span>
         </span>
       </div>
-    </div>
-
-    <div class="pokemon-grid" *ngIf="!isLoading && filteredPokemon.length > 0">
+    </div>    <!-- Lista Regular (para poucos itens) -->
+    <div class="pokemon-grid" *ngIf="!isLoading && filteredPokemon.length > 0 && filteredPokemon.length <= 50">
       <app-pokemon-card
         *ngFor="let pokemon of filteredPokemon; trackBy: trackByPokemonId"
         [pokemon]="pokemon"
@@ -99,6 +104,27 @@
         (favoriteToggle)="toggleFavorite($event)">
       </app-pokemon-card>
     </div>
+
+    <!-- Virtual Scrolling (para muitos itens) -->
+    <cdk-virtual-scroll-viewport
+      *ngIf="!isLoading && filteredPokemon.length > 50"
+      [itemSize]="itemSize"
+      [minBufferPx]="minBufferPx"
+      [maxBufferPx]="maxBufferPx"
+      class="virtual-scroll-viewport">
+
+      <div class="pokemon-grid virtual-grid">
+        <app-pokemon-card
+          *cdkVirtualFor="let pokemon of filteredPokemon; trackBy: trackByPokemonId"
+          [pokemon]="pokemon"
+          [localizedName]="getLocalizedPokemonName(pokemon)"
+          [isFavorite]="isFavorite(pokemon.id)"
+          [showFavoriteButton]="true"
+          (cardClick)="goToDetails($event)"
+          (favoriteToggle)="toggleFavorite($event)">
+        </app-pokemon-card>
+      </div>
+    </cdk-virtual-scroll-viewport>
   </div>  <!-- Estado vazio -->
   <div class="empty-state" *ngIf="!isLoading && filteredPokemon.length === 0">
     <div class="empty-animation">

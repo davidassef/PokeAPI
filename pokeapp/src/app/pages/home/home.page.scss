@@ -1,94 +1,13 @@
-// Modern Header Design
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+// 🏠 Home Page - Refatorado
+// Sistema modular e performático
 
-  .logo {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  }
+@import '../../../styles/design-tokens.scss';
+@import '../../../styles/mixins.scss';
 
-  .brand-text {
-    h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 700;
-      background: linear-gradient(45deg, #3880ff, #5260ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.75rem;
-      color: var(--ion-color-medium);
-      font-weight: 500;
-    }
-  }
-}
-
-// Navigation Menu in Header
-.nav-buttons {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  .nav-btn {
-    --padding-start: 8px;
-    --padding-end: 8px;
-    --border-radius: 20px;
-    position: relative;
-    transition: all 0.3s ease;
-
-    &:hover {
-      --background: rgba(var(--ion-color-primary-rgb), 0.1);
-    }
-
-    ion-icon {
-      font-size: 1.2rem;
-    }
-
-    &.favorites-btn {
-      ion-badge {
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        min-width: 18px;
-        height: 18px;
-        font-size: 0.7rem;
-        font-weight: 600;
-      }
-
-      &.has-favorites {
-        --color: var(--ion-color-danger);
-        animation: heartbeat 2s ease-in-out infinite;
-      }
-    }
-
-    &.lang-btn {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-
-      span {
-        font-size: 0.8rem;
-        font-weight: 600;
-      }
-    }
-  }
-}
-
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-// Hero Section
+// 🎨 Hero Section
 .hero-section {
-  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
-  padding: 24px 16px;
+  background: var(--gradient-primary);
+  padding: var(--space-xl) var(--space-md);
   margin: 0;
   position: relative;
   overflow: hidden;
@@ -96,10 +15,7 @@
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>') repeat;
     background-size: 50px 50px;
   }
@@ -111,34 +27,31 @@
     color: white;
 
     h2 {
-      font-size: 1.8rem;
+      @extend .text-3xl;
       font-weight: 700;
-      margin: 0 0 8px 0;
+      margin: 0 0 var(--space-sm) 0;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     p {
-      font-size: 1rem;
-      margin: 0 0 20px 0;
+      @extend .text-base;
+      margin: 0 0 var(--space-lg) 0;
       opacity: 0.9;
     }
   }
 
   .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 20px;
+    @include flex-center;
+    gap: var(--space-xl);
+    margin-top: var(--space-lg);
 
     .stat-item {
-      display: flex;
-      align-items: center;
+      @include flex-center;
       gap: 6px;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 8px 12px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      font-size: 0.9rem;
+      @include glassmorphism(0.2);
+      padding: var(--space-sm) var(--space-md);
+      @extend .rounded-lg;
+      @extend .text-sm;
       font-weight: 600;
 
       ion-icon {
@@ -148,78 +61,76 @@
   }
 }
 
-// Search Section
-.search-section {
+// 🔍 Search Section
+.search-container {
   background: var(--ion-color-light);
-  padding: 16px;
+  padding: var(--space-md);
   border-bottom: 1px solid var(--ion-color-step-100);
 
-  .search-container {
+  .modern-search {
+    --background: white;
+    --border-radius: var(--radius-lg);
+    --box-shadow: var(--shadow-md);
+    --icon-color: var(--ion-color-primary);
+    --placeholder-color: var(--ion-color-medium);
+    margin-bottom: var(--space-md);
     max-width: 600px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    .modern-search {
-      --background: white;
-      --border-radius: 16px;
-      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      --icon-color: var(--ion-color-primary);
-      --placeholder-color: var(--ion-color-medium);
-      margin-bottom: 12px;
-    }
-
+  // 🎛️ Quick Filters
   .quick-filters {
-    margin-top: 12px;
+    margin-top: var(--space-md);
 
     .filters-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      padding: 0 4px;
+      @include flex-between;
+      margin-bottom: var(--space-md);
+      padding: 0 var(--space-xs);
 
       h4 {
         margin: 0;
-        font-size: 1rem;
+        @extend .text-base;
         font-weight: 600;
         color: var(--ion-color-dark);
       }
 
       .results-count {
-        font-size: 0.85rem;
+        @extend .text-sm;
         color: var(--ion-color-medium);
         background: var(--ion-color-step-100);
-        padding: 4px 8px;
-        border-radius: 12px;
+        padding: var(--space-xs) var(--space-sm);
+        @extend .rounded-md;
         font-weight: 500;
       }
     }
 
     .filters-grid {
       display: flex;
-      gap: 8px;
+      gap: var(--space-sm);
       justify-content: flex-start;
       flex-wrap: wrap;
-      margin-bottom: 8px;
-    }    .filter-chip {
+      margin-bottom: var(--space-sm);
+    }
+
+    .filter-chip {
       --background: var(--chip-background, white);
       --color: var(--chip-text-color, var(--ion-color-medium));
-      transition: all 0.3s ease;
+      @extend .transition-normal;
       cursor: pointer;
       border: 1px solid var(--chip-color, var(--ion-color-step-200));
       min-height: 36px;
       position: relative;
       overflow: hidden;
+      @include focus-outline;
 
       &::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        inset: 0;
         background: var(--chip-color, var(--ion-color-primary));
         opacity: 0;
-        transition: opacity 0.3s ease;
+        @extend .transition-normal;
         z-index: 0;
       }
 
@@ -228,7 +139,7 @@
         --color: white;
         transform: scale(1.05);
         border-color: var(--chip-color, var(--ion-color-primary));
-        box-shadow: 0 2px 12px rgba(var(--chip-color, var(--ion-color-primary-rgb)), 0.4);
+        @extend .shadow-md;
 
         &::before {
           opacity: 1;
@@ -238,7 +149,7 @@
       &:hover:not(.active) {
         --background: var(--chip-background, var(--ion-color-step-50));
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        @extend .shadow-sm;
         border-color: var(--chip-color, var(--ion-color-primary));
 
         &::before {
@@ -247,7 +158,7 @@
       }
 
       ion-icon {
-        margin-right: 4px;
+        margin-right: var(--space-xs);
         font-size: 1rem;
         position: relative;
         z-index: 1;
@@ -255,7 +166,7 @@
 
       ion-label {
         font-weight: 500;
-        font-size: 0.85rem;
+        @extend .text-sm;
         position: relative;
         z-index: 1;
       }
@@ -264,34 +175,36 @@
     .clear-filters-btn {
       --color: var(--ion-color-medium);
       --background: transparent;
-      font-size: 0.8rem;
-      margin-top: 4px;
+      @extend .text-sm;
+      margin-top: var(--space-xs);
 
       &:hover {
         --color: var(--ion-color-danger);
       }
     }
   }
-  }
 }
 
-// Loading Animation
+// ⏳ Loading Animation
 .loading-container {
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  padding: 80px 20px;
+  padding: 80px var(--space-lg);
   text-align: center;
 
   .pokeball-loader {
     width: 80px;
     height: 80px;
     position: relative;
-    margin: 0 auto 24px;
+    margin: 0 auto var(--space-xl);
     animation: spin 2s linear infinite;
 
-    .pokeball-top {
+    .pokeball-top, .pokeball-bottom, .pokeball-center {
+      position: absolute;
       width: 100%;
+    }
+
+    .pokeball-top {
       height: 50%;
       background: #ff3d3d;
       border-radius: 40px 40px 0 0;
@@ -307,402 +220,119 @@
         height: 16px;
         background: white;
         border: 3px solid #333;
-        border-radius: 50%;
+        @extend .rounded-full;
       }
     }
 
     .pokeball-center {
-      width: 100%;
       height: 8px;
       background: #333;
-      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
       z-index: 2;
     }
 
     .pokeball-bottom {
-      width: 100%;
       height: 50%;
       background: white;
       border-radius: 0 0 40px 40px;
       border: 2px solid #333;
       border-top: none;
+      bottom: 0;
     }
   }
 
   h3 {
     color: var(--ion-color-primary);
-    font-size: 1.4rem;
-    margin: 0 0 8px 0;
+    @extend .text-xl;
+    margin: 0 0 var(--space-sm) 0;
     font-weight: 600;
   }
 
   p {
     color: var(--ion-color-medium);
     margin: 0;
-    font-size: 1rem;
+    @extend .text-base;
   }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-// Pokemon Section
+// 🎮 Pokemon Section
 .pokemon-section {
-  padding: 16px;
+  padding: var(--space-md);
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding: 0 8px;
+  .active-filters-indicator {
+    background: var(--gradient-primary);
+    margin: 0 var(--space-md) var(--space-md) var(--space-md);
+    padding: var(--space-md) var(--space-md);
+    @extend .rounded-md;
+    @extend .shadow-sm;
 
-    h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--ion-color-dark);
-      margin: 0;
-    }
+    .indicator-content {
+      @include flex-center;
+      gap: var(--space-sm);
+      color: white;
+      @extend .text-sm;
+      font-weight: 500;
 
-    ion-button {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      font-size: 0.85rem;
+      ion-icon {
+        font-size: 1.1rem;
+      }
     }
   }
 
   .pokemon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    gap: var(--space-md);
     max-width: 1200px;
     margin: 0 auto;
+    min-height: 100vh;
 
-    .pokemon-card-wrapper {
-      animation: fadeInUp 0.6s ease forwards;
+    app-pokemon-card {
+      @include fade-in(0.4s);
       opacity: 0;
       transform: translateY(20px);
-    }
-  }
 
-  // Seção de Pokémons com indicadores
-  .active-filters-indicator {
-    background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-secondary-tint));
-    margin: 0 16px 16px 16px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.2);
-
-    .indicator-content {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: white;
-      font-size: 0.9rem;
-      font-weight: 500;
-
-      ion-icon {
-        font-size: 1.1rem;
-      }
-
-      span {
-        opacity: 0.95;
-      }
+      &:nth-child(1) { animation-delay: 0.1s; }
+      &:nth-child(2) { animation-delay: 0.15s; }
+      &:nth-child(3) { animation-delay: 0.2s; }
+      &:nth-child(4) { animation-delay: 0.25s; }
+      &:nth-child(5) { animation-delay: 0.3s; }
+      &:nth-child(6) { animation-delay: 0.35s; }
+      &:nth-child(n+7) { animation-delay: 0.4s; }
     }
   }
 }
 
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Empty State
-.empty-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 80px 20px;
-  text-align: center;
-
-  .empty-content {
-    max-width: 300px;
-
-    .empty-illustration {
-      font-size: 4rem;
-      color: var(--ion-color-medium);
-      margin-bottom: 16px;
-      opacity: 0.7;
-    }
-
-    h3 {
-      color: var(--ion-color-dark);
-      margin-bottom: 8px;
-      font-size: 1.3rem;
-    }
-
-    p {
-      color: var(--ion-color-medium);
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-  }
-}
-
-// FAB Container
-.fab-container {
-  .fab-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    z-index: 10;
-    min-width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-    border-radius: 10px;
-  }
-
-  ion-fab-button {
-    --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    --transition: all 0.3s ease;
-    position: relative;
-
-    &.has-favorites {
-      animation: heartbeat 2s infinite;
-    }
-
-    &:hover {
-      --transform: scale(1.1);
-    }
-
-    &[size="small"] {
-      --size: 40px;
-    }
-  }
-}
-
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 20px 16px;
-
-    .hero-content h2 {
-      font-size: 1.5rem;
-    }
-
-    .stats-bar {
-      gap: 16px;
-
-      .stat-item {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-      }
-    }
-  }
-
-  .pokemon-section .pokemon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
-  }
-
-  .search-filters {
-    .filter-chip {
-      font-size: 0.8rem;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .header-brand .brand-text {
-    h1 {
-      font-size: 1.2rem;
-    }
-
-    p {
-      display: none;
-    }
-  }
-
-  .pokemon-section .pokemon-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
-  .stats-bar {
-    flex-direction: column;
-    gap: 8px !important;
-  }
-}
-
-// Dark Theme Support
-@media (prefers-color-scheme: dark) {
-  .search-section {
-    background: var(--ion-color-step-50);
-
-    .modern-search {
-      --background: var(--ion-color-step-100);
-      --color: var(--ion-color-dark-contrast);
-    }
-  }
-
-  .search-filters .filter-chip {
-    --background: var(--ion-color-step-100);
-    --color: var(--ion-color-dark-contrast);
-  }
-}
-
-// Performance Optimizations
-.pokemon-grid {
-  contain: layout style paint;
-}
-
-ion-content {
-  --overflow: auto;
-  scroll-behavior: smooth;
-  height: 100vh;
-
-  // Melhora performance do scroll
-  &.has-header {
-    --offset-top: var(--ion-safe-area-top, 0px);
-  }
-
-  // Força scroll vertical funcional
-  &::part(scroll) {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-// Melhorias para scroll suave no grid
-.pokemon-grid {
-  contain: layout style paint;
-  will-change: scroll-position;
-
-  // Otimização para scroll em dispositivos móveis
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-
-  // Adiciona padding bottom para o infinite scroll
-  padding-bottom: 80px;
-}
-
-// Accessibility
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-// Grid de Pokémons - Responsivo e Scrollável
-.pokemon-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-  padding: 16px;
-  max-width: 1400px;
-  margin: 0 auto;
-  min-height: 100vh; // Garante altura mínima para scroll
-
-  // Animação para itens que aparecem
-  app-pokemon-card {
-    animation: fadeInUp 0.4s ease forwards;
-    opacity: 0;
-    transform: translateY(20px);
-
-    &:nth-child(1) { animation-delay: 0.1s; }
-    &:nth-child(2) { animation-delay: 0.15s; }
-    &:nth-child(3) { animation-delay: 0.2s; }
-    &:nth-child(4) { animation-delay: 0.25s; }
-    &:nth-child(5) { animation-delay: 0.3s; }
-    &:nth-child(6) { animation-delay: 0.35s; }
-    &:nth-child(n+7) { animation-delay: 0.4s; }
-  }
-}
-
-// Breakpoints responsivos
-@media (max-width: 768px) {
-  .pokemon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-    padding: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .pokemon-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 8px;
-  }
-
-  .nav-buttons {
-    .nav-btn {
-      --padding-start: 6px;
-      --padding-end: 6px;
-
-      &.lang-btn span {
-        display: none; // Esconde texto em telas pequenas
-      }
-    }
-  }
-}
-
-@media (min-width: 1200px) {
-  .pokemon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-}
-
-// Estado vazio
+// 📭 Empty State
 .empty-state {
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
+  padding: 60px var(--space-lg);
   text-align: center;
   min-height: 400px;
 
   .empty-animation {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-xl);
 
-    .empty-pokeball {
-      .pokeball-bounce {
-        font-size: 4rem;
-        animation: bounce 2s ease-in-out infinite;
-        opacity: 0.7;
-      }
+    .empty-pokeball .pokeball-bounce {
+      font-size: 4rem;
+      animation: bounce 2s ease-in-out infinite;
+      opacity: 0.7;
     }
   }
-
   h3 {
     color: var(--ion-color-dark);
     font-size: 1.5rem;
+    line-height: 2rem;
     font-weight: 600;
-    margin: 0 0 12px 0;
+    margin: 0 0 var(--space-md) 0;
   }
 
-  .search-text {
+  .search-text, .error-text {
     color: var(--ion-color-medium);
-    font-size: 1rem;
-    margin: 0 0 24px 0;
+    @extend .text-base;
+    margin: 0 0 var(--space-xl) 0;
     max-width: 300px;
     line-height: 1.5;
 
@@ -712,24 +342,16 @@ ion-content {
     }
   }
 
-  .error-text {
-    color: var(--ion-color-medium);
-    font-size: 1rem;
-    margin: 0 0 24px 0;
-    max-width: 280px;
-    line-height: 1.5;
-  }
-
   .empty-actions {
     display: flex;
-    gap: 12px;
+    gap: var(--space-md);
     flex-wrap: wrap;
     justify-content: center;
 
     .action-button {
       --border-radius: 25px;
-      --padding-start: 20px;
-      --padding-end: 20px;
+      @include spacing(--padding-start, lg);
+      @include spacing(--padding-end, lg);
       font-weight: 500;
       text-transform: none;
 
@@ -740,136 +362,195 @@ ion-content {
   }
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-20px);
-  }
-  60% {
-    transform: translateY(-10px);
-  }
-}
-
-// Botão flutuante
-ion-fab-button {
-  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --transition: all 0.3s ease;
-
-  &.has-favorites {
-    animation: heartbeat 2s infinite;
-  }
-
-  &:hover {
-    --transform: scale(1.1);
-  }
-}
-
-// Animação do coração
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-// Responsividade para mobile
-@media (max-width: 768px) {
+// 💀 Skeleton Loading
+.skeleton-loading {
   .pokemon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 8px;
-    padding: 8px;
-  }
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+    padding: var(--space-md);    .skeleton-card {
+      height: 300px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+      );
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.5s infinite;
+      position: relative;
 
-  .search-container {
-    padding: 12px;
-  }
+      &::before {
+        content: '';
+        position: absolute;
+        top: var(--space-md);
+        left: var(--space-md);
+        right: var(--space-md);
+        height: 20px;
+        @extend .rounded-md;
+        background: rgba(0, 0, 0, 0.1);
+      }
 
-  .loading-container,
-  .empty-state {
-    padding: 40px 16px;
-  }
-}
-
-// Responsividade para telas muito pequenas
-@media (max-width: 480px) {
-  .pokemon-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
-  .header-content {
-    span {
-      display: none;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 80px;
+        @extend .rounded-full;
+        background: rgba(0, 0, 0, 0.1);
+      }
     }
   }
 }
 
-// Otimizações de performance
-.pokemon-grid {
-  contain: layout style paint;
-}
-
-// Smooth scrolling e scroll funcional
-ion-content {
-  --overflow: auto;
-  scroll-behavior: smooth;
-  height: 100%;
-
-  // Garante que o conteúdo pode ser rolado
-  &::part(scroll) {
-    overflow-y: auto !important;
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card {
+    animation: none !important;
   }
 }
 
-// Estilos para o infinite scroll
-ion-infinite-scroll-content {
-  --color: var(--ion-color-primary);
+// 🔄 Virtual Scrolling
+.virtual-scroll-viewport {
+  height: 600px;
+  margin: var(--space-md);
+  @extend .rounded-lg;
+  overflow-y: auto;
+
+  .virtual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
 }
 
-// Melhorias de acessibilidade
+// Responsivo para virtual scrolling
+@include respond-to(mobile) {
+  .virtual-scroll-viewport {
+    height: 500px;
+
+    .virtual-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+}
+
+@include respond-to(tablet) {
+  .virtual-scroll-viewport {
+    height: 650px;
+
+    .virtual-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+}
+
+// 🎪 Animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-20px); }
+  60% { transform: translateY(-10px); }
+}
+
+// 📱 Responsive Design
+@include respond-to(tablet) {
+  .hero-section {
+    padding: var(--space-lg) var(--space-md);    .hero-content h2 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+
+    .stats-bar {
+      gap: var(--space-md);
+
+      .stat-item {
+        @extend .text-sm;
+        padding: 6px 10px;
+      }
+    }
+  }
+
+  .pokemon-section .pokemon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-md);
+  }
+}
+
+@include respond-to(mobile) {
+  .hero-section .stats-bar {
+    flex-direction: column;
+    gap: var(--space-sm) !important;
+  }
+
+  .pokemon-section .pokemon-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .search-container {
+    padding: var(--space-md);
+  }
+
+  .loading-container, .empty-state {
+    padding: 40px var(--space-md);
+  }
+}
+
+// 🌙 Dark Theme Support
+@include dark-mode {
+  .search-container {
+    background: var(--ion-color-step-50);
+
+    .modern-search {
+      --background: var(--ion-color-step-100);
+      --color: var(--ion-color-dark-contrast);
+    }
+  }
+
+  .quick-filters .filter-chip {
+    --background: var(--ion-color-step-100);
+    --color: var(--ion-color-dark-contrast);
+  }
+}
+
+// ⚡ Performance Optimizations
+.pokemon-grid {
+  contain: layout style paint;
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: 80px;
+}
+
+ion-content {
+  --overflow: auto;
+  scroll-behavior: smooth;
+  height: 100vh;
+
+  &.has-header {
+    --offset-top: var(--ion-safe-area-top, 0px);
+  }
+
+  &::part(scroll) {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// 🎯 Accessibility
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-// Tema escuro
-@media (prefers-color-scheme: dark) {
-  .search-container {
-    ion-searchbar {
-      --background: rgba(255, 255, 255, 0.1);
-      --color: white;
-    }
-  }
-}
-
-// Força scroll funcional em todos os dispositivos
-html, body {
-  overflow: auto !important;
-  height: 100% !important;
-}
-
-ion-app {
-  overflow: auto !important;
-}
-
-// Corrige problemas específicos do Ionic
-ion-router-outlet {
-  overflow: auto !important;
-}
-
-// Garante que as páginas possam fazer scroll
-.ion-page {
-  overflow: auto !important;
-
-  ion-content {
-    --overflow: auto !important;
-    overflow: auto !important;
   }
 }

@@ -72,6 +72,20 @@ export interface PokemonSpecies {
   name: string;
   url: string;
   flavor_text_entries?: FlavorTextEntry[];
+  names?: Array<{
+    name: string;
+    language: {
+      name: string;
+      url: string;
+    };
+  }>;
+  genera?: Array<{
+    genus: string;
+    language: {
+      name: string;
+      url: string;
+    };
+  }>;
 }
 
 export interface FlavorTextEntry {

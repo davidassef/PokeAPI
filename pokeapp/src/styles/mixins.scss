@@ -1,0 +1,186 @@
+// 🔧 Mixins Utilitários - Reutilização de Código CSS
+// Seguindo princípios DRY (Don't Repeat Yourself)
+
+// 📱 Responsive Breakpoints
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == mobile {
+    @media (max-width: var(--bp-mobile)) {
+      @content;
+    }
+  }
+  @if $breakpoint == tablet {
+    @media (max-width: var(--bp-tablet)) {
+      @content;
+    }
+  }
+  @if $breakpoint == desktop {
+    @media (min-width: var(--bp-desktop)) {
+      @content;
+    }
+  }
+  @if $breakpoint == large {
+    @media (min-width: var(--bp-large)) {
+      @content;
+    }
+  }
+}
+
+// 🎭 Card Styles
+@mixin card-base {
+  background: var(--ion-color-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+@mixin card-hover {
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+// 🎨 Pokemon Type Styling
+@mixin pokemon-type-background($type) {
+  background: var(--type-#{$type});
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+// 🔘 Button Styles
+@mixin button-base {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: var(--ion-color-primary);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: var(--ion-color-primary-shade);
+    transform: translateY(-1px);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: transparent;
+  color: var(--ion-color-primary);
+  border: 1px solid var(--ion-color-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--ion-color-primary);
+    color: white;
+  }
+}
+
+// 🎯 Flex Utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+// 📏 Spacing Utilities
+@mixin spacing($property, $size) {
+  #{$property}: var(--space-#{$size});
+}
+
+// 🌟 Loading States
+@mixin skeleton-loading {
+  background: linear-gradient(90deg,
+    var(--ion-color-step-100) 25%,
+    var(--ion-color-step-50) 50%,
+    var(--ion-color-step-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// 🎪 Animations
+@mixin fade-in($duration: 0.3s) {
+  opacity: 0;
+  animation: fade-in $duration ease forwards;
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+@mixin slide-up($duration: 0.3s) {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slide-up $duration ease forwards;
+}
+
+@keyframes slide-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 🎨 Focus States (Acessibilidade)
+@mixin focus-outline {
+  &:focus-visible {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+// 🌙 Dark Mode
+@mixin dark-mode {
+  @media (prefers-color-scheme: dark) {
+    @content;
+  }
+}
+
+// 🎭 Glassmorphism Effect
+@mixin glassmorphism($opacity: 0.1) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// 📱 Touch Interactions
+@mixin touch-feedback {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

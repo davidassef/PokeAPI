@@ -1,0 +1,68 @@
+// 💀 Skeleton Loading Component
+// Melhora a UX durante carregamento
+
+.skeleton-card {
+  @include card-base;
+  min-height: 300px;
+  padding: var(--space-lg);
+
+  .skeleton-header {
+    @include flex-between;
+    margin-bottom: var(--space-md);
+
+    .skeleton-id {
+      width: 60px;
+      height: 24px;
+      @include skeleton-loading;
+      @extend .rounded-md;
+    }
+
+    .skeleton-heart {
+      width: 36px;
+      height: 36px;
+      @include skeleton-loading;
+      @extend .rounded-full;
+    }
+  }
+
+  .skeleton-image {
+    width: 120px;
+    height: 120px;
+    @include skeleton-loading;
+    @extend .rounded-full;
+    margin: var(--space-md) auto;
+  }
+
+  .skeleton-name {
+    width: 80%;
+    height: 24px;
+    @include skeleton-loading;
+    @extend .rounded-sm;
+    margin: 0 auto var(--space-md);
+  }
+
+  .skeleton-types {
+    @include flex-center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+
+    .skeleton-type {
+      width: 60px;
+      height: 28px;
+      @include skeleton-loading;
+      @extend .rounded-lg;
+    }
+  }
+
+  .skeleton-stats {
+    @include flex-center;
+    gap: var(--space-sm);
+
+    .skeleton-stat {
+      width: 45px;
+      height: 50px;
+      @include skeleton-loading;
+      @extend .rounded-sm;
+    }
+  }
+}

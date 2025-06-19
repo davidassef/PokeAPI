@@ -1,0 +1,208 @@
+// 🎭 Micro-interactions Stylesheet
+// Animações sutis para melhor feedback visual
+
+@import './design-tokens.scss';
+
+// 🎯 Micro-interactions Base
+@mixin micro-interaction($property: transform, $scale: 1.02, $duration: 0.2s) {
+  transition: #{$property} #{$duration} ease-out;
+
+  &:hover:not(:disabled) {
+    @if $property == transform {
+      transform: scale(#{$scale});
+    } @else if $property == opacity {
+      opacity: #{$scale};
+    } @else {
+      #{$property}: #{$scale};
+    }
+  }
+
+  &:active:not(:disabled) {
+    @if $property == transform {
+      $activeScale: $scale * 0.98;
+      transform: scale(#{$activeScale});
+    }
+  }
+}
+
+// 🎪 Bounce Animation
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-50px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) translateY(0);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// 🌊 Wave Animation para botões
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+// 💫 Glow Effect
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px var(--ion-color-primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--ion-color-primary), 0 0 30px var(--ion-color-primary);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--ion-color-primary);
+  }
+}
+
+// 🔥 Shake Animation para erros
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+// 💝 Heart Beat
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+// 🌀 Spin
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// 📈 Slide Up
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 🎯 Classes de Utilidade
+.micro-scale { @include micro-interaction(transform, 1.05); }
+.micro-glow {
+  transition: box-shadow 0.2s ease-out;
+  &:hover:not(:disabled) {
+    box-shadow: 0 0 15px var(--ion-color-primary);
+  }
+}
+.micro-lift {
+  transition: transform 0.2s ease-out;
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+}
+
+.bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.glow-effect {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.shake-error {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.heartbeat-favorite {
+  animation: heartbeat 1s ease-in-out infinite;
+}
+
+.spin-loading {
+  animation: spin 1s linear infinite;
+}
+
+.slide-up-fade {
+  animation: slideUpFade 0.5s ease-out;
+}
+
+// 🎭 Ripple Effect para botões
+.ripple-button {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  &:active::before {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+// 🎨 Loading States Específicos
+.loading-pokeball {
+  @keyframes pokeball-spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  animation: pokeball-spin 1.5s ease-in-out infinite;
+}
+
+// 🎪 Stagger Animation para listas
+.stagger-container {
+  .stagger-item {
+    opacity: 0;
+    animation: slideUpFade 0.5s ease-out forwards;
+
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.1}s;
+      }
+    }
+  }
+}
+
+// 📱 Reduced Motion Support
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .micro-scale:hover,
+  .micro-glow:hover,
+  .micro-lift:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

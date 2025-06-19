@@ -5,9 +5,10 @@ import { IonicModule, IonContent } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { PokemonApiService } from '../../services/pokemon-api.service';
-import { FavoritesService } from '../../services/favorites.service';
+import { PokemonFavoritesService } from '../../services/pokemon-favorites.service';
 import { LocalizationService } from '../../services/localization.service';
 import { PokemonTranslationService } from '../../services/pokemon-translation.service';
 import { PokemonCardComponent } from '../../components/pokemon-card.component';
@@ -15,6 +16,7 @@ import { SharedHeaderComponent } from '../../components/shared-header.component'
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Pokemon, FavoritePokemon } from '../../models/pokemon.model';
 import { POKEMON_TYPES, getTypeColor, getContrastColor } from '../../utils/pokemon-types.util';
+import { AppPages } from '../../enums/app.enums';
 
 // Interface para filtros rápidos
 interface QuickFilter {
@@ -33,10 +35,14 @@ interface QuickFilter {
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule, PokemonCardComponent, SharedHeaderComponent, TranslatePipe]
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule, ScrollingModule, PokemonCardComponent, SharedHeaderComponent, TranslatePipe],
 })
 export class HomePage implements OnInit {
   @ViewChild(IonContent, { static: false }) content!: IonContent;
+
+  // 📱 Enums para templates
+  readonly appPages = AppPages;
+
   // Controle de inicialização
   private initialized = false;
 
@@ -44,7 +50,6 @@ export class HomePage implements OnInit {
   favorites: FavoritePokemon[] = [];
   totalPokemon = 0;
   currentLanguage = 'pt';
-
   // Paginação
   currentOffset = 0;
   readonly itemsPerPage = 20;
@@ -52,21 +57,24 @@ export class HomePage implements OnInit {
   isLoading = false;
   isLoadingMore = false;
 
+  // Virtual Scrolling
+  readonly itemSize = 320; // Altura aproximada de cada card pokemon
+  readonly minBufferPx = 800;
+  readonly maxBufferPx = 1600;
+
   // Filtros
   searchTerm = '';
   filteredPokemon: Pokemon[] = [];
   allLoadedPokemon: Pokemon[] = [];
   isSearching = false;
-  searchTimeout: any;  quickFilters: QuickFilter[] = [];
-
-  constructor(
+  searchTimeout: any;  quickFilters: QuickFilter[] = [];  constructor(
     private pokemonApi: PokemonApiService,
-    private favoritesService: FavoritesService,
+    private pokemonFavoritesService: PokemonFavoritesService,
     private localizationService: LocalizationService,
     private pokemonTranslationService: PokemonTranslationService,
     private router: Router,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private toastController: ToastController,
   ) {
     this.currentLanguage = this.localizationService.getCurrentLanguage();
     this.initializeFilters();
@@ -92,9 +100,10 @@ export class HomePage implements OnInit {
     this.initialized = true;
     await this.loadInitialData();
     this.subscribeToFavorites();
-  }/**
+  }  /**
    * Carrega dados iniciais
-   */  private async loadInitialData(): Promise<void> {
+   */
+  private async loadInitialData(): Promise<void> {
     console.log('🔄 Iniciando carregamento de dados...');
     this.isLoading = true;
 
@@ -107,13 +116,13 @@ export class HomePage implements OnInit {
             console.log(`📦 Carregando detalhes de ${response.results.length} Pokémons...`);
 
             // Carrega detalhes dos Pokémons
-            const pokemonDetails = await Promise.all(
-              response.results.map((pokemon: any) =>
-                this.pokemonApi.getPokemonDetailsByUrl(pokemon.url).toPromise()
-              )
+            const pokemonDetailsPromises = response.results.map((pokemon: any) =>
+              this.pokemonApi.getPokemonDetailsByUrl(pokemon.url).toPromise(),
             );
 
+            const pokemonDetails = await Promise.all(pokemonDetailsPromises);
             const validPokemons = pokemonDetails.filter((p: Pokemon | undefined): p is Pokemon => p !== undefined);
+
             console.log(`✅ ${validPokemons.length} Pokémons carregados com sucesso`);
 
             this.pokemons = validPokemons;
@@ -125,16 +134,15 @@ export class HomePage implements OnInit {
 
             console.log(`📊 Estado atual: ${this.pokemons.length} pokémons, offset: ${this.currentOffset}, hasMore: ${this.hasMore}`);
           }
-          this.isLoading = false;
         },
         error: async (error) => {
           console.error('❌ Erro ao carregar Pokémons:', error);
           await this.showToast(this.localizationService.translate('error.loadingData'), 'danger');
-          this.isLoading = false;
-        }
+        },
       });
     } catch (error) {
       console.error('❌ Erro crítico ao carregar Pokémons:', error);
+    } finally {
       this.isLoading = false;
     }
   }
@@ -153,8 +161,8 @@ export class HomePage implements OnInit {
       next: async (response) => {        if (response && response.results) {
           const pokemonDetails = await Promise.all(
             response.results.map((pokemon: any) =>
-              this.pokemonApi.getPokemonDetailsByUrl(pokemon.url).toPromise()
-            )
+              this.pokemonApi.getPokemonDetailsByUrl(pokemon.url).toPromise(),
+            ),
           );
 
           const validNewPokemons = pokemonDetails.filter((p: Pokemon | undefined): p is Pokemon => p !== undefined);
@@ -177,7 +185,7 @@ export class HomePage implements OnInit {
         await this.showToast(this.localizationService.translate('error.loadingMore'), 'warning');
         this.isLoadingMore = false;
         event.target.complete();
-      }
+      },
     });
   }
 
@@ -200,7 +208,7 @@ export class HomePage implements OnInit {
    * Inscreve-se nas mudanças de favoritos
    */
   private subscribeToFavorites(): void {
-    this.favoritesService.getFavorites().subscribe(favorites => {
+    this.pokemonFavoritesService.getFavorites().subscribe(favorites => {
       this.favorites = favorites;
     });
   }
@@ -213,36 +221,36 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * Alterna favorito
+   * Observable de IDs dos favoritos
    */
-  async toggleFavorite(pokemon: Pokemon): Promise<void> {
-    const imageUrl = this.pokemonApi.getPokemonImageUrl(pokemon.id);
+  favorites$ = this.pokemonFavoritesService.favorites$;
 
-    try {
-      const success = await this.favoritesService.toggleFavorite({
-        id: pokemon.id,
-        name: pokemon.name,
-        imageUrl
-      });
-
-      if (success) {        const isFavorite = this.favoritesService.isFavorite(pokemon.id);
-        const pokemonName = this.pokemonApi.formatPokemonName(pokemon.name);
-        const message = isFavorite
-          ? `${pokemonName} ${this.localizationService.translate('favorites.added')}`
-          : `${pokemonName} ${this.localizationService.translate('favorites.removed')}`;
-
-        await this.showSuccessToast(message);
-      }
-    } catch (error) {
-      await this.showErrorToast(this.localizationService.translate('error.changeFavorite'));
-    }
+  /**
+   * Retorna se o Pokémon está nos favoritos
+   */
+  isFavorite(pokemonId: number): boolean {
+    return this.pokemonFavoritesService.isFavorite(pokemonId);
   }
 
   /**
-   * Verifica se Pokémon é favorito
+   * Alterna favorito
    */
-  isFavorite(pokemonId: number): boolean {
-    return this.favoritesService.isFavorite(pokemonId);
+  toggleFavorite(pokemonId: number): void {
+    this.pokemonFavoritesService.toggleFavorite(pokemonId);
+  }
+
+  /**
+   * Limpa todos os favoritos
+   */
+  clearFavorites(): void {
+    this.pokemonFavoritesService.clearFavorites();
+  }
+
+  /**
+   * Retorna a contagem de favoritos
+   */
+  getFavoritesCount(): number {
+    return this.pokemonFavoritesService.getFavorites().length;
   }
 
   /**
@@ -328,7 +336,7 @@ export class HomePage implements OnInit {
       message,
       duration: 2000,
       color: 'success',
-      position: 'bottom'
+      position: 'bottom',
     });
     await toast.present();
   }
@@ -340,7 +348,7 @@ export class HomePage implements OnInit {
       message,
       duration: 3000,
       color: 'danger',
-      position: 'bottom'
+      position: 'bottom',
     });
     await toast.present();
   }
@@ -352,15 +360,9 @@ export class HomePage implements OnInit {
       message,
       duration: color === 'danger' ? 3000 : 2000,
       color,
-      position: 'bottom'
+      position: 'bottom',
     });
     await toast.present();
-  }
-  /**
-   * Obtém quantidade de favoritos
-   */
-  getFavoritesCount(): number {
-    return this.favoritesService.getFavoritesCount();
   }
 
   /**
@@ -506,7 +508,7 @@ export class HomePage implements OnInit {
       377, 378, 379, 380, 381, 382, 383, 384, 385, // Regirock, Regice, Registeel, Latias, Latios, Kyogre, Groudon, Rayquaza, Jirachi
       480, 481, 482, 483, 484, 485, 486, 487, 488, // Uxie, Mesprit, Azelf, Dialga, Palkia, Heatran, Regigigas, Giratina, Cresselia
       491, 492, 493, // Darkrai, Shaymin, Arceus
-      638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649 // Cobalion, Terrakion, Virizion, Tornadus, Thundurus, Reshiram, Zekrom, Landorus, Kyurem, Keldeo, Meloetta, Genesect
+      638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, // Cobalion, Terrakion, Virizion, Tornadus, Thundurus, Reshiram, Zekrom, Landorus, Kyurem, Keldeo, Meloetta, Genesect
     ];
 
     return legendaryIds.includes(pokemonId);
@@ -521,7 +523,7 @@ export class HomePage implements OnInit {
     }
 
     return pokemon.types.some(typeInfo =>
-      typeInfo.type.name.toLowerCase() === typeName.toLowerCase()
+      typeInfo.type.name.toLowerCase() === typeName.toLowerCase(),
     );
   }
 
@@ -558,10 +560,10 @@ export class HomePage implements OnInit {
         label: 'filters.favorites',
         icon: 'heart',
         active: false,
-        filterFn: (pokemon: Pokemon) => this.favoritesService.isFavorite(pokemon.id),
+        filterFn: (pokemon: Pokemon) => this.pokemonFavoritesService.isFavorite(pokemon.id),
         color: '#e74c3c',
         backgroundColor: '#ffebee',
-        textColor: '#c62828'
+        textColor: '#c62828',
       },
       {
         id: 'legendary',
@@ -571,7 +573,7 @@ export class HomePage implements OnInit {
         filterFn: (pokemon: Pokemon) => this.isLegendaryPokemon(pokemon.id),
         color: '#f39c12',
         backgroundColor: '#fff8e1',
-        textColor: '#f57f17'
+        textColor: '#f57f17',
       },
       {
         id: 'generation1',
@@ -581,8 +583,8 @@ export class HomePage implements OnInit {
         filterFn: (pokemon: Pokemon) => pokemon.id <= 151,
         color: '#9b59b6',
         backgroundColor: '#f3e5f5',
-        textColor: '#7b1fa2'
-      }
+        textColor: '#7b1fa2',
+      },
     ];
 
     // Adiciona filtros por tipo de Pokémon
@@ -599,7 +601,7 @@ export class HomePage implements OnInit {
         filterFn: (pokemon: Pokemon) => this.hasType(pokemon, type),
         color: typeColor,
         backgroundColor: lightColor,
-        textColor: textColor === '#FFFFFF' ? typeColor : textColor
+        textColor: textColor === '#FFFFFF' ? typeColor : textColor,
       });
     });
   }
@@ -626,7 +628,7 @@ export class HomePage implements OnInit {
       'ghost': 'skull-outline',
       'steel': 'hardware-chip-outline',
       'fairy': 'heart-outline',
-      'normal': 'ellipse-outline'
+      'normal': 'ellipse-outline',
     };
 
     return typeIcons[type] || 'help-outline';

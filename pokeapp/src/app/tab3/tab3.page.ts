@@ -13,7 +13,7 @@ import {
   IonCardTitle,
   IonCardContent,
   IonButton,
-  ToastController
+  ToastController,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,13 +30,14 @@ import {
   playSkipBackOutline,
   radioOutline,
   pauseCircleOutline,
-  informationCircleOutline
+  informationCircleOutline,
 } from 'ionicons/icons';
 
 import { SharedHeaderComponent } from '../components/shared-header.component';
 import { LocalizationService } from '../services/localization.service';
 import { AudioService } from '../services/audio.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { AppPages } from '../enums/app.enums';
 
 @Component({
   selector: 'app-tab3',
@@ -59,10 +60,13 @@ import { TranslatePipe } from '../pipes/translate.pipe';
     SharedHeaderComponent,
     CommonModule,
     FormsModule,
-    TranslatePipe
+    TranslatePipe,
   ],
 })
 export class Tab3Page implements OnInit, OnDestroy {
+  // 📱 Enums para templates
+  readonly appPages = AppPages;
+
   currentLanguage = 'pt';
   audioEnabled = true;
   audioVolume = 0.5;
@@ -70,12 +74,12 @@ export class Tab3Page implements OnInit, OnDestroy {
   isMuted = false;
 
   private subscriptions: Subscription[] = [];
-
   constructor(
     private localizationService: LocalizationService,
     private audioService: AudioService,
-    private toastController: ToastController
+    private toastController: ToastController,
   ) {
+    // Registra ícones necessários
     addIcons({
       languageOutline,
       musicalNotesOutline,
@@ -87,7 +91,7 @@ export class Tab3Page implements OnInit, OnDestroy {
       playSkipBackOutline,
       radioOutline,
       pauseCircleOutline,
-      informationCircleOutline
+      informationCircleOutline,
     });
   }
 
@@ -96,25 +100,25 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.localizationService.currentLanguage$.subscribe(lang => {
         this.currentLanguage = lang;
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.audioService.isEnabled$.subscribe(enabled => {
         this.audioEnabled = enabled;
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.audioService.volume$.subscribe(volume => {
         this.audioVolume = volume;
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.audioService.isPlaying$.subscribe(playing => {
         this.isPlaying = playing;
-      })
+      }),
     );
   }
 
@@ -165,7 +169,7 @@ export class Tab3Page implements OnInit, OnDestroy {
       message,
       duration: 2000,
       position: 'bottom',
-      color: 'success'
+      color: 'success',
     });
     toast.present();
   }
@@ -174,7 +178,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     const names: { [key: string]: string } = {
       'pt': 'Português',
       'en': 'English',
-      'es': 'Español'
+      'es': 'Español',
     };
     return names[language] || language;
   }

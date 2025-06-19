@@ -1,39 +1,36 @@
-// Header customizado
-ion-toolbar {
-  .pokemon-id {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin-left: 8px;
-  }
-}
+// 📱 Pokemon Details Page - Refatorado
+// Sistema modular com design tokens
 
-// Loading
+@import '../../../styles/design-tokens.scss';
+@import '../../../styles/mixins.scss';
+
+// 🔄 Loading State
 .loading-container {
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  padding: 60px 20px;
+  padding: 60px var(--space-lg);
 
   ion-spinner {
     width: 50px;
     height: 50px;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-md);
     --color: var(--ion-color-primary);
   }
 
   p {
     color: var(--ion-color-medium);
+    @extend .text-base;
   }
 }
 
-// Container principal
+// 📄 Main Container
 .pokemon-details {
   min-height: 100vh;
 }
 
-// Header com imagem principal
+// 🎨 Header Section
 .pokemon-header {
-  padding: 60px 20px 40px;
+  padding: 60px var(--space-lg) 40px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -41,327 +38,319 @@ ion-toolbar {
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%);
+    inset: 0;
+    background: radial-gradient(
+      circle at 30% 20%,
+      rgba(255,255,255,0.3) 0%,
+      transparent 50%
+    );
     pointer-events: none;
+  }
+
+  .main-image-container {
+    margin-bottom: var(--space-lg);
+
+    .main-pokemon-image {
+      max-width: 200px;
+      max-height: 200px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      @extend .transition-normal;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
   }
 }
 
-.main-image-container {
-  position: relative;
-  z-index: 2;
-}
-
-.main-pokemon-image {
-  max-width: 200px;
-  max-height: 200px;
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-// Informações básicas
+// 📋 Info Cards Grid
 .basic-info {
-  padding: 0 16px;
-  margin-top: -20px;
-  position: relative;
-  z-index: 3;
-}
+  padding: 0 var(--space-md);
 
-.info-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-md);
+    max-width: 1200px;
+    margin: 0 auto var(--space-lg);
+  }
 
-.info-card {
-  margin: 0;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  .info-card {
+    @include card-base;
+    margin: 0;
 
-  ion-card-header {
-    padding-bottom: 8px;
+    ion-card-header {
+      padding-bottom: var(--space-sm);
 
-    ion-card-title {
-      font-size: 1rem;
-      font-weight: 600;
+      ion-card-title {
+        @extend .text-base;
+        font-weight: 600;
+      }
+    }
+
+    ion-card-content {
+      padding-top: 0;
     }
   }
 
-  ion-card-content {
-    padding-top: 0;
+  .info-grid {
+    @include flex-center;
+    flex-direction: column;
+    gap: var(--space-sm);
+
+    .info-item {
+      @include flex-between;
+      width: 100%;
+
+      .label {
+        color: var(--ion-color-medium);
+        @extend .text-sm;
+      }
+
+      .value {
+        font-weight: 600;
+        color: var(--ion-color-dark);
+        @extend .text-sm;
+      }
+    }
   }
 }
 
-.info-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .label {
-    color: var(--ion-color-medium);
-    font-size: 0.9rem;
-  }
-
-  .value {
-    font-weight: 600;
-    color: var(--ion-color-dark);
-  }
-}
-
-// Tipos
+// 🏷️ Types Container
 .types-container {
-  display: flex;
-  gap: 8px;
+  @include flex-center;
+  gap: var(--space-sm);
   flex-wrap: wrap;
+
+  .type-chip {
+    --color: white;
+    @extend .text-sm;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    @extend .shadow-sm;
+  }
 }
 
-.type-chip {
-  --color: white;
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-// Stats
+// 📊 Stats Section
 .stats-card {
-  margin: 16px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: var(--space-md);
+  @include card-base;
 
   ion-card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    @include flex-start;
+    gap: var(--space-sm);
 
     ion-icon {
       color: var(--ion-color-primary);
     }
   }
-}
 
-.stats-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .stats-grid {
+    @include flex-center;
+    flex-direction: column;
+    gap: var(--space-md);
 
-.stat-item {
-  .stat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+    .stat-item {
+      width: 100%;
 
-    .stat-name {
-      font-weight: 600;
-      color: var(--ion-color-dark);
-    }
+      .stat-header {
+        @include flex-between;
+        margin-bottom: var(--space-sm);
 
-    .stat-value {
-      font-weight: bold;
-      color: var(--ion-color-primary);
-      font-size: 1.1rem;
+        .stat-name {
+          font-weight: 600;
+          color: var(--ion-color-dark);
+          @extend .text-sm;
+        }
+
+        .stat-value {
+          font-weight: bold;
+          color: var(--ion-color-primary);
+          @extend .text-lg;
+        }
+      }
+
+      .stat-bar {
+        height: 8px;
+        background: var(--ion-color-light);
+        @extend .rounded-sm;
+        overflow: hidden;
+
+        .stat-fill {
+          height: 100%;
+          @extend .rounded-sm;
+          @extend .transition-slow;
+          background: linear-gradient(
+            90deg,
+            currentColor 0%,
+            rgba(255,255,255,0.3) 100%
+          );
+        }
+      }
     }
   }
-
-  .stat-bar {
-    height: 8px;
-    background: var(--ion-color-light);
-    border-radius: 4px;
-    overflow: hidden;
-
-    .stat-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.6s ease;
-      background: linear-gradient(90deg, currentColor 0%, rgba(255,255,255,0.3) 100%);
-    }
-  }
 }
 
-// Habilidades
+// 🎯 Abilities Section
 .abilities-card {
-  margin: 16px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: var(--space-md);
+  @include card-base;
 
   ion-card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    @include flex-start;
+    gap: var(--space-sm);
 
     ion-icon {
       color: var(--ion-color-warning);
     }
   }
-}
 
-.abilities-grid {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+  .abilities-grid {
+    @include flex-start;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
 
-.ability-chip {
-  --background: var(--ion-color-primary);
-  --color: white;
+    .ability-chip {
+      --background: var(--ion-color-primary);
+      --color: white;
 
-  &.hidden-ability {
-    --background: var(--ion-color-warning);
+      &.hidden-ability {
+        --background: var(--ion-color-warning);
 
-    .hidden-label {
-      font-size: 0.8rem;
-      opacity: 0.8;
+        .hidden-label {
+          @extend .text-sm;
+          opacity: 0.8;
+        }
+      }
     }
   }
 }
 
-// Galeria de imagens
+// 🖼️ Images Gallery
 .images-card {
-  margin: 16px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: var(--space-md);
+  @include card-base;
 
   ion-card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    @include flex-start;
+    gap: var(--space-sm);
 
     ion-icon {
       color: var(--ion-color-secondary);
     }
   }
-}
 
-.images-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-}
+  .images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--space-md);
 
-.image-item {
-  aspect-ratio: 1;
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--ion-color-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    .image-item {
+      aspect-ratio: 1;
+      @extend .rounded-md;
+      overflow: hidden;
+      background: var(--ion-color-light);
+      @include flex-center;
 
-  .gallery-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
+      .gallery-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        @extend .transition-normal;
 
-    &:hover {
-      transform: scale(1.05);
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
     }
   }
 }
 
-// Descrições
+// 📝 Descriptions Section
 .descriptions-card {
-  margin: 16px 16px 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: var(--space-md) var(--space-md) 32px;
+  @include card-base;
 
   ion-card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    @include flex-start;
+    gap: var(--space-sm);
 
     ion-icon {
       color: var(--ion-color-tertiary);
     }
   }
-}
 
-.descriptions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .descriptions-list {
+    @include flex-center;
+    flex-direction: column;
+    gap: var(--space-md);
 
-.description-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: var(--ion-color-light);
-  border-radius: 12px;
-  border-left: 4px solid var(--ion-color-primary);
+    .description-item {
+      @include flex-start;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--ion-color-light);
+      @extend .rounded-md;
+      border-left: 4px solid var(--ion-color-primary);
 
-  .description-number {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    background: var(--ion-color-primary);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 600;
+      .description-number {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        background: var(--ion-color-primary);
+        color: white;
+        @extend .rounded-full;
+        @include flex-center;
+        @extend .text-sm;
+        font-weight: 600;
+      }
+
+      .description-text {
+        margin: 0;
+        line-height: 1.5;
+        color: var(--ion-color-dark);
+        text-align: justify;
+        @extend .text-sm;
+      }
+    }
   }
-
-  .description-text {
-    margin: 0;
-    line-height: 1.5;
-    color: var(--ion-color-dark);
-    text-align: justify;
-  }
 }
 
-// Responsividade
-@media (max-width: 768px) {
+// 📱 Responsive Design
+@include respond-to(tablet) {
   .info-cards {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: var(--space-sm);
   }
 
   .pokemon-header {
-    padding: 40px 16px 20px;
-  }
+    padding: 40px var(--space-md) 20px;
 
-  .main-pokemon-image {
-    max-width: 150px;
-    max-height: 150px;
+    .main-pokemon-image {
+      max-width: 150px;
+      max-height: 150px;
+    }
   }
 
   .images-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: var(--space-sm);
   }
 
   .stats-card,
   .abilities-card,
   .images-card,
   .descriptions-card {
-    margin: 12px;
+    margin: var(--space-md);
   }
 }
 
-@media (max-width: 480px) {
+@include respond-to(mobile) {
   .basic-info {
-    padding: 0 8px;
+    padding: 0 var(--space-sm);
   }
 
   .images-grid {
@@ -378,7 +367,7 @@ ion-toolbar {
   }
 }
 
-// Animações
+// 🎪 Animations
 @keyframes slideInUp {
   from {
     transform: translateY(20px);
@@ -398,13 +387,14 @@ ion-toolbar {
   animation: slideInUp 0.6s ease forwards;
 }
 
-// Tema escuro
-@media (prefers-color-scheme: dark) {
-  .pokemon-header::before {
-    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+// 🌙 Dark Theme Support
+@include dark-mode {
+  .pokemon-header {
+    background: var(--ion-color-step-100);
   }
 
   .description-item {
-    background: var(--ion-color-step-50);
+    background: var(--ion-color-step-200);
+    border-left-color: var(--ion-color-primary-tint);
   }
 }

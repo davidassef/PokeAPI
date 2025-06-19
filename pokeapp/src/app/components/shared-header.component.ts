@@ -4,23 +4,25 @@ import { IonicModule } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LocalizationService } from '../services/localization.service';
-import { FavoritesService } from '../services/favorites.service';
 import { AudioService } from '../services/audio.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { AppPages } from '../enums/app.enums';
 
 @Component({
   selector: 'app-shared-header',
   templateUrl: './shared-header.component.html',
   styleUrls: ['./shared-header.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, TranslatePipe]
+  imports: [CommonModule, IonicModule, RouterModule, TranslatePipe],
 })
 export class SharedHeaderComponent implements OnInit, OnDestroy {
   @Input() title: string = 'PokéDex';
   @Input() subtitle?: string = 'Explore & Discover';
-  @Input() currentPage: 'home' | 'favorites' | 'settings' | 'details' = 'home';
+  @Input() currentPage: AppPages = AppPages.HOME;
   @Input() showBackButton: boolean = false;
-  currentLanguage = 'pt';  isAudioEnabled = false;
+
+  currentLanguage = 'pt';
+  isAudioEnabled = false;
   isAudioPlaying = false;
   isMuted = false;
   currentVolume = 0.5;
@@ -31,8 +33,7 @@ export class SharedHeaderComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private localizationService: LocalizationService,
-    private favoritesService: FavoritesService,
-    private audioService: AudioService
+    private audioService: AudioService,
   ) {
     this.currentLanguage = this.localizationService.getCurrentLanguage();
   }
@@ -41,20 +42,20 @@ export class SharedHeaderComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.audioService.isEnabled$.subscribe(enabled => {
         this.isAudioEnabled = enabled;
-      })
+      }),
     );
 
     this.subscriptions.add(
       this.audioService.isPlaying$.subscribe(playing => {
         this.isAudioPlaying = playing;
-      })
+      }),
     );
 
     this.subscriptions.add(
       this.audioService.volume$.subscribe(volume => {
         this.currentVolume = volume;
         this.isMuted = volume === 0;
-      })
+      }),
     );
   }
 
@@ -165,27 +166,9 @@ export class SharedHeaderComponent implements OnInit, OnDestroy {
   getMuteIcon(): string {
     if (this.isMuted) {
       return 'volume-mute-outline';
-    } else if (this.currentVolume > 0.5) {
-      return 'volume-high-outline';
+    } else if (this.currentVolume > 0.5) {      return 'volume-high-outline';
     } else {
       return 'volume-low-outline';
-    }
-  }
-
-  /**
-   * Obtém quantidade de favoritos
-   */
-  getFavoritesCount(): number {
-    return this.favoritesService.getFavoritesCount();
-  }
-
-  /**
-   * Rola para o topo da página
-   */
-  scrollToTop(): void {
-    const content = document.querySelector('ion-content');
-    if (content) {
-      content.scrollToTop(500);
     }
   }
 }

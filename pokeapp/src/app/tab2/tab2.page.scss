@@ -1,79 +1,90 @@
-// Header customizado
+// 💖 Favorites Tab - Refatorado
+// Sistema modular e performático
+
+@import '../../styles/design-tokens.scss';
+@import '../../styles/mixins.scss';
+
+// 🔝 Header Content
 .header-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  @include flex-start;
+  gap: var(--space-sm);
 
   ion-icon {
     font-size: 1.5rem;
   }
 
   ion-badge {
-    font-size: 0.8rem;
-    padding: 4px 8px;
+    @extend .text-sm;
+    padding: var(--space-xs) var(--space-sm);
   }
 }
 
-// Loading
+// ⏳ Loading State
 .loading-container {
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  padding: 60px 20px;
+  padding: 60px var(--space-lg);
 
   ion-spinner {
     width: 50px;
     height: 50px;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-md);
     --color: var(--ion-color-secondary);
   }
 
   p {
     color: var(--ion-color-medium);
-    font-size: 1rem;
+    @extend .text-base;
   }
 }
 
-// Grid de favoritos
+// 🎮 Pokemon Grid
 .pokemon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 16px;
+  gap: var(--space-md);
+  padding: var(--space-md);
   max-width: 1200px;
   margin: 0 auto;
+  contain: layout style paint;
 }
 
+// 💝 Favorite Item
 .favorite-item {
   position: relative;
+  animation: slideInUp 0.4s ease forwards;
 
   .favorite-date {
-    display: flex;
-    align-items: center;
+    @include flex-start;
     gap: 6px;
-    padding: 8px 12px;
-    margin-top: 8px;
+    padding: var(--space-sm) var(--space-md);
+    margin-top: var(--space-sm);
     background: var(--ion-color-light);
-    border-radius: 12px;
-    font-size: 0.8rem;
+    @extend .rounded-md;
+    @extend .text-sm;
     color: var(--ion-color-medium);
+    @extend .transition-normal;
 
     ion-icon {
       font-size: 0.9rem;
     }
+
+    &:hover {
+      background: var(--ion-color-secondary-tint);
+      color: var(--ion-color-secondary-contrast);
+    }
   }
 }
 
-// Estado vazio
+// 📭 Empty State
 .empty-state {
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  padding: 80px 20px;
+  padding: 80px var(--space-lg);
   text-align: center;
 
   .empty-icon-container {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-xl);
     position: relative;
 
     .empty-icon {
@@ -90,7 +101,7 @@
       width: 120px;
       height: 120px;
       border: 3px dashed var(--ion-color-medium);
-      border-radius: 50%;
+      @extend .rounded-full;
       transform: translate(-50%, -50%);
       opacity: 0.3;
     }
@@ -98,15 +109,16 @@
 
   h2 {
     color: var(--ion-color-dark);
-    margin-bottom: 12px;
-    font-size: 1.5rem;
+    margin-bottom: var(--space-md);
+    @extend .text-2xl;
   }
 
   p {
     color: var(--ion-color-medium);
-    margin-bottom: 24px;
+    margin-bottom: var(--space-xl);
     line-height: 1.6;
     max-width: 300px;
+    @extend .text-base;
   }
 
   ion-button {
@@ -116,41 +128,37 @@
   }
 }
 
-// Responsividade para mobile
-@media (max-width: 768px) {
+// 📱 Responsive Design
+@include respond-to(tablet) {
   .pokemon-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 8px;
-    padding: 8px;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
   }
 
   .loading-container,
   .empty-state {
-    padding: 60px 16px;
+    padding: 60px var(--space-md);
   }
 
   .empty-state {
     .empty-icon-container .empty-icon {
       font-size: 4rem;
-    }
-
-    h2 {
-      font-size: 1.3rem;
+    }    h2 {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
     }
   }
 }
 
-// Responsividade para telas muito pequenas
-@media (max-width: 480px) {
+@include respond-to(mobile) {
   .pokemon-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: var(--space-sm);
   }
 
-  .header-content {
-    span {
-      display: none;
-    }
+  .header-content span {
+    display: none;
   }
 
   .favorite-date {
@@ -165,11 +173,7 @@
   }
 }
 
-// Animações
-.favorite-item {
-  animation: slideInUp 0.4s ease forwards;
-}
-
+// 🎪 Animations
 @keyframes slideInUp {
   from {
     transform: translateY(20px);
@@ -181,28 +185,22 @@
   }
 }
 
-// Hover effects
+// 🖱️ Hover Effects
 .favorite-item:hover {
   .favorite-date {
-    background: var(--ion-color-secondary-tint);
-    color: var(--ion-color-secondary-contrast);
-    transition: all 0.3s ease;
+    transform: translateY(-2px);
+    @extend .shadow-sm;
   }
 }
 
-// Tema escuro
-@media (prefers-color-scheme: dark) {
+// 🌙 Dark Theme Support
+@include dark-mode {
   .favorite-date {
     background: var(--ion-color-step-100);
   }
 }
 
-// Otimizações de performance
-.pokemon-grid {
-  contain: layout style paint;
-}
-
-// Smooth scrolling
+// ⚡ Performance Optimizations
 ion-content {
   --overflow: hidden;
   scroll-behavior: smooth;

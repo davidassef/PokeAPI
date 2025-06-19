@@ -1,3 +1,34 @@
 <ion-tabs>
-  <!-- Remove o tab-bar do footer - navegação agora é pelo header -->
+  <ion-router-outlet></ion-router-outlet>
+
+  <!-- Bottom Tab Bar com design moderno -->
+  <ion-tab-bar slot="bottom" class="modern-tab-bar">
+    <!-- Home/Pokédex -->
+    <ion-tab-button tab="tab1" class="tab-button">
+      <div class="tab-content">
+        <ion-icon name="home" class="tab-icon"></ion-icon>
+        <ion-label class="tab-label">{{ 'nav.pokedex' | translate }}</ion-label>
+      </div>
+      <div class="tab-indicator"></div>
+    </ion-tab-button>
+
+    <!-- Favoritos -->
+    <ion-tab-button tab="tab2" class="tab-button">
+      <div class="tab-content">
+        <ion-icon name="heart" class="tab-icon"></ion-icon>
+        <ion-label class="tab-label">{{ 'nav.favorites' | translate }}</ion-label>
+        <ion-badge *ngIf="favoritesCount > 0" class="favorites-badge">{{ favoritesCount }}</ion-badge>
+      </div>
+      <div class="tab-indicator"></div>
+    </ion-tab-button>
+
+    <!-- Configurações -->
+    <ion-tab-button tab="tab3" class="tab-button">
+      <div class="tab-content">
+        <ion-icon name="settings" class="tab-icon"></ion-icon>
+        <ion-label class="tab-label">{{ 'nav.settings' | translate }}</ion-label>
+      </div>
+      <div class="tab-indicator"></div>
+    </ion-tab-button>
+  </ion-tab-bar>
 </ion-tabs>

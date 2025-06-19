@@ -1,0 +1,389 @@
+// 🎨 Toast Styles - Sistema de feedback visual moderno
+// Estilos para toasts com animações e design Pokémon
+
+// 🎯 Base Toast Styles
+.toast-modern {
+  --background: rgba(255, 255, 255, 0.95);
+  --color: var(--ion-color-dark);
+  --border-radius: 16px;
+  --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 500;
+
+  .toast-wrapper {
+    margin: 16px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+
+  .toast-container {
+    padding: 16px 20px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-color, var(--ion-color-primary));
+      border-radius: 0 2px 2px 0;
+    }
+  }
+
+  .toast-message {
+    font-size: 15px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toast-button {
+    --color: var(--accent-color, var(--ion-color-primary));
+    --background: transparent;
+    font-weight: 600;
+    font-size: 14px;
+    margin-left: 8px;
+  }
+}
+
+// 🟢 Success Toast
+.toast-success {
+  --accent-color: var(--ion-color-success);
+  --background: rgba(46, 213, 115, 0.1);
+  --color: var(--ion-color-success-shade);
+
+  .toast-container::before {
+    background: linear-gradient(135deg,
+      var(--ion-color-success),
+      var(--ion-color-success-shade)
+    );
+  }
+
+  ion-icon {
+    color: var(--ion-color-success);
+    animation: successPulse 0.6s ease-out;
+  }
+}
+
+// 🔴 Error Toast
+.toast-error {
+  --accent-color: var(--ion-color-danger);
+  --background: rgba(255, 71, 87, 0.1);
+  --color: var(--ion-color-danger-shade);
+
+  .toast-container::before {
+    background: linear-gradient(135deg,
+      var(--ion-color-danger),
+      var(--ion-color-danger-shade)
+    );
+  }
+
+  ion-icon {
+    color: var(--ion-color-danger);
+    animation: errorShake 0.6s ease-out;
+  }
+}
+
+// 🟡 Warning Toast
+.toast-warning {
+  --accent-color: var(--ion-color-warning);
+  --background: rgba(255, 193, 7, 0.1);
+  --color: var(--ion-color-warning-shade);
+
+  .toast-container::before {
+    background: linear-gradient(135deg,
+      var(--ion-color-warning),
+      var(--ion-color-warning-shade)
+    );
+  }
+
+  ion-icon {
+    color: var(--ion-color-warning);
+    animation: warningBounce 0.8s ease-out;
+  }
+}
+
+// 🔵 Info Toast
+.toast-info {
+  --accent-color: var(--ion-color-primary);
+  --background: rgba(56, 128, 255, 0.1);
+  --color: var(--ion-color-primary-shade);
+
+  .toast-container::before {
+    background: linear-gradient(135deg,
+      var(--ion-color-primary),
+      var(--ion-color-primary-shade)
+    );
+  }
+
+  ion-icon {
+    color: var(--ion-color-primary);
+    animation: infoPulse 1s ease-in-out infinite;
+  }
+}
+
+// 🎮 Pokemon Theme Toast
+.toast-pokemon {
+  --accent-color: #ff6b6b;
+  --background: linear-gradient(135deg,
+    rgba(255, 107, 107, 0.1),
+    rgba(74, 144, 226, 0.1)
+  );
+  --color: var(--ion-color-dark);
+  border: 2px solid rgba(255, 107, 107, 0.3);
+
+  .toast-container::before {
+    background: linear-gradient(135deg,
+      #ff6b6b,
+      #4a90e2,
+      #f39c12
+    );
+    width: 6px;
+    animation: pokemonGradient 2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    color: #ff6b6b;
+    animation: pokemonHeart 1.2s ease-in-out infinite;
+  }
+}
+
+// 🔄 Loading Toast
+.toast-loading {
+  --background: rgba(255, 255, 255, 0.98);
+  --color: var(--ion-color-medium);
+
+  .toast-container::before {
+    background: linear-gradient(90deg,
+      var(--ion-color-primary),
+      var(--ion-color-secondary),
+      var(--ion-color-primary)
+    );
+    animation: loadingGradient 1.5s ease-in-out infinite;
+  }
+
+  ion-icon {
+    animation: spin 1s linear infinite;
+  }
+}
+
+// 🎭 Animações
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes warningBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-4px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes infoPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes pokemonHeart {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2) rotate(-5deg);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(1.2) rotate(5deg);
+  }
+}
+
+@keyframes pokemonGradient {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes loadingGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 🌙 Dark Theme Support
+@media (prefers-color-scheme: dark) {
+  .toast-modern {
+    --background: rgba(26, 26, 26, 0.95);
+    --color: var(--ion-color-light);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .toast-success {
+    --background: rgba(46, 213, 115, 0.2);
+  }
+
+  .toast-error {
+    --background: rgba(255, 71, 87, 0.2);
+  }
+
+  .toast-warning {
+    --background: rgba(255, 193, 7, 0.2);
+  }
+
+  .toast-info {
+    --background: rgba(56, 128, 255, 0.2);
+  }
+
+  .toast-pokemon {
+    --background: linear-gradient(135deg,
+      rgba(255, 107, 107, 0.2),
+      rgba(74, 144, 226, 0.2)
+    );
+  }
+}
+
+// 📱 Responsividade
+@media (max-width: 480px) {
+  .toast-modern {
+    .toast-wrapper {
+      margin: 12px;
+    }
+
+    .toast-container {
+      padding: 14px 18px;
+    }
+
+    .toast-message {
+      font-size: 14px;
+    }
+  }
+}
+
+// 🎯 Acessibilidade
+@media (prefers-reduced-motion: reduce) {
+  .toast-modern,
+  .toast-success,
+  .toast-error,
+  .toast-warning,
+  .toast-info,
+  .toast-pokemon,
+  .toast-loading {
+    ion-icon {
+      animation: none !important;
+    }
+
+    .toast-container::before {
+      animation: none !important;
+    }
+  }
+}
+
+// 🔧 Haptic Feedback Visual Indicator
+.toast-haptic {
+  .toast-container {
+    position: relative;
+
+    &::after {
+      content: '📳';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+  }
+}
+
+// 🎨 Toast Entrance/Exit Animations
+.toast-modern {
+  &.toast-entering {
+    animation: toastSlideIn 0.3s ease-out;
+  }
+
+  &.toast-leaving {
+    animation: toastSlideOut 0.2s ease-in;
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}

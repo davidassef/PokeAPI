@@ -4,12 +4,13 @@ import { IonicModule } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
 
-import { FavoritesService } from '../services/favorites.service';
+import { PokemonFavoritesService } from '../services/pokemon-favorites.service';
 import { LocalizationService } from '../services/localization.service';
 import { PokemonCardComponent } from '../components/pokemon-card.component';
 import { SharedHeaderComponent } from '../components/shared-header.component';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { FavoritePokemon, Pokemon } from '../models/pokemon.model';
+import { AppPages } from '../enums/app.enums';
 
 @Component({
   selector: 'app-tab2',
@@ -19,16 +20,41 @@ import { FavoritePokemon, Pokemon } from '../models/pokemon.model';
   imports: [CommonModule, IonicModule, RouterModule, PokemonCardComponent, SharedHeaderComponent, TranslatePipe]
 })
 export class Tab2Page implements OnInit {
-  favorites: FavoritePokemon[] = [];
-  isLoading = true;
+  // 📱 Enums para templates
+  readonly appPages = AppPages;
 
+  /**
+   * Injeta o serviço de favoritos dedicado
+   */
   constructor(
-    private favoritesService: FavoritesService,
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController,
-    private localizationService: LocalizationService
+    private localizationService: LocalizationService,
+    private pokemonFavoritesService: PokemonFavoritesService
   ) {}
+
+  /**
+   * Remove um Pokémon dos favoritos (por ID)
+   */
+  removeFavorite(pokemonId: number): void {
+    this.pokemonFavoritesService.toggleFavorite(pokemonId);
+  }
+
+  /**
+   * Limpa todos os favoritos
+   */
+  clearFavorites(): void {
+    this.pokemonFavoritesService.clearFavorites();
+  }
+
+  /**
+   * Observable de IDs dos favoritos
+   */
+  favorites$ = this.pokemonFavoritesService.favorites$;
+
+  favorites: FavoritePokemon[] = [];
+  isLoading = true;
 
   ngOnInit(): void {
     this.loadFavorites();
@@ -44,7 +70,7 @@ export class Tab2Page implements OnInit {
   private loadFavorites(): void {
     this.isLoading = true;
 
-    this.favoritesService.getFavorites().subscribe(favorites => {
+    this.pokemonFavoritesService.getFavorites().subscribe(favorites => {
       this.favorites = favorites.sort((a, b) =>
         new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
       );
@@ -99,20 +125,6 @@ export class Tab2Page implements OnInit {
         },
         {
           text: this.localizationService.translate('favorites.removeButtonText'),
-          role: 'destructive',
-          handler: async () => {
-            const success = await this.favoritesService.removeFromFavorites(favorite.id);
-
-            if (success) {
-              await this.showSuccessToast(`${this.formatName(favorite.name)} ${this.localizationService.translate('favorites.removed')}`);
-            } else {
-              await this.showErrorToast(this.localizationService.translate('error.removeFavorite'));
-            }
-          }
-        }
-      ]
-    });
-
     await alert.present();
   }
 
@@ -137,7 +149,7 @@ export class Tab2Page implements OnInit {
           text: this.localizationService.translate('favorites.clearAllButtonText'),
           role: 'destructive',
           handler: async () => {
-            await this.favoritesService.clearAllFavorites();
+            await this.pokemonFavoritesService.clearAllFavorites();
             await this.showSuccessToast('Todos os favoritos foram removidos!');
           }
         }
@@ -178,10 +190,17 @@ export class Tab2Page implements OnInit {
   }
 
   /**
-   * Sempre retorna true pois estamos na página de favoritos
+   * Retorna se o Pokémon está nos favoritos
    */
   isFavorite(pokemonId: number): boolean {
-    return true;
+    return this.pokemonFavoritesService.isFavorite(pokemonId);
+  }
+
+  /**
+   * Retorna a contagem de favoritos
+   */
+  getFavoritesCount(): number {
+    return this.pokemonFavoritesService.getFavorites().length;
   }
 
   /**

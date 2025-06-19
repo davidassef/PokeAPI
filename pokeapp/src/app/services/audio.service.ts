@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { LocalizationService } from './localization.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AudioService {
   private audio: HTMLAudioElement | null = null;
@@ -19,7 +19,7 @@ export class AudioService {
   private audioTracks: { [key: string]: string } = {
     'pt': 'https://www.soundjay.com/misc/sounds/pokemon-theme.mp3', // Placeholder - substitua por URLs reais
     'en': 'https://www.soundjay.com/misc/sounds/pokemon-theme-en.mp3',
-    'es': 'https://www.soundjay.com/misc/sounds/pokemon-theme-es.mp3'
+    'es': 'https://www.soundjay.com/misc/sounds/pokemon-theme-es.mp3',
   };
 
   constructor(private localizationService: LocalizationService) {
