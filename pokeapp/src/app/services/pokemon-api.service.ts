@@ -6,6 +6,7 @@ import {
   PokemonListResponse,
   PokemonSpecies,
 } from '../models/pokemon.model';
+import { EvolutionChain } from '../models/evolution.model';
 import { API_URLS, PAGINATION } from '../constants/app.constants';
 
 @Injectable({
@@ -93,6 +94,15 @@ export class PokemonApiService {
    */
   formatPokemonName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  /**
+   * Busca a cadeia evolutiva de um Pokémon
+   */
+  getEvolutionChain(chainUrl: string): Observable<EvolutionChain> {
+    return this.http.get<EvolutionChain>(chainUrl).pipe(
+      catchError(this.handleError),
+    );
   }
 
   /**

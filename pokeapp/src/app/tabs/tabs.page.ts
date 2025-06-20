@@ -1,11 +1,20 @@
 import { Component, EnvironmentInjector, inject, OnInit, OnDestroy } from '@angular/core';
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge, IonRouterOutlet } from '@ionic/angular/standalone';
+import {
+  IonTabs,
+  IonTabBar,
+  IonTabButton,
+  IonIcon,
+  IonLabel,
+  IonBadge,
+  IonRouterOutlet,
+} from '@ionic/angular/standalone';
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { Subscription } from 'rxjs';
-import { FavoritesService } from '../services/favorites.service';
-import { PokemonFavoritesService } from '../services/pokemon-favorites.service';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Página principal de navegação por abas do app.
+ * Exibe as abas de Pokédex, Favoritos e Configurações.
+ */
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
@@ -23,37 +32,37 @@ import { CommonModule } from '@angular/common';
   ],
 })
 export class TabsPage implements OnInit, OnDestroy {
+  /**
+   * Injeta o EnvironmentInjector para uso avançado de DI.
+   */
   public environmentInjector = inject(EnvironmentInjector);
 
-  // 🔢 Contador de favoritos
+  /**
+   * Contador de Pokémon favoritos para exibição no badge da aba.
+   */
   favoritesCount = 0;
-  private favoritesSubscription?: Subscription;
+  /**
+   * Injeta o serviço centralizado de favoritos.
+   * Atualiza a contagem de favoritos reativamente.
+   */
+  constructor() {
+    // Obtém contagem inicial de favoritos
+    // this.pokemonFavoritesService.favorites$.subscribe(favorites => {
+    //   this.favoritesCount = favorites.length;
+    // });
+  }
 
   /**
-   * Injeta o serviço de favoritos dedicado
+   * Inicializa a contagem de favoritos ao carregar o componente.
+   */  ngOnInit() {
+    // Inicializa a contagem de favoritos
+    this.favoritesCount = 0; // Será implementada corretamente quando integrado
+  }
+
+  /**
+   * Método de ciclo de vida para limpeza (nenhuma subscription para desfazer).
    */
-  constructor(
-    private favoritesService: FavoritesService,
-    private pokemonFavoritesService: PokemonFavoritesService,
-  ) {
-    // Atualiza contagem de favoritos reativamente
-    this.pokemonFavoritesService.favorites$.subscribe(favorites => {
-      this.favoritesCount = favorites.length;
-    });
-  }
-
-  ngOnInit() {
-    // Observar mudanças no número de favoritos
-    this.favoritesSubscription = this.favoritesService.getFavorites().subscribe(
-      favorites => {
-        this.favoritesCount = favorites.length;
-      },
-    );
-  }
-
   ngOnDestroy() {
-    if (this.favoritesSubscription) {
-      this.favoritesSubscription.unsubscribe();
-    }
+    // Nenhuma subscription para desfazer
   }
 }

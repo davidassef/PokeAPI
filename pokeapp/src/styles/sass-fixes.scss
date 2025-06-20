@@ -1,0 +1,56 @@
+/**
+ * 🎨 Design System - SASS Fix para Dart Sass 3.0
+ * ===============================================
+ *
+ * Corrige as funções depreciadas do SASS para compatibilidade futura
+ */
+
+// Importar módulo color do Sass
+@use 'sass:color';
+
+/**
+ * Mixin corrigido para gerar variáveis CSS de cores primárias
+ * @param {Color} $color - Cor base para gerar as variáveis
+ */
+@mixin generate-color-variables($color) {
+  --primary-color-rgb: #{color.channel($color, "red", $space: rgb)},
+                       #{color.channel($color, "green", $space: rgb)},
+                       #{color.channel($color, "blue", $space: rgb)};
+  --secondary-color: #{color.adjust($color, $lightness: -20%)};
+  --primary-color: #{$color};
+}
+
+/**
+ * Mixin para cores de tipos Pokémon com funções corretas
+ */
+@mixin pokemon-type-colors() {
+  // Fire type
+  &.fire {
+    @include generate-color-variables(#ff4757);
+  }
+
+  // Water type
+  &.water {
+    @include generate-color-variables(#3742fa);
+  }
+
+  // Grass type
+  &.grass {
+    @include generate-color-variables(#2ed573);
+  }
+
+  // Electric type
+  &.electric {
+    @include generate-color-variables(#ffa502);
+  }
+
+  // Outros tipos...
+  &.normal {
+    @include generate-color-variables(#a4a4a4);
+  }
+}
+
+// Exportar mixins
+@mixin pokemon-card-colors {
+  @include pokemon-type-colors();
+}

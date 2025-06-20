@@ -1,0 +1,159 @@
+<!-- 🌟 Header Épico - Portal Dimensional da Pokédex -->
+<header
+  class="epic-header"
+  role="banner"
+  [attr.aria-label]="'Cabeçalho principal da Pokédex Interativa'"
+  [class.header-focused]="isHeaderFocused"
+  [class.header-animated]="isAnimating"
+  (mouseenter)="onHeaderHover(true)"
+  (mouseleave)="onHeaderHover(false)"
+  (focusin)="onHeaderFocus(true)"
+  (focusout)="onHeaderFocus(false)">
+
+  <!-- Partículas de Background -->
+  <div class="header-particles" aria-hidden="true">
+    <div class="particle" *ngFor="let particle of headerParticles; trackBy: trackParticle"
+         [style.left.%]="particle.x"
+         [style.top.%]="particle.y"
+         [style.animation-delay.s]="particle.delay">
+    </div>
+  </div>
+
+  <!-- Portal Dimensional -->
+  <div class="dimensional-portal" aria-hidden="true">
+    <div class="portal-ring"></div>
+    <div class="portal-ring"></div>
+    <div class="portal-ring"></div>
+  </div>
+
+  <!-- Aura Elemental -->
+  <div class="elemental-aura" aria-hidden="true">
+    <div class="aura-wave"></div>
+    <div class="aura-wave"></div>
+    <div class="aura-wave"></div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="header-content">
+
+    <!-- Logo e Título -->
+    <div class="header-brand">
+      <div class="logo-container">
+        <img
+          src="assets/img/pokeball.svg"
+          alt="Pokébola - Símbolo da Pokédex"
+          class="epic-logo"
+          [class.logo-spinning]="isLogoSpinning"
+          (click)="onLogoClick()"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'Logo da Pokédex - Clique para ação especial'"
+          (keydown.enter)="onLogoClick()"
+          (keydown.space)="onLogoClick()" />
+
+        <!-- Holograma do Logo -->
+        <div class="logo-hologram" aria-hidden="true"></div>
+
+        <!-- Efeito Shiny -->
+        <div class="logo-shiny" aria-hidden="true"></div>
+      </div>
+
+      <div class="title-container">
+        <h1 class="epic-title">
+          <span class="title-main">Pokédex</span>
+          <span class="title-sub">Interativa</span>
+          <div class="title-glow" aria-hidden="true"></div>
+        </h1>
+
+        <!-- Descrição para Screen Readers -->
+        <p class="sr-only">
+          Pokédex Interativa - Explore o mundo dos Pokémon com interface acessível e moderna
+        </p>
+      </div>
+    </div>
+
+    <!-- Controles de Ação -->
+    <nav class="header-actions" role="navigation" aria-label="Controles principais">
+
+      <!-- Botão de Favoritos -->
+      <button
+        class="action-btn favorite-btn"
+        type="button"
+        (click)="onFavoritesClick()"
+        [attr.aria-label]="'Ver ' + favoritesCount + ' Pokémon favoritos'"
+        [attr.aria-pressed]="showingFavorites"
+        [class.btn-active]="showingFavorites"
+        [class.btn-has-count]="favoritesCount > 0">
+
+        <div class="btn-icon">
+          <svg class="icon-heart" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+
+        <span class="btn-count" *ngIf="favoritesCount > 0" aria-hidden="true">
+          {{ favoritesCount }}
+        </span>
+
+        <div class="btn-glow" aria-hidden="true"></div>
+      </button>
+
+      <!-- Toggle de Tema -->
+      <div class="action-wrapper">
+        <poke-ui-theme-toggle class="epic-toggle"></poke-ui-theme-toggle>
+      </div>
+
+      <!-- Toggle de Tamanho da Fonte -->
+      <div class="action-wrapper">
+        <poke-ui-font-size-toggle class="epic-toggle"></poke-ui-font-size-toggle>
+      </div>
+
+      <!-- Toggle de Avatar -->
+      <div class="action-wrapper">
+        <poke-ui-avatar-toggle class="epic-toggle"></poke-ui-avatar-toggle>
+      </div>
+
+      <!-- Botão de Busca Avançada -->
+      <button
+        class="action-btn search-btn"
+        type="button"
+        (click)="onAdvancedSearchClick()"
+        aria-label="Abrir busca avançada"
+        [class.btn-active]="showingAdvancedSearch">
+
+        <div class="btn-icon">
+          <svg class="icon-search" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+        </div>
+
+        <div class="btn-glow" aria-hidden="true"></div>
+      </button>
+
+      <!-- Botão de Menu -->
+      <button
+        class="action-btn menu-btn"
+        type="button"
+        (click)="onMenuToggle()"
+        [attr.aria-label]="showingMenu ? 'Fechar menu' : 'Abrir menu'"
+        [attr.aria-expanded]="showingMenu"
+        [class.btn-active]="showingMenu">
+
+        <div class="btn-icon">
+          <svg class="icon-menu" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+        </div>
+
+        <div class="btn-glow" aria-hidden="true"></div>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Spotlight Cinematográfico -->
+  <div class="cinematic-spotlight" aria-hidden="true"></div>
+
+  <!-- Overlay de Interação -->
+  <div class="interaction-overlay" aria-hidden="true"></div>
+
+</header>

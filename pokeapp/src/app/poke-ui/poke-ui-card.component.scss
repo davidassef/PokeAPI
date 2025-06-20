@@ -1,0 +1,945 @@
+/**
+ * 🎴 Poke Card Épico - SCSS Otimizado e Funcional
+ * ===============================================
+ *
+ * Versão reconstruída com estilos essenciais para cards bonitos
+ * dentro do limite de orçamento do Angular (≤15KB)
+ *
+ * 🚨 CORREÇÃO CRÍTICA DE CLICABILIDADE:
+ * - Todos os overlays e elementos decorativos têm pointer-events: none
+ * - Z-index otimizado para garantir interatividade
+ * - Botões e elementos clicáveis com z-index alto
+ */
+
+// ===== REGRA GLOBAL PARA GARANTIR CLICABILIDADE =====
+.poke-card {
+  * {
+    &:not(button):not(.poke-card):not(.poke-fav-btn):not(.pokemon-sprite) {
+      pointer-events: none;
+    }
+  }
+}
+
+// ===== VARIÁVEIS E CORES OTIMIZADAS =====
+$card-width: 340px;  // 🚨 CORREÇÃO: Aumentado para melhor visualização
+$card-height: 500px; // 🚨 CORREÇÃO: Aumentado para acomodar todo o conteúdo
+$card-radius: 20px;
+$transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+$type-colors: (
+  normal: #A8A878, fire: #F08030, water: #6890F0, electric: #F8D030,
+  grass: #78C850, ice: #98D8D8, fighting: #C03028, poison: #A040A0,
+  ground: #E0C068, flying: #A890F0, psychic: #F85888, bug: #A8B820,
+  rock: #B8A038, ghost: #705898, dragon: #7038F8, dark: #705848,
+  steel: #B8B8D0, fairy: #EE99AC
+);
+
+// ===== CARD PRINCIPAL ÉPICO REVOLUCIONÁRIO =====
+.poke-card {
+  position: relative;
+  width: $card-width;
+  height: $card-height;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.25) 0%,
+    rgba(255,255,255,0.18) 30%,
+    rgba(255,255,255,0.12) 70%,
+    rgba(255,255,255,0.08) 100%
+  );
+  backdrop-filter: blur(20px) saturate(200%) brightness(110%);
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: $card-radius;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.15),
+    0 4px 16px rgba(0,0,0,0.1),
+    0 0 0 1px rgba(255,255,255,0.1),
+    inset 0 2px 0 rgba(255,255,255,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: visible; // 🚨 CORREÇÃO: Permitir que elementos saiam um pouco
+  z-index: 10; // 🚨 CORREÇÃO: Z-index maior para garantir clicabilidade
+  transform-style: preserve-3d;
+  animation: cardEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+
+  // Animação de entrada escalonada
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.08}s;
+    }
+  }
+
+  // ✨ EFEITO HOLOGRÁFICO ÚNICO (NÃO BLOQUEIA CLIQUES)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0.1) 50%,
+      transparent 100%
+    );
+    transition: left 0.8s ease;
+    z-index: -2; // 🚨 CORREÇÃO: Z-index negativo para ficar atrás
+    pointer-events: none; // 🚨 CORREÇÃO: Não bloqueia cliques
+  }
+
+  // 🌟 AURA POR TIPO DE POKÉMON (NÃO BLOQUEIA CLIQUES)
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg,
+      rgba(var(--primary-color-rgb, 59,130,246), 0.1) 0%,
+      rgba(var(--primary-color-rgb, 59,130,246), 0.05) 50%,
+      rgba(var(--primary-color-rgb, 59,130,246), 0.1) 100%
+    );
+    border-radius: calc($card-radius + 2px);
+    z-index: -3; // 🚨 CORREÇÃO: Z-index negativo para ficar atrás
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; // 🚨 CORREÇÃO: Não bloqueia cliques
+  }
+  // Estados épicos de interação
+  &:hover {
+    transform: translateY(-16px) scale(1.05) rotateX(5deg);
+    box-shadow:
+      0 32px 64px rgba(0,0,0,0.25),
+      0 16px 32px rgba(var(--primary-color-rgb, 59,130,246), 0.2),
+      0 0 0 1px rgba(255,255,255,0.3),
+      inset 0 2px 0 rgba(255,255,255,0.25),
+      0 0 40px rgba(var(--primary-color-rgb, 59,130,246), 0.3);
+    border-color: rgba(var(--primary-color-rgb, 59,130,246), 0.6);
+    backdrop-filter: blur(24px) saturate(250%) brightness(120%);
+
+    &::before {
+      left: 100%;
+    }
+
+    &::after {
+      opacity: 1;
+      animation: auraGlow 2s ease-in-out infinite alternate;
+    }
+
+    .pokemon-sprite {
+      transform: scale(1.15) translateZ(20px);
+      filter:
+        drop-shadow(0 16px 32px rgba(0,0,0,0.3))
+        drop-shadow(0 0 20px rgba(var(--primary-color-rgb, 59,130,246), 0.4));
+    }
+
+    .poke-fav-btn {
+      transform: scale(1.2) translateZ(10px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .type-badge {
+      transform: translateY(-4px) scale(1.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .power-bar .power-fill {
+      box-shadow:
+        0 0 20px rgba(var(--primary-color-rgb, 59,130,246), 0.6),
+        inset 0 0 10px rgba(255,255,255,0.3);
+    }    .type-badge {
+      transform: translateY(-4px) scale(1.1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .power-bar .power-fill {
+      box-shadow:
+        0 0 20px rgba(var(--primary-color-rgb, 59,130,246), 0.6),
+        inset 0 0 10px rgba(255,255,255,0.3);
+    }
+  }
+
+  // 🎯 FOCUS EFFECTS
+  &:focus-visible {
+    outline: none;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+      0 20px 40px rgba(0,0,0,0.2),
+      0 0 0 4px rgba(59,130,246,0.4),
+      0 0 24px rgba(59,130,246,0.3);
+  }
+
+  // 💥 ACTIVE STATE
+  &:active {
+    transform: translateY(-12px) scale(1.03);
+    transition: all 0.1s ease;
+  }
+
+  // Estados especiais épicos
+  &.favorito {
+    background: linear-gradient(135deg,
+      rgba(239,68,68,0.15) 0%,
+      rgba(220,38,38,0.08) 100%
+    );
+    border-color: rgba(239,68,68,0.4);
+    box-shadow:
+      0 8px 32px rgba(239,68,68,0.2),
+      0 0 0 1px rgba(239,68,68,0.1);
+
+    &:hover {
+      box-shadow:
+        0 25px 50px rgba(239,68,68,0.3),
+        0 0 60px rgba(239,68,68,0.4);
+    }
+  }
+
+  &.shiny {
+    background: linear-gradient(135deg,
+      rgba(251,191,36,0.15) 0%,
+      rgba(245,158,11,0.08) 100%
+    );
+    border-color: rgba(251,191,36,0.5);
+    box-shadow:
+      0 8px 32px rgba(251,191,36,0.2),
+      0 0 30px rgba(251,191,36,0.3);
+    animation: shinyGlow 2s ease-in-out infinite alternate;
+
+    &:hover {
+      box-shadow:
+        0 25px 50px rgba(251,191,36,0.4),
+        0 0 80px rgba(251,191,36,0.6);
+    }
+  }
+}
+
+// ===== BOTÕES E BADGES ÉPICOS OTIMIZADOS =====
+.poke-fav-btn {
+  position: absolute;
+  top: 15px; // 🚨 CORREÇÃO: Posição ajustada
+  right: 15px; // 🚨 CORREÇÃO: Posição ajustada
+  width: 52px; // 🚨 CORREÇÃO: Tamanho aumentado para melhor usabilidade
+  height: 52px; // 🚨 CORREÇÃO: Tamanho aumentado para melhor usabilidade
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.25) 0%,
+    rgba(255,255,255,0.15) 100%
+  );
+  backdrop-filter: blur(10px) saturate(200%);
+  border: 2px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000; // 🚨 CORREÇÃO: Z-index muito alto para garantir clicabilidade
+  transform-style: preserve-3d;
+  isolation: isolate; // 🚨 CORREÇÃO: Cria novo contexto de empilhamento
+
+  .fav-icon {
+    font-size: 24px; // 🚨 CORREÇÃO: Tamanho aumentado
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    z-index: 1001; // 🚨 CORREÇÃO: Z-index alto
+  }
+
+  &:hover {
+    transform: scale(1.15) translateZ(10px);
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.35) 0%,
+      rgba(255,255,255,0.25) 100%
+    );
+    border-color: rgba(255,255,255,0.5);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.3),
+      0 0 20px rgba(255,255,255,0.2);
+
+    .fav-icon {
+      transform: scale(1.2) rotateZ(10deg);
+    }
+  }
+
+  &:active {
+    transform: scale(1.05) translateZ(5px);
+    transition: all 0.1s ease;
+  }
+
+  &.favorito {
+    background: linear-gradient(135deg,
+      rgba(239,68,68,0.4) 0%,
+      rgba(220,38,38,0.3) 100%
+    );
+    border-color: rgba(239,68,68,0.6);
+    animation: favoriteGlow 2s ease-in-out infinite alternate;
+
+    .fav-icon {
+      color: #ef4444;
+      filter:
+        drop-shadow(0 2px 4px rgba(0,0,0,0.3))
+        drop-shadow(0 0 8px rgba(239,68,68,0.6));
+    }
+
+    &:hover {
+      background: linear-gradient(135deg,
+        rgba(239,68,68,0.5) 0%,
+        rgba(220,38,38,0.4) 100%
+      );
+      box-shadow:
+        0 8px 24px rgba(239,68,68,0.4),
+        0 0 20px rgba(239,68,68,0.3);
+    }
+  }
+}
+
+.rarity-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  z-index: 10;
+  transform-style: preserve-3d;
+  transition: all $transition;
+
+  &.rarity-shiny {
+    background: linear-gradient(45deg, #fbbf24, #f59e0b);
+    border-color: rgba(251,191,36,0.5);
+    box-shadow: 0 4px 15px rgba(251,191,36,0.4);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  &.rarity-legendary {
+    background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+    border-color: rgba(139,92,246,0.5);
+    box-shadow: 0 4px 15px rgba(139,92,246,0.4);
+    animation: legendaryAura 3s ease-in-out infinite;
+  }
+
+  &.rarity-mythical {
+    background: linear-gradient(45deg, #ef4444, #dc2626);
+    border-color: rgba(239,68,68,0.5);
+    box-shadow: 0 4px 15px rgba(239,68,68,0.4);
+    animation: mythicalPulse 2s ease-in-out infinite;
+  }
+
+  &:hover {
+    transform: scale(1.1) translateZ(5px);
+  }
+}
+
+// ===== CONTAINER DA IMAGEM ÉPICO OTIMIZADO =====
+.poke-card-img-container {
+  position: relative;
+  width: 100%;
+  height: 240px; // 🚨 CORREÇÃO: Altura aumentada para melhor visualização
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px; // 🚨 CORREÇÃO: Espaçamento aumentado
+  border-radius: 16px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.15) 0%,
+    rgba(255,255,255,0.08) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.2);
+  overflow: visible; // 🚨 CORREÇÃO: Permite Pokémons saírem um pouco
+  transform-style: preserve-3d;
+  z-index: 5; // 🚨 CORREÇÃO: Z-index para garantir clicabilidade
+
+  // Glow de tipo dinâmico
+  .type-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center,
+      rgba(var(--primary-color-rgb, 59,130,246), 0.15) 0%,
+      rgba(var(--primary-color-rgb, 59,130,246), 0.08) 40%,
+      transparent 70%
+    );
+    z-index: -1; // 🚨 CORREÇÃO: Z-index negativo
+    opacity: 0.8;
+    animation: typeGlowPulse 3s ease-in-out infinite alternate;
+    pointer-events: none; // 🚨 CORREÇÃO: Não bloqueia cliques
+  }
+
+  // Partículas flutuantes por tipo (NÃO BLOQUEIA CLIQUES)
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+      radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.2), transparent);
+    background-size: 150px 100px;
+    animation: particlesFloat 8s linear infinite;
+    z-index: -2; // 🚨 CORREÇÃO: Z-index negativo
+    opacity: 0.6;
+    pointer-events: none; // 🚨 CORREÇÃO: Não bloqueia cliques
+  }
+
+  .pokemon-sprite {
+    width: 200px; // 🚨 CORREÇÃO: Tamanho aumentado para melhor visualização
+    height: 200px; // 🚨 CORREÇÃO: Tamanho aumentado para melhor visualização
+    object-fit: contain;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter:
+      drop-shadow(0 8px 16px rgba(0,0,0,0.2))
+      drop-shadow(0 0 10px rgba(var(--primary-color-rgb, 59,130,246), 0.3));
+    z-index: 10; // 🚨 CORREÇÃO: Z-index alto para garantir clicabilidade
+    position: relative;
+    transform-style: preserve-3d;
+
+    &.loaded {
+      opacity: 1;
+      transform: scale(1);
+      animation: spriteEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    &.loading {
+      opacity: 0.5;
+      transform: scale(0.9);
+      filter: blur(2px);
+    }
+
+    &.error {
+      opacity: 0.3;
+      filter: grayscale(100%);
+    }
+
+    &.shiny {
+      filter:
+        drop-shadow(0 12px 24px rgba(0,0,0,0.2))
+        drop-shadow(0 0 30px rgba(255,215,0,0.8))
+        drop-shadow(0 0 15px rgba(255,255,255,0.6));
+      animation: shinyGlow 2s ease-in-out infinite alternate;
+    }
+  }
+}
+
+// ===== PLACEHOLDERS =====
+.image-placeholder, .image-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 1;
+}
+
+.image-placeholder {
+  color: rgba(255,255,255,0.7);
+
+  .loading-spinner-small {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255,255,255,0.2);
+    border-top: 3px solid rgba(255,255,255,0.8);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+.image-error {
+  color: rgba(239,68,68,0.8);  font-size: 12px;
+  text-align: center;
+}
+
+// ===== OVERLAY SHINY ÉPICO =====
+.shiny-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+
+  .sparkle {
+    position: absolute;
+    font-size: 18px;
+    animation: sparkleOrbit 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px currentColor);
+
+    &.sparkle-1 {
+      top: 15%;
+      left: 20%;
+      animation-delay: 0s;
+      color: #fbbf24;
+    }
+
+    &.sparkle-2 {
+      top: 25%;
+      right: 15%;
+      animation-delay: 1.3s;
+      color: #f59e0b;
+    }
+
+    &.sparkle-3 {
+      bottom: 20%;
+      left: 25%;
+      animation-delay: 2.6s;
+      color: #eab308;
+    }
+  }
+
+  // Partículas flutuantes
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, #fbbf24, transparent);
+    border-radius: 50%;
+    animation: floatParticle 6s linear infinite;
+  }
+
+  &::before {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  &::after {
+    top: 60%;
+    right: 20%;
+    animation-delay: 3s;
+  }
+}
+
+// ===== INFORMAÇÕES DO POKÉMON =====
+.poke-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pokemon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .pokemon-id-display .pokemon-id {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    background: rgba(0,0,0,0.2);
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  .pokemon-name {
+    margin: 0;
+    flex: 1;
+    text-align: center;
+
+    .name-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .shiny-indicator {
+      margin-left: 6px;
+      font-size: 14px;
+    }
+  }
+}
+
+// ===== BADGES DE TIPO =====
+.pokemon-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 12px;
+
+  .type-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg,
+      var(--type-color, #A8A878) 0%,
+      color-mix(in srgb, var(--type-color, #A8A878) 80%, #000) 100%
+    );
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.3),
+      0 2px 6px color-mix(in srgb, var(--type-color, #A8A878) 50%, transparent),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.3) 50%,
+        transparent 100%
+      );
+      transition: left 0.5s ease;
+      pointer-events: none; // 🚨 CORREÇÃO: Não bloqueia cliques
+    }
+
+    .type-icon {
+      font-size: 14px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    }
+
+    &:hover {
+      transform: translateY(-3px) scale(1.08);
+      box-shadow:
+        0 8px 20px rgba(0,0,0,0.4),
+        0 4px 12px color-mix(in srgb, var(--type-color, #A8A878) 60%, transparent),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+
+      &::before {
+        left: 100%;
+      }
+    }
+  }
+}
+
+// ===== NÍVEL DE PODER =====
+.power-level-display {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+
+  .power-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+  }
+
+  .power-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+
+    .power-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+  }
+
+  .power-percentage {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+  }
+}
+
+// ===== ESTATÍSTICAS =====
+.pokemon-stats .stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    font-size: 11px;
+
+    .stat-icon { font-size: 16px; }
+    .stat-label {
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+    }
+    .stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+  }
+}
+
+// ===== EXPERIÊNCIA =====
+.experience-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(34,197,94,0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(34,197,94,0.3);
+  font-size: 12px;
+
+  .exp-label {
+    font-weight: 600;
+    color: rgba(34,197,94,0.9);
+    text-transform: uppercase;
+  }
+  .exp-value {
+    font-weight: 700;
+    color: rgb(34,197,94);
+  }
+}
+
+// ===== OVERLAYS =====
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: $card-radius;
+  z-index: 20;
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-text {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ===== ANIMAÇÕES ÉPICAS =====
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-4px) scale(1.1); opacity: 1; }
+}
+
+@keyframes sparkleOrbit {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  25% {
+    transform: translateY(-8px) scale(1.2) rotate(90deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.1) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-10px) scale(1.3) rotate(270deg);
+    opacity: 1;
+  }
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(0) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    transform: translateY(-10px) translateX(5px) scale(1);
+    opacity: 1;
+  }
+  90% {
+    transform: translateY(-100px) translateX(-10px) scale(0.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-120px) translateX(-15px) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes cardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8) rotateX(-15deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-10px) scale(1.02) rotateX(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
+@keyframes materialize {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateZ(-20px);
+    filter: blur(8px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1) translateZ(10px);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes energize {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(var(--primary-color-rgb, 59,130,246), 0.6);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes shinyGlow {
+  0% {
+    filter:
+      drop-shadow(0 12px 24px rgba(0,0,0,0.2))
+      drop-shadow(0 0 20px rgba(255,215,0,0.6))
+      drop-shadow(0 0 10px rgba(255,255,255,0.4));
+  }
+  100% {
+    filter:
+      drop-shadow(0 12px 24px rgba(0,0,0,0.2))
+      drop-shadow(0 0 40px rgba(255,215,0,1))
+      drop-shadow(0 0 20px rgba(255,255,255,0.8));
+  }
+}
+
+@keyframes auraGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(var(--primary-color-rgb, 59,130,246), 0.3);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(var(--primary-color-rgb, 59,130,246), 0.6);
+  }
+}
+
+@keyframes typeGlowPulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+// ===== CORES POR TIPO =====
+@use 'sass:color';
+
+@each $type, $color in $type-colors {
+  .poke-card[data-type="#{$type}"] {
+    --primary-color: #{$color};
+    --primary-color-rgb: #{color.channel($color, "red")}, #{color.channel($color, "green")}, #{color.channel($color, "blue")};
+    --secondary-color: #{color.adjust($color, $lightness: -20%)};
+
+    border-color: rgba($color, 0.3);
+    &:hover { box-shadow: 0 20px 40px rgba($color, 0.3); }
+  }
+}
+
+// ===== RESPONSIVIDADE =====
+@media (max-width: 480px) {
+  .poke-card {
+    width: 280px;
+    height: 380px;
+  }
+
+  .poke-card-img-container {
+    height: 160px;
+    .pokemon-sprite { width: 120px; height: 120px; }
+  }
+}

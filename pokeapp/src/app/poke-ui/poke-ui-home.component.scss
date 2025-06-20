@@ -1,0 +1,1131 @@
+/**
+ * 🏠 POKÉDEX HOME - Interface Épica Revolucionária
+ * ===============================================
+ *
+ * Design System Avançado com:
+ * - Glassmorphism cinematográfico
+ * - Animações fluidas e épicas
+ * - Partículas e efeitos atmosféricos
+ * - Responsividade total
+ * - Acessibilidade completa
+ * - Performance otimizada
+ */
+
+// ===== VARIÁVEIS ÉPICAS =====
+:root {
+  --epic-primary: #dc2626;
+  --epic-secondary: #059669;
+  --epic-accent: #3b82f6;
+  --epic-glass: rgba(255, 255, 255, 0.1);
+  --epic-glass-strong: rgba(255, 255, 255, 0.15);
+  --epic-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --epic-shadow-xl: 0 35px 60px -12px rgba(0, 0, 0, 0.35);
+  --epic-transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  --epic-transition-fast: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+// ===== REGRA GLOBAL PARA GARANTIR CLICABILIDADE =====
+// Todos os elementos decorativos devem ser não-interativos
+.ambient-particles,
+.entrance-portal,
+.atmospheric-effects,
+.particle-system,
+.effect-sparkles,
+.effect-energy-waves,
+.effect-lightning {
+  pointer-events: none !important;
+}
+
+// Pseudo-elementos decorativos também devem ser não-interativos
+.ambient-particles *::before, .ambient-particles *::after,
+.entrance-portal *::before, .entrance-portal *::after,
+.atmospheric-effects *::before, .atmospheric-effects *::after {
+  pointer-events: none !important;
+}
+
+// ===== HOST ÉPICO =====
+:host {
+  display: block;
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg,
+    #0f172a 0%,
+    #1e293b 25%,
+    #334155 50%,
+    #1e293b 75%,
+    #0f172a 100%
+  );
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+// ===== CONTAINER PRINCIPAL =====
+.epic-main {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 4rem 3rem;
+  }
+}
+
+// ===== PORTAL DE ENTRADA ÉPICO =====
+.entrance-portal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  z-index: -1;
+  opacity: 0.3;
+  pointer-events: none;
+
+  .portal-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, var(--epic-primary) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: portalPulse 4s ease-in-out infinite;
+  }
+
+  .portal-rings {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid var(--epic-accent);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: portalRing 6s linear infinite;
+      animation-delay: var(--ring-delay);
+    }
+  }
+}
+
+// ===== PARTÍCULAS AMBIENTAIS =====
+.ambient-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -10;
+  overflow: hidden;
+
+  .particle-system {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    .particle {
+      position: absolute;
+      background: var(--epic-accent);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: particleFloat var(--duration) ease-in-out infinite;
+
+      &.particle-small {
+        opacity: 0.3;
+        animation-duration: calc(var(--duration) * 0.8);
+      }
+
+      &.particle-large {
+        opacity: 0.6;
+        animation-duration: calc(var(--duration) * 1.2);
+      }
+    }
+  }
+}
+
+// ===== CONTROLES ÉPICOS =====
+.epic-controls {
+  position: sticky;
+  top: 2rem;
+  z-index: 100;
+  margin-bottom: 3rem;
+
+  @media (min-width: 768px) {
+    top: 3rem;
+    margin-bottom: 4rem;
+  }
+}
+
+// ===== BARRA DE BUSCA FUTURISTA =====
+.search-container {
+  margin-bottom: 2rem;
+
+  .search-wrapper {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+
+    .search-icon {
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      color: rgba(255, 255, 255, 0.7);
+      z-index: 2;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .epic-search {
+      width: 100%;
+      padding: 1.25rem 1.5rem 1.25rem 4rem;
+      background: var(--epic-glass);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 2rem;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: var(--epic-transition);
+      box-shadow: var(--epic-shadow);
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      &:hover {
+        border-color: var(--epic-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--epic-shadow-xl);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--epic-primary);
+        box-shadow:
+          var(--epic-shadow-xl),
+          0 0 0 4px rgba(220, 38, 38, 0.2);
+      }
+
+      &.search-focused {
+        border-color: var(--epic-primary);
+        box-shadow:
+          var(--epic-shadow-xl),
+          0 0 30px rgba(220, 38, 38, 0.3);
+      }
+    }
+
+    .search-glow {
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg,
+        var(--epic-primary),
+        var(--epic-accent),
+        var(--epic-secondary)
+      );
+      border-radius: 2rem;
+      opacity: 0;
+      transition: var(--epic-transition);
+      z-index: -1;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    .search-counter {
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--epic-primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+
+      .counter-text {
+        font-weight: 700;
+      }
+
+      .counter-label {
+        margin-left: 0.25rem;
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+// ===== FILTROS AVANÇADOS =====
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: 768px) {
+    gap: 2rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    .filter-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      .label-icon {
+        font-size: 1.1rem;
+      }
+    }
+
+    // Seletor de Tipo Épico
+    .select-wrapper {
+      position: relative;
+
+      .epic-select {
+        appearance: none;
+        background: var(--epic-glass);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 1.5rem;
+        color: white;
+        padding: 1rem 3rem 1rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        min-width: 180px;
+        transition: var(--epic-transition);
+        cursor: pointer;
+
+        &:hover {
+          border-color: var(--epic-accent);
+          transform: translateY(-2px);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: var(--epic-accent);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        option {
+          background: #1e293b;
+          color: white;
+          padding: 0.5rem;
+        }
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.7);
+        pointer-events: none;
+
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .select-glow {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--epic-accent), var(--epic-secondary));
+        border-radius: 1.5rem;
+        opacity: 0;
+        transition: var(--epic-transition);
+        z-index: -1;
+      }
+
+      &:hover .select-glow {
+        opacity: 0.3;
+      }
+    }
+
+    // Toggle de Favoritos Épico
+    .epic-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--epic-glass);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1.5rem;
+      color: white;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--epic-transition);
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        border-color: var(--epic-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--epic-shadow);
+      }
+
+      &.toggle-active {
+        background: var(--epic-primary);
+        border-color: var(--epic-primary);
+        box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+
+        .toggle-icon {
+          color: white;
+          animation: heartBeat 1.5s ease-in-out infinite;
+        }
+      }
+
+      .toggle-icon {
+        width: 24px;
+        height: 24px;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          fill: currentColor;
+        }
+      }
+
+      .toggle-counter {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        min-width: 24px;
+        text-align: center;
+      }
+
+      .toggle-glow {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--epic-primary), #ef4444);
+        border-radius: 1.5rem;
+        opacity: 0;
+        transition: var(--epic-transition);
+        z-index: -1;
+      }
+
+      &:hover .toggle-glow {
+        opacity: 0.3;
+      }
+    }
+
+    // Botão Reset Épico
+    .epic-reset-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--epic-glass);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1.5rem;
+      color: white;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--epic-transition);
+      position: relative;
+
+      &:hover:not(:disabled) {
+        border-color: var(--epic-secondary);
+        transform: translateY(-2px);
+        box-shadow: var(--epic-shadow);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .reset-icon {
+        width: 20px;
+        height: 20px;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          fill: currentColor;
+        }
+      }
+
+      .reset-glow {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--epic-secondary), #10b981);
+        border-radius: 1.5rem;
+        opacity: 0;
+        transition: var(--epic-transition);
+        z-index: -1;
+      }
+
+      &:hover:not(:disabled) .reset-glow {
+        opacity: 0.3;
+      }
+    }
+  }
+}
+
+// ===== ESTADOS DE LOADING ÉPICO =====
+.epic-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+
+  .loading-portal {
+    margin-bottom: 2rem;
+
+    .portal-spinner {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+
+      .spinner-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 3px solid transparent;
+        border-top: 3px solid var(--ring-color);
+        border-radius: 50%;
+        width: var(--ring-size);
+        height: var(--ring-size);
+        animation: spinnerRotate 2s linear infinite;
+        animation-delay: var(--ring-delay);
+      }
+    }
+  }
+
+  .loading-content {
+    color: white;
+
+    .loading-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, var(--epic-primary), var(--epic-accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .loading-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+
+    .progress-container {
+      max-width: 300px;
+      margin: 0 auto;
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, var(--epic-primary), var(--epic-accent));
+          border-radius: 4px;
+          transition: width 0.5s ease;
+          position: relative;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progressShimmer 2s ease-in-out infinite;
+            pointer-events: none;
+          }
+        }
+      }
+
+      .progress-text {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// ===== ESTADO VAZIO ÉPICO =====
+.epic-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+
+  .empty-illustration {
+    margin-bottom: 2rem;
+
+    .pokeball-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+
+      .pokeball-image {
+        width: 100%;
+        height: 100%;
+        opacity: 0.7;
+        filter: grayscale(50%);
+      }
+
+      .pokeball-glow {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        background: radial-gradient(circle, rgba(220, 38, 38, 0.3) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: glowPulse 3s ease-in-out infinite;
+      }
+    }
+  }
+
+  .empty-content {
+    color: white;
+
+    .empty-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, var(--epic-primary), var(--epic-accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .empty-message {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+      max-width: 400px;
+    }
+
+    .empty-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+
+      .epic-action-btn {
+        padding: 1rem 2rem;
+        background: var(--epic-primary);
+        border: none;
+        border-radius: 1.5rem;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--epic-transition);
+        box-shadow: var(--epic-shadow);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--epic-shadow-xl);
+        }
+
+        &.secondary {
+          background: var(--epic-glass);
+          backdrop-filter: blur(20px);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+
+          &:hover {
+            border-color: var(--epic-accent);
+          }
+        }
+      }
+    }
+  }
+}
+
+// ===== GRID ÉPICO DE POKÉMON OTIMIZADO =====
+.epic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); // 🚨 CORREÇÃO: Aumentado para cards maiores
+  gap: 2rem;
+  padding: 2rem 0;
+  width: 100%;
+  max-width: 1800px; // 🚨 CORREÇÃO: Aumentado para melhor aproveitamento
+  margin: 0 auto;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); // 🚨 CORREÇÃO: Ajustado
+    gap: 2.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); // 🚨 CORREÇÃO: Ajustado
+    gap: 3rem;
+  }
+
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); // 🚨 CORREÇÃO: Para telas grandes
+    gap: 3.5rem;
+  }
+
+  @media (min-width: 1920px) {
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); // 🚨 NOVO: Para telas ultra wide
+    gap: 4rem;
+  }
+
+  &.grid-filtered {
+    animation: gridFadeIn 0.5s ease-out;
+  }
+
+  &.grid-favorites {
+    .poke-ui-card {
+      animation: favoriteGlow 2s ease-in-out infinite;
+    }
+  }
+
+  // Load More Button
+  .load-more-container {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+
+    .epic-load-more-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--epic-glass);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 2rem;
+      color: white;
+      padding: 1.25rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--epic-transition);
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        border-color: var(--epic-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--epic-shadow-xl);
+      }
+
+      .load-more-icon {
+        width: 24px;
+        height: 24px;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          fill: currentColor;
+        }
+      }
+
+      .load-more-glow {
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--epic-primary), var(--epic-accent));
+        border-radius: 2rem;
+        opacity: 0;
+        transition: var(--epic-transition);
+        z-index: -1;
+      }
+
+      &:hover .load-more-glow {
+        opacity: 0.3;
+      }
+    }
+  }
+}
+
+// ===== EFEITOS ATMOSFÉRICOS =====
+.atmospheric-effects {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -5;
+  overflow: hidden;
+
+  .effect-lightning {
+    position: absolute;
+    width: 1px;
+    height: 100vh;
+    background: linear-gradient(to bottom, transparent, var(--epic-accent), transparent);
+    opacity: 0;
+    animation: lightningStrike 8s ease-in-out infinite;
+
+    &:nth-child(1) { left: 20%; animation-delay: 0s; }
+    &:nth-child(2) { left: 50%; animation-delay: 3s; }
+    &:nth-child(3) { left: 80%; animation-delay: 6s; }
+  }
+
+  .effect-sparkles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    &::before, &::after {
+      content: '✨';
+      position: absolute;
+      font-size: 1.5rem;
+      color: var(--epic-accent);
+      opacity: 0;
+      animation: sparkleFloat 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    &::before {
+      top: 20%;
+      left: 30%;
+      animation-delay: 1s;
+    }
+
+    &::after {
+      top: 70%;
+      right: 25%;
+      animation-delay: 3s;
+    }
+  }
+
+  .effect-energy-waves {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 2px solid var(--epic-primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: energyWave 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    &::after {
+      animation-delay: 3s;
+    }
+  }
+}
+
+// ===== FOOTER ÉPICO =====
+.epic-footer {
+  position: relative;
+  margin-top: 4rem;
+  padding: 3rem 2rem 2rem;
+  background: var(--epic-glass);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      text-align: center;
+
+      .brand-text {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(45deg, var(--epic-primary), var(--epic-accent));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+
+      .brand-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+    }
+
+    .footer-stats {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--epic-primary);
+        }
+
+        .stat-label {
+          font-size: 0.8rem;
+          opacity: 0.8;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  .footer-glow {
+    position: absolute;
+    top: -50px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(to bottom, transparent, rgba(220, 38, 38, 0.1));
+    pointer-events: none;
+  }
+}
+
+// ===== ANIMAÇÕES ÉPICAS =====
+@keyframes portalPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.6;
+  }
+}
+
+@keyframes portalRing {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes spinnerRotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes gridFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes favoriteGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(220, 38, 38, 0.6);
+  }
+}
+
+@keyframes lightningStrike {
+  0%, 90%, 100% { opacity: 0; }
+  95% { opacity: 1; }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes energyWave {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+// ===== RESPONSIVIDADE ÉPICA =====
+@media (max-width: 768px) {
+  .epic-main {
+    padding: 2rem 1rem;
+  }
+
+  .epic-controls {
+    margin-bottom: 2rem;
+  }
+
+  .filters-container {
+    flex-direction: column;
+    gap: 1rem;
+
+    .filter-group {
+      width: 100%;
+      max-width: 300px;
+
+      .epic-select {
+        width: 100%;
+      }
+    }
+  }
+
+  .epic-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container .search-wrapper .epic-search {
+    padding: 1rem 1.25rem 1rem 3.5rem;
+    font-size: 1rem;
+  }
+
+  .epic-loading .loading-content .loading-title,
+  .epic-empty .empty-content .empty-title {
+    font-size: 1.5rem;
+  }
+}
+
+// ===== MODO ESCURO AVANÇADO =====
+@media (prefers-color-scheme: dark) {
+  :root {
+    --epic-glass: rgba(255, 255, 255, 0.05);
+    --epic-glass-strong: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// ===== REDUÇÃO DE MOVIMENTO =====
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .atmospheric-effects {
+    display: none;
+  }
+}
