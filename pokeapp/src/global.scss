@@ -1,29 +1,52 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+/**
+ * 🌐 Estilos Globais da Pokédex Revolucionária
+ * ===========================================
+ *
+ * Arquivo principal de estilos que define:
+ * - Imports dos componentes Ionic
+ * - Design tokens customizados
+ * - Estilos base e utilitários
+ * - Temas e variáveis globais
+ *
+ * @version 2.0.0
+ * @since 2025-01-01
  */
 
-/* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+/**
+ * Design System - Tokens e Mixins
+ * -----------------------------------------------------
+ * Sistema centralizado de design para consistência visual
+ * IMPORTANTE: @use deve vir antes de qualquer outra regra
+ */
+@use 'styles/design-tokens.scss';
+@use 'styles/mixins.scss';
+@use 'styles/skeleton.scss';
+@use 'styles/micro-interactions.scss';
+@use 'styles/toast-styles.scss';
+@use 'styles/epic-effects.scss'; /* 🎆 Novos efeitos épicos */
+@use 'styles/sass-fixes.scss'; /* 🔧 Correções SASS */
 
-/* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+/* 🎨 Core CSS necessário para componentes Ionic funcionarem */
+@use "@ionic/angular/css/core.css";
 
-/* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
+/* 🧱 CSS básico para apps construídos com Ionic */
+@use "@ionic/angular/css/normalize.css";
+@use "@ionic/angular/css/structure.css";
+@use "@ionic/angular/css/typography.css";
+@use "@ionic/angular/css/display.css";
+
+/* ⚡ Utilitários CSS opcionais */
+@use "@ionic/angular/css/padding.css";
+@use "@ionic/angular/css/float-elements.css";
+@use "@ionic/angular/css/text-alignment.css";
+@use "@ionic/angular/css/text-transformation.css";
+@use "@ionic/angular/css/flex-utils.css";
+
+/* 🎭 Design System da Pokédex */
+@use "./styles/design-tokens.scss";
+@use "./styles/mixins.scss";
+@use "./styles/epic-effects.scss";
+@use "./styles/micro-interactions.scss";
 
 /**
  * Ionic Dark Mode
@@ -37,15 +60,118 @@
 @import '@ionic/angular/css/palettes/dark.system.css';
 
 /**
- * Design System - Tokens e Mixins
+ * 🎨 BASE STYLING - APLICANDO O NOVO TEMA
  * -----------------------------------------------------
- * Sistema centralizado de design para consistência visual
+ * Aplicação das novas variáveis de design em todo o app
  */
-@import 'styles/design-tokens.scss';
-@import 'styles/mixins.scss';
-@import 'styles/skeleton.scss';
-@import 'styles/micro-interactions.scss';
-@import 'styles/toast-styles.scss';
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--poke-bg-primary);
+  color: var(--poke-text-primary);
+  line-height: 1.5;
+
+  /* Suaviza as fontes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos principais com fonte display */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-bold);
+  color: var(--poke-text-primary);
+  line-height: 1.2;
+}
+
+/* Cores primárias customizadas do Ionic */
+:root {
+  --ion-color-primary: var(--poke-primary);
+  --ion-color-primary-rgb: 220, 38, 38;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--poke-primary-dark);
+  --ion-color-primary-tint: var(--poke-primary-light);
+
+  --ion-color-secondary: var(--poke-secondary);
+  --ion-color-secondary-rgb: 251, 191, 36;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: var(--poke-secondary-dark);
+  --ion-color-secondary-tint: var(--poke-secondary-light);
+
+  /* Fundo do aplicativo */
+  --ion-background-color: var(--poke-bg-primary);
+  --ion-text-color: var(--poke-text-primary);
+}
+
+/* ==============================================
+   🎨 ESTILOS GLOBAIS APRIMORADOS
+   ============================================== */
+
+/* Scroll suave em toda a aplicação */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Seleção de texto personalizada */
+::selection {
+  background-color: var(--poke-primary);
+  color: white;
+}
+
+/* Focus personalizado para acessibilidade */
+:focus-visible {
+  outline: 2px solid var(--poke-primary);
+  outline-offset: 2px;
+}
+
+/* ==============================================
+   🎯 COMPONENTES IONIC CUSTOMIZADOS
+   ============================================== */
+
+/* Botões Ionic customizados */
+ion-button {
+  --border-radius: var(--radius-md);
+  --transition: var(--transition-normal);
+
+  &.button-fill-solid {
+    --background: var(--poke-primary);
+    --background-hover: var(--poke-primary-light);
+    --background-focused: var(--poke-primary-dark);
+    --color: white;
+  }
+}
+
+/* Cards Ionic */
+ion-card {
+  --background: var(--poke-bg-card);
+  --color: var(--poke-text-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    transition: var(--transition-normal);
+  }
+}
+
+/* Inputs e formulários */
+ion-input, ion-textarea, ion-select {
+  --background: var(--poke-bg-card);
+  --color: var(--poke-text-primary);
+  --border-radius: var(--radius-md);
+  --padding-start: var(--space-md);
+  --padding-end: var(--space-md);
+}
+
+/* Loading spinner customizado */
+ion-loading {
+  --background: var(--poke-bg-card);
+  --color: var(--poke-text-primary);
+  --spinner-color: var(--poke-primary);
+}
 
 /**
  * Toast Notifications Styling
@@ -242,4 +368,15 @@
   .pokemon-grid {
     contain: layout style paint;
   }
+}
+
+/* Hotfix global para desbloquear interações caso overlays estejam travando a interface */
+ion-app > .cdk-overlay-container,
+ion-app > .loading-overlay,
+ion-app > .modal-wrapper,
+ion-app > .ion-overlay-backdrop {
+  pointer-events: none !important;
+}
+ion-app * {
+  pointer-events: auto;
 }

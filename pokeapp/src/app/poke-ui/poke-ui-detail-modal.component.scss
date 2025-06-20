@@ -1,0 +1,182 @@
+/*
+  Estilos do modal de detalhes do Pokémon
+  Responsivo, acessível e com animações
+*/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  outline: none;
+  animation: popIn 0.2s;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-types {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.type-badge {
+  padding: 0.2rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.sprites {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.sprites img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  background: #f6f6f6;
+  border-radius: 50%;
+  border: 2px solid #eee;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.stat-name {
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.evolution-chain {
+  margin-top: 1.2rem;
+  text-align: center;
+}
+.evolution-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.evolution-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  transition: transform 0.15s;
+  outline: none;
+}
+.evolution-btn:focus,
+.evolution-btn:hover {
+  transform: scale(1.08);
+  background: #f7f7f7;
+  border-radius: 8px;
+}
+.evolution-btn img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  background: #f6f6f6;
+  border-radius: 50%;
+  border: 2px solid #eee;
+}
+.evolution-btn span {
+  font-size: 0.95rem;
+  color: #444;
+  font-weight: 500;
+}
+.curiosidade {
+  margin-top: 1.2rem;
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.curiosidade strong {
+  color: #e63946;
+  margin-right: 0.5rem;
+}
+@media (max-width: 600px) {
+  .modal-content {
+    max-width: 98vw;
+    padding: 1rem;
+  }
+  .sprites img {
+    width: 72px;
+    height: 72px;
+  }
+  .evolution-btn img {
+    width: 36px;
+    height: 36px;
+  }
+}

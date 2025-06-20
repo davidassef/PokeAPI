@@ -1,10 +1,13 @@
-// 🏠 Tabs Layout - Design Moderno
-// Sistema de navegação aprimorado com micro-interações
+//
+// tabs.page.scss - Estilos do layout de navegação por abas
+// Interface moderna, responsiva e acessível, com microinterações e suporte a tema escuro.
+// Toda a documentação e comentários em português brasileiro (pt-br).
+//
 
-@import '../../styles/design-tokens.scss';
-@import '../../styles/mixins.scss';
+@use '../../styles/design-tokens.scss';
+@use '../../styles/mixins.scss' as mixins;
 
-// 🎨 Modern Tab Bar
+// Barra inferior de navegação (Tab Bar)
 .modern-tab-bar {
   --background: var(--ion-color-light);
   --border: 1px solid var(--ion-color-light-shade);
@@ -18,7 +21,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  // 🔘 Tab Button
+  // Botão de aba
   .tab-button {
     --color: var(--ion-color-medium);
     --color-selected: var(--ion-color-primary);
@@ -27,9 +30,9 @@
     overflow: hidden;
     transition: all var(--transition-normal);
 
-    // 📦 Tab Content
+    // Conteúdo do botão
     .tab-content {
-      @include flex-center;
+      @include mixins.flex-center;
       flex-direction: column;
       gap: 4px;
       padding: 8px 12px;
@@ -37,7 +40,7 @@
       z-index: 1;
     }
 
-    // 🎯 Tab Icon
+    // Ícone da aba
     .tab-icon {
       font-size: 24px;
       transition: all var(--transition-fast);
@@ -48,7 +51,7 @@
       }
     }
 
-    // 🏷️ Tab Label
+    // Rótulo da aba
     .tab-label {
       font-size: 12px;
       font-weight: 500;
@@ -57,7 +60,7 @@
       text-align: center;
     }
 
-    // 🔢 Favorites Badge
+    // Badge de favoritos
     .favorites-badge {
       position: absolute;
       top: 2px;
@@ -71,26 +74,28 @@
       border-radius: 9px;
       animation: badgePulse 2s ease-in-out infinite;
 
+      // Animação do badge
       @keyframes badgePulse {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.1); }
       }
     }
 
-    // 📍 Tab Indicator
+    // Indicador visual da aba ativa
     .tab-indicator {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) scaleX(0);
-      width: 32px;
       height: 3px;
+      width: 100%;
       background: var(--ion-color-primary);
       border-radius: 2px 2px 0 0;
-      transition: transform var(--transition-normal);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
     }
 
-    // 🎨 Estados de Interação
+    // Estados de interação
     &:hover:not(.tab-selected) {
       --color: var(--ion-color-primary-shade);
 
@@ -104,7 +109,7 @@
       }
     }
 
-    // ✅ Tab Selecionado
+    // Tab selecionado
     &.tab-selected {
       --color: var(--ion-color-primary);
 
@@ -121,21 +126,21 @@
       }
     }
 
-    // 🎭 Animação de Seleção
+    // Animação de seleção
     @keyframes selectedTabBounce {
       0% { transform: scale(1); }
       50% { transform: scale(1.15); }
       100% { transform: scale(1); }
     }
 
-    // 👆 Feedback de Toque
+    // Feedback de toque
     &:active {
       .tab-content {
         transform: scale(0.95);
       }
     }
 
-    // 🎪 Ripple Effect
+    // Efeito ripple
     &::before {
       content: '';
       position: absolute;
@@ -158,7 +163,7 @@
   }
 }
 
-// 📱 Responsividade
+// Responsividade
 @media (max-width: 480px) {
   .modern-tab-bar {
     .tab-button {
@@ -173,7 +178,7 @@
   }
 }
 
-// 🌅 Tela grande
+// Tela grande
 @media (min-width: 768px) {
   .modern-tab-bar {
     .tab-button {
@@ -193,7 +198,7 @@
   }
 }
 
-// 🎯 Acessibilidade
+// Acessibilidade
 @media (prefers-reduced-motion: reduce) {
   .modern-tab-bar {
     .tab-button {
@@ -218,7 +223,7 @@
   }
 }
 
-// 🌙 Modo Escuro Personalizado
+// Modo Escuro Personalizado
 .dark-theme {
   .modern-tab-bar {
     --background: rgba(26, 26, 26, 0.95);

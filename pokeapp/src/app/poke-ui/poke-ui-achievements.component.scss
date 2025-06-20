@@ -1,0 +1,52 @@
+/* Estilos para conquistas */
+.pokeui-achievements {
+  margin: 2rem auto 1rem auto;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 1.2rem 1rem;
+  text-align: center;
+}
+.pokeui-achievements h3 {
+  margin-bottom: 1rem;
+  color: #457b9d;
+}
+.pokeui-achievements ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pokeui-achievements li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+  font-size: 1.05rem;
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.pokeui-achievements li.unlocked {
+  opacity: 1;
+  background: #e9ffea;
+}
+.pokeui-achievements .icon {
+  font-size: 1.3rem;
+}
+.pokeui-achievements .name {
+  font-weight: 600;
+  flex: 1;
+}
+.pokeui-achievements .desc {
+  font-size: 0.95rem;
+  color: #888;
+}
+@media (max-width: 600px) {
+  .pokeui-achievements {
+    max-width: 98vw;
+    padding: 1rem 0.2rem;
+  }
+}

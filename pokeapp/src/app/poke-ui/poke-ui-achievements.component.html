@@ -1,0 +1,11 @@
+<!-- Lista de conquistas do usuário -->
+<section class="pokeui-achievements">
+  <h3>Conquistas</h3>
+  <ul>
+    <li *ngFor="let a of achievements" [class.unlocked]="a.unlocked">
+      <span class="icon">{{ a.unlocked ? '🏆' : '🔒' }}</span>
+      <span class="name">{{ a.name }}</span>
+      <span class="desc">{{ a.description }}</span>
+    </li>
+  </ul>
+</section>

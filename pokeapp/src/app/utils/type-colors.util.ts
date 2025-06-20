@@ -26,20 +26,20 @@ export const TYPE_COLORS: { [key: string]: string } = {
 
 /**
  * Retorna a cor específica para um tipo de Pokémon
- * @param type - Tipo do Pokémon
- * @returns Cor hexadecimal do tipo
+ * @param tipo Tipo do Pokémon
+ * @returns {string} Cor hexadecimal do tipo
  */
-export function getTypeColor(type: string): string {
-  return TYPE_COLORS[type.toLowerCase()] || '#68A090';
+export function getTypeColor(tipo: string): string {
+  return TYPE_COLORS[tipo.toLowerCase()] || '#68A090';
 }
 
 /**
  * Retorna cor de contraste (branca ou preta) baseada na luminosidade
- * @param hexColor - Cor em hexadecimal
- * @returns Cor de contraste (#FFFFFF ou #000000)
+ * @param corHexadecimal Cor em hexadecimal
+ * @returns {string} Cor de contraste (#FFFFFF ou #000000)
  */
-export function getContrastColor(hexColor: string): string {
-  const color = hexColor.replace('#', '');
+export function getContrastColor(corHexadecimal: string): string {
+  const color = corHexadecimal.replace('#', '');
   const r = parseInt(color.substr(0, 2), 16);
   const g = parseInt(color.substr(2, 2), 16);
   const b = parseInt(color.substr(4, 2), 16);
@@ -52,11 +52,11 @@ export function getContrastColor(hexColor: string): string {
 
 /**
  * Retorna versão mais clara da cor para backgrounds
- * @param type - Tipo do Pokémon
- * @returns Cor hexadecimal mais clara
+ * @param tipo Tipo do Pokémon
+ * @returns {string} Cor hexadecimal mais clara
  */
-export function getLightTypeColor(type: string): string {
-  const baseColor = getTypeColor(type);
+export function getLightTypeColor(tipo: string): string {
+  const baseColor = getTypeColor(tipo);
   // Converter para RGB e clarear
   const color = baseColor.replace('#', '');
   const r = Math.min(255, parseInt(color.substr(0, 2), 16) + 40);

@@ -88,6 +88,24 @@ export const APP_TRANSLATIONS: Record<string, Record<string, string>> = {
     'type.dark': 'Sombrio',
     'type.steel': 'Aço',
     'type.fairy': 'Fada',
+
+    // Filtros rápidos
+    'filters.title': 'Filtros',
+    'filters.favorites': 'Favoritos',
+    'filters.legendary': 'Lendários',
+    'filters.gen1': 'Geração 1',
+    'filters.normal': 'Normal',
+    'filters.fire': 'Fogo',
+    'filters.water': 'Água',
+    'filters.electric': 'Elétrico',
+    'filters.grass': 'Grama',
+    'filters.ice': 'Gelo',
+    'filters.active': 'filtro ativo',
+    'filters.clearAll': 'Limpar filtros',
+    'filters.noResults': 'Nenhum resultado para o filtro',
+    'filters.noResultsMessage': 'Tente outros filtros.',
+    'filters.noResultsCombined': 'Nenhum resultado para busca e filtro',
+    'filters.tryDifferentCriteria': 'Tente outros critérios.',
   },
   en: {
     // Navigation
@@ -175,6 +193,24 @@ export const APP_TRANSLATIONS: Record<string, Record<string, string>> = {
     'type.dark': 'Dark',
     'type.steel': 'Steel',
     'type.fairy': 'Fairy',
+
+    // Quick Filters
+    'filters.title': 'Filters',
+    'filters.favorites': 'Favorites',
+    'filters.legendary': 'Legendary',
+    'filters.gen1': 'Gen 1',
+    'filters.normal': 'Normal',
+    'filters.fire': 'Fire',
+    'filters.water': 'Water',
+    'filters.electric': 'Electric',
+    'filters.grass': 'Grass',
+    'filters.ice': 'Ice',
+    'filters.active': 'active filter',
+    'filters.clearAll': 'Clear filters',
+    'filters.noResults': 'No results for filter',
+    'filters.noResultsMessage': 'Try other filters.',
+    'filters.noResultsCombined': 'No results for search and filter',
+    'filters.tryDifferentCriteria': 'Try different criteria.',
   },
   es: {
     // Navegación
@@ -200,22 +236,22 @@ export const APP_TRANSLATIONS: Record<string, Record<string, string>> = {
 
     // Carga
     'loading.title': 'Cargando...',
-    'loading.subtitle': 'Buscando Pokémon increíbles',
+    'loading.subtitle': 'Buscando Pokémon incríveis',
     'loading.more': 'Cargando más...',
     'loading.pokemon': 'Cargando Pokémon...',
-    'loading.data': 'Cargando datos...',
-    'loading.details': 'Cargando detalles...',
+    'loading.data': 'Cargando dados...',
+    'loading.details': 'Cargando detalhes...',
 
     // Errores
-    'error.loadingData': 'Error al cargar datos',
+    'error.loadingData': 'Error al cargar dados',
     'error.noConnection': 'Sin conexión a internet',
     'error.tryAgain': 'Intentar de nuevo',
     'error.unexpected': 'Error inesperado',
     'error.pokemonNotFound': 'Pokémon no encontrado',
     'error.loadingMore': 'Error al cargar más datos',
 
-    // Estados comunes
-    'common.retry': 'Intentar de nuevo',
+    // Estados comuns
+    'common.retry': 'Intentar de novo',
     'common.cancel': 'Cancelar',
     'common.ok': 'OK',
     'common.yes': 'Sí',
@@ -223,7 +259,7 @@ export const APP_TRANSLATIONS: Record<string, Record<string, string>> = {
     'common.save': 'Guardar',
     'common.close': 'Cerrar',
     'common.back': 'Atrás',
-    'common.clear': 'Limpiar',
+    'common.clear': 'Limpar',
 
     // Favoritos
     'favorites.title': 'Favoritos',
@@ -262,5 +298,23 @@ export const APP_TRANSLATIONS: Record<string, Record<string, string>> = {
     'type.dark': 'Siniestro',
     'type.steel': 'Acero',
     'type.fairy': 'Hada',
+
+    // Filtros rápidos
+    'filters.title': 'Filtros',
+    'filters.favorites': 'Favoritos',
+    'filters.legendary': 'Legendarios',
+    'filters.gen1': 'Generación 1',
+    'filters.normal': 'Normal',
+    'filters.fire': 'Fuego',
+    'filters.water': 'Agua',
+    'filters.electric': 'Eléctrico',
+    'filters.grass': 'Hierba',
+    'filters.ice': 'Hielo',
+    'filters.active': 'filtro ativo',
+    'filters.clearAll': 'Limpiar filtros',
+    'filters.noResults': 'Sin resultados para el filtro',
+    'filters.noResultsMessage': 'Prueba otros filtros.',
+    'filters.noResultsCombined': 'Sin resultados para búsqueda y filtro',
+    'filters.tryDifferentCriteria': 'Prueba otros criterios.',
   },
 };

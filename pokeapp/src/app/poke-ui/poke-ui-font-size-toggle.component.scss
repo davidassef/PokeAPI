@@ -1,0 +1,26 @@
+/* Ajuste de fonte global para acessibilidade */
+.pokeui-font-size-toggle {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.pokeui-font-size-toggle button {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  padding: 0.2rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.pokeui-font-size-toggle button:focus {
+  outline: 2px solid #ffb703;
+}
+.pokeui-font-small {
+  font-size: 14px !important;
+}
+.pokeui-font-large {
+  font-size: 20px !important;
+}

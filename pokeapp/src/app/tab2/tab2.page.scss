@@ -1,207 +1,63 @@
-// 💖 Favorites Tab - Refatorado
-// Sistema modular e performático
-
-@import '../../styles/design-tokens.scss';
-@import '../../styles/mixins.scss';
-
-// 🔝 Header Content
-.header-content {
-  @include flex-start;
-  gap: var(--space-sm);
-
-  ion-icon {
-    font-size: 1.5rem;
-  }
-
-  ion-badge {
-    @extend .text-sm;
-    padding: var(--space-xs) var(--space-sm);
-  }
+.container {
+  padding: 16px;
 }
 
-// ⏳ Loading State
 .loading-container {
-  @include flex-center;
+  display: flex;
   flex-direction: column;
-  padding: 60px var(--space-lg);
-
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  
   ion-spinner {
-    width: 50px;
-    height: 50px;
-    margin-bottom: var(--space-md);
-    --color: var(--ion-color-secondary);
-  }
-
-  p {
-    color: var(--ion-color-medium);
-    @extend .text-base;
+    margin-bottom: 16px;
   }
 }
 
-// 🎮 Pokemon Grid
-.pokemon-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-md);
-  padding: var(--space-md);
-  max-width: 1200px;
-  margin: 0 auto;
-  contain: layout style paint;
-}
-
-// 💝 Favorite Item
-.favorite-item {
-  position: relative;
-  animation: slideInUp 0.4s ease forwards;
-
-  .favorite-date {
-    @include flex-start;
-    gap: 6px;
-    padding: var(--space-sm) var(--space-md);
-    margin-top: var(--space-sm);
-    background: var(--ion-color-light);
-    @extend .rounded-md;
-    @extend .text-sm;
-    color: var(--ion-color-medium);
-    @extend .transition-normal;
-
-    ion-icon {
-      font-size: 0.9rem;
-    }
-
-    &:hover {
-      background: var(--ion-color-secondary-tint);
-      color: var(--ion-color-secondary-contrast);
-    }
-  }
-}
-
-// 📭 Empty State
-.empty-state {
-  @include flex-center;
-  flex-direction: column;
-  padding: 80px var(--space-lg);
+.text-center {
   text-align: center;
-
-  .empty-icon-container {
-    margin-bottom: var(--space-xl);
-    position: relative;
-
-    .empty-icon {
-      font-size: 5rem;
-      color: var(--ion-color-medium);
-      opacity: 0.5;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 120px;
-      height: 120px;
-      border: 3px dashed var(--ion-color-medium);
-      @extend .rounded-full;
-      transform: translate(-50%, -50%);
-      opacity: 0.3;
-    }
+  
+  ion-icon {
+    margin-bottom: 16px;
   }
-
+  
   h2 {
-    color: var(--ion-color-dark);
-    margin-bottom: var(--space-md);
-    @extend .text-2xl;
-  }
-
-  p {
+    margin: 8px 0;
     color: var(--ion-color-medium);
-    margin-bottom: var(--space-xl);
-    line-height: 1.6;
-    max-width: 300px;
-    @extend .text-base;
   }
+  
+  p {
+    color: var(--ion-color-medium-shade);
+  }
+}
 
-  ion-button {
-    --border-width: 2px;
-    --border-style: solid;
+.pokemon-card {
+  margin-bottom: 16px;
+  
+  .pokemon-image {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
     font-weight: 600;
+    text-transform: capitalize;
   }
-}
-
-// 📱 Responsive Design
-@include respond-to(tablet) {
-  .pokemon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-sm);
-    padding: var(--space-sm);
+  
+  p {
+    margin: 4px 0 0 0;
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
   }
-
-  .loading-container,
-  .empty-state {
-    padding: 60px var(--space-md);
+  
+  ion-col:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
   }
-
-  .empty-state {
-    .empty-icon-container .empty-icon {
-      font-size: 4rem;
-    }    h2 {
-      font-size: 1.25rem;
-      line-height: 1.75rem;
-    }
-  }
-}
-
-@include respond-to(mobile) {
-  .pokemon-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-sm);
-  }
-
-  .header-content span {
-    display: none;
-  }
-
-  .favorite-date {
-    font-size: 0.7rem !important;
-    padding: 6px 10px;
-
-    span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-
-// 🎪 Animations
-@keyframes slideInUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-// 🖱️ Hover Effects
-.favorite-item:hover {
-  .favorite-date {
-    transform: translateY(-2px);
-    @extend .shadow-sm;
-  }
-}
-
-// 🌙 Dark Theme Support
-@include dark-mode {
-  .favorite-date {
-    background: var(--ion-color-step-100);
-  }
-}
-
-// ⚡ Performance Optimizations
-ion-content {
-  --overflow: hidden;
-  scroll-behavior: smooth;
 }

@@ -1,139 +1,82 @@
-<app-shared-header
-  [title]="'settings.title' | translate"
-  [currentPage]="appPages.SETTINGS">
-</app-shared-header>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      {{ 'nav.settings' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content [fullscreen]="true" class="settings-content">
-  <!-- Configurações de Idioma -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="language-outline"></ion-icon>
-        {{ 'settings.language' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>{{ 'nav.language' | translate }}</ion-label>
-        <ion-select
-          [value]="currentLanguage"
-          (ionChange)="onLanguageChange($event)"
-          interface="popover">
-          <ion-select-option value="pt">{{ getLanguageDisplayName('pt') }}</ion-select-option>
-          <ion-select-option value="en">{{ getLanguageDisplayName('en') }}</ion-select-option>
-          <ion-select-option value="es">{{ getLanguageDisplayName('es') }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'nav.settings' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-  <!-- Configurações de Áudio -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="musical-notes-outline"></ion-icon>
-        {{ 'settings.audio' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <!-- Toggle Áudio -->
-      <ion-item>
-        <ion-icon name="musical-notes-outline" slot="start"></ion-icon>
-        <ion-label>
-          {{ audioEnabled ? ('settings.audioEnabled' | translate) : ('settings.audioDisabled' | translate) }}
-        </ion-label>
-        <ion-toggle
-          [checked]="audioEnabled"
-          (ionChange)="onAudioToggle($event)">
-        </ion-toggle>
-      </ion-item>
+  <div class="container">
+    <!-- Configurações de Idioma -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'nav.language' | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-select
+            [value]="currentLanguage"
+            (ionChange)="onLanguageChange($event)"
+            [placeholder]="'nav.language' | translate">
+            <ion-select-option
+              *ngFor="let language of availableLanguages"
+              [value]="language.code">
+              {{ language.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
 
-      <!-- Player de Música Pokémon -->
-      <div class="pokemon-music-player" *ngIf="audioEnabled">
-        <div class="player-header">
-          <ion-icon name="musical-notes-outline" class="music-icon"></ion-icon>
-          <h3>{{ 'audio.pokemonTheme' | translate }}</h3>
-        </div>
+    <!-- Configurações de Áudio -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Áudio</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>Música de fundo</ion-label>
+          <ion-toggle
+            [checked]="audioEnabled"
+            (ionChange)="onAudioToggle($event)">
+          </ion-toggle>
+        </ion-item>
 
-        <div class="player-controls">
-          <!-- Botão de Reiniciar -->
-          <ion-button
-            class="control-btn restart-btn"
-            fill="clear"
-            (click)="restartMusic()"
-            [attr.aria-label]="'audio.restart' | translate">
-            <ion-icon name="play-skip-back-outline"></ion-icon>
-          </ion-button>
-
-          <!-- Botão Principal Play/Pause -->
-          <ion-button
-            class="control-btn play-pause-btn"
-            fill="solid"
-            (click)="togglePlayPause()"
-            [attr.aria-label]="isPlaying ? ('audio.pause' | translate) : ('audio.play' | translate)">
-            <ion-icon [name]="isPlaying ? 'pause' : 'play'"></ion-icon>
-          </ion-button>
-
-          <!-- Botão de Mute/Unmute -->
-          <ion-button
-            class="control-btn mute-btn"
-            fill="clear"
-            (click)="toggleMute()"
-            [attr.aria-label]="isMuted ? ('audio.unmute' | translate) : ('audio.mute' | translate)">
-            <ion-icon [name]="isMuted ? 'volume-mute' : 'volume-high'"></ion-icon>
-          </ion-button>
-        </div>
-
-        <!-- Status do Player -->
-        <div class="player-status">
-          <div class="status-indicator">
-            <ion-icon
-              [name]="isPlaying ? 'radio-outline' : 'pause-circle-outline'"
-              [class]="isPlaying ? 'playing-icon' : 'paused-icon'">
-            </ion-icon>
-            <span class="status-text">
-              {{ isPlaying ? ('audio.playing' | translate) : ('audio.paused' | translate) }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Controle de Volume -->
-        <div class="volume-control">
-          <ion-icon name="volume-low" class="volume-icon-start"></ion-icon>
+        <ion-item *ngIf="audioEnabled">
+          <ion-label>Volume</ion-label>
           <ion-range
-            class="volume-slider"
-            [value]="isMuted ? 0 : (audioVolume * 100)"
-            (ionInput)="onVolumeChange($event)"
             min="0"
             max="100"
-            step="5"
-            [disabled]="isMuted"
-            [attr.aria-label]="'audio.volume' | translate">
-            <ion-label slot="start">0</ion-label>
-            <ion-label slot="end">100</ion-label>
+            step="10"
+            [value]="audioVolume * 100"
+            (ionChange)="onVolumeChange($event)"
+            pin="true">
           </ion-range>
-          <ion-icon name="volume-high" class="volume-icon-end"></ion-icon>
-        </div>
-      </div>
-    </ion-card-content>
-  </ion-card>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
 
-  <!-- Sobre o App -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="information-circle-outline"></ion-icon>
-        {{ 'settings.about' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>
-          <h2>PokéDex App</h2>
-          <p>{{ 'settings.version' | translate }}: 1.0.0</p>
-          <p>{{ 'home.subtitle' | translate }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
+    <!-- Informações do App -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Sobre</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>
+            <h2>PokéDex</h2>
+            <p>Versão 1.0.0</p>
+            <p>Uma aplicação para explorar o mundo Pokémon</p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

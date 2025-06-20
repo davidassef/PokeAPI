@@ -1,0 +1,15 @@
+<!-- Ranking dos Pokémon mais favoritados -->
+<section class="pokeui-ranking">
+  <h3>Top 10 Pokémon Favoritos</h3>
+  <div *ngIf="isLoading">Carregando ranking...</div>
+  <ol *ngIf="!isLoading">
+    <li *ngFor="let p of ranking; let i = index">
+      <span class="pokeui-ranking-pos">#{{i+1}}</span>
+      <span class="pokeui-ranking-img">
+        <img [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + p.pokemonId + '.png'" [alt]="'Pokémon #' + p.pokemonId" />
+      </span>
+      <span class="pokeui-ranking-pokemon">Pokémon #{{p.pokemonId}}</span>
+      <span class="pokeui-ranking-count">{{p.count}} favoritos</span>
+    </li>
+  </ol>
+</section>
