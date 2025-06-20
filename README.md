@@ -44,7 +44,7 @@ Este projeto é um aplicativo mobile desenvolvido com Ionic e Angular, que conso
 ## Como Rodar o Projeto
 1. Clone o repositório:
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone https://github.com/davidassef/PokeAPI
    ```
 2. Instale as dependências:
    ```bash
