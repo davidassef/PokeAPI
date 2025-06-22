@@ -1,0 +1,192 @@
+<ion-menu side="start" menuId="main-menu" contentId="main-content">
+  <ion-header>
+    <ion-toolbar class="menu-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="assets/img/pokeball-logo.png" alt="Pokédex" class="logo">
+          <div class="app-info">
+            <h2>{{ 'APP.NAME' | translate }}</h2>
+            <p>{{ 'APP.VERSION' | translate }} 1.0.0</p>
+          </div>
+        </div>
+
+        <ion-button fill="clear" (click)="closeMenu()" class="close-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="menu-content">
+    <!-- User Stats Section -->
+    <div class="user-stats-section">
+      <h3>{{ 'MENU.YOUR_PROGRESS' | translate }}</h3>
+
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <ion-icon name="eye-outline" color="primary"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ userStats.seenCount }}</span>
+            <span class="stat-label">{{ 'MENU.SEEN' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <ion-icon name="archive-outline" color="success"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ userStats.caughtCount }}</span>
+            <span class="stat-label">{{ 'MENU.CAUGHT' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <ion-icon name="heart" color="danger"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-number">{{ userStats.favoritesCount }}</span>
+            <span class="stat-label">{{ 'MENU.FAVORITES' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bars -->
+      <div class="progress-section">
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>{{ 'MENU.COMPLETION' | translate }}</span>
+            <span>{{ getCompletionPercentage() }}%</span>
+          </div>
+          <ion-progress-bar
+            [value]="getCompletionPercentage() / 100"
+            color="primary">
+          </ion-progress-bar>
+        </div>
+
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>{{ 'MENU.CAPTURE_RATE' | translate }}</span>
+            <span>{{ getCaptureRate() }}%</span>
+          </div>
+          <ion-progress-bar
+            [value]="getCaptureRate() / 100"
+            color="success">
+          </ion-progress-bar>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="navigation-section">
+      <h3>{{ 'MENU.NAVIGATION' | translate }}</h3>
+      <ion-list class="menu-list">
+        <ion-item
+          *ngFor="let item of menuItems"
+          button
+          (click)="onMenuItemClick(item)"
+          class="menu-item">
+
+          <ion-icon
+            [name]="item.icon"
+            [color]="item.color"
+            slot="start">
+          </ion-icon>
+
+          <ion-label>
+            <h3>{{ item.title | translate }}</h3>
+          </ion-label>
+
+          <ion-badge
+            *ngIf="item.badge && item.badge > 0"
+            [color]="item.color"
+            slot="end">
+            {{ item.badge }}
+          </ion-badge>
+
+          <ion-icon
+            name="chevron-forward-outline"
+            slot="end"
+            class="chevron">
+          </ion-icon>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Additional Features -->
+    <div class="features-section">
+      <h3>{{ 'MENU.FEATURES' | translate }}</h3>
+      <ion-list class="menu-list">
+        <ion-item
+          *ngFor="let item of additionalItems"
+          button
+          (click)="onMenuItemClick(item)"
+          class="menu-item">
+
+          <ion-icon
+            [name]="item.icon"
+            [color]="item.color"
+            slot="start">
+          </ion-icon>
+
+          <ion-label>
+            <h3>{{ item.title | translate }}</h3>
+          </ion-label>
+
+          <ion-icon
+            name="chevron-forward-outline"
+            slot="end"
+            class="chevron">
+          </ion-icon>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="language-section">
+      <h3>{{ 'MENU.LANGUAGE' | translate }}</h3>
+      <ion-list class="language-list">
+        <ion-item
+          *ngFor="let lang of availableLanguages"
+          button
+          (click)="changeLanguage(lang.code)"
+          [class.selected]="currentLanguage === lang.code"
+          class="language-item">
+
+          <div class="language-flag" slot="start">{{ lang.flag }}</div>
+
+          <ion-label>
+            <h3>{{ lang.name }}</h3>
+          </ion-label>
+
+          <ion-icon
+            *ngIf="currentLanguage === lang.code"
+            name="checkmark-circle"
+            color="success"
+            slot="end">
+          </ion-icon>
+        </ion-item>
+      </ion-list>
+    </div>
+  </ion-content>
+
+  <ion-footer class="menu-footer">
+    <div class="footer-content">
+      <p>{{ 'APP.FOOTER_TEXT' | translate }}</p>
+      <div class="social-links">
+        <ion-button fill="clear" size="small">
+          <ion-icon name="logo-github"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="logo-twitter"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="mail-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-footer>
+</ion-menu>

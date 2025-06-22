@@ -1,0 +1,120 @@
+{
+  "app": {
+    "title": "Pokédex",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "retry": "Tentar novamente",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "clear": "Limpar"
+  },
+  "tabs": {
+    "home": "Pokédex",
+    "favorites": "Favoritos",
+    "ranking": "Ranking",
+    "settings": "Configurações"
+  },
+  "pokemon": {
+    "details": "Detalhes",
+    "height": "Altura",
+    "weight": "Peso",
+    "experience": "Experiência",
+    "abilities": "Habilidades",
+    "stats": "Estatísticas",
+    "types": "Tipos",
+    "description": "Descrição",
+    "shiny": "Shiny",
+    "normal": "Normal",
+    "favorite": "Favoritar",
+    "unfavorite": "Desfavoritar",
+    "addedToFavorites": "Adicionado aos favoritos!",
+    "removedFromFavorites": "Removido dos favoritos!",
+    "notFound": "Pokémon não encontrado",
+    "searchPlaceholder": "Digite o nome do Pokémon...",
+    "generation": "Geração",
+    "habitat": "Habitat",
+    "color": "Cor"
+  },
+  "stats": {
+    "hp": "HP",
+    "attack": "Ataque",
+    "defense": "Defesa",
+    "special-attack": "Ataque Especial",
+    "special-defense": "Defesa Especial",
+    "speed": "Velocidade"
+  },
+  "types": {
+    "normal": "Normal",
+    "fighting": "Lutador",
+    "flying": "Voador",
+    "poison": "Venenoso",
+    "ground": "Terrestre",
+    "rock": "Pedra",
+    "bug": "Inseto",
+    "ghost": "Fantasma",
+    "steel": "Aço",
+    "fire": "Fogo",
+    "water": "Água",
+    "grass": "Planta",
+    "electric": "Elétrico",
+    "psychic": "Psíquico",
+    "ice": "Gelo",
+    "dragon": "Dragão",
+    "dark": "Sombrio",
+    "fairy": "Fada"
+  },
+  "favorites": {
+    "title": "Meus Favoritos",
+    "empty": "Nenhum Pokémon favoritado ainda",
+    "emptyMessage": "Explore a Pokédex e adicione seus Pokémons favoritos!"
+  },
+  "ranking": {
+    "title": "Ranking Global",
+    "mostFavorited": "Mais Favoritados",
+    "position": "Posição",
+    "favorites": "Favoritos",
+    "empty": "Ranking não disponível",
+    "emptyMessage": "O ranking será atualizado em breve!"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "theme": "Tema",
+    "music": "Música",
+    "volume": "Volume",
+    "about": "Sobre",
+    "version": "Versão",
+    "developer": "Desenvolvedor",
+    "light": "Claro",
+    "dark": "Escuro",
+    "enabled": "Habilitada",
+    "disabled": "Desabilitada"
+  },
+  "music": {
+    "play": "Tocar",
+    "pause": "Pausar",
+    "restart": "Reiniciar",
+    "volume": "Volume"
+  },
+  "filters": {
+    "all": "Todos",
+    "sortBy": "Ordenar por",
+    "sortByName": "Nome",
+    "sortById": "Número",
+    "ascending": "Crescente",
+    "descending": "Decrescente",
+    "filterByType": "Filtrar por tipo",
+    "generation": "Geração"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página",
+    "of": "de",
+    "showing": "Mostrando",
+    "results": "resultados"
+  }
+}

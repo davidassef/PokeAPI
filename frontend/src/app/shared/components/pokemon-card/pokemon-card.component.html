@@ -1,0 +1,69 @@
+<div class="pokemon-card"
+     [style.animation-delay]="animationDelay + 'ms'"
+     (click)="onCardClick()">
+
+  <!-- Pokemon Image -->
+  <div class="pokemon-image-container">
+    <img [src]="pokemon.sprites?.front_default || 'assets/img/pokemon-placeholder.png'"
+         [alt]="pokemon.name"
+         class="pokemon-image"
+         loading="lazy">
+
+    <!-- Favorite Button -->
+    <button *ngIf="showFavoriteButton"
+            class="favorite-btn"
+            [class.active]="isFavorite"
+            [disabled]="isLoading"
+            (click)="onFavoriteClick($event)">
+      <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+    </button>
+  </div>
+
+  <!-- Pokemon Info -->
+  <div class="pokemon-info">
+    <div class="pokemon-header">
+      <span class="pokemon-number">{{ formatPokemonNumber(pokemon.id) }}</span>
+      <h3 class="pokemon-name">{{ capitalizeName(pokemon.name) }}</h3>
+    </div>
+
+    <!-- Pokemon Types -->
+    <div class="pokemon-types">
+      <span *ngFor="let type of pokemon.types"
+            class="type-badge"
+            [style.background-color]="getTypeColor(type.type.name)">
+        {{ type.type.name | titlecase }}
+      </span>
+    </div>
+
+    <!-- Pokemon Stats (Optional) -->
+    <div *ngIf="showStats" class="pokemon-stats">
+      <div *ngFor="let stat of pokemon.stats" class="stat-row">
+        <span class="stat-name">{{ stat.stat.name | titlecase }}</span>
+        <div class="stat-bar">
+          <div class="stat-fill"
+               [style.width.%]="getStatBarWidth(stat.base_stat)"
+               [style.background-color]="getTypeColor(pokemon.types[0].type.name)">
+          </div>
+        </div>
+        <span class="stat-value">{{ stat.base_stat }}</span>
+      </div>
+    </div>
+
+    <!-- Pokemon Basic Info -->
+    <div class="pokemon-basic-info">
+      <div class="info-item">
+        <span class="info-label">Height:</span>
+        <span class="info-value">{{ (pokemon.height / 10).toFixed(1) }}m</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Weight:</span>
+        <span class="info-value">{{ (pokemon.weight / 10).toFixed(1) }}kg</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</div>

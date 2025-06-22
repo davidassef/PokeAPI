@@ -1,0 +1,108 @@
+<div class="search-filter-container">
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <ion-searchbar
+      formControlName="searchTerm"
+      [placeholder]="placeholder"
+      debounce="300"
+      clear-input="true"
+      show-clear-button="focus">
+    </ion-searchbar>
+
+    <ion-button
+      *ngIf="showAdvancedFilters"
+      fill="clear"
+      class="filter-toggle-btn"
+      (click)="toggleAdvancedFilters()">
+      <ion-icon name="options-outline"></ion-icon>
+      <ion-badge
+        *ngIf="getActiveFiltersCount() > 0"
+        color="primary"
+        class="filter-badge">
+        {{ getActiveFiltersCount() }}
+      </ion-badge>
+    </ion-button>
+  </div>
+
+  <!-- Advanced Filters Panel -->
+  <div class="advanced-filters"
+       [class.expanded]="isAdvancedFiltersOpen"
+       *ngIf="showAdvancedFilters">
+
+    <!-- Filter Header -->
+    <div class="filter-header">
+      <h4>Advanced Filters</h4>
+      <ion-button
+        fill="clear"
+        color="danger"
+        size="small"
+        (click)="onClearFilters()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Clear All
+      </ion-button>
+    </div>
+
+    <!-- Types Filter -->
+    <div class="filter-section">
+      <h5>Types</h5>
+      <div class="types-grid">
+        <ion-chip
+          *ngFor="let type of pokemonTypes"
+          [class.selected]="isTypeSelected(type)"
+          [style.background-color]="isTypeSelected(type) ? getTypeColor(type) : 'transparent'"
+          [style.color]="isTypeSelected(type) ? 'white' : getTypeColor(type)"
+          [style.border-color]="getTypeColor(type)"
+          (click)="onTypeToggle(type)">
+          {{ type | titlecase }}
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Generation Filter -->
+    <div class="filter-section">
+      <h5>Generation</h5>
+      <ion-select
+        formControlName="selectedGeneration"
+        placeholder="Select Generation"
+        interface="popover">
+        <ion-select-option value="null">All Generations</ion-select-option>
+        <ion-select-option
+          *ngFor="let gen of generations"
+          [value]="gen.id">
+          {{ gen.name }}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <!-- Sort Options -->
+    <div class="filter-section">
+      <h5>Sort By</h5>
+      <div class="sort-controls">
+        <ion-select
+          formControlName="sortBy"
+          placeholder="Sort by..."
+          interface="popover"
+          class="sort-select">
+          <ion-select-option
+            *ngFor="let option of sortOptions"
+            [value]="option.value">
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+
+        <ion-segment
+          formControlName="sortOrder"
+          class="sort-order">
+          <ion-segment-button value="asc">
+            <ion-icon name="arrow-up-outline"></ion-icon>
+            <ion-label>Asc</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="desc">
+            <ion-icon name="arrow-down-outline"></ion-icon>
+            <ion-label>Desc</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    </div>
+  </div>
+</div>
