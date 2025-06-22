@@ -6,6 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { Pokemon } from '../../models/pokemon.model';
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { FavoritesService } from '../../core/services/favorites.service';
+import { AudioService } from '../../core/services/audio.service';
 
 interface ImageVariant {
   url: string;
@@ -19,14 +20,13 @@ interface ImageVariant {
 })
 export class DetailsPage implements OnInit, OnDestroy {
   pokemon: Pokemon | null = null;
-  loading = false;
-  isFavorite = false;
+  loading = false;  isFavorite = false;
   selectedImageType = 'default';
   currentImageUrl = '';
+  showFavoriteAnimation = false;
 
   private pokemonId: number = 0;
   private destroy$ = new Subject<void>();
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -34,7 +34,8 @@ export class DetailsPage implements OnInit, OnDestroy {
     private favoritesService: FavoritesService,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private audioService: AudioService
   ) {}
 
   ngOnInit() {
@@ -54,11 +55,11 @@ export class DetailsPage implements OnInit, OnDestroy {
 
   /**
    * Carrega detalhes do Pokémon
-   */
-  private async loadPokemonDetails() {
+   */  private async loadPokemonDetails() {
     this.loading = true;
     try {
-      this.pokemon = await this.pokeApiService.getPokemon(this.pokemonId).toPromise();
+      const pokemonData = await this.pokeApiService.getPokemon(this.pokemonId).toPromise();
+      this.pokemon = pokemonData || null;
       if (this.pokemon) {
         this.currentImageUrl = this.pokemon.sprites?.front_default || '';
       }
@@ -80,7 +81,6 @@ export class DetailsPage implements OnInit, OnDestroy {
         this.isFavorite = favorites.some(fav => fav.pokemon_id === this.pokemonId);
       });
   }
-
   /**
    * Alterna status de favorito
    */
@@ -90,9 +90,13 @@ export class DetailsPage implements OnInit, OnDestroy {
     try {
       if (this.isFavorite) {
         await this.favoritesService.removeFromFavorites(this.pokemon.id);
+        await this.audioService.playSound('favorite_remove');
         this.showToast(this.translate.instant('DETAILS.REMOVED_FROM_FAVORITES'));
       } else {
         await this.favoritesService.addToFavorites(this.pokemon);
+        await this.audioService.playSound('favorite_add');
+        this.showFavoriteAnimation = true;
+        setTimeout(() => this.showFavoriteAnimation = false, 1000);
         this.showToast(this.translate.instant('DETAILS.ADDED_TO_FAVORITES'));
       }
     } catch (error) {
@@ -240,13 +244,13 @@ export class DetailsPage implements OnInit, OnDestroy {
     if (!this.pokemon?.stats) return 0;
     return this.pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
   }
-
   /**
    * Obtém movimentos recentes
    */
   getRecentMoves() {
-    if (!this.pokemon?.moves) return [];
-    return this.pokemon.moves.slice(0, 6);
+    // Como a interface Pokemon atual não tem moves, vamos retornar um array vazio por enquanto
+    // TODO: Adicionar moves à interface Pokemon se necessário
+    return [];
   }
 
   /**
@@ -286,5 +290,30 @@ export class DetailsPage implements OnInit, OnDestroy {
       position: 'bottom'
     });
     await toast.present();
+  }
+
+  /**
+   * Compartilha o Pokémon
+   */
+  async sharePokemon() {
+    if (!this.pokemon) return;
+
+    try {
+      const shareData = {
+        title: `${this.pokemon.name} - Pokédex`,
+        text: `Confira ${this.pokemon.name} (#${this.pokemon.id}) na Pokédex!`,
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback para navegadores que não suportam Web Share API
+        await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+        this.showToast('Link copiado para área de transferência!');
+      }
+    } catch (error) {
+      console.error('Erro ao compartilhar:', error);
+    }
   }
 }

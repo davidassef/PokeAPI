@@ -58,93 +58,25 @@
       [refreshingText]="'REFRESHING' | translate">
     </ion-refresher-content>
   </ion-refresher>
-
   <!-- Lista de Pokémon favoritos -->
-  <ion-grid *ngIf="!loading && filteredFavorites.length > 0">
-    <ion-row>
-      <ion-col size="6" size-md="4" size-lg="3" *ngFor="let pokemon of filteredFavorites">
-        <ion-card
-          class="pokemon-card favorite-card"
-          [routerLink]="['/pokemon', pokemon.id]">
-
-          <!-- Badge de remover favorito -->
-          <ion-button
-            fill="clear"
-            class="remove-btn"
-            (click)="removeFavorite(pokemon, $event)">
-            <ion-icon name="heart" color="danger"></ion-icon>
-          </ion-button>
-
-          <!-- Badge de favorito há quanto tempo -->
-          <div class="favorite-badge">
-            <ion-chip color="tertiary">
-              <ion-icon name="star"></ion-icon>
-              <ion-label>{{ 'FAVORITE' | translate }}</ion-label>
-            </ion-chip>
-          </div>
-
-          <!-- Imagem do Pokémon -->
-          <div class="pokemon-image-container">
-            <img
-              [src]="pokemon.sprites?.other?.['official-artwork']?.front_default || pokemon.sprites?.front_default"
-              [alt]="pokemon.name"
-              class="pokemon-image"
-              loading="lazy">
-          </div>
-
-          <ion-card-content>
-            <!-- ID do Pokémon -->
-            <div class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</div>
-
-            <!-- Nome do Pokémon -->
-            <ion-card-title class="pokemon-name">
-              {{ pokemon.name | titlecase }}
-            </ion-card-title>
-
-            <!-- Tipos -->
-            <div class="pokemon-types">
-              <ion-chip
-                *ngFor="let type of pokemon.types"
-                [class]="'type-' + type.type.name"
-                class="pokemon-type">
-                <ion-label>{{ type.type.name | translate | uppercase }}</ion-label>
-              </ion-chip>
-            </div>
-
-            <!-- Stats totais -->
-            <div class="pokemon-stats">
-              <div class="stat-total">
-                <span class="stat-label">{{ 'TOTAL_STATS' | translate }}:</span>
-                <span class="stat-value">{{ getStatsTotal(pokemon) }}</span>
-              </div>
-            </div>
-
-            <!-- Indicadores de performance -->
-            <div class="performance-indicators">
-              <div class="indicator" [class.high]="pokemon.stats[0].base_stat > 80">
-                <ion-icon name="fitness"></ion-icon>
-                <span>{{ pokemon.stats[0].base_stat }}</span>
-              </div>
-              <div class="indicator" [class.high]="pokemon.stats[1].base_stat > 80">
-                <ion-icon name="flash"></ion-icon>
-                <span>{{ pokemon.stats[1].base_stat }}</span>
-              </div>
-              <div class="indicator" [class.high]="pokemon.stats[2].base_stat > 80">
-                <ion-icon name="shield"></ion-icon>
-                <span>{{ pokemon.stats[2].base_stat }}</span>
-              </div>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Loading spinner -->
-  <div *ngIf="loading" class="loading-container">
-    <ion-spinner name="dots"></ion-spinner>
-    <p>{{ 'LOADING_FAVORITES' | translate }}</p>
+  <div class="pokemon-grid" *ngIf="!loading && filteredFavorites.length > 0">
+    <app-pokemon-card
+      *ngFor="let pokemon of filteredFavorites; trackBy: trackByPokemonId; let i = index"
+      [pokemon]="pokemon"
+      [isFavorite]="true"
+      [animationDelay]="getAnimationDelay(i)"
+      (cardClick)="navigateToDetails(pokemon.id)"
+      (favoriteToggle)="onFavoriteToggle(pokemon)">
+    </app-pokemon-card>
   </div>
+  <!-- Loading spinner -->
+  <app-loading-spinner
+    *ngIf="loading"
+    [overlay]="false"
+    size="large"
+    type="pokeball"
+    [message]="'LOADING_FAVORITES' | translate">
+  </app-loading-spinner>
 
   <!-- Estado vazio -->
   <div *ngIf="!loading && favoritesPokemon.length === 0" class="empty-state">

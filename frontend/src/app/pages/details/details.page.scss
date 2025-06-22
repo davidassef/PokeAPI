@@ -260,6 +260,51 @@ ion-content {
   }
 }
 
+// Animações para detalhes
+.bounce-animation {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.animated-stat-fill {
+  animation: fillBar 1.5s ease-out;
+}
+
+.favorite-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  font-size: 3rem;
+  pointer-events: none;
+  z-index: 3;
+
+  &.show {
+    animation: favoritePopup 1s ease-out;
+  }
+}
+
+@keyframes favoritePopup {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fillBar {
+  from {
+    width: 0%;
+  }
+}
+
 // Animations
 @keyframes bounce {
   0%, 100% {

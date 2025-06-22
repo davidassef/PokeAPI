@@ -6,6 +6,8 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { FavoritesPageRoutingModule } from './favorites-routing.module';
 import { FavoritesPage } from './favorites.page';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
 
 @NgModule({
   imports: [
@@ -13,7 +15,9 @@ import { FavoritesPage } from './favorites.page';
     FormsModule,
     IonicModule,
     TranslateModule,
-    FavoritesPageRoutingModule
+    FavoritesPageRoutingModule,
+    SharedComponentsModule,
+    SharedPipesModule
   ],
   declarations: [FavoritesPage]
 })
