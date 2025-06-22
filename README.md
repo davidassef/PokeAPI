@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/seu-usuario/PokeAPIApp)
+[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
@@ -122,8 +122,8 @@ backend/
 
 ### 1️⃣ Clone o Repositório
 ```bash
-git clone https://github.com/seu-usuario/PokeAPIApp.git
-cd PokeAPIApp
+git clone https://github.com/davidassef/PokeAPI.git
+cd PokeAPI
 ```
 
 ### 2️⃣ Configure o Backend
@@ -245,10 +245,10 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 👨‍💻 Autor
 
-**Seu Nome**
-- GitHub: [@seu-usuario](https://github.com/seu-usuario)
-- LinkedIn: [Seu Perfil](https://linkedin.com/in/seu-perfil)
-- Email: seu.email@exemplo.com
+**David Assef**
+- GitHub: [@davidassef](https://github.com/davidassef)
+- Repositório: [PokeAPI](https://github.com/davidassef/PokeAPI)
+- LinkedIn: [David Assef](https://linkedin.com/in/davidassef)
 
 ---
 
@@ -265,8 +265,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 **⭐ Se este projeto te ajudou, considere dar uma estrela!**
 
-[![GitHub stars](https://img.shields.io/github/stars/seu-usuario/PokeAPIApp?style=social)](https://github.com/seu-usuario/PokeAPIApp/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/seu-usuario/PokeAPIApp?style=social)](https://github.com/seu-usuario/PokeAPIApp/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/davidassef/PokeAPI?style=social)](https://github.com/davidassef/PokeAPI/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/davidassef/PokeAPI?style=social)](https://github.com/davidassef/PokeAPI/network/members)
 
 *Feito com ❤️ e muito ☕*
 
