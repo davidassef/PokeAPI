@@ -30,7 +30,7 @@ class User(UserBase):
     id: int
     created_at: datetime
     is_active: bool
-    
+
     class Config:
         from_attributes = True
 
@@ -52,7 +52,7 @@ class FavoritePokemon(FavoritePokemonBase):
     id: int
     user_id: int
     added_at: datetime
-    
+
     class Config:
         from_attributes = True
 
@@ -69,7 +69,7 @@ class PokemonRanking(PokemonRankingBase):
     """Schema de resposta do ranking."""
     id: int
     last_updated: datetime
-    
+
     class Config:
         from_attributes = True
 

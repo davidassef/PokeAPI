@@ -88,7 +88,7 @@ A API estará disponível em: http://localhost:8000
 O projeto usa SQLite por padrão para desenvolvimento. As tabelas são:
 
 - **users**: Usuários do sistema
-- **favorite_pokemons**: Pokémons favoritos dos usuários  
+- **favorite_pokemons**: Pokémons favoritos dos usuários
 - **pokemon_rankings**: Ranking dos Pokémons mais favoritados
 
 ## 🔧 Desenvolvimento

@@ -20,14 +20,14 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email já cadastrado"
         )
-    
+
     # Verifica se username já existe
     if UserService.get_user_by_username(db, user.username):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username já cadastrado"
         )
-    
+
     return UserService.create_user(db, user)
 
 
