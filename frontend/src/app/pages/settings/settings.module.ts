@@ -6,6 +6,8 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SettingsPageRoutingModule } from './settings-routing.module';
 import { SettingsPage } from './settings.page';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
 
 @NgModule({
   imports: [
@@ -13,7 +15,9 @@ import { SettingsPage } from './settings.page';
     FormsModule,
     IonicModule,
     TranslateModule,
-    SettingsPageRoutingModule
+    SettingsPageRoutingModule,
+    SharedComponentsModule,
+    SharedPipesModule
   ],
   declarations: [SettingsPage]
 })

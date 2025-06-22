@@ -1,50 +1,55 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{ 'SETTINGS' | translate }}</ion-title>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'SETTINGS.TITLE' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ 'SETTINGS' | translate }}</ion-title>
+      <ion-title size="large">{{ 'SETTINGS.TITLE' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
+  <!-- Loading -->
+  <app-loading-spinner
+    *ngIf="loading"
+    [overlay]="false"
+    size="medium"
+    type="standard"
+    [message]="'SETTINGS.LOADING' | translate">
+  </app-loading-spinner>
   <!-- Seção de Idioma e Tema -->
-  <ion-card class="settings-card">
+  <ion-card class="settings-card" *ngIf="!loading">
     <ion-card-header>
       <ion-card-title>
-        <ion-icon name="globe" color="primary"></ion-icon>
-        {{ 'LANGUAGE_THEME' | translate }}
+        <ion-icon name="globe-outline" color="primary"></ion-icon>
+        {{ 'SETTINGS.LANGUAGE_THEME' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <!-- Seleção de idioma -->
-      <ion-item>
-        <ion-label>{{ 'LANGUAGE' | translate }}</ion-label>
-        <ion-select
-          [(ngModel)]="settings.language"
-          (ionChange)="onLanguageChange()"
-          interface="action-sheet">
-          <ion-select-option *ngFor="let lang of languages" [value]="lang.code">
-            {{ lang.flag }} {{ lang.name }}
-          </ion-select-option>
-        </ion-select>
+      <ion-item button (click)="openLanguageModal()">
+        <ion-icon name="language-outline" slot="start" color="medium"></ion-icon>
+        <ion-label>
+          <h3>{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
+          <p>{{ getCurrentLanguageName() }}</p>
+        </ion-label>
+        <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
       </ion-item>
 
       <!-- Seleção de tema -->
       <ion-item>
-        <ion-label>{{ 'THEME' | translate }}</ion-label>
-        <ion-select
-          [(ngModel)]="settings.theme"
+        <ion-icon name="moon-outline" slot="start" color="medium"></ion-icon>
+        <ion-label>{{ 'SETTINGS.DARK_THEME' | translate }}</ion-label>
+        <ion-toggle
+          [(ngModel)]="settings.darkMode"
           (ionChange)="onThemeChange()"
-          interface="action-sheet">
-          <ion-select-option *ngFor="let theme of themes" [value]="theme.value">
-            <ion-icon [name]="theme.icon"></ion-icon>
-            {{ theme.name | translate }}
-          </ion-select-option>
-        </ion-select>
+          slot="end">
+        </ion-toggle>
       </ion-item>
     </ion-card-content>
   </ion-card>

@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
@@ -29,7 +30,8 @@ export class FavoritesPage implements OnInit, OnDestroy {
     private audioService: AudioService,
     private alertController: AlertController,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -224,6 +226,35 @@ export class FavoritesPage implements OnInit, OnDestroy {
     }, 0);
 
     return Math.round(totalStats / this.favoritesPokemon.length);
+  }
+
+  /**
+   * Rastrea Pokémons por ID para otimizar performance do *ngFor
+   */
+  trackByPokemonId(index: number, pokemon: Pokemon): number {
+    return pokemon.id;
+  }
+
+  /**
+   * Calcula delay de animação baseado no índice
+   */
+  getAnimationDelay(index: number): number {
+    return index * 100;
+  }
+
+  /**
+   * Navega para página de detalhes
+   */
+  navigateToDetails(pokemonId: number) {
+    this.router.navigate(['/pokemon', pokemonId]);
+  }
+
+  /**
+   * Manipula toggle de favorito
+   */
+  async onFavoriteToggle(pokemon: Pokemon) {
+    // Remove da lista local após a remoção
+    this.loadFavorites();
   }
 
   private async showToast(messageKey: string, pokemonName?: string) {

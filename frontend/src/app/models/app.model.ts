@@ -4,6 +4,7 @@
 export interface AppSettings {
   language: 'pt-BR' | 'en-US' | 'es-ES';
   theme: 'light' | 'dark' | 'auto';
+  darkMode: boolean;
   musicVolume?: number;
   musicEnabled: boolean;
   soundEnabled: boolean;
@@ -12,7 +13,7 @@ export interface AppSettings {
   pokemonPerPage: number;
   showShinyChance: boolean;
   autoPlayMusic: boolean;
-  favoriteType: string;
+  favoriteType?: string;
 }
 
 /**

@@ -2,10 +2,12 @@
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button [text]="'BACK' | translate"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ pokemon?.name | titlecase }}</ion-title>
+    </ion-buttons>    <ion-title>{{ pokemon?.name | titlecase }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="toggleFavorite()" *ngIf="pokemon">
+      <ion-button (click)="sharePokemon()" *ngIf="pokemon">
+        <ion-icon name="share-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="toggleFavorite()" *ngIf="pokemon" [disabled]="loading">
         <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"
                   [color]="isFavorite ? 'danger' : 'light'"></ion-icon>
       </ion-button>
@@ -13,12 +15,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <!-- Loading -->
+<ion-content [fullscreen]="true">  <!-- Loading -->
   <app-loading-spinner
     *ngIf="loading"
     [overlay]="true"
     size="large"
+    type="pokeball"
     [message]="'DETAILS.LOADING' | translate">
   </app-loading-spinner>
 
@@ -39,14 +41,18 @@
             <ion-label>{{ type.type.name | titlecase }}</ion-label>
           </ion-chip>
         </div>
-      </div>
-
-      <!-- Main Image -->
+      </div>      <!-- Main Image -->
       <div class="pokemon-image-main">
         <img
           [src]="getCurrentImage()"
           [alt]="pokemon.name"
+          class="pokemon-main-image bounce-animation"
           (error)="onImageError($event)">
+
+        <!-- Favorite Animation Overlay -->
+        <div class="favorite-animation" [class.show]="showFavoriteAnimation">
+          <ion-icon name="heart" color="danger"></ion-icon>
+        </div>
       </div>
     </div>
 
@@ -100,14 +106,13 @@
         <ion-card-title>{{ 'DETAILS.STATS' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <div class="stats-list">
-          <div class="stat-item" *ngFor="let stat of pokemon.stats">
+        <div class="stats-list">          <div class="stat-item" *ngFor="let stat of pokemon.stats">
             <div class="stat-header">
               <span class="stat-name">{{ getStatName(stat.stat.name) }}</span>
               <span class="stat-value">{{ stat.base_stat }}</span>
             </div>
             <div class="stat-bar">
-              <div class="stat-fill"
+              <div class="stat-fill animated-stat-fill"
                    [style.width.%]="getStatPercentage(stat.base_stat)"
                    [style.background]="stat.base_stat | statColor">
               </div>
