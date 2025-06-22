@@ -1,7 +1,0 @@
-{
-  "name": "pokeapp",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}
