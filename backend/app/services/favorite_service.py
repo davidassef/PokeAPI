@@ -12,7 +12,8 @@ class FavoriteService:
     """Serviço para operações com favoritos."""
 
     @staticmethod
-    def add_favorite(db: Session, favorite: FavoritePokemonCreate) -> FavoritePokemon:
+    def add_favorite(db: Session,
+                     favorite: FavoritePokemonCreate) -> FavoritePokemon:
         """Adiciona Pokémon aos favoritos."""
         # Verifica se já não está nos favoritos
         existing = db.query(FavoritePokemon).filter(
@@ -32,7 +33,8 @@ class FavoriteService:
         db.add(db_favorite)
 
         # Atualiza ranking
-        FavoriteService._update_ranking(db, favorite.pokemon_id, favorite.pokemon_name)
+        FavoriteService._update_ranking(
+            db, favorite.pokemon_id, favorite.pokemon_name)
 
         db.commit()
         db.refresh(db_favorite)
@@ -53,7 +55,8 @@ class FavoriteService:
         db.delete(favorite)
 
         # Atualiza ranking
-        FavoriteService._update_ranking(db, pokemon_id, pokemon_name, increment=False)
+        FavoriteService._update_ranking(
+            db, pokemon_id, pokemon_name, increment=False)
 
         db.commit()
         return True
@@ -82,7 +85,8 @@ class FavoriteService:
         ).limit(limit).all()
 
     @staticmethod
-    def _update_ranking(db: Session, pokemon_id: int, pokemon_name: str, increment: bool = True):
+    def _update_ranking(db: Session, pokemon_id: int, pokemon_name: str,
+                        increment: bool = True):
         """Atualiza ranking do Pokémon."""
         ranking = db.query(PokemonRanking).filter(
             PokemonRanking.pokemon_id == pokemon_id
