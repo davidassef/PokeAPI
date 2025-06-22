@@ -1,0 +1,32 @@
+# FastAPI e ASGI
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.13.0
+sqlite3-python==1.0.1
+
+# Validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# HTTP Requests
+httpx==0.25.2
+aiohttp==3.9.1
+
+# CORS
+fastapi-cors==0.0.6
+
+# Environment
+python-dotenv==1.0.0
+
+# Logging
+loguru==0.7.2
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
