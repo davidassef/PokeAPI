@@ -1,138 +1,78 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{ 'POKEDEX' | translate }}</ion-title>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'HOME.TITLE' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="showFilterModal()">
-        <ion-icon name="filter" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button (click)="clearFilters()">
-        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      <ion-button (click)="toggleSearch()">
+        <ion-icon name="search-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+
+  <!-- Search and Filter Component -->
+  <div *ngIf="showSearch" class="search-container">
+    <app-search-filter
+      [currentFilters]="currentFilters"
+      (filtersChanged)="onFiltersChanged($event)"
+      (searchChanged)="onSearchChanged($event)">
+    </app-search-filter>
+  </div>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ 'POKEDEX' | translate }}</ion-title>
+      <ion-title size="large">{{ 'HOME.TITLE' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <!-- Barra de pesquisa -->
-  <ion-searchbar
-    [placeholder]="'SEARCH_POKEMON' | translate"
-    (ionInput)="onSearch($event)"
-    [value]="filters.name"
-    show-clear-button="focus">
-  </ion-searchbar>
+  <!-- Loading -->
+  <app-loading-spinner
+    *ngIf="loading && pokemon.length === 0"
+    [overlay]="true"
+    size="large"
+    [message]="'HOME.LOADING' | translate">
+  </app-loading-spinner>
 
-  <!-- Filtros rápidos -->
-  <ion-segment [(ngModel)]="filters.sortBy" (ionChange)="onFilterChange()">
-    <ion-segment-button value="id">
-      <ion-label>{{ 'SORT_BY_ID' | translate }}</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="name">
-      <ion-label>{{ 'SORT_BY_NAME' | translate }}</ion-label>
-    </ion-segment-button>
-  </ion-segment>
-
-  <!-- Pull to refresh -->
-  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
-    <ion-refresher-content
-      [pullingText]="'PULL_TO_REFRESH' | translate"
-      [refreshingText]="'REFRESHING' | translate">
-    </ion-refresher-content>
-  </ion-refresher>
-
-  <!-- Lista de Pokémon -->
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6" size-md="4" size-lg="3" *ngFor="let pokemon of filteredPokemon">
-        <ion-card
-          class="pokemon-card"
-          [routerLink]="['/pokemon', pokemon.id]"
-          [class.shiny]="false">
-
-          <!-- Badge de favorito -->
-          <ion-button
-            fill="clear"
-            class="favorite-btn"
-            (click)="toggleFavorite(pokemon, $event)">
-            <ion-icon
-              [name]="(isFavorite(pokemon.id) | async) ? 'heart' : 'heart-outline'"
-              [color]="(isFavorite(pokemon.id) | async) ? 'danger' : 'medium'">
-            </ion-icon>
-          </ion-button>
-
-          <!-- Imagem do Pokémon -->
-          <div class="pokemon-image-container">
-            <img
-              [src]="pokemon.sprites?.other?.['official-artwork']?.front_default || pokemon.sprites?.front_default"
-              [alt]="pokemon.name"
-              class="pokemon-image"
-              loading="lazy">
-          </div>
-
-          <ion-card-content>
-            <!-- ID do Pokémon -->
-            <div class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</div>
-
-            <!-- Nome do Pokémon -->
-            <ion-card-title class="pokemon-name">
-              {{ pokemon.name | titlecase }}
-            </ion-card-title>
-
-            <!-- Tipos -->
-            <div class="pokemon-types">
-              <ion-chip
-                *ngFor="let type of pokemon.types"
-                [class]="'type-' + type.type.name"
-                class="pokemon-type">
-                <ion-label>{{ type.type.name | translate | uppercase }}</ion-label>
-              </ion-chip>
-            </div>
-
-            <!-- Stats básicas -->
-            <div class="pokemon-stats">
-              <div class="stat">
-                <span class="stat-label">{{ 'HEIGHT' | translate }}:</span>
-                <span class="stat-value">{{ pokemon.height / 10 }}m</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">{{ 'WEIGHT' | translate }}:</span>
-                <span class="stat-value">{{ pokemon.weight / 10 }}kg</span>
-              </div>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Loading spinner -->
-  <div *ngIf="loading" class="loading-container">
-    <ion-spinner name="dots"></ion-spinner>
-    <p>{{ 'LOADING_POKEMON' | translate }}</p>
+  <!-- Pokemon Grid -->
+  <div class="pokemon-grid" *ngIf="!loading || pokemon.length > 0">
+    <app-pokemon-card
+      *ngFor="let poke of pokemon; trackBy: trackByPokemonId; let i = index"
+      [pokemon]="poke"
+      [isFavorite]="isFavorite(poke.id)"
+      [animationDelay]="getAnimationDelay(i)"
+      (cardClick)="navigateToDetails(poke.id)"
+      (favoriteClick)="toggleFavorite(poke)">
+    </app-pokemon-card>
   </div>
 
-  <!-- Mensagem quando não há Pokémon -->
-  <div *ngIf="!loading && filteredPokemon.length === 0" class="empty-state">
-    <ion-icon name="search" size="large" color="medium"></ion-icon>
-    <h2>{{ 'NO_POKEMON_FOUND' | translate }}</h2>
-    <p>{{ 'TRY_DIFFERENT_SEARCH' | translate }}</p>
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && pokemon.length === 0">
+    <ion-icon name="search-outline" size="large"></ion-icon>
+    <h2>{{ 'HOME.NO_RESULTS' | translate }}</h2>
+    <p>{{ 'HOME.NO_RESULTS_MESSAGE' | translate }}</p>
     <ion-button fill="outline" (click)="clearFilters()">
-      {{ 'CLEAR_FILTERS' | translate }}
+      {{ 'HOME.CLEAR_FILTERS' | translate }}
     </ion-button>
   </div>
 
-  <!-- Infinite scroll -->
+  <!-- Infinite Scroll -->
   <ion-infinite-scroll
     threshold="100px"
-    (ionInfinite)="loadMore($event)"
-    [disabled]="loading || currentPage >= totalPages">
+    (ionInfinite)="loadMorePokemon($event)"
+    [disabled]="!hasMoreData">
     <ion-infinite-scroll-content
-      [loadingText]="'LOADING_MORE' | translate">
+      loadingSpinner="bubbles"
+      [loadingText]="'HOME.LOADING_MORE' | translate">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="scrollToTop()">
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
