@@ -1,0 +1,26 @@
+<div class="loading-container"
+     [class.overlay]="overlay"
+     [class.small]="size === 'small'"
+     [class.medium]="size === 'medium'"
+     [class.large]="size === 'large'">
+
+  <!-- Pokeball Loader -->
+  <div *ngIf="type === 'pokeball'" class="pokeball-loader">
+    <div class="pokeball">
+      <div class="pokeball-upper"></div>
+      <div class="pokeball-lower"></div>
+      <div class="pokeball-button">
+        <div class="pokeball-button-inner"></div>
+      </div>
+    </div>
+    <div class="pokeball-shadow"></div>
+  </div>
+
+  <!-- Standard Ionic Loader -->
+  <div *ngIf="type === 'standard'" class="standard-loader">
+    <ion-spinner name="crescent" class="spinner"></ion-spinner>
+  </div>
+
+  <!-- Loading Message -->
+  <p class="loading-message" *ngIf="message">{{ message }}</p>
+</div>

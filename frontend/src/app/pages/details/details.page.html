@@ -1,0 +1,263 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="pokemon">{{ pokemon.name | titlecase }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()" *ngIf="pokemon">
+        <ion-icon
+          [name]="isFavorite ? 'heart' : 'heart-outline'"
+          [color]="isFavorite ? 'danger' : 'medium'">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="dots"></ion-spinner>
+    <p>{{ 'LOADING_POKEMON_DETAILS' | translate }}</p>
+  </div>
+
+  <!-- Conteúdo do Pokémon -->
+  <div *ngIf="!loading && pokemon" class="pokemon-details">
+    <!-- Header com imagem e info básica -->
+    <div class="pokemon-header" [style.background]="'linear-gradient(135deg, ' + getTypeColor(pokemon.types[0].type.name) + ', ' + getTypeColor(pokemon.types[pokemon.types.length - 1].type.name) + ')'">
+      <div class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</div>
+
+      <div class="pokemon-image-container">
+        <img
+          [src]="pokemon.sprites?.other?.['official-artwork']?.front_default || pokemon.sprites?.front_default"
+          [alt]="pokemon.name"
+          class="pokemon-image-main">
+
+        <!-- Badge de favorito -->
+        <div class="favorite-badge" *ngIf="isFavorite">
+          <ion-icon name="heart" color="danger"></ion-icon>
+        </div>
+      </div>
+
+      <h1 class="pokemon-name">{{ pokemon.name | titlecase }}</h1>
+
+      <!-- Tipos -->
+      <div class="pokemon-types">
+        <ion-chip
+          *ngFor="let type of pokemon.types"
+          [style.background]="getTypeColor(type.type.name)"
+          class="pokemon-type">
+          <ion-label>{{ type.type.name | translate | uppercase }}</ion-label>
+        </ion-chip>
+      </div>
+
+      <!-- Informações básicas -->
+      <div class="basic-info">
+        <div class="info-item">
+          <span class="info-label">{{ 'HEIGHT' | translate }}</span>
+          <span class="info-value">{{ getHeightInMeters() }}m</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'WEIGHT' | translate }}</span>
+          <span class="info-value">{{ getWeightInKg() }}kg</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">{{ 'TOTAL_STATS' | translate }}</span>
+          <span class="info-value">{{ getTotalStats() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegação por tabs -->
+    <div class="tab-navigation">
+      <ion-segment [(ngModel)]="selectedTab" (ionChange)="selectTab(selectedTab)">
+        <ion-segment-button value="info">
+          <ion-icon name="information-circle"></ion-icon>
+          <ion-label>{{ 'INFO' | translate }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="stats">
+          <ion-icon name="bar-chart"></ion-icon>
+          <ion-label>{{ 'STATS' | translate }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="moves">
+          <ion-icon name="flash"></ion-icon>
+          <ion-label>{{ 'MOVES' | translate }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="evolution">
+          <ion-icon name="git-branch"></ion-icon>
+          <ion-label>{{ 'EVOLUTION' | translate }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Conteúdo das tabs -->
+    <div class="tab-content">
+      <!-- Tab Info -->
+      <div *ngIf="selectedTab === 'info'" class="tab-info">
+        <!-- Descrição -->
+        <ion-card class="description-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'DESCRIPTION' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ getFlavorText() }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Habilidades -->
+        <ion-card class="abilities-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'ABILITIES' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let ability of pokemon.abilities" class="ability-item">
+              <div class="ability-header">
+                <h3>{{ ability.ability.name | titlecase }}</h3>
+                <ion-chip *ngIf="ability.is_hidden" color="warning">
+                  <ion-label>{{ 'HIDDEN' | translate }}</ion-label>
+                </ion-chip>
+              </div>
+              <p>{{ getAbilityDescription(ability.ability.name) }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Sprites adicionais -->
+        <ion-card class="sprites-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'SPRITES' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="sprites-grid">
+              <div class="sprite-item" *ngIf="pokemon.sprites.front_default">
+                <img [src]="pokemon.sprites.front_default" alt="Front">
+                <span>{{ 'FRONT' | translate }}</span>
+              </div>
+              <div class="sprite-item" *ngIf="pokemon.sprites.back_default">
+                <img [src]="pokemon.sprites.back_default" alt="Back">
+                <span>{{ 'BACK' | translate }}</span>
+              </div>
+              <div class="sprite-item" *ngIf="pokemon.sprites.front_shiny">
+                <img [src]="pokemon.sprites.front_shiny" alt="Shiny Front">
+                <span>{{ 'SHINY_FRONT' | translate }}</span>
+              </div>
+              <div class="sprite-item" *ngIf="pokemon.sprites.back_shiny">
+                <img [src]="pokemon.sprites.back_shiny" alt="Shiny Back">
+                <span>{{ 'SHINY_BACK' | translate }}</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Tab Stats -->
+      <div *ngIf="selectedTab === 'stats'" class="tab-stats">
+        <ion-card class="stats-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'BASE_STATS' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngFor="let stat of pokemon.stats" class="stat-row">
+              <div class="stat-info">
+                <span class="stat-name">{{ stat.stat.name | translate | titlecase }}</span>
+                <span class="stat-value">{{ stat.base_stat }}</span>
+              </div>
+              <div class="stat-bar-container">
+                <ion-progress-bar
+                  [value]="getStatPercentage(stat.base_stat) / 100"
+                  [color]="getStatBarColor(stat.base_stat)">
+                </ion-progress-bar>
+                <span class="stat-percentage">{{ getStatPercentage(stat.base_stat).toFixed(0) }}%</span>
+              </div>
+            </div>
+
+            <!-- Total -->
+            <div class="stat-total">
+              <strong>{{ 'TOTAL' | translate }}: {{ getTotalStats() }}</strong>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Chart radar (mockup visual) -->
+        <ion-card class="chart-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'STATS_RADAR' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="radar-chart-placeholder">
+              <p>{{ 'RADAR_CHART_PLACEHOLDER' | translate }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Tab Moves -->
+      <div *ngIf="selectedTab === 'moves'" class="tab-moves">
+        <ion-card class="moves-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'LEARNABLE_MOVES' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="moves-list">
+              <div *ngFor="let move of pokemon.moves.slice(0, 20)" class="move-item">
+                <div class="move-info">
+                  <h4>{{ move.move.name | titlecase }}</h4>
+                  <p>{{ 'LEARNED_BY' | translate }}:
+                    <span *ngFor="let detail of move.version_group_details.slice(0, 1); let last = last">
+                      {{ detail.move_learn_method.name | titlecase }}
+                      <span *ngIf="detail.level_learned_at > 0"> ({{ 'LEVEL' | translate }} {{ detail.level_learned_at }})</span>
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p class="moves-note">{{ 'SHOWING_LIMITED_MOVES' | translate }}</p>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Tab Evolution -->
+      <div *ngIf="selectedTab === 'evolution'" class="tab-evolution">
+        <ion-card class="evolution-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'EVOLUTION_CHAIN' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="evolution-chain">
+              <div *ngFor="let evo of getEvolutionChain(); let i = index" class="evolution-step">
+                <div class="evolution-pokemon">
+                  <div class="evolution-image">
+                    <img [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + evo.id + '.png'"
+                         [alt]="evo.name">
+                  </div>
+                  <h4>{{ evo.name | titlecase }}</h4>
+                  <p *ngIf="evo.level !== 1">#{{ evo.id.toString().padStart(3, '0') }}</p>
+                </div>
+
+                <div *ngIf="i < getEvolutionChain().length - 1" class="evolution-arrow">
+                  <ion-icon name="arrow-forward"></ion-icon>
+                  <span class="evolution-condition">
+                    {{ evo.level === 'friendship' ? ('FRIENDSHIP' | translate) :
+                       evo.level === 'thunder stone' ? ('THUNDER_STONE' | translate) :
+                       ('LEVEL' | translate) + ' ' + getEvolutionChain()[i + 1].level }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagem de erro -->
+  <div *ngIf="!loading && !pokemon" class="error-state">
+    <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+    <h2>{{ 'POKEMON_NOT_FOUND' | translate }}</h2>
+    <p>{{ 'POKEMON_NOT_FOUND_DESC' | translate }}</p>
+    <ion-button fill="outline" routerLink="/tabs/home">
+      {{ 'GO_BACK_HOME' | translate }}
+    </ion-button>
+  </div>
+</ion-content>

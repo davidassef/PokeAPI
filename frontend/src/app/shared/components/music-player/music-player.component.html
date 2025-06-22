@@ -1,0 +1,141 @@
+<div class="music-player" [class.minimized]="isMinimized">
+  <!-- Minimized View -->
+  <div class="player-minimized" *ngIf="isMinimized" (click)="toggleMinimize()">
+    <div class="track-info">
+      <div class="track-image">
+        <img src="assets/img/pokeball-icon.png" alt="Now Playing">
+        <div class="play-indicator" [class.playing]="isPlaying">
+          <div class="wave-bar" *ngFor="let bar of [1,2,3,4]"></div>
+        </div>
+      </div>
+      <div class="track-details" *ngIf="currentTrack">
+        <span class="track-title">{{ currentTrack.title }}</span>
+        <span class="track-artist">{{ currentTrack.artist }}</span>
+      </div>
+    </div>
+
+    <div class="mini-controls">
+      <ion-button fill="clear" (click)="playPrevious(); $event.stopPropagation()">
+        <ion-icon name="play-skip-back-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button
+        fill="clear"
+        class="play-pause-btn"
+        [disabled]="isLoading"
+        (click)="togglePlay(); $event.stopPropagation()">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isLoading" [name]="isPlaying ? 'pause' : 'play'"></ion-icon>
+      </ion-button>
+
+      <ion-button fill="clear" (click)="playNext(); $event.stopPropagation()">
+        <ion-icon name="play-skip-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Expanded View -->
+  <div class="player-expanded" *ngIf="!isMinimized">
+    <!-- Header -->
+    <div class="player-header">
+      <h3>Now Playing</h3>
+      <ion-button fill="clear" (click)="toggleMinimize()">
+        <ion-icon name="chevron-down-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Track Display -->
+    <div class="track-display" *ngIf="currentTrack">
+      <div class="track-artwork">
+        <img src="assets/img/pokemon-music-cover.jpg"
+             [alt]="currentTrack.title"
+             class="cover-image">
+        <div class="vinyl-effect" [class.spinning]="isPlaying"></div>
+      </div>
+
+      <div class="track-info-expanded">
+        <h4 class="track-title">{{ currentTrack.title }}</h4>
+        <p class="track-artist">{{ currentTrack.artist }}</p>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="time-info">
+        <span class="current-time">{{ formatTime(currentTime) }}</span>
+        <span class="duration">{{ formatTime(duration) }}</span>
+      </div>
+
+      <ion-range
+        min="0"
+        max="100"
+        [value]="getProgress()"
+        (ionInput)="seek($event)"
+        class="progress-bar">
+        <ion-icon name="musical-note-outline" slot="start"></ion-icon>
+        <ion-icon name="musical-notes-outline" slot="end"></ion-icon>
+      </ion-range>
+    </div>
+
+    <!-- Main Controls -->
+    <div class="main-controls">
+      <ion-button fill="clear" (click)="playPrevious()">
+        <ion-icon name="play-skip-back"></ion-icon>
+      </ion-button>
+
+      <ion-button
+        class="play-pause-main"
+        [disabled]="isLoading"
+        (click)="togglePlay()">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isLoading" [name]="isPlaying ? 'pause' : 'play'"></ion-icon>
+      </ion-button>
+
+      <ion-button fill="clear" (click)="playNext()">
+        <ion-icon name="play-skip-forward"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Volume Control -->
+    <div class="volume-control">
+      <ion-button fill="clear" (click)="toggleMute()">
+        <ion-icon [name]="getVolumeIcon()"></ion-icon>
+      </ion-button>
+
+      <ion-range
+        min="0"
+        max="100"
+        [value]="volume * 100"
+        [disabled]="isMuted"
+        (ionInput)="setVolume($event)"
+        class="volume-slider">
+      </ion-range>
+    </div>
+
+    <!-- Playlist -->
+    <div class="playlist-section">
+      <h5>Playlist</h5>
+      <div class="playlist">
+        <div
+          *ngFor="let track of playlist"
+          class="playlist-item"
+          [class.active]="currentTrack?.id === track.id"
+          (click)="selectTrack(track)">
+
+          <div class="playlist-track-info">
+            <span class="playlist-track-title">{{ track.title }}</span>
+            <span class="playlist-track-artist">{{ track.artist }}</span>
+          </div>
+
+          <div class="playlist-track-actions">
+            <ion-icon
+              *ngIf="currentTrack?.id === track.id && isPlaying"
+              name="volume-high-outline"
+              class="playing-indicator">
+            </ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

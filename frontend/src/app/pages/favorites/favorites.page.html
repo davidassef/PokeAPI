@@ -1,0 +1,193 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'FAVORITES' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="exportFavorites()" [disabled]="favoritesPokemon.length === 0">
+        <ion-icon name="download" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="fileInput.click()">
+        <ion-icon name="cloud-upload" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="clearAllFavorites()" [disabled]="favoritesPokemon.length === 0">
+        <ion-icon name="trash" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'FAVORITES' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Input file escondido para importar -->
+  <input #fileInput type="file" accept=".json" (change)="importFavorites($event)" style="display: none;">
+
+  <!-- Barra de pesquisa -->
+  <ion-searchbar
+    [placeholder]="'SEARCH_FAVORITES' | translate"
+    (ionInput)="onSearch($event)"
+    [value]="searchTerm"
+    show-clear-button="focus">
+  </ion-searchbar>
+
+  <!-- Controles de ordenação -->
+  <div class="sort-controls">
+    <ion-segment [(ngModel)]="sortBy" (ionChange)="onSortChange()">
+      <ion-segment-button value="id">
+        <ion-label>{{ 'SORT_BY_ID' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="name">
+        <ion-label>{{ 'SORT_BY_NAME' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-button
+      fill="clear"
+      (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; onSortChange()">
+      <ion-icon [name]="sortOrder === 'asc' ? 'arrow-up' : 'arrow-down'" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content
+      [pullingText]="'PULL_TO_REFRESH' | translate"
+      [refreshingText]="'REFRESHING' | translate">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Lista de Pokémon favoritos -->
+  <ion-grid *ngIf="!loading && filteredFavorites.length > 0">
+    <ion-row>
+      <ion-col size="6" size-md="4" size-lg="3" *ngFor="let pokemon of filteredFavorites">
+        <ion-card
+          class="pokemon-card favorite-card"
+          [routerLink]="['/pokemon', pokemon.id]">
+
+          <!-- Badge de remover favorito -->
+          <ion-button
+            fill="clear"
+            class="remove-btn"
+            (click)="removeFavorite(pokemon, $event)">
+            <ion-icon name="heart" color="danger"></ion-icon>
+          </ion-button>
+
+          <!-- Badge de favorito há quanto tempo -->
+          <div class="favorite-badge">
+            <ion-chip color="tertiary">
+              <ion-icon name="star"></ion-icon>
+              <ion-label>{{ 'FAVORITE' | translate }}</ion-label>
+            </ion-chip>
+          </div>
+
+          <!-- Imagem do Pokémon -->
+          <div class="pokemon-image-container">
+            <img
+              [src]="pokemon.sprites?.other?.['official-artwork']?.front_default || pokemon.sprites?.front_default"
+              [alt]="pokemon.name"
+              class="pokemon-image"
+              loading="lazy">
+          </div>
+
+          <ion-card-content>
+            <!-- ID do Pokémon -->
+            <div class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</div>
+
+            <!-- Nome do Pokémon -->
+            <ion-card-title class="pokemon-name">
+              {{ pokemon.name | titlecase }}
+            </ion-card-title>
+
+            <!-- Tipos -->
+            <div class="pokemon-types">
+              <ion-chip
+                *ngFor="let type of pokemon.types"
+                [class]="'type-' + type.type.name"
+                class="pokemon-type">
+                <ion-label>{{ type.type.name | translate | uppercase }}</ion-label>
+              </ion-chip>
+            </div>
+
+            <!-- Stats totais -->
+            <div class="pokemon-stats">
+              <div class="stat-total">
+                <span class="stat-label">{{ 'TOTAL_STATS' | translate }}:</span>
+                <span class="stat-value">{{ getStatsTotal(pokemon) }}</span>
+              </div>
+            </div>
+
+            <!-- Indicadores de performance -->
+            <div class="performance-indicators">
+              <div class="indicator" [class.high]="pokemon.stats[0].base_stat > 80">
+                <ion-icon name="fitness"></ion-icon>
+                <span>{{ pokemon.stats[0].base_stat }}</span>
+              </div>
+              <div class="indicator" [class.high]="pokemon.stats[1].base_stat > 80">
+                <ion-icon name="flash"></ion-icon>
+                <span>{{ pokemon.stats[1].base_stat }}</span>
+              </div>
+              <div class="indicator" [class.high]="pokemon.stats[2].base_stat > 80">
+                <ion-icon name="shield"></ion-icon>
+                <span>{{ pokemon.stats[2].base_stat }}</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="dots"></ion-spinner>
+    <p>{{ 'LOADING_FAVORITES' | translate }}</p>
+  </div>
+
+  <!-- Estado vazio -->
+  <div *ngIf="!loading && favoritesPokemon.length === 0" class="empty-state">
+    <ion-icon name="heart-outline" size="large" color="medium"></ion-icon>
+    <h2>{{ 'NO_FAVORITES_YET' | translate }}</h2>
+    <p>{{ 'ADD_FAVORITES_HINT' | translate }}</p>
+    <ion-button fill="outline" routerLink="/tabs/home">
+      {{ 'EXPLORE_POKEMON' | translate }}
+    </ion-button>
+  </div>
+
+  <!-- Sem resultados na busca -->
+  <div *ngIf="!loading && favoritesPokemon.length > 0 && filteredFavorites.length === 0" class="empty-state">
+    <ion-icon name="search" size="large" color="medium"></ion-icon>
+    <h2>{{ 'NO_FAVORITES_FOUND' | translate }}</h2>
+    <p>{{ 'TRY_DIFFERENT_SEARCH' | translate }}</p>
+    <ion-button fill="outline" (click)="searchTerm = ''; onSearch({ target: { value: '' } })">
+      {{ 'CLEAR_SEARCH' | translate }}
+    </ion-button>
+  </div>
+
+  <!-- Estatísticas dos favoritos -->
+  <div *ngIf="!loading && favoritesPokemon.length > 0" class="favorites-stats">
+    <ion-card class="stats-card">
+      <ion-card-header>
+        <ion-card-title>{{ 'FAVORITES_STATISTICS' | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number">{{ favoritesPokemon.length }}</span>
+            <span class="stat-label">{{ 'TOTAL_FAVORITES' | translate }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getUniqueTypes().length }}</span>
+            <span class="stat-label">{{ 'DIFFERENT_TYPES' | translate }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getAverageStats() }}</span>
+            <span class="stat-label">{{ 'AVERAGE_STATS' | translate }}</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

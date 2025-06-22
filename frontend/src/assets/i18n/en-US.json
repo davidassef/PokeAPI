@@ -1,0 +1,120 @@
+{
+  "app": {
+    "title": "Pokédex",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "clear": "Clear"
+  },
+  "tabs": {
+    "home": "Pokédex",
+    "favorites": "Favorites",
+    "ranking": "Ranking",
+    "settings": "Settings"
+  },
+  "pokemon": {
+    "details": "Details",
+    "height": "Height",
+    "weight": "Weight",
+    "experience": "Experience",
+    "abilities": "Abilities",
+    "stats": "Stats",
+    "types": "Types",
+    "description": "Description",
+    "shiny": "Shiny",
+    "normal": "Normal",
+    "favorite": "Add to Favorites",
+    "unfavorite": "Remove from Favorites",
+    "addedToFavorites": "Added to favorites!",
+    "removedFromFavorites": "Removed from favorites!",
+    "notFound": "Pokémon not found",
+    "searchPlaceholder": "Type Pokémon name...",
+    "generation": "Generation",
+    "habitat": "Habitat",
+    "color": "Color"
+  },
+  "stats": {
+    "hp": "HP",
+    "attack": "Attack",
+    "defense": "Defense",
+    "special-attack": "Special Attack",
+    "special-defense": "Special Defense",
+    "speed": "Speed"
+  },
+  "types": {
+    "normal": "Normal",
+    "fighting": "Fighting",
+    "flying": "Flying",
+    "poison": "Poison",
+    "ground": "Ground",
+    "rock": "Rock",
+    "bug": "Bug",
+    "ghost": "Ghost",
+    "steel": "Steel",
+    "fire": "Fire",
+    "water": "Water",
+    "grass": "Grass",
+    "electric": "Electric",
+    "psychic": "Psychic",
+    "ice": "Ice",
+    "dragon": "Dragon",
+    "dark": "Dark",
+    "fairy": "Fairy"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "No favorite Pokémon yet",
+    "emptyMessage": "Explore the Pokédex and add your favorite Pokémon!"
+  },
+  "ranking": {
+    "title": "Global Ranking",
+    "mostFavorited": "Most Favorited",
+    "position": "Position",
+    "favorites": "Favorites",
+    "empty": "Ranking not available",
+    "emptyMessage": "Ranking will be updated soon!"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "music": "Music",
+    "volume": "Volume",
+    "about": "About",
+    "version": "Version",
+    "developer": "Developer",
+    "light": "Light",
+    "dark": "Dark",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "music": {
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Restart",
+    "volume": "Volume"
+  },
+  "filters": {
+    "all": "All",
+    "sortBy": "Sort by",
+    "sortByName": "Name",
+    "sortById": "Number",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "filterByType": "Filter by type",
+    "generation": "Generation"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    "showing": "Showing",
+    "results": "results"
+  }
+}

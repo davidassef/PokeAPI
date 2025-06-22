@@ -1,0 +1,311 @@
+ion-content {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+// Cards dos Pokémon
+.pokemon-card {
+  position: relative;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  &.shiny {
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+}
+
+// Botão de favorito
+.favorite-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+
+// Container da imagem
+.pokemon-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 12px;
+  margin: 16px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+    border-radius: 50%;
+    z-index: 1;
+  }
+}
+
+.pokemon-image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// ID do Pokémon
+.pokemon-id {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+// Nome do Pokémon
+.pokemon-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 12px;
+  color: var(--ion-color-dark);
+}
+
+// Tipos de Pokémon
+.pokemon-types {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.pokemon-type {
+  --background: var(--type-color, var(--ion-color-medium));
+  --color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  height: 24px;
+  border-radius: 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+// Cores dos tipos
+.type-normal { --type-color: #A8A878; }
+.type-fighting { --type-color: #C03028; }
+.type-flying { --type-color: #A890F0; }
+.type-poison { --type-color: #A040A0; }
+.type-ground { --type-color: #E0C068; }
+.type-rock { --type-color: #B8A038; }
+.type-bug { --type-color: #A8B820; }
+.type-ghost { --type-color: #705898; }
+.type-steel { --type-color: #B8B8D0; }
+.type-fire { --type-color: #F08030; }
+.type-water { --type-color: #6890F0; }
+.type-grass { --type-color: #78C850; }
+.type-electric { --type-color: #F8D030; }
+.type-psychic { --type-color: #F85888; }
+.type-ice { --type-color: #98D8D8; }
+.type-dragon { --type-color: #7038F8; }
+.type-dark { --type-color: #705848; }
+.type-fairy { --type-color: #EE99AC; }
+
+// Stats básicas
+.pokemon-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .stat-label {
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .stat-value {
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+}
+
+// Barra de pesquisa
+ion-searchbar {
+  --background: rgba(255, 255, 255, 0.9);
+  --border-radius: 12px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin: 16px;
+}
+
+// Segmento de filtros
+ion-segment {
+  margin: 0 16px 16px 16px;
+  --background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+// Container de loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+
+  p {
+    margin-top: 16px;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+}
+
+// Estado vazio
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  ion-icon {
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  h2 {
+    color: var(--ion-color-dark);
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin-bottom: 24px;
+    max-width: 280px;
+  }
+}
+
+// Grid responsivo
+ion-grid {
+  padding: 8px;
+}
+
+ion-col {
+  padding: 4px;
+}
+
+// Animações
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pokemon-card {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+// Dark theme
+body.dark-theme {
+  ion-content {
+    --background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+
+  .pokemon-card {
+    background: rgba(45, 55, 72, 0.95);
+    color: var(--ion-color-dark-contrast);
+  }
+
+  .pokemon-name {
+    color: var(--ion-color-dark-contrast);
+  }
+
+  .pokemon-id {
+    color: var(--ion-color-medium-tint);
+  }
+
+  .stat-value {
+    color: var(--ion-color-dark-contrast);
+  }
+
+  ion-searchbar {
+    --background: rgba(45, 55, 72, 0.9);
+    --color: var(--ion-color-dark-contrast);
+  }
+
+  ion-segment {
+    --background: rgba(45, 55, 72, 0.9);
+  }
+}
+
+// Responsividade
+@media (max-width: 576px) {
+  .pokemon-image-container {
+    height: 100px;
+  }
+
+  .pokemon-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .pokemon-name {
+    font-size: 1rem;
+  }
+
+  .pokemon-type {
+    font-size: 0.7rem;
+    min-width: 50px;
+  }
+}
+
+@media (min-width: 768px) {
+  .pokemon-card {
+    margin: 12px;
+  }
+
+  .pokemon-image-container {
+    height: 140px;
+  }
+
+  .pokemon-image {
+    width: 120px;
+    height: 120px;
+  }
+}
