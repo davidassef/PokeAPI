@@ -8,11 +8,11 @@ from app.core.config import settings
 
 class PokeAPIService:
     """Serviço para comunicação com a PokeAPI."""
-    
+
     def __init__(self):
         self.base_url = settings.pokeapi_base_url
         self.client = httpx.AsyncClient(timeout=30.0)
-    
+
     async def get_pokemon(self, pokemon_id_or_name: str) -> Optional[Dict]:
         """Busca dados de um Pokémon específico."""
         try:
@@ -22,7 +22,7 @@ class PokeAPIService:
             return response.json()
         except httpx.HTTPError:
             return None
-    
+
     async def get_pokemon_list(self, limit: int = 20, offset: int = 0) -> Optional[Dict]:
         """Busca lista de Pokémons com paginação."""
         try:
@@ -33,7 +33,7 @@ class PokeAPIService:
             return response.json()
         except httpx.HTTPError:
             return None
-    
+
     async def get_pokemon_species(self, pokemon_id_or_name: str) -> Optional[Dict]:
         """Busca dados da espécie do Pokémon (descrições, evoluções, etc)."""
         try:
@@ -43,7 +43,7 @@ class PokeAPIService:
             return response.json()
         except httpx.HTTPError:
             return None
-    
+
     async def get_pokemon_types(self) -> Optional[List[Dict]]:
         """Busca todos os tipos de Pokémon."""
         try:
@@ -54,7 +54,7 @@ class PokeAPIService:
             return data.get("results", [])
         except httpx.HTTPError:
             return None
-    
+
     async def get_type(self, type_name: str) -> Optional[Dict]:
         """Busca detalhes de um tipo específico."""
         try:
@@ -64,7 +64,7 @@ class PokeAPIService:
             return response.json()
         except httpx.HTTPError:
             return None
-    
+
     async def search_pokemon(self, query: str) -> List[Dict]:
         """Busca Pokémons por nome (simulação de busca)."""
         try:
@@ -73,13 +73,13 @@ class PokeAPIService:
             pokemon = await self.get_pokemon(query.lower())
             if pokemon:
                 return [pokemon]
-            
+
             # Se não encontrar, retorna lista vazia
             # Em uma implementação real, poderíamos fazer busca fuzzy
             return []
         except Exception:
             return []
-    
+
     async def close(self):
         """Fecha o cliente HTTP."""
         await self.client.aclose()
