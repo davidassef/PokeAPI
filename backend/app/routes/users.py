@@ -50,7 +50,8 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=User)
-def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user_update: UserUpdate,
+                db: Session = Depends(get_db)):
     """Atualiza usuário."""
     user = UserService.update_user(db, user_id, user_update)
     if not user:

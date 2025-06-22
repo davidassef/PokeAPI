@@ -11,14 +11,17 @@ from app.services.favorite_service import FavoriteService
 router = APIRouter(prefix="/favorites", tags=["favorites"])
 
 
-@router.post("/", response_model=FavoritePokemon, status_code=status.HTTP_201_CREATED)
-def add_favorite(favorite: FavoritePokemonCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=FavoritePokemon,
+             status_code=status.HTTP_201_CREATED)
+def add_favorite(favorite: FavoritePokemonCreate,
+                 db: Session = Depends(get_db)):
     """Adiciona Pokémon aos favoritos."""
     return FavoriteService.add_favorite(db, favorite)
 
 
 @router.delete("/{user_id}/{pokemon_id}", response_model=Message)
-def remove_favorite(user_id: int, pokemon_id: int, db: Session = Depends(get_db)):
+def remove_favorite(user_id: int, pokemon_id: int,
+                    db: Session = Depends(get_db)):
     """Remove Pokémon dos favoritos."""
     if not FavoriteService.remove_favorite(db, user_id, pokemon_id):
         raise HTTPException(
@@ -35,7 +38,8 @@ def get_user_favorites(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/check/{user_id}/{pokemon_id}")
-def check_favorite(user_id: int, pokemon_id: int, db: Session = Depends(get_db)):
+def check_favorite(user_id: int, pokemon_id: int,
+                   db: Session = Depends(get_db)):
     """Verifica se Pokémon é favorito do usuário."""
     is_favorite = FavoriteService.is_favorite(db, user_id, pokemon_id)
     return {"is_favorite": is_favorite}

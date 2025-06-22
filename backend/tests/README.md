@@ -176,7 +176,7 @@ Os testes estão preparados para integração com pipelines de CI/CD:
 - name: Run Tests
   run: |
     python -m pytest tests/ --cov=app --cov-report=xml
-    
+
 - name: Upload Coverage
   uses: codecov/codecov-action@v1
 ```
