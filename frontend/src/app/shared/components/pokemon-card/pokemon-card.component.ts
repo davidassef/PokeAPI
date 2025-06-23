@@ -14,10 +14,9 @@ export class PokemonCardComponent implements OnInit {
   @Input() showFavoriteButton = true;
   @Input() showStats = false;
   @Input() animationDelay = 0;
+  @Input() isFavorite = false;
   @Output() favoriteToggle = new EventEmitter<Pokemon>();
   @Output() cardClick = new EventEmitter<Pokemon>();
-
-  isFavorite = false;
   isLoading = false;
 
   constructor(
@@ -25,15 +24,15 @@ export class PokemonCardComponent implements OnInit {
     private favoritesService: FavoritesService,
     private audioService: AudioService
   ) {}
-
   ngOnInit() {
-    this.checkIfFavorite();
+    // Se isFavorite não foi passado como input, verifica através do serviço
+    if (!this.isFavorite) {
+      this.checkIfFavorite();
+    }
   }
 
   private checkIfFavorite() {
-    this.favoritesService.getFavorites().subscribe(favorites => {
-      this.isFavorite = favorites.some(fav => fav.id === this.pokemon.id);
-    });
+    this.isFavorite = this.favoritesService.isFavorite(this.pokemon.id);
   }
 
   onCardClick() {

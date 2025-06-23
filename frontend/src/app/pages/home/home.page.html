@@ -10,11 +10,10 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-
   <!-- Search and Filter Component -->
   <div *ngIf="showSearch" class="search-container">
     <app-search-filter
-      [currentFilters]="currentFilters"
+      [currentFilters]="currentFilterOptions"
       (filtersChanged)="onFiltersChanged($event)"
       (searchChanged)="onSearchChanged($event)">
     </app-search-filter>

@@ -129,6 +129,10 @@ export class RankingPage implements OnInit, OnDestroy {
     return this.viewMode === 'global' ? this.globalRanking : this.localRanking;
   }
 
+  get currentRanking(): PokemonRanking[] {
+    return this.getCurrentRanking();
+  }
+
   getRankBadgeColor(rank: number): string {
     switch (rank) {
       case 1: return 'warning'; // Ouro

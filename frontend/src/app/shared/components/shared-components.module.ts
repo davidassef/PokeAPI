@@ -1,36 +1,41 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Components
 import { PokemonCardComponent } from './pokemon-card/pokemon-card.component';
-import { SearchFilterComponent } from './search-filter/search-filter.component';
-import { MusicPlayerComponent } from './music-player/music-player.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { MusicPlayerComponent } from './music-player/music-player.component';
+import { SearchFilterComponent } from './search-filter/search-filter.component';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
+
+// Shared Pipes Module
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 @NgModule({
   declarations: [
     PokemonCardComponent,
-    SearchFilterComponent,
-    MusicPlayerComponent,
     LoadingSpinnerComponent,
+    MusicPlayerComponent,
+    SearchFilterComponent,
     SidebarMenuComponent
-  ],
-  imports: [
+  ],  imports: [
     CommonModule,
     IonicModule,
+    TranslateModule,
+    FormsModule,
     ReactiveFormsModule,
-    TranslateModule
+    SharedPipesModule
   ],
   exports: [
     PokemonCardComponent,
-    SearchFilterComponent,
-    MusicPlayerComponent,
     LoadingSpinnerComponent,
-    SidebarMenuComponent
+    MusicPlayerComponent,
+    SearchFilterComponent,
+    SidebarMenuComponent,
+    SharedPipesModule
   ]
 })
 export class SharedComponentsModule { }
