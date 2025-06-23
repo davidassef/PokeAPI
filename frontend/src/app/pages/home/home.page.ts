@@ -36,6 +36,16 @@ export class HomePage implements OnInit, OnDestroy {
   pokemonPerPage = 20;
   private destroy$ = new Subject<void>();
 
+  get currentFilterOptions(): FilterOptions {
+    return {
+      searchTerm: this.currentFilters.name || '',
+      selectedTypes: this.currentFilters.type ? [this.currentFilters.type] : [],
+      selectedGeneration: this.currentFilters.generation || null,
+      sortBy: this.currentFilters.sortBy,
+      sortOrder: this.currentFilters.sortOrder
+    };
+  }
+
   constructor(
     private router: Router,
     private pokeApiService: PokeApiService,
@@ -141,16 +151,16 @@ export class HomePage implements OnInit, OnDestroy {
    */
   toggleSearch() {
     this.showSearch = !this.showSearch;
-  }
-
-  /**
+  }  /**
    * Manipula mudanças nos filtros
    */
   onFiltersChanged(filters: FilterOptions) {
     this.currentFilters = {
-      ...this.currentFilters,
+      name: filters.searchTerm || '',
       type: filters.selectedTypes[0] || '',
-      generation: filters.selectedGeneration || undefined
+      generation: filters.selectedGeneration || undefined,
+      sortBy: (filters.sortBy === 'height' || filters.sortBy === 'weight') ? 'id' : filters.sortBy,
+      sortOrder: filters.sortOrder
     };
     this.applyFilters();
   }

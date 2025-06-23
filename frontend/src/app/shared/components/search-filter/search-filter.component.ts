@@ -20,7 +20,16 @@ export interface FilterOptions {
 export class SearchFilterComponent implements OnInit, OnDestroy {
   @Input() showAdvancedFilters = true;
   @Input() placeholder = 'Search Pokémon...';
+  @Input() currentFilters: FilterOptions = {
+    searchTerm: '',
+    selectedTypes: [],
+    selectedGeneration: null,
+    sortBy: 'id',
+    sortOrder: 'asc'
+  };
   @Output() filterChange = new EventEmitter<FilterOptions>();
+  @Output() filtersChanged = new EventEmitter<FilterOptions>();
+  @Output() searchChanged = new EventEmitter<string>();
   @Output() clearFilters = new EventEmitter<void>();
 
   filterForm: FormGroup;
@@ -58,9 +67,12 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       sortOrder: ['asc']
     });
   }
-
   ngOnInit() {
     this.loadPokemonTypes();
+    // Inicializar o form com os filtros atuais se fornecidos
+    if (this.currentFilters) {
+      this.filterForm.patchValue(this.currentFilters);
+    }
     this.setupFormSubscriptions();
   }
 
@@ -82,7 +94,6 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       ];
     }
   }
-
   private setupFormSubscriptions() {
     // Debounce search term changes
     this.filterForm.get('searchTerm')?.valueChanges
@@ -91,7 +102,8 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
-      .subscribe(() => {
+      .subscribe((searchTerm) => {
+        this.searchChanged.emit(searchTerm || '');
         this.emitFilterChange();
       });
 
@@ -127,9 +139,9 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       selectedTypes: this.filterForm.get('selectedTypes')?.value || [],
       selectedGeneration: this.filterForm.get('selectedGeneration')?.value,
       sortBy: this.filterForm.get('sortBy')?.value || 'id',
-      sortOrder: this.filterForm.get('sortOrder')?.value || 'asc'
-    };
+      sortOrder: this.filterForm.get('sortOrder')?.value || 'asc'    };
     this.filterChange.emit(filterOptions);
+    this.filtersChanged.emit(filterOptions);
   }
 
   onTypeToggle(type: string) {

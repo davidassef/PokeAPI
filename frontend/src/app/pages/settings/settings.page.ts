@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AppSettings } from '../../models/app.model';
 import { SettingsService } from '../../core/services/settings.service';
+import { AudioService, AudioState } from '../../core/services/audio.service';
+import { FavoritesService } from '../../core/services/favorites.service';
 
 @Component({
   selector: 'app-settings',
@@ -24,11 +26,22 @@ export class SettingsPage implements OnInit, OnDestroy {
     autoPlayMusic: false
   };
 
+  audioState: AudioState = {
+    isPlaying: false,
+    currentTrack: null,
+    currentTime: 0,
+    duration: 0,
+    volume: 0.7,
+    isLoading: false
+  };
+
   languages = [
     { code: 'pt-BR', name: 'Português (Brasil)', flag: '🇧🇷' },
     { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
     { code: 'es-ES', name: 'Español (España)', flag: '🇪🇸' }
   ];
+
+  pokemonPerPageOptions = [10, 20, 30, 50, 100];
 
   private destroy$ = new Subject<void>();
 
@@ -36,11 +49,16 @@ export class SettingsPage implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private translate: TranslateService,
     private toastController: ToastController,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private audioService: AudioService,
+    private favoritesService: FavoritesService
   ) {}
 
   ngOnInit() {
     this.loadSettings();
+    this.audioService.audioState$.pipe(takeUntil(this.destroy$)).subscribe(state => {
+      this.audioState = { ...state };
+    });
   }
 
   ngOnDestroy() {
@@ -110,6 +128,99 @@ export class SettingsPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Erro ao alterar tema:', error);
     }
+  }
+
+  onSettingChange(setting: keyof AppSettings, value: any) {
+    this.settingsService.saveSettings({ [setting]: value });
+  }
+
+  selectTrack() {
+    // Exemplo: seleciona próxima faixa
+    const tracks = this.audioService.getAvailableTracks();
+    const current = this.audioState.currentTrack;
+    let idx = tracks.findIndex(t => t.id === current?.id);
+    idx = (idx + 1) % tracks.length;
+    this.audioService.loadTrack(tracks[idx].id);
+  }
+
+  togglePlayPause() {
+    this.audioService.togglePlayPause();
+  }
+
+  onVolumeChange(event: any) {
+    const value = event.detail?.value ?? event;
+    this.audioService.setVolume(value / 100);
+  }
+
+  formatTime(seconds: number): string {
+    if (!seconds) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  exportFavorites() {
+    const data = this.favoritesService.exportFavorites();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'favorites.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  async importFavorites() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      await this.favoritesService.importFavorites(text);
+      this.showToast('FAVORITES.IMPORTED');
+    };
+    input.click();
+  }
+
+  clearAllFavorites() {
+    this.favoritesService.clearAllFavorites();
+    this.showToast('FAVORITES.CLEARED');
+  }
+
+  async exportSettings() {
+    const data = await this.settingsService.exportSettings();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'settings.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  async importSettings() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = async (e: any) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      await this.settingsService.importSettings(text);
+      this.showToast('SETTINGS.IMPORTED');
+    };
+    input.click();
+  }
+
+  async resetSettings() {
+    await this.settingsService.resetSettings();
+    this.showToast('SETTINGS.RESET');
+  }
+
+  showAbout() {
+    alert('PokéAPIApp\nDesenvolvido com Angular + Ionic.\nPowered by PokéAPI.');
   }
 
   /**

@@ -6,6 +6,8 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { RankingPageRoutingModule } from './ranking-routing.module';
 import { RankingPage } from './ranking.page';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
+import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
 
 @NgModule({
   imports: [
@@ -13,7 +15,9 @@ import { RankingPage } from './ranking.page';
     FormsModule,
     IonicModule,
     TranslateModule,
-    RankingPageRoutingModule
+    RankingPageRoutingModule,
+    SharedComponentsModule,
+    SharedPipesModule
   ],
   declarations: [RankingPage]
 })
