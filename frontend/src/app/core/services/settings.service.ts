@@ -8,10 +8,10 @@ import { AppSettings } from '../../models/app.model';
   providedIn: 'root'
 })
 export class SettingsService {
-  private readonly SETTINGS_KEY = 'app-settings';
-  private settingsSubject = new BehaviorSubject<AppSettings>({
+  private readonly SETTINGS_KEY = 'app-settings';  private settingsSubject = new BehaviorSubject<AppSettings>({
     language: 'pt-BR',
     theme: 'light',
+    darkMode: false,
     soundEnabled: true,
     musicEnabled: true,
     vibrationEnabled: true,
@@ -54,9 +54,7 @@ export class SettingsService {
       console.error('Erro ao salvar configurações:', error);
       throw error;
     }
-  }
-
-  async updateLanguage(language: string): Promise<void> {
+  }  async updateLanguage(language: 'pt-BR' | 'en-US' | 'es-ES'): Promise<void> {
     await this.storage.set('app-language', language);
     await this.saveSettings({ language });
     this.translate.use(language);
@@ -91,10 +89,10 @@ export class SettingsService {
     return this.settingsSubject.value;
   }
 
-  async resetSettings(): Promise<void> {
-    const defaultSettings: AppSettings = {
+  async resetSettings(): Promise<void> {    const defaultSettings: AppSettings = {
       language: 'pt-BR',
       theme: 'light',
+      darkMode: false,
       soundEnabled: true,
       musicEnabled: true,
       vibrationEnabled: true,
