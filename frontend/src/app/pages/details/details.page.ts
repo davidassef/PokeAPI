@@ -247,9 +247,7 @@ export class DetailsPage implements OnInit, OnDestroy {
    * Obtém movimentos recentes
    */
   getRecentMoves(): { move: { name: string } }[] {
-    // Como a interface Pokemon atual não tem moves, vamos retornar um array vazio por enquanto
-    // TODO: Adicionar moves à interface Pokemon se necessário
-    return [];
+    return this.pokemon?.moves?.slice(0, 10) || [];
   }
 
   /**

@@ -1,8 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button [text]="'BACK' | translate"></ion-back-button>
-    </ion-buttons>    <ion-title>{{ pokemon?.name | titlecase }}</ion-title>
+      <ion-back-button [text]="'details.back' | translate"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'details.title' | translate:{name: (pokemon?.name | titlecase)} }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="sharePokemon()" *ngIf="pokemon">
         <ion-icon name="share-outline"></ion-icon>
@@ -21,7 +22,7 @@
     [overlay]="true"
     size="large"
     type="pokeball"
-    [message]="'DETAILS.LOADING' | translate">
+    [message]="'details.loading' | translate">
   </app-loading-spinner>
 
   <!-- Pokemon Details -->
@@ -60,10 +61,10 @@
     <div class="image-gallery">
       <ion-segment [(ngModel)]="selectedImageType" (ionChange)="onImageTypeChange($event)">
         <ion-segment-button value="default">
-          <ion-label>{{ 'DETAILS.DEFAULT' | translate }}</ion-label>
+          <ion-label>{{ 'details.default' | translate }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="shiny">
-          <ion-label>{{ 'DETAILS.SHINY' | translate }}</ion-label>
+          <ion-label>{{ 'details.shiny' | translate }}</ion-label>
         </ion-segment-button>
       </ion-segment>
 
@@ -80,20 +81,20 @@
     <!-- Basic Info -->
     <ion-card class="info-card">
       <ion-card-header>
-        <ion-card-title>{{ 'DETAILS.BASIC_INFO' | translate }}</ion-card-title>
+        <ion-card-title>{{ 'details.basic_info' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="info-grid">
           <div class="info-item">
-            <span class="label">{{ 'DETAILS.HEIGHT' | translate }}</span>
+            <span class="label">{{ 'details.height' | translate }}</span>
             <span class="value">{{ pokemon.height | pokemonHeight }}</span>
           </div>
           <div class="info-item">
-            <span class="label">{{ 'DETAILS.WEIGHT' | translate }}</span>
+            <span class="label">{{ 'details.weight' | translate }}</span>
             <span class="value">{{ pokemon.weight | pokemonWeight }}</span>
           </div>
           <div class="info-item">
-            <span class="label">{{ 'DETAILS.BASE_EXPERIENCE' | translate }}</span>
+            <span class="label">{{ 'details.base_experience' | translate }}</span>
             <span class="value">{{ pokemon.base_experience || 'N/A' }}</span>
           </div>
         </div>
@@ -103,7 +104,7 @@
     <!-- Stats -->
     <ion-card class="stats-card">
       <ion-card-header>
-        <ion-card-title>{{ 'DETAILS.STATS' | translate }}</ion-card-title>
+        <ion-card-title>{{ 'details.stats' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="stats-list">          <div class="stat-item" *ngFor="let stat of pokemon.stats">
@@ -121,7 +122,7 @@
         </div>
 
         <div class="stats-total">
-          <strong>{{ 'DETAILS.TOTAL' | translate }}: {{ getTotalStats() }}</strong>
+          <strong>{{ 'details.total' | translate }}: {{ getTotalStats() }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -129,7 +130,7 @@
     <!-- Abilities -->
     <ion-card class="abilities-card">
       <ion-card-header>
-        <ion-card-title>{{ 'DETAILS.ABILITIES' | translate }}</ion-card-title>
+        <ion-card-title>{{ 'details.abilities' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="abilities-list">
@@ -139,7 +140,7 @@
             [color]="ability.is_hidden ? 'warning' : 'primary'">
             <ion-label>
               {{ ability.ability.name | titlecase }}
-              <span *ngIf="ability.is_hidden"> ({{ 'DETAILS.HIDDEN' | translate }})</span>
+              <span *ngIf="ability.is_hidden"> ({{ 'details.hidden' | translate }})</span>
             </ion-label>
           </ion-chip>
         </div>
@@ -149,13 +150,13 @@
     <!-- Moves (sample) -->
     <ion-card class="moves-card">
       <ion-card-header>
-        <ion-card-title>{{ 'DETAILS.MOVES' | translate }}</ion-card-title>
-        <ion-card-subtitle>{{ 'DETAILS.RECENT_MOVES' | translate }}</ion-card-subtitle>
+        <ion-card-title>{{ 'details.moves' | translate }}</ion-card-title>
+        <ion-card-subtitle>{{ 'details.recent_moves' | translate }}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <div class="moves-grid">
           <ion-chip
-            *ngFor="let move of getRecentMoves()"
+            *ngFor="let move of pokemon?.moves || []"
             color="secondary"
             outline>
             <ion-label>{{ move.move.name | titlecase }}</ion-label>
@@ -168,10 +169,10 @@
   <!-- Error State -->
   <div class="error-state" *ngIf="!loading && !pokemon">
     <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-    <h2>{{ 'DETAILS.ERROR_TITLE' | translate }}</h2>
-    <p>{{ 'DETAILS.ERROR_MESSAGE' | translate }}</p>
+    <h2>{{ 'details.error_title' | translate }}</h2>
+    <p>{{ 'details.error_message' | translate }}</p>
     <ion-button fill="outline" (click)="retry()">
-      {{ 'DETAILS.RETRY' | translate }}
+      {{ 'details.retry' | translate }}
     </ion-button>
   </div>
 </ion-content>

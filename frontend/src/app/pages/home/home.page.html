@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ 'HOME.TITLE' | translate }}</ion-title>
+    <ion-title>{{ 'tabs.home' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleSearch()">
         <ion-icon name="search-outline"></ion-icon>
@@ -23,7 +23,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ 'HOME.TITLE' | translate }}</ion-title>
+      <ion-title size="large">{{ 'tabs.home' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -32,7 +32,7 @@
     *ngIf="loading && pokemon.length === 0"
     [overlay]="true"
     size="large"
-    [message]="'HOME.LOADING' | translate">
+    [message]="'home.loading' | translate">
   </app-loading-spinner>
 
   <!-- Pokemon Grid -->
@@ -50,10 +50,10 @@
   <!-- Empty State -->
   <div class="empty-state" *ngIf="!loading && pokemon.length === 0">
     <ion-icon name="search-outline" size="large"></ion-icon>
-    <h2>{{ 'HOME.NO_RESULTS' | translate }}</h2>
-    <p>{{ 'HOME.NO_RESULTS_MESSAGE' | translate }}</p>
+    <h2>{{ 'home.no_results' | translate }}</h2>
+    <p>{{ 'home.no_results_message' | translate }}</p>
     <ion-button fill="outline" (click)="clearFilters()">
-      {{ 'HOME.CLEAR_FILTERS' | translate }}
+      {{ 'home.clear_filters' | translate }}
     </ion-button>
   </div>
 
@@ -64,7 +64,7 @@
     [disabled]="!hasMoreData">
     <ion-infinite-scroll-content
       loadingSpinner="bubbles"
-      [loadingText]="'HOME.LOADING_MORE' | translate">
+      [loadingText]="'home.loading_more' | translate">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 

@@ -24,25 +24,25 @@ export interface MenuItem {
 export class SidebarMenuComponent implements OnInit, OnDestroy {
   menuItems: MenuItem[] = [
     {
-      title: 'MENU.HOME',
+      title: 'menu.home',
       url: '/tabs/home',
       icon: 'home-outline',
       color: 'primary'
     },
     {
-      title: 'MENU.FAVORITES',
+      title: 'menu.favorites',
       url: '/tabs/favorites',
       icon: 'heart-outline',
       color: 'danger'
     },
     {
-      title: 'MENU.RANKING',
+      title: 'menu.ranking',
       url: '/tabs/ranking',
       icon: 'trophy-outline',
       color: 'warning'
     },
     {
-      title: 'MENU.SETTINGS',
+      title: 'menu.settings',
       url: '/tabs/settings',
       icon: 'settings-outline',
       color: 'medium'
@@ -51,19 +51,19 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
 
   additionalItems: MenuItem[] = [
     {
-      title: 'MENU.RANDOM_POKEMON',
+      title: 'menu.random_pokemon',
       url: '',
       icon: 'shuffle-outline',
       color: 'success'
     },
     {
-      title: 'MENU.TYPE_CHART',
+      title: 'menu.type_chart',
       url: '',
       icon: 'grid-outline',
       color: 'tertiary'
     },
     {
-      title: 'MENU.STATS',
+      title: 'menu.stats',
       url: '',
       icon: 'stats-chart-outline',
       color: 'secondary'
@@ -146,14 +146,14 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
 
   private async handleSpecialAction(item: MenuItem) {
     switch (item.title) {
-      case 'MENU.RANDOM_POKEMON':
+      case 'menu.random_pokemon':
         await this.goToRandomPokemon();
         break;
-      case 'MENU.TYPE_CHART':
+      case 'menu.type_chart':
         // TODO: Implement type chart modal
         console.log('Type chart not implemented yet');
         break;
-      case 'MENU.STATS':
+      case 'menu.stats':
         // TODO: Implement stats modal
         console.log('Stats modal not implemented yet');
         break;

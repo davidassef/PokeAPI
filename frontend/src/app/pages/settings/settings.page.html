@@ -3,14 +3,14 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ 'SETTINGS.TITLE' | translate }}</ion-title>
+    <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ 'SETTINGS.TITLE' | translate }}</ion-title>
+      <ion-title size="large">{{ 'tabs.settings' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -20,14 +20,14 @@
     [overlay]="false"
     size="medium"
     type="standard"
-    [message]="'SETTINGS.LOADING' | translate">
+    [message]="'settings_page.loading' | translate">
   </app-loading-spinner>
   <!-- Seção de Idioma e Tema -->
   <ion-card class="settings-card" *ngIf="!loading">
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="globe-outline" color="primary"></ion-icon>
-        {{ 'SETTINGS.LANGUAGE_THEME' | translate }}
+        {{ 'settings_page.language_theme' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
@@ -35,7 +35,7 @@
       <ion-item button (click)="openLanguageModal()">
         <ion-icon name="language-outline" slot="start" color="medium"></ion-icon>
         <ion-label>
-          <h3>{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
+          <h3>{{ 'settings_page.language' | translate }}</h3>
           <p>{{ getCurrentLanguageName() }}</p>
         </ion-label>
         <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
@@ -44,7 +44,7 @@
       <!-- Seleção de tema -->
       <ion-item>
         <ion-icon name="moon-outline" slot="start" color="medium"></ion-icon>
-        <ion-label>{{ 'SETTINGS.DARK_THEME' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.dark_theme' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.darkMode"
           (ionChange)="onThemeChange()"
@@ -59,14 +59,14 @@
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="musical-notes" color="secondary"></ion-icon>
-        {{ 'AUDIO_SETTINGS' | translate }}
+        {{ 'settings_page.audio_settings' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <!-- Música habilitada -->
       <ion-item>
         <ion-icon name="music-note" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'ENABLE_MUSIC' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.enable_music' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.musicEnabled"
           (ionChange)="onSettingChange('musicEnabled', $event.detail.checked)">
@@ -76,7 +76,7 @@
       <!-- Sons habilitados -->
       <ion-item>
         <ion-icon name="volume-high" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'ENABLE_SOUNDS' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.enable_sounds' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.soundEnabled"
           (ionChange)="onSettingChange('soundEnabled', $event.detail.checked)">
@@ -86,7 +86,7 @@
       <!-- Vibração -->
       <ion-item>
         <ion-icon name="phone-portrait" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'ENABLE_VIBRATION' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.enable_vibration' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.vibrationEnabled"
           (ionChange)="onSettingChange('vibrationEnabled', $event.detail.checked)">
@@ -96,7 +96,7 @@
       <!-- Auto-play música -->
       <ion-item>
         <ion-icon name="play-circle" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'AUTO_PLAY_MUSIC' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.auto_play_music' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.autoPlayMusic"
           (ionChange)="onSettingChange('autoPlayMusic', $event.detail.checked)">
@@ -106,9 +106,9 @@
       <!-- Player de música -->
       <div class="music-player" *ngIf="settings.musicEnabled">
         <ion-item>
-          <ion-label>{{ 'CURRENT_TRACK' | translate }}</ion-label>
+          <ion-label>{{ 'settings_page.current_track' | translate }}</ion-label>
           <ion-button fill="outline" size="small" (click)="selectTrack()">
-            {{ audioState.currentTrack?.name || ('SELECT_TRACK' | translate) }}
+            {{ audioState.currentTrack?.name || ('settings_page.select_track' | translate) }}
           </ion-button>
         </ion-item>
 
@@ -150,13 +150,13 @@
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="eye" color="tertiary"></ion-icon>
-        {{ 'DISPLAY_SETTINGS' | translate }}
+        {{ 'settings_page.display_settings' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <!-- Pokémon por página -->
       <ion-item>
-        <ion-label>{{ 'POKEMON_PER_PAGE' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.pokemon_per_page' | translate }}</ion-label>
         <ion-select
           [(ngModel)]="settings.pokemonPerPage"
           (ionChange)="onSettingChange('pokemonPerPage', $event.detail.value)"
@@ -170,7 +170,7 @@
       <!-- Mostrar chance de shiny -->
       <ion-item>
         <ion-icon name="star" slot="start" color="tertiary"></ion-icon>
-        <ion-label>{{ 'SHOW_SHINY_CHANCE' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.show_shiny_chance' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.showShinyChance"
           (ionChange)="onSettingChange('showShinyChance', $event.detail.checked)">
@@ -184,25 +184,25 @@
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="heart" color="danger"></ion-icon>
-        {{ 'FAVORITES_MANAGEMENT' | translate }}
+        {{ 'settings_page.favorites_management' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item button (click)="exportFavorites()">
         <ion-icon name="download" slot="start" color="success"></ion-icon>
-        <ion-label>{{ 'EXPORT_FAVORITES' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.export_favorites' | translate }}</ion-label>
         <ion-note slot="end">JSON</ion-note>
       </ion-item>
 
       <ion-item button (click)="importFavorites()">
         <ion-icon name="cloud-upload" slot="start" color="primary"></ion-icon>
-        <ion-label>{{ 'IMPORT_FAVORITES' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.import_favorites' | translate }}</ion-label>
         <ion-note slot="end">JSON</ion-note>
       </ion-item>
 
       <ion-item button (click)="clearAllFavorites()">
         <ion-icon name="trash" slot="start" color="danger"></ion-icon>
-        <ion-label color="danger">{{ 'CLEAR_ALL_FAVORITES' | translate }}</ion-label>
+        <ion-label color="danger">{{ 'settings_page.clear_all_favorites' | translate }}</ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -212,25 +212,25 @@
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="settings" color="medium"></ion-icon>
-        {{ 'ADVANCED_SETTINGS' | translate }}
+        {{ 'settings_page.advanced_settings' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item button (click)="exportSettings()">
         <ion-icon name="download" slot="start" color="success"></ion-icon>
-        <ion-label>{{ 'EXPORT_SETTINGS' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.export_settings' | translate }}</ion-label>
         <ion-note slot="end">JSON</ion-note>
       </ion-item>
 
       <ion-item button (click)="importSettings()">
         <ion-icon name="cloud-upload" slot="start" color="primary"></ion-icon>
-        <ion-label>{{ 'IMPORT_SETTINGS' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.import_settings' | translate }}</ion-label>
         <ion-note slot="end">JSON</ion-note>
       </ion-item>
 
       <ion-item button (click)="resetSettings()">
         <ion-icon name="refresh" slot="start" color="warning"></ion-icon>
-        <ion-label color="warning">{{ 'RESET_SETTINGS' | translate }}</ion-label>
+        <ion-label color="warning">{{ 'settings_page.reset_settings' | translate }}</ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -240,24 +240,24 @@
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="information-circle" color="primary"></ion-icon>
-        {{ 'APP_INFO' | translate }}
+        {{ 'settings_page.app_info' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item button (click)="showAbout()">
         <ion-icon name="help-circle" slot="start" color="primary"></ion-icon>
-        <ion-label>{{ 'ABOUT_APP' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.about_app' | translate }}</ion-label>
       </ion-item>
 
       <ion-item>
         <ion-icon name="code-slash" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'VERSION' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.version' | translate }}</ion-label>
         <ion-note slot="end">1.0.0</ion-note>
       </ion-item>
 
       <ion-item>
         <ion-icon name="globe" slot="start" color="tertiary"></ion-icon>
-        <ion-label>{{ 'DATA_SOURCE' | translate }}</ion-label>
+        <ion-label>{{ 'settings_page.data_source' | translate }}</ion-label>
         <ion-note slot="end">PokéAPI</ion-note>
       </ion-item>
     </ion-card-content>

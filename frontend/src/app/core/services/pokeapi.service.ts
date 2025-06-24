@@ -193,4 +193,44 @@ export class PokeApiService {
       ];
     }
   }
+
+  /**
+   * Obtém o ranking global de jogadores
+   * @returns Observable com lista de rankings globais
+   */
+  getGlobalRanking(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/ranking/global`).pipe(
+      catchError(error => {
+        console.error('Erro ao buscar ranking global:', error);
+        return from([[]]);
+      })
+    );
+  }
+
+  /**
+   * Obtém o ranking local de jogadores
+   * @param region Região para o ranking local
+   * @returns Observable com lista de rankings locais
+   */
+  getLocalRanking(region: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/ranking/local`, {
+      params: new HttpParams().set('region', region)
+    }).pipe(
+      catchError(error => {
+        console.error('Erro ao buscar ranking local:', error);
+        return from([[]]);
+      })
+    );
+  }
+
+  /**
+   * Obtém a URL da imagem oficial do Pokémon
+   * @param identifier ID ou nome do Pokémon
+   * @returns URL da imagem oficial
+   */
+  getPokemonOfficialArtworkUrl(identifier: string | number): Observable<string> {
+    return this.getPokemon(identifier).pipe(
+      map(pokemon => pokemon.sprites?.other?.['official-artwork']?.front_default || '')
+    );
+  }
 }

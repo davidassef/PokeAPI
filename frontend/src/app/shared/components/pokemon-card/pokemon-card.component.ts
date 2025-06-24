@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Pokemon } from '../../../models/pokemon.model';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AudioService } from '../../../core/services/audio.service';
+import { PokeApiService } from '../../../core/services/pokeapi.service';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -18,21 +19,31 @@ export class PokemonCardComponent implements OnInit {
   @Output() favoriteToggle = new EventEmitter<Pokemon>();
   @Output() cardClick = new EventEmitter<Pokemon>();
   isLoading = false;
+  imageUrl: string = '';
 
   constructor(
     private router: Router,
     private favoritesService: FavoritesService,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private pokeApiService: PokeApiService
   ) {}
   ngOnInit() {
     // Se isFavorite não foi passado como input, verifica através do serviço
     if (!this.isFavorite) {
       this.checkIfFavorite();
     }
+    this.loadPokemonImage();
   }
 
   private checkIfFavorite() {
     this.isFavorite = this.favoritesService.isFavorite(this.pokemon.id);
+  }
+
+  private loadPokemonImage() {
+    this.pokeApiService.getPokemonOfficialArtworkUrl(this.pokemon.id).subscribe(
+      url => this.imageUrl = url,
+      error => console.error('Error loading Pokemon image:', error)
+    );
   }
 
   onCardClick() {
