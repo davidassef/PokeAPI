@@ -16,6 +16,7 @@ export interface Pokemon {
     name: string;
     url: string;
   };
+  moves: PokemonMove[];
 }
 
 /**
@@ -152,4 +153,14 @@ export interface PokemonRanking {
   pokemon_id: number;
   pokemon_name: string;
   favorite_count: number;
+}
+
+/**
+ * Interface para movimentos do Pokémon
+ */
+export interface PokemonMove {
+  move: {
+    name: string;
+    url: string;
+  };
 }

@@ -3,10 +3,10 @@
     <ion-toolbar class="menu-header">
       <div class="header-content">
         <div class="logo-section">
-          <img src="assets/img/pokeball-logo.png" alt="Pokédex" class="logo">
+          <img src="assets/img/pokedex.png" alt="Pokédex" class="logo" style="width:56px;height:56px;object-fit:contain;margin-right:12px;" />
           <div class="app-info">
-            <h2>{{ 'APP.NAME' | translate }}</h2>
-            <p>{{ 'APP.VERSION' | translate }} 1.0.0</p>
+            <h2>{{ 'app.name' | translate }}</h2>
+            <p>{{ 'app.version' | translate }} 1.0.0</p>
           </div>
         </div>
 
@@ -20,7 +20,7 @@
   <ion-content class="menu-content">
     <!-- User Stats Section -->
     <div class="user-stats-section">
-      <h3>{{ 'MENU.YOUR_PROGRESS' | translate }}</h3>
+      <h3>{{ 'menu.your_progress' | translate }}</h3>
 
       <div class="stats-cards">
         <div class="stat-card">
@@ -29,7 +29,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-number">{{ userStats.seenCount }}</span>
-            <span class="stat-label">{{ 'MENU.SEEN' | translate }}</span>
+            <span class="stat-label">{{ 'menu.seen' | translate }}</span>
           </div>
         </div>
 
@@ -39,7 +39,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-number">{{ userStats.caughtCount }}</span>
-            <span class="stat-label">{{ 'MENU.CAUGHT' | translate }}</span>
+            <span class="stat-label">{{ 'menu.caught' | translate }}</span>
           </div>
         </div>
 
@@ -49,7 +49,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-number">{{ userStats.favoritesCount }}</span>
-            <span class="stat-label">{{ 'MENU.FAVORITES' | translate }}</span>
+            <span class="stat-label">{{ 'menu.favorites' | translate }}</span>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@
       <div class="progress-section">
         <div class="progress-item">
           <div class="progress-header">
-            <span>{{ 'MENU.COMPLETION' | translate }}</span>
+            <span>{{ 'menu.completion' | translate }}</span>
             <span>{{ getCompletionPercentage() }}%</span>
           </div>
           <ion-progress-bar
@@ -69,7 +69,7 @@
 
         <div class="progress-item">
           <div class="progress-header">
-            <span>{{ 'MENU.CAPTURE_RATE' | translate }}</span>
+            <span>{{ 'menu.capture_rate' | translate }}</span>
             <span>{{ getCaptureRate() }}%</span>
           </div>
           <ion-progress-bar
@@ -82,7 +82,7 @@
 
     <!-- Main Navigation -->
     <div class="navigation-section">
-      <h3>{{ 'MENU.NAVIGATION' | translate }}</h3>
+      <h3>{{ 'menu.navigation' | translate }}</h3>
       <ion-list class="menu-list">
         <ion-item
           *ngFor="let item of menuItems"
@@ -118,7 +118,7 @@
 
     <!-- Additional Features -->
     <div class="features-section">
-      <h3>{{ 'MENU.FEATURES' | translate }}</h3>
+      <h3>{{ 'menu.features' | translate }}</h3>
       <ion-list class="menu-list">
         <ion-item
           *ngFor="let item of additionalItems"
@@ -147,7 +147,7 @@
 
     <!-- Language Selector -->
     <div class="language-section">
-      <h3>{{ 'MENU.LANGUAGE' | translate }}</h3>
+      <h3>{{ 'menu.language' | translate }}</h3>
       <ion-list class="language-list">
         <ion-item
           *ngFor="let lang of availableLanguages"
@@ -159,7 +159,7 @@
           <div class="language-flag" slot="start">{{ lang.flag }}</div>
 
           <ion-label>
-            <h3>{{ lang.name }}</h3>
+            <h3>{{ ('languages.' + lang.code) | translate }}</h3>
           </ion-label>
 
           <ion-icon
@@ -175,7 +175,7 @@
 
   <ion-footer class="menu-footer">
     <div class="footer-content">
-      <p>{{ 'APP.FOOTER_TEXT' | translate }}</p>
+      <p>{{ 'app.footer_text' | translate }}</p>
       <div class="social-links">
         <ion-button fill="clear" size="small">
           <ion-icon name="logo-github"></ion-icon>

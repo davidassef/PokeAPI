@@ -1,202 +1,161 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{ 'RANKING' | translate }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" (click)="onRefresh({ target: { complete: () => {} } })">
-        <ion-icon name="refresh" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <ion-title>{{ 'tabs.ranking' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ 'RANKING' | translate }}</ion-title>
+      <ion-title size="large">{{ 'tabs.ranking' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <!-- Seletor de tipo de ranking -->
-  <div class="ranking-selector">
-    <ion-segment [(ngModel)]="viewMode" (ionChange)="switchView(viewMode)">
-      <ion-segment-button value="global">
-        <ion-icon name="globe"></ion-icon>
-        <ion-label>{{ 'GLOBAL_RANKING' | translate }}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="local">
-        <ion-icon name="person"></ion-icon>
-        <ion-label>{{ 'MY_FAVORITES' | translate }}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
-
-  <!-- Pull to refresh -->
-  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
-    <ion-refresher-content
-      [pullingText]="'PULL_TO_REFRESH' | translate"
-      [refreshingText]="'REFRESHING' | translate">
-    </ion-refresher-content>
-  </ion-refresher>
-
-  <!-- Header do ranking -->
   <div class="ranking-header" *ngIf="!loading && currentRanking.length > 0">
     <h2>
-      {{ viewMode === 'global' ? ('MOST_LOVED_POKEMON' | translate) : ('YOUR_FAVORITE_POKEMON' | translate) }}
+      {{ viewMode === 'global' ? ('ranking_page.most_loved_pokemon' | translate) : ('ranking_page.your_favorite_pokemon' | translate) }}
     </h2>
     <p>
-      {{ viewMode === 'global' ? ('GLOBAL_POPULARITY_DESC' | translate) : ('LOCAL_FAVORITES_DESC' | translate) }}
+      {{ viewMode === 'global' ? ('ranking_page.global_popularity_desc' | translate) : ('ranking_page.local_favorites_desc' | translate) }}
     </p>
   </div>
 
-  <!-- Top 3 Podium -->
   <div class="podium-container" *ngIf="!loading && currentRanking.length >= 3">
     <div class="podium">
-      <!-- 2º lugar -->
-      <div class="podium-item second" [routerLink]="['/pokemon', currentRanking[1].pokemon.id]">
+      <div class="podium-item second" [routerLink]="['/pokemon', getSafePokemon(currentRanking[1].pokemon).id]">
         <div class="pokemon-image-container">
           <img
-            [src]="currentRanking[1].pokemon.sprites?.other?.['official-artwork']?.front_default || currentRanking[1].pokemon.sprites?.front_default"
-            [alt]="currentRanking[1].pokemon.name"
+            [src]="getSafePokemonImage(currentRanking[1].pokemon)"
+            [alt]="getSafePokemonName(currentRanking[1].pokemon)"
             class="pokemon-image">
         </div>
         <div class="rank-badge silver">
           <ion-icon name="medal"></ion-icon>
           <span>2</span>
         </div>
-        <h3>{{ currentRanking[1].pokemon.name | titlecase }}</h3>
-        <p>{{ formatFavoriteCount(currentRanking[1].favoriteCount) }} {{ 'FAVORITES' | translate }}</p>
+        <h3>{{ getSafePokemonName(currentRanking[1].pokemon) | titlecase }}</h3>
+        <p>{{ getSafeFavoriteCount(currentRanking[1].favoriteCount) }} {{ 'favorites' | translate }}</p>
       </div>
 
-      <!-- 1º lugar -->
-      <div class="podium-item first" [routerLink]="['/pokemon', currentRanking[0].pokemon.id]">
+      <div class="podium-item first" [routerLink]="['/pokemon', getSafePokemon(currentRanking[0].pokemon).id]">
         <div class="pokemon-image-container">
           <img
-            [src]="currentRanking[0].pokemon.sprites?.other?.['official-artwork']?.front_default || currentRanking[0].pokemon.sprites?.front_default"
-            [alt]="currentRanking[0].pokemon.name"
+            [src]="getSafePokemonImage(currentRanking[0].pokemon)"
+            [alt]="getSafePokemonName(currentRanking[0].pokemon)"
             class="pokemon-image">
         </div>
         <div class="rank-badge gold">
           <ion-icon name="trophy"></ion-icon>
           <span>1</span>
         </div>
-        <h3>{{ currentRanking[0].pokemon.name | titlecase }}</h3>
-        <p>{{ formatFavoriteCount(currentRanking[0].favoriteCount) }} {{ 'FAVORITES' | translate }}</p>
+        <h3>{{ getSafePokemonName(currentRanking[0].pokemon) | titlecase }}</h3>
+        <p>{{ getSafeFavoriteCount(currentRanking[0].favoriteCount) }} {{ 'favorites' | translate }}</p>
         <div class="crown">👑</div>
       </div>
 
-      <!-- 3º lugar -->
-      <div class="podium-item third" [routerLink]="['/pokemon', currentRanking[2].pokemon.id]">
+      <div class="podium-item third" [routerLink]="['/pokemon', getSafePokemon(currentRanking[2].pokemon).id]">
         <div class="pokemon-image-container">
           <img
-            [src]="currentRanking[2].pokemon.sprites?.other?.['official-artwork']?.front_default || currentRanking[2].pokemon.sprites?.front_default"
-            [alt]="currentRanking[2].pokemon.name"
+            [src]="getSafePokemonImage(currentRanking[2].pokemon)"
+            [alt]="getSafePokemonName(currentRanking[2].pokemon)"
             class="pokemon-image">
         </div>
         <div class="rank-badge bronze">
           <ion-icon name="medal"></ion-icon>
           <span>3</span>
         </div>
-        <h3>{{ currentRanking[2].pokemon.name | titlecase }}</h3>
-        <p>{{ formatFavoriteCount(currentRanking[2].favoriteCount) }} {{ 'FAVORITES' | translate }}</p>
+        <h3>{{ getSafePokemonName(currentRanking[2].pokemon) | titlecase }}</h3>
+        <p>{{ getSafeFavoriteCount(currentRanking[2].favoriteCount) }} {{ 'favorites' | translate }}</p>
       </div>
     </div>
   </div>
 
-  <!-- Lista do ranking (4º em diante) -->
   <div class="ranking-list" *ngIf="!loading && currentRanking.length > 3">
     <ion-card
       *ngFor="let item of currentRanking.slice(3)"
       class="ranking-card"
-      [routerLink]="['/pokemon', item.pokemon.id]">
+      [routerLink]="['/pokemon', getSafePokemon(item.pokemon).id]">
 
-      <!-- Rank e trend -->
       <div class="rank-info">
         <div class="rank-number">
           <span>{{ item.rank }}</span>
         </div>
         <div class="trend-indicator">
           <ion-icon
-            [name]="getTrendIcon(item.trend)"
-            [color]="getTrendColor(item.trend)">
+            [name]="getTrendIcon(getSafeTrend(item.trend))"
+            [color]="getTrendColor(getSafeTrend(item.trend))">
           </ion-icon>
         </div>
       </div>
 
-      <!-- Imagem do Pokémon -->
       <div class="pokemon-image-small">
         <img
-          [src]="item.pokemon.sprites?.other?.['official-artwork']?.front_default || item.pokemon.sprites?.front_default"
-          [alt]="item.pokemon.name"
+          [src]="getSafePokemonImage(item.pokemon)"
+          [alt]="getSafePokemonName(item.pokemon)"
           loading="lazy">
       </div>
 
-      <!-- Info do Pokémon -->
       <div class="pokemon-info">
-        <h3>{{ item.pokemon.name | titlecase }}</h3>
+        <h3>{{ getSafePokemonName(item.pokemon) | titlecase }}</h3>
         <div class="pokemon-types">
           <ion-chip
-            *ngFor="let type of item.pokemon.types"
-            [class]="'type-' + type.type.name"
+            *ngFor="let type of getSafePokemon(item.pokemon).types"
+            [class]="'type-' + getSafeTypeName(type.type.name)"
             class="pokemon-type">
-            <ion-label>{{ type.type.name | translate | uppercase }}</ion-label>
+            <ion-label>{{ getSafeTypeName(type.type.name) | translate | uppercase }}</ion-label>
           </ion-chip>
         </div>
         <div class="stats-summary">
-          <span class="total-stats">{{ getStatsTotal(item.pokemon) }} {{ 'TOTAL_STATS' | translate }}</span>
+          <span class="total-stats">{{ getStatsTotal(getSafePokemon(item.pokemon)) }} {{ 'ranking_page.total_stats' | translate }}</span>
         </div>
       </div>
 
-      <!-- Contador de favoritos -->
       <div class="favorite-count">
-        <div class="count-number">{{ formatFavoriteCount(item.favoriteCount) }}</div>
-        <div class="count-label">{{ 'FAVORITES' | translate }}</div>
+        <div class="count-number">{{ getSafeFavoriteCount(item.favoriteCount) }}</div>
+        <div class="count-label">{{ 'favorites' | translate }}</div>
       </div>
 
-      <!-- Botão de favorito -->
       <ion-button
         fill="clear"
         class="favorite-btn"
-        (click)="toggleFavorite(item.pokemon, $event)">
+        (click)="toggleFavorite(getSafePokemon(item.pokemon), $event)">
         <ion-icon
-          [name]="(isFavorite(item.pokemon.id) | async) ? 'heart' : 'heart-outline'"
-          [color]="(isFavorite(item.pokemon.id) | async) ? 'danger' : 'medium'">
+          [name]="(isFavorite(getSafePokemon(item.pokemon).id) | async) ? 'heart' : 'heart-outline'"
+          [color]="(isFavorite(getSafePokemon(item.pokemon).id) | async) ? 'danger' : 'medium'">
         </ion-icon>
       </ion-button>
     </ion-card>
   </div>
 
-  <!-- Loading spinner -->
   <div *ngIf="loading" class="loading-container">
     <ion-spinner name="dots"></ion-spinner>
-    <p>{{ 'LOADING_RANKING' | translate }}</p>
+    <p>{{ 'ranking_page.loading_ranking' | translate }}</p>
   </div>
 
-  <!-- Estado vazio para ranking local -->
   <div *ngIf="!loading && viewMode === 'local' && currentRanking.length === 0" class="empty-state">
     <ion-icon name="trophy" size="large" color="medium"></ion-icon>
-    <h2>{{ 'NO_LOCAL_RANKING' | translate }}</h2>
-    <p>{{ 'ADD_FAVORITES_FOR_RANKING' | translate }}</p>
+    <h2>{{ 'ranking_page.no_local_ranking' | translate }}</h2>
+    <p>{{ 'ranking_page.add_favorites_for_ranking' | translate }}</p>
     <ion-button fill="outline" routerLink="/tabs/home">
-      {{ 'EXPLORE_POKEMON' | translate }}
+      {{ 'ranking_page.explore_pokemon' | translate }}
     </ion-button>
   </div>
 
-  <!-- Informações extras -->
   <div class="ranking-info" *ngIf="!loading && currentRanking.length > 0">
     <ion-card class="info-card">
       <ion-card-header>
-        <ion-card-title>{{ 'RANKING_INFO' | translate }}</ion-card-title>
+        <ion-card-title>{{ 'ranking_page.ranking_info' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="info-item">
           <ion-icon name="information-circle" color="primary"></ion-icon>
           <span>
-            {{ viewMode === 'global' ? ('GLOBAL_RANKING_INFO' | translate) : ('LOCAL_RANKING_INFO' | translate) }}
+            {{ viewMode === 'global' ? ('ranking_page.global_ranking_info' | translate) : ('ranking_page.local_ranking_info' | translate) }}
           </span>
         </div>
         <div class="info-item">
           <ion-icon name="time" color="medium"></ion-icon>
-          <span>{{ 'UPDATED_DAILY' | translate }}</span>
+          <span>{{ 'ranking_page.updated_daily' | translate }}</span>
         </div>
       </ion-card-content>
     </ion-card>

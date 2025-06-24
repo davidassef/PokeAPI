@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{ 'FAVORITES' | translate }}</ion-title>
+    <ion-title>{{ 'tabs.favorites' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="exportFavorites()" [disabled]="favoritesPokemon.length === 0">
         <ion-icon name="download" slot="icon-only"></ion-icon>
@@ -18,7 +18,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{ 'FAVORITES' | translate }}</ion-title>
+      <ion-title size="large">{{ 'tabs.favorites' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -27,7 +27,7 @@
 
   <!-- Barra de pesquisa -->
   <ion-searchbar
-    [placeholder]="'SEARCH_FAVORITES' | translate"
+    [placeholder]="'favorites_page.search_favorites' | translate"
     (ionInput)="onSearch($event)"
     [value]="searchTerm"
     show-clear-button="focus">
@@ -37,10 +37,10 @@
   <div class="sort-controls">
     <ion-segment [(ngModel)]="sortBy" (ionChange)="onSortChange()">
       <ion-segment-button value="id">
-        <ion-label>{{ 'SORT_BY_ID' | translate }}</ion-label>
+        <ion-label>{{ 'favorites_page.sort_by_id' | translate }}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="name">
-        <ion-label>{{ 'SORT_BY_NAME' | translate }}</ion-label>
+        <ion-label>{{ 'favorites_page.sort_by_name' | translate }}</ion-label>
       </ion-segment-button>
     </ion-segment>
 
@@ -54,8 +54,8 @@
   <!-- Pull to refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
     <ion-refresher-content
-      [pullingText]="'PULL_TO_REFRESH' | translate"
-      [refreshingText]="'REFRESHING' | translate">
+      [pullingText]="'favorites_page.pull_to_refresh' | translate"
+      [refreshingText]="'favorites_page.refreshing' | translate">
     </ion-refresher-content>
   </ion-refresher>
   <!-- Lista de Pokémon favoritos -->
@@ -75,26 +75,26 @@
     [overlay]="false"
     size="large"
     type="pokeball"
-    [message]="'LOADING_FAVORITES' | translate">
+    [message]="'favorites_page.loading_favorites' | translate">
   </app-loading-spinner>
 
   <!-- Estado vazio -->
   <div *ngIf="!loading && favoritesPokemon.length === 0" class="empty-state">
     <ion-icon name="heart-outline" size="large" color="medium"></ion-icon>
-    <h2>{{ 'NO_FAVORITES_YET' | translate }}</h2>
-    <p>{{ 'ADD_FAVORITES_HINT' | translate }}</p>
+    <h2>{{ 'favorites_page.no_favorites_yet' | translate }}</h2>
+    <p>{{ 'favorites_page.add_favorites_hint' | translate }}</p>
     <ion-button fill="outline" routerLink="/tabs/home">
-      {{ 'EXPLORE_POKEMON' | translate }}
+      {{ 'favorites_page.explore_pokemon' | translate }}
     </ion-button>
   </div>
 
   <!-- Sem resultados na busca -->
   <div *ngIf="!loading && favoritesPokemon.length > 0 && filteredFavorites.length === 0" class="empty-state">
     <ion-icon name="search" size="large" color="medium"></ion-icon>
-    <h2>{{ 'NO_FAVORITES_FOUND' | translate }}</h2>
-    <p>{{ 'TRY_DIFFERENT_SEARCH' | translate }}</p>
+    <h2>{{ 'favorites_page.no_favorites_found' | translate }}</h2>
+    <p>{{ 'favorites_page.try_different_search' | translate }}</p>
     <ion-button fill="outline" (click)="searchTerm = ''; onSearch({ target: { value: '' } })">
-      {{ 'CLEAR_SEARCH' | translate }}
+      {{ 'favorites_page.clear_search' | translate }}
     </ion-button>
   </div>
 
@@ -102,21 +102,21 @@
   <div *ngIf="!loading && favoritesPokemon.length > 0" class="favorites-stats">
     <ion-card class="stats-card">
       <ion-card-header>
-        <ion-card-title>{{ 'FAVORITES_STATISTICS' | translate }}</ion-card-title>
+        <ion-card-title>{{ 'favorites_page.favorites_statistics' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="stats-grid">
           <div class="stat-item">
             <span class="stat-number">{{ favoritesPokemon.length }}</span>
-            <span class="stat-label">{{ 'TOTAL_FAVORITES' | translate }}</span>
+            <span class="stat-label">{{ 'favorites_page.total_favorites' | translate }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-number">{{ getUniqueTypes().length }}</span>
-            <span class="stat-label">{{ 'DIFFERENT_TYPES' | translate }}</span>
+            <span class="stat-label">{{ 'favorites_page.different_types' | translate }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-number">{{ getAverageStats() }}</span>
-            <span class="stat-label">{{ 'AVERAGE_STATS' | translate }}</span>
+            <span class="stat-label">{{ 'favorites_page.average_stats' | translate }}</span>
           </div>
         </div>
       </ion-card-content>

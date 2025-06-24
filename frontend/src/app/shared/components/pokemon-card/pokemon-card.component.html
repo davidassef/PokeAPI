@@ -4,7 +4,7 @@
 
   <!-- Pokemon Image -->
   <div class="pokemon-image-container">
-    <img [src]="pokemon.sprites?.front_default || 'assets/img/pokemon-placeholder.png'"
+    <img [src]="imageUrl || 'assets/img/pokemon-placeholder.png'"
          [alt]="pokemon.name"
          class="pokemon-image"
          loading="lazy">

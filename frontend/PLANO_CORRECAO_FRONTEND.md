@@ -1,75 +1,121 @@
-# Plano de Correção e Padronização do Frontend PokeAPIApp
+# 🚀 Plano de Melhorias para o Frontend PokeAPIApp
 
-## Objetivo
-Corrigir o build do frontend Angular/Ionic, padronizar para Angular 17 + Ionic 7, restaurar arquitetura tradicional de NgModules, garantir que todos os imports, declarações e dependências estejam corretos, e que o build finalize com sucesso. Corrigir também problemas de template, bindings e propriedades ausentes nos componentes/páginas.
+Baseado na análise das telas atuais do aplicativo, este plano apresenta melhorias visuais, funcionais e de experiência do usuário para elevar o PokeAPIApp ao próximo nível.
+
+## 1. 🎨 Melhorias Visuais e UI
+
+### 1.1 Consistência Visual
+- [ ] Padronizar cores de fundo entre páginas (atualmente Ranking tem fundo amarelo, Favoritos vermelho)
+- [ ] Implementar sistema de cores baseado nos tipos de Pokémon em todo o aplicativo
+- [ ] Padronizar componentes de cabeçalho entre telas (títulos, botões de ação)
+- [ ] Adicionar animações suaves nas transições entre páginas
+
+### 1.2 Aprimoramento de Cards
+- [ ] Adicionar efeito de hover/tap nos cards com leve elevação e brilho
+- [ ] Melhorar badges de tipos com ícones específicos para cada tipo
+- [ ] Implementar animação ao favoritar (efeito "captura" com Pokébola)
+- [ ] Adicionar indicadores visuais para Pokémon já capturados/visualizados
+
+### 1.3 Tema e Modo Escuro
+- [ ] Refinamento do modo escuro com paleta adequada para cada elemento
+- [ ] Implementar transição suave entre tema claro/escuro
+- [ ] Criar tema baseado nas cores dos jogos originais (opção adicional)
+
+### 1.4 Internacionalização e Títulos
+- [x] Corrigir todos os títulos das páginas, menus e abas para exibir o texto traduzido corretamente (ex: "TABS.HOME" → "Pokédex" ou equivalente no idioma selecionado)
+- [x] Padronizar o menu lateral para uso das chaves de tradução no padrão minúsculo e com ponto (ex: 'menu.your_progress')
+- [x] Adicionar a chave 'app.name' nos arquivos de tradução para exibir o nome do app corretamente
+- [x] Validar visualmente se todos os textos do menu lateral aparecem traduzidos corretamente
+- [ ] Garantir que todas as labels, botões e menus estejam usando as chaves corretas do sistema de i18n
+- [ ] Revisar arquivos de tradução e adicionar entradas faltantes para títulos e menus
+- [ ] Implementar fallback para exibição amigável caso a chave de tradução não exista (opcional)
+
+## 2. ⚙️ Melhorias Funcionais
+
+### 2.1 Tela de Ranking
+- [ ] Implementar podium para top 3 Pokémon (layout especial destacado)
+- [ ] Adicionar gráficos/estatísticas de popularidade por tipo/geração
+- [ ] Implementar filtros de tempo (ranking semanal, mensal, geral)
+
+### 2.2 Tela de Detalhes
+- [ ] Adicionar animações nas barras de status
+- [ ] Implementar visualização de evoluções com setas e condições
+- [ ] Adicionar abas para organizar informações (Sobre, Stats, Movimentos, Locais)
+- [ ] Implementar galeria de imagens com diferentes sprites/poses
+
+### 2.3 Player Musical
+- [ ] Redesenhar player para estilo mini-Pokédex no footer
+- [ ] Implementar playlist com temas de diferentes gerações
+- [ ] Adicionar visualizador de ondas sonoras minimalista
+- [ ] Sincronizar música com tema visual (músicas diferentes para tipos diferentes)
+
+## 3. 📱 Melhorias de Experiência do Usuário
+
+### 3.1 Navegação e Layout
+- [ ] Implementar gestos para navegação entre detalhes (swipe lateral)
+- [ ] Melhorar layout responsivo (atualmente alguns elementos não se ajustam bem)
+- [ ] Adicionar botão de retorno rápido ao topo nas listas longas
+- [ ] Aprimorar feedback visual para ações (carregamento, sucesso, erro)
+
+### 3.2 Interatividade
+- [ ] Adicionar som ao clicar nos cards (estilo Pokédex)
+- [ ] Implementar modo AR simples para visualizar Pokémon na câmera
+- [ ] Criar easter eggs interativos (ex: código Konami desbloqueia visual retro)
+- [ ] Implementar notificações para descobertas de novos Pokémon
+
+### 3.3 Acessibilidade
+- [ ] Implementar suporte completo para leitor de tela
+- [ ] Adicionar opções de tamanho de fonte e contraste
+- [ ] Garantir navegação completa por teclado
+- [ ] Implementar legendas para conteúdos de áudio
+
+## 4. 🔧 Otimizações Técnicas
+
+### 4.1 Performance
+- [ ] Implementar lazy loading para imagens
+- [ ] Otimizar carregamento inicial e tempo de inicialização
+- [ ] Implementar cache inteligente para dados da API
+- [ ] Reduzir tamanho do bundle com code splitting
+
+### 4.2 Offline e Persistência
+- [ ] Implementar modo offline com dados básicos
+- [ ] Melhorar estratégia de cache para imagens e dados frequentes
+- [ ] Implementar sincronização em segundo plano quando online
+
+## 5. 🌟 Diferenciais Inovadores
+
+### 5.1 Recursos Sociais
+- [ ] Implementar compartilhamento de coleções favoritas
+- [ ] Adicionar sistema de conquistas/medalhas pelo uso do app
+- [ ] Criar QR codes para compartilhar Pokémon específicos
+
+### 5.2 Gamificação
+- [ ] Adicionar sistema diário de "Pokémon destaque"
+- [ ] Implementar "Quiz" sobre características dos Pokémon
+- [ ] Criar modo "Quem é esse Pokémon?" com silhuetas
+
+### 5.3 Inteligência Artificial
+- [ ] Implementar recomendações de Pokémon baseadas nos favoritos
+- [ ] Adicionar assistente virtual estilo "Professor Carvalho"
+- [ ] Criar gerador de times baseado em tipos/estratégias
+
+## 6. 📅 Cronograma de Implementação
+
+1. **Curto Prazo (1-2 semanas)**
+   - Melhorias visuais e UI básicas
+   - Correção de problemas urgentes na navegação
+   - Aprimoramento dos cards e tela de detalhes
+
+2. **Médio Prazo (2-4 semanas)**
+   - Implementação completa da tela de ranking
+   - Melhorias no player musical
+   - Otimizações de performance
+
+3. **Longo Prazo (1-2 meses)**
+   - Recursos de gamificação
+   - Funcionalidades sociais
+   - Recursos inovadores com IA
 
 ---
 
-## 1. Diagnóstico Atual
-- **Build avança, mas falha por erros de template e propriedades ausentes.**
-- **SettingsPage:** Diversos métodos e propriedades não implementados (corrigido nesta etapa).
-- **HomePage, FavoritesPage, RankingPage, DetailsPage:** Erros de bindings, tipagem, propriedades e sintaxe.
-- **Componentes compartilhados:** Inputs/Outputs e eventos não padronizados.
-
----
-
-## 2. Plano de Correção
-
-### 2.1. SettingsPage
-- [x] Implementar todos os métodos e propriedades esperados pelo template.
-- [x] Integrar corretamente com AudioService, SettingsService e FavoritesService.
-- [x] Garantir que todas as opções e eventos estejam funcionais.
-
-### 2.2. HomePage & FavoritesPage
-- [x] Corrigir bindings dos componentes `app-pokemon-card` e `app-search-filter`.
-- [x] Garantir que os Inputs/Outputs estejam declarados e tipados corretamente.
-- [x] Ajustar métodos de filtro, busca e favoritos para tipagem e integração correta.
-
-### 2.3. RankingPage
-- [x] Corrigir erros de sintaxe no template.
-- [x] Garantir que métodos e propriedades usados no HTML existam e estejam tipados.
-- [ ] Validar integração com dados de ranking (mock ou API).
-
-### 2.4. DetailsPage
-- [ ] Corrigir erro de propriedade `move` no template.
-- [ ] Garantir que todos os dados exibidos estejam presentes e tipados.
-
-### 2.5. Componentes Compartilhados
-- [ ] Revisar e padronizar Inputs/Outputs dos componentes em `shared/components`.
-- [ ] Garantir que eventos e propriedades estejam documentados e tipados.
-- [ ] Validar integração dos componentes nas páginas.
-
-### 2.6. Testes e Validação
-- [ ] Rodar o build e garantir ausência de erros.
-- [ ] Testar navegação, filtros, favoritos, player e configurações.
-- [ ] Validar responsividade e layout.
-
----
-
-## 3. Boas Práticas
-- Seguir o guia de código limpo do projeto.
-- Garantir modularização, nomes descritivos e tipagem forte.
-- Evitar duplicação e lógica excessiva em templates.
-- Documentar métodos e propriedades públicas.
-
----
-
-## 4. Próximos Passos
-1. Corrigir HomePage e FavoritesPage (bindings e eventos).
-2. Corrigir RankingPage (template e integração).
-3. Corrigir DetailsPage (dados e tipagem).
-4. Revisar componentes compartilhados.
-5. Rodar build e validar app.
-6. Testar funcionalidades principais.
-7. Documentar pontos importantes e próximos diferenciais.
-
----
-
-## 5. Referências
-- [Instruções do Projeto](../.github/instructions/Frontend.instructions.md)
-- [Guia de Código Limpo](../.github/instructions/Instruções.instructions.md)
-- [Objetivo do Projeto](../.github/instructions/Objetivo.instructions.md)
-
----
-
-> _Este plano deve ser atualizado conforme o progresso das correções e validações._
+> Este plano de melhorias será constantemente revisado e atualizado conforme o progresso da implementação e feedback dos usuários.
