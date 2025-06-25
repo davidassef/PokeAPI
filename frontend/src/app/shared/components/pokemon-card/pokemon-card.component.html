@@ -31,14 +31,14 @@
       <span *ngFor="let type of pokemon.types"
             class="type-badge"
             [style.background-color]="getTypeColor(type.type.name)">
-        {{ type.type.name | titlecase }}
+        {{ ('types.' + type.type.name) | translate }}
       </span>
     </div>
 
     <!-- Pokemon Stats (Optional) -->
     <div *ngIf="showStats" class="pokemon-stats">
       <div *ngFor="let stat of pokemon.stats" class="stat-row">
-        <span class="stat-name">{{ stat.stat.name | titlecase }}</span>
+        <span class="stat-name">{{ ('stats.' + stat.stat.name) | translate }}</span>
         <div class="stat-bar">
           <div class="stat-fill"
                [style.width.%]="getStatBarWidth(stat.base_stat)"
@@ -52,11 +52,11 @@
     <!-- Pokemon Basic Info -->
     <div class="pokemon-basic-info">
       <div class="info-item">
-        <span class="info-label">Height:</span>
+        <span class="info-label">{{ 'pokemon.height' | translate }}:</span>
         <span class="info-value">{{ (pokemon.height / 10).toFixed(1) }}m</span>
       </div>
       <div class="info-item">
-        <span class="info-label">Weight:</span>
+        <span class="info-label">{{ 'pokemon.weight' | translate }}:</span>
         <span class="info-value">{{ (pokemon.weight / 10).toFixed(1) }}kg</span>
       </div>
     </div>

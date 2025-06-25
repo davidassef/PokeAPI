@@ -1,4 +1,14 @@
+/*
+  Pokemon Card Component Styles
+  ----------------------------
+  - Estilos para o card de Pokémon na Pokédex.
+  - Responsável por layout, responsividade, animações e temas.
+  - Inspirado no design oficial da Pokédex.
+  - Inclui suporte a modo escuro e responsivo.
+*/
+
 .pokemon-card {
+  /* Card principal do Pokémon */
   position: relative;
   background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
   border-radius: 16px;
@@ -12,8 +22,13 @@
   transform: translateY(20px);
   border: 2px solid transparent;
   overflow: hidden;
+  /* Largura aumentada para melhor visualização */
+  width: 100%;
+  max-width: 350px; // antes 320px
+  min-width: 180px; // antes 160px
 
   &::before {
+    /* Barra colorida superior */
     content: '';
     position: absolute;
     top: 0;
@@ -25,6 +40,7 @@
   }
 
   &:hover {
+    /* Efeito de elevação ao passar o mouse */
     transform: translateY(-8px) scale(1.02);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     border-color: var(--ion-color-primary);
@@ -35,6 +51,7 @@
   }
 
   .pokemon-image-container {
+    /* Container da imagem do Pokémon */
     position: relative;
     text-align: center;
     margin-bottom: 12px;
@@ -43,6 +60,7 @@
     border-radius: 12px;
 
     .pokemon-image {
+      /* Imagem do Pokémon */
       width: 96px;
       height: 96px;
       object-fit: contain;
@@ -55,6 +73,7 @@
     }
 
     .favorite-btn {
+      /* Botão de favoritar */
       position: absolute;
       top: 8px;
       right: 8px;
@@ -96,6 +115,7 @@
   }
 
   .pokemon-info {
+    /* Informações do Pokémon (nome, número, tipos, stats, etc) */
     .pokemon-header {
       text-align: center;
       margin-bottom: 12px;
@@ -117,6 +137,7 @@
     }
 
     .pokemon-types {
+      /* Badges de tipos */
       display: flex;
       justify-content: center;
       gap: 8px;
@@ -140,6 +161,7 @@
     }
 
     .pokemon-stats {
+      /* Barras de stats */
       margin: 16px 0;
 
       .stat-row {
@@ -180,6 +202,7 @@
     }
 
     .pokemon-basic-info {
+      /* Altura, peso, etc */
       display: flex;
       justify-content: space-between;
       margin-top: 12px;
@@ -208,6 +231,7 @@
   }
 
   .loading-overlay {
+    /* Overlay de carregamento */
     position: absolute;
     top: 0;
     left: 0;
@@ -248,6 +272,8 @@
   .pokemon-card {
     margin: 4px;
     padding: 12px;
+    max-width: 98vw; // aumenta largura em telas pequenas
+    min-width: 120px;
 
     .pokemon-image-container {
       padding: 12px;
