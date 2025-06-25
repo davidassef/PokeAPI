@@ -21,9 +21,10 @@ export interface AppSettings {
  */
 export interface PokemonFilters {
   name?: string;
-  type?: string;
+  elementTypes?: string[];
+  movementTypes?: string[];
   generation?: number;
-  sortBy: 'id' | 'name';
+  sortBy: 'id' | 'name' | 'height' | 'weight';
   sortOrder: 'asc' | 'desc';
 }
 

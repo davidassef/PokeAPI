@@ -26,7 +26,7 @@ Baseado na análise das telas atuais do aplicativo, este plano apresenta melhori
 - [x] Padronizar o menu lateral para uso das chaves de tradução no padrão minúsculo e com ponto (ex: 'menu.your_progress')
 - [x] Adicionar a chave 'app.name' nos arquivos de tradução para exibir o nome do app corretamente
 - [x] Validar visualmente se todos os textos do menu lateral aparecem traduzidos corretamente
-- [ ] Garantir que todas as labels, botões e menus estejam usando as chaves corretas do sistema de i18n
+- [x] Garantir que todas as labels, botões e menus estejam usando as chaves corretas do sistema de i18n
 - [ ] Revisar arquivos de tradução e adicionar entradas faltantes para títulos e menus
 - [ ] Implementar fallback para exibição amigável caso a chave de tradução não exista (opcional)
 

@@ -67,7 +67,9 @@
     "ice": "Ice",
     "dragon": "Dragon",
     "dark": "Dark",
-    "fairy": "Fairy"
+    "fairy": "Fairy",
+    "stella": "Stellar",
+    "unknow": "Unknown"
   },
   "favorites": {
     "title": "My Favorites",
@@ -110,7 +112,26 @@
     "ascending": "Ascending",
     "descending": "Descending",
     "filterByType": "Filter by type",
-    "generation": "Generation"
+    "generation": "Generation",
+    "generation_1": "Generation I (Kanto)",
+    "generation_2": "Generation II (Johto)",
+    "generation_3": "Generation III (Hoenn)",
+    "generation_4": "Generation IV (Sinnoh)",
+    "generation_5": "Generation V (Unova)",
+    "generation_6": "Generation VI (Kalos)",
+    "generation_7": "Generation VII (Alola)",
+    "generation_8": "Generation VIII (Galar)",
+    "sort_by_id": "Pokédex Number",
+    "sort_by_name": "Name",
+    "sort_by_height": "Height",
+    "sort_by_weight": "Weight",
+    "all_generations": "All generations",
+    "select_generation": "Select generation",
+    "clear_all": "Clear all",
+    "filters_types": "Types",
+    "advanced_filters": "Advanced Filters",
+    "types_elements": "Element Types",
+    "types_movement": "Movement Types"
   },
   "pagination": {
     "previous": "Previous",
@@ -148,7 +169,8 @@
     "no_results": "No results found",
     "no_results_message": "Try adjusting filters or searching another name.",
     "clear_filters": "Clear filters",
-    "loading_more": "Loading more..."
+    "loading_more": "Loading more...",
+    "placeholder": "Type Pokémon name or ID..."
   },
   "favorites_page": {
     "search_favorites": "Search favorites",
@@ -231,5 +253,23 @@
     "retry": "Try again"
   },
   "MADE_WITH_LOVE": "Made with ❤️ by PokéAPIApp",
-  "POWERED_BY_POKEAPI": "Powered by PokéAPI"
+  "POWERED_BY_POKEAPI": "Powered by PokéAPI",
+  "translations": {
+    "en-US": {
+      "generation_1": "Generation I (Kanto)",
+      "generation_2": "Generation II (Johto)",
+      "generation_3": "Generation III (Hoenn)",
+      "generation_4": "Generation IV (Sinnoh)",
+      "generation_5": "Generation V (Unova)",
+      "generation_6": "Generation VI (Kalos)",
+      "generation_7": "Generation VII (Alola)",
+      "generation_8": "Generation VIII (Galar)",
+      "sort_by_id": "Pokédex Number",
+      "sort_by_name": "Name",
+      "sort_by_height": "Height",
+      "sort_by_weight": "Weight",
+      "types_elements": "Element Types",
+      "types_movement": "Movement Types"
+    }
+  }
 }

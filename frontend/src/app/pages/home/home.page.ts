@@ -25,7 +25,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   currentFilters: PokemonFilters = {
     name: '',
-    type: '',
+    elementTypes: [],
+    movementTypes: [],
     generation: undefined,
     sortBy: 'id',
     sortOrder: 'asc'
@@ -39,7 +40,8 @@ export class HomePage implements OnInit, OnDestroy {
   get currentFilterOptions(): FilterOptions {
     return {
       searchTerm: this.currentFilters.name || '',
-      selectedTypes: this.currentFilters.type ? [this.currentFilters.type] : [],
+      selectedElementTypes: this.currentFilters.elementTypes || [],
+      selectedMovementTypes: this.currentFilters.movementTypes || [],
       selectedGeneration: this.currentFilters.generation || null,
       sortBy: this.currentFilters.sortBy,
       sortOrder: this.currentFilters.sortOrder
@@ -155,11 +157,13 @@ export class HomePage implements OnInit, OnDestroy {
    * Manipula mudanças nos filtros
    */
   onFiltersChanged(filters: FilterOptions) {
+    console.log('[HomePage] Filtros recebidos:', filters);
     this.currentFilters = {
       name: filters.searchTerm || '',
-      type: filters.selectedTypes[0] || '',
+      elementTypes: filters.selectedElementTypes || [],
+      movementTypes: filters.selectedMovementTypes || [],
       generation: filters.selectedGeneration || undefined,
-      sortBy: (filters.sortBy === 'height' || filters.sortBy === 'weight') ? 'id' : filters.sortBy,
+      sortBy: filters.sortBy,
       sortOrder: filters.sortOrder
     };
     this.applyFilters();
@@ -177,20 +181,75 @@ export class HomePage implements OnInit, OnDestroy {
    * Aplica filtros aos Pokémons
    */
   private async applyFilters() {
-    if (!this.currentFilters.name && !this.currentFilters.type && !this.currentFilters.generation) {
-      return;
-    }
-
+    console.log('[HomePage] Aplicando filtros:', this.currentFilters);
     this.loading = true;
     try {
-      // Se há termo de busca, usa busca por nome
+      let pokemons: Pokemon[] = [];
+      // Busca por nome tem prioridade
       if (this.currentFilters.name) {
-        const pokemon = await this.pokeApiService.searchPokemon(this.currentFilters.name).toPromise();
-        this.pokemon = pokemon || [];
+        pokemons = (await this.pokeApiService.searchPokemon(this.currentFilters.name, 1000).toPromise()) || [];
       } else {
-        // Recarrega lista com filtros
-        await this.loadInitialPokemon();
+        // Carrega uma lista grande para filtrar localmente
+        const response = await this.pokeApiService.getPokemonList(1000, 0).toPromise();
+        if (response?.results) {
+          pokemons = await this.loadPokemonDetails(response.results);
+        }
       }
+      // Filtro por tipos de elemento
+      if (this.currentFilters.elementTypes && this.currentFilters.elementTypes.length > 0) {
+        pokemons = pokemons.filter(pokemon =>
+          Array.isArray(pokemon.types) &&
+          Array.isArray(this.currentFilters.elementTypes) &&
+          pokemon.types.length > 0 &&
+          pokemon.types.some(t => t && t.type && typeof t.type.name === 'string' && (this.currentFilters.elementTypes?.includes?.(t.type.name)))
+        );
+      }
+      // Filtro por tipos de movimentação
+      if (this.currentFilters.movementTypes && this.currentFilters.movementTypes.length > 0) {
+        pokemons = pokemons.filter(pokemon =>
+          Array.isArray(pokemon.types) &&
+          Array.isArray(this.currentFilters.movementTypes) &&
+          pokemon.types.length > 0 &&
+          pokemon.types.some(t => t && t.type && typeof t.type.name === 'string' && (this.currentFilters.movementTypes?.includes?.(t.type.name)))
+        );
+      }
+      // Filtro por geração
+      if (this.currentFilters.generation) {
+        // Busca espécies da geração e filtra por id
+        const speciesList = await this.pokeApiService.getPokemonsByGeneration(this.currentFilters.generation).toPromise();
+        const allowedNames = (speciesList || []).map(s => s.name);
+        pokemons = pokemons.filter(p => allowedNames.includes(p.name));
+      }
+      // Ordenação
+      if (this.currentFilters.sortBy === 'name') {
+        pokemons = pokemons.sort((a, b) =>
+          this.currentFilters.sortOrder === 'asc'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        );
+      } else if (this.currentFilters.sortBy === 'height') {
+        pokemons = pokemons.sort((a, b) =>
+          this.currentFilters.sortOrder === 'asc'
+            ? a.height - b.height
+            : b.height - a.height
+        );
+      } else if (this.currentFilters.sortBy === 'weight') {
+        pokemons = pokemons.sort((a, b) =>
+          this.currentFilters.sortOrder === 'asc'
+            ? a.weight - b.weight
+            : b.weight - a.weight
+        );
+      } else {
+        pokemons = pokemons.sort((a, b) =>
+          this.currentFilters.sortOrder === 'asc'
+            ? a.id - b.id
+            : b.id - a.id
+        );
+      }
+      // Garante que todos os pokémons possuem dados completos (types, stats, etc)
+      pokemons = pokemons.filter(p => p && Array.isArray(p.types) && p.types.length > 0 && Array.isArray(p.stats) && p.stats.length > 0);
+      this.pokemon = pokemons;
+      console.log('[HomePage] Lista final de pokémons:', this.pokemon);
     } catch (error) {
       console.error('Erro ao aplicar filtros:', error);
       this.showErrorToast();
@@ -205,7 +264,8 @@ export class HomePage implements OnInit, OnDestroy {
   clearFilters() {
     this.currentFilters = {
       name: '',
-      type: '',
+      elementTypes: [],
+      movementTypes: [],
       generation: undefined,
       sortBy: 'id',
       sortOrder: 'asc'

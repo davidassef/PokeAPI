@@ -67,7 +67,9 @@
     "ice": "Hielo",
     "dragon": "Dragón",
     "dark": "Siniestro",
-    "fairy": "Hada"
+    "fairy": "Hada",
+    "stella": "Estelar",
+    "unknow": "Desconocido"
   },
   "favorites": {
     "title": "Mis Favoritos",
@@ -104,14 +106,34 @@
   },
   "filters": {
     "all": "Todos",
+    "all_generations": "Todas las generaciones",
     "sortBy": "Ordenar por",
     "sortByName": "Nombre",
     "sortById": "Número",
     "ascending": "Ascendente",
     "descending": "Descendente",
     "filterByType": "Filtrar por tipo",
-    "generation": "Generación"
+    "generation": "Generación",
+    "generation_1": "Generación I (Kanto)",
+    "generation_2": "Generación II (Johto)",
+    "generation_3": "Generación III (Hoenn)",
+    "generation_4": "Generación IV (Sinnoh)",
+    "generation_5": "Generación V (Unova)",
+    "generation_6": "Generación VI (Kalos)",
+    "generation_7": "Generación VII (Alola)",
+    "generation_8": "Generación VIII (Galar)",
+    "sort_by_id": "Número Pokédex",
+    "sort_by_name": "Nombre",
+    "sort_by_height": "Altura",
+    "sort_by_weight": "Peso",
+    "select_generation": "Seleccionar generación",
+    "clear_all": "Limpiar todos",
+    "advanced_filters": "Filtros Avanzados",
+    "types": "Tipos",
+    "types_elements": "Tipos de Elemento",
+    "types_movement": "Tipos de Movimiento"
   },
+  "filters_types": "Tipos",
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente",
@@ -148,7 +170,8 @@
     "no_results": "No se encontraron resultados",
     "no_results_message": "Intenta ajustar los filtros o buscar otro nombre.",
     "clear_filters": "Limpiar filtros",
-    "loading_more": "Cargando más..."
+    "loading_more": "Cargando más...",
+    "placeholder": "Escribe el nombre del Pokémon o ID..."
   },
   "favorites_page": {
     "search_favorites": "Buscar en favoritos",

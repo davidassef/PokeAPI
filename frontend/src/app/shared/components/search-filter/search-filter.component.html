@@ -3,7 +3,7 @@
   <div class="search-bar">
     <ion-searchbar
       formControlName="searchTerm"
-      [placeholder]="placeholder"
+      [placeholder]="placeholder | translate"
       debounce="300"
       clear-input="true"
       show-clear-button="focus">
@@ -31,75 +31,94 @@
 
     <!-- Filter Header -->
     <div class="filter-header">
-      <h4>Advanced Filters</h4>
+      <h4>{{ 'filters.advanced_filters' | translate }}</h4>
       <ion-button
         fill="clear"
         color="danger"
         size="small"
         (click)="onClearFilters()">
         <ion-icon name="refresh-outline" slot="start"></ion-icon>
-        Clear All
+        {{ 'filters.clear_all' | translate }}
       </ion-button>
     </div>
 
-    <!-- Types Filter -->
+    <!-- Element Types Filter -->
     <div class="filter-section">
-      <h5>Types</h5>
+      <h5>{{ 'filters.types_elements' | translate }}</h5>
       <div class="types-grid">
         <ion-chip
-          *ngFor="let type of pokemonTypes"
-          [class.selected]="isTypeSelected(type)"
-          [style.background-color]="isTypeSelected(type) ? getTypeColor(type) : 'transparent'"
-          [style.color]="isTypeSelected(type) ? 'white' : getTypeColor(type)"
+          *ngFor="let type of elementTypes"
+          [class.selected]="isElementTypeSelected(type)"
+          [style.background-color]="isElementTypeSelected(type) ? getTypeColor(type) : 'transparent'"
+          [style.color]="isElementTypeSelected(type) ? 'white' : getTypeColor(type)"
           [style.border-color]="getTypeColor(type)"
-          (click)="onTypeToggle(type)">
-          {{ type | titlecase }}
+          (click)="onElementTypeToggle(type)"
+          class="auto-width-center">
+          {{ ('types.' + type) | translate }}
         </ion-chip>
       </div>
     </div>
 
-    <!-- Generation Filter -->
+    <!-- Movement Types Filter -->
     <div class="filter-section">
-      <h5>Generation</h5>
-      <ion-select
-        formControlName="selectedGeneration"
-        placeholder="Select Generation"
-        interface="popover">
-        <ion-select-option value="null">All Generations</ion-select-option>
-        <ion-select-option
-          *ngFor="let gen of generations"
-          [value]="gen.id">
-          {{ gen.name }}
-        </ion-select-option>
-      </ion-select>
+      <h5>{{ 'filters.types_movement' | translate }}</h5>
+      <div class="types-grid">
+        <ion-chip
+          *ngFor="let type of movementTypes"
+          [class.selected]="isMovementTypeSelected(type)"
+          [style.background-color]="isMovementTypeSelected(type) ? getTypeColor(type) : 'transparent'"
+          [style.color]="isMovementTypeSelected(type) ? 'white' : getTypeColor(type)"
+          [style.border-color]="getTypeColor(type)"
+          (click)="onMovementTypeToggle(type)"
+          class="auto-width-center">
+          {{ ('types.' + type) | translate }}
+        </ion-chip>
+      </div>
     </div>
 
-    <!-- Sort Options -->
-    <div class="filter-section">
-      <h5>Sort By</h5>
+    <!-- Generation + Sort Options (lado a lado, compactos) -->
+    <div class="filter-section row-group">
+      <!-- Geração -->
+      <div class="generation-select">
+        <h5>{{ 'filters.generation' | translate }}</h5>
+        <ion-select
+          formControlName="selectedGeneration"
+          [placeholder]="'filters.select_generation' | translate"
+          interface="popover"
+          (ionChange)="filterForm.get('selectedGeneration')?.setValue($event.detail.value)">
+          <ion-select-option [value]="null">{{ 'filters.all_generations' | translate }}</ion-select-option>
+          <ion-select-option
+            *ngFor="let gen of generations"
+            [value]="gen.id">
+            {{ gen.name | translate }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+      <!-- Ordenação -->
       <div class="sort-controls">
+        <h5>{{ 'filters.sort_by' | translate }}</h5>
         <ion-select
           formControlName="sortBy"
-          placeholder="Sort by..."
+          [placeholder]="'filters.sort_by' | translate"
           interface="popover"
           class="sort-select">
           <ion-select-option
             *ngFor="let option of sortOptions"
             [value]="option.value">
-            {{ option.label }}
+            {{ ('filters.sort_by_' + option.value) | translate }}
           </ion-select-option>
         </ion-select>
-
         <ion-segment
           formControlName="sortOrder"
-          class="sort-order">
+          class="sort-order auto-center"
+          (ionChange)="filterForm.get('sortOrder')?.setValue($event.detail.value)">
           <ion-segment-button value="asc">
             <ion-icon name="arrow-up-outline"></ion-icon>
-            <ion-label>Asc</ion-label>
+            <ion-label class="centered-label">{{ 'filters.ascending' | translate }}</ion-label>
           </ion-segment-button>
           <ion-segment-button value="desc">
             <ion-icon name="arrow-down-outline"></ion-icon>
-            <ion-label>Desc</ion-label>
+            <ion-label class="centered-label">{{ 'filters.descending' | translate }}</ion-label>
           </ion-segment-button>
         </ion-segment>
       </div>
