@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="mini-controls">
+    <div class="mini-controls" (click)="$event.stopPropagation()">
       <ion-button fill="clear" (click)="playPrevious(); $event.stopPropagation()">
         <ion-icon name="play-skip-back-outline"></ion-icon>
       </ion-button>
@@ -31,6 +31,19 @@
       <ion-button fill="clear" (click)="playNext(); $event.stopPropagation()">
         <ion-icon name="play-skip-forward-outline"></ion-icon>
       </ion-button>
+
+      <!-- Mini volume control -->
+      <ion-button fill="clear" (click)="toggleMute(); $event.stopPropagation()">
+        <ion-icon [name]="getVolumeIcon()"></ion-icon>
+      </ion-button>
+      <ion-range
+        min="0"
+        max="100"
+        [value]="volume * 100"
+        [disabled]="isMuted"
+        (ionInput)="setVolume($event); $event.stopPropagation()"
+        class="mini-volume-slider">
+      </ion-range>
     </div>
   </div>
 

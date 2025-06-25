@@ -118,14 +118,35 @@
           --background: rgba(255, 255, 255, 0.2);
           --border-radius: 20px;
         }
+      }
 
-        ion-icon {
-          font-size: 20px;
-        }
-
-        ion-spinner {
-          --color: white;
-        }
+      .mini-volume-slider {
+        width: 70px;
+        margin-left: 4px;
+        --bar-background: rgba(255,255,255,0.3);
+        --bar-height: 2px;
+        --knob-background: #fff;
+        --knob-size: 12px;
+        --pin-background: #fff;
+        --pin-color: #333;
+        --bar-border-radius: 2px;
+        --bar-active-background: #fff;
+        --bar-active-border-radius: 2px;
+        --bar-border-width: 0;
+        --bar-border-color: transparent;
+        --bar-active-border-width: 0;
+        --bar-active-border-color: transparent;
+        --ticks-background: transparent;
+        --ticks-color: transparent;
+        --ticks-width: 0;
+        --ticks-height: 0;
+        --label-color: transparent;
+        --label-font-size: 0;
+        --label-font-weight: 400;
+        --label-margin-top: 0;
+        --label-margin-bottom: 0;
+        --label-margin-start: 0;
+        --label-margin-end: 0;
       }
     }
   }
