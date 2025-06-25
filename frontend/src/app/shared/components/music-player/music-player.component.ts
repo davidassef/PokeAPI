@@ -27,33 +27,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   isMinimized = true;
   isLoading = false;
 
-  // Sample tracks - in real app these would come from a service
-  playlist: Track[] = [
-    {
-      id: 'route1',
-      title: 'Route 1',
-      artist: 'Pokémon Red/Blue',
-      url: 'assets/audio/route1.mp3'
-    },
-    {
-      id: 'pallettown',
-      title: 'Pallet Town',
-      artist: 'Pokémon Red/Blue',
-      url: 'assets/audio/pallettown.mp3'
-    },
-    {
-      id: 'pokemoncenter',
-      title: 'Pokémon Center',
-      artist: 'Pokémon Red/Blue',
-      url: 'assets/audio/pokemoncenter.mp3'
-    },
-    {
-      id: 'wildpokemon',
-      title: 'Wild Pokémon Battle',
-      artist: 'Pokémon Red/Blue',
-      url: 'assets/audio/wildpokemon.mp3'
-    }
-  ];
+  playlist: Track[] = [];
 
   private destroy$ = new Subject<void>();
   private audio?: HTMLAudioElement;
@@ -66,7 +40,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadSettings();
     this.setupAudioService();
-    this.initializePlayer();
+    this.setupPlaylistByLanguage();
   }
 
   ngOnDestroy() {
@@ -101,6 +75,39 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
       });
   }
 
+  private setupPlaylistByLanguage() {
+    this.settingsService.settings$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(settings => {
+        let lang = settings.language || 'pt-BR';
+        let track: Track;
+        if (lang === 'pt-BR') {
+          track = {
+            id: 'opening-br',
+            title: 'Abertura Pokémon (BR)',
+            artist: 'Pokémon Brasil',
+            url: 'assets/audio/Opening BR.mp3'
+          };
+        } else if (lang === 'en-US') {
+          track = {
+            id: 'opening-en',
+            title: 'Pokémon Theme (EN)',
+            artist: 'Pokémon English',
+            url: 'assets/audio/Opening EN.mp3'
+          };
+        } else {
+          track = {
+            id: 'opening-es',
+            title: 'Apertura Pokémon (ES)',
+            artist: 'Pokémon España',
+            url: 'assets/audio/Opening ES.mp3'
+          };
+        }
+        this.playlist = [track];
+        this.loadTrack(track, true); // true = autoplay
+      });
+  }
+
   private initializePlayer() {
     // Load first track by default
     if (this.playlist.length > 0) {
@@ -108,7 +115,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadTrack(track: Track) {
+  private loadTrack(track: Track, autoplay = false) {
     this.currentTrack = track;
     this.isLoading = true;
 
@@ -124,6 +131,10 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.audio.addEventListener('loadedmetadata', () => {
       this.duration = this.audio?.duration || 0;
       this.isLoading = false;
+      if (autoplay) {
+        this.audio?.play();
+        this.isPlaying = true;
+      }
     });
 
     this.audio.addEventListener('timeupdate', () => {
@@ -175,7 +186,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     if (this.audio) {
       this.audio.volume = this.isMuted ? 0 : this.volume;
     }
-    this.audioService.setVolume(this.volume);
+    // Não chama audioService.setVolume para evitar conflito
   }
 
   seek(event: any) {
