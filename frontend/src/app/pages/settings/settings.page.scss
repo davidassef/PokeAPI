@@ -74,6 +74,17 @@ ion-item {
   border-radius: 12px;
   padding: 16px;
   margin-top: 16px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+@media (max-width: 576px) {
+  .music-player {
+    max-width: 98vw;
+    padding: 8px;
+  }
 }
 
 .player-controls {

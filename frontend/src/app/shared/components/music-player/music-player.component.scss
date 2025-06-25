@@ -12,6 +12,9 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
 
   &.minimized {
     height: 64px;

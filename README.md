@@ -210,10 +210,11 @@ ng e2e
 | 🌐 Deploy | ⏳ Pendente | 0% |
 
 ### Últimas Atualizações
-- ✨ **[2024-01-XX]** Refatoração completa das páginas principais
-- 🎨 **[2024-01-XX]** Implementação de animações CSS
-- 🔧 **[2024-01-XX]** Integração de componentes compartilhados
-- ⚙️ **[2024-01-XX]** Sistema de configurações e temas
+- 🌍 **[2025-06-23]** Padronização e cobertura total de i18n (títulos, menus, labels, botões)
+- 🏷️ **[2025-06-23]** Adição de todas as chaves de tradução faltantes nas páginas principais e configurações
+- 🖼️ **[2025-06-23]** Substituição do logo do menu lateral por Pokédex em alta definição
+- 📝 **[2025-06-23]** Atualização do plano de melhorias e README
+- 🛠️ **[2025-06-23]** Correção de labels e menus para uso de chaves minúsculas e com ponto
 
 ---
 
