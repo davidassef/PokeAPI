@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AppSettings } from '../../models/app.model';
 import { SettingsService } from '../../core/services/settings.service';
-import { FavoritesService } from '../../core/services/favorites.service';
+import { CapturedService } from '../../core/services/captured.service';
 
 @Component({
   selector: 'app-settings',
@@ -40,7 +40,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     private translate: TranslateService,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
-    private favoritesService: FavoritesService
+    private capturedService: CapturedService
   ) {}
 
   ngOnInit() {
@@ -133,18 +133,18 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.settingsService.saveSettings({ [setting]: value });
   }
 
-  exportFavorites() {
-    const data = this.favoritesService.exportFavorites();
+  exportCaptured() {
+    const data = this.capturedService.exportCaptured();
     const blob = new Blob([data], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'favorites.json';
+    a.download = 'captured.json';
     a.click();
     window.URL.revokeObjectURL(url);
   }
 
-  async importFavorites() {
+  async importCaptured() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json,application/json';
@@ -152,15 +152,15 @@ export class SettingsPage implements OnInit, OnDestroy {
       const file = e.target.files[0];
       if (!file) return;
       const text = await file.text();
-      await this.favoritesService.importFavorites(text);
-      this.showToast('FAVORITES.IMPORTED');
+      await this.capturedService.importCaptured(text);
+      this.showToast('CAPTURED.IMPORTED');
     };
     input.click();
   }
 
-  clearAllFavorites() {
-    this.favoritesService.clearAllFavorites();
-    this.showToast('FAVORITES.CLEARED');
+  clearAllCaptured() {
+    this.capturedService.clearAllCaptured();
+    this.showToast('CAPTURED.CLEARED');
   }
 
   async exportSettings() {

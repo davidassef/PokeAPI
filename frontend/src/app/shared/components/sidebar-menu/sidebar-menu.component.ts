@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../core/services/settings.service';
-import { FavoritesService } from '../../../core/services/favorites.service';
+import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
 
 export interface MenuItem {
@@ -30,10 +30,10 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
       color: 'primary'
     },
     {
-      title: 'menu.favorites',
-      url: '/tabs/favorites',
-      icon: 'heart-outline',
-      color: 'danger'
+      title: 'menu.captured',
+      url: '/tabs/captured',
+      icon: 'cube-outline',
+      color: 'success'
     },
     {
       title: 'menu.ranking',
@@ -71,7 +71,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   ];
 
   userStats = {
-    favoritesCount: 0,
+    capturedCount: 0,
     seenCount: 0,
     caughtCount: 0
   };
@@ -90,7 +90,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     private menuController: MenuController,
     private translate: TranslateService,
     private settingsService: SettingsService,
-    private favoritesService: FavoritesService,
+    private capturedService: CapturedService,
     private audioService: AudioService
   ) {}
 
@@ -105,11 +105,11 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
 
   private loadUserStats() {
-    this.favoritesService.getFavorites()
+    this.capturedService.getCaptured()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(favorites => {
-        this.userStats.favoritesCount = favorites.length;
-        this.updateFavoritesBadge();
+      .subscribe(captured => {
+        this.userStats.capturedCount = captured.length;
+        this.updateCapturedBadge();
       });
 
     // Mock data for seen/caught - in real app this would come from a service
@@ -125,10 +125,10 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
       });
   }
 
-  private updateFavoritesBadge() {
-    const favoritesItem = this.menuItems.find(item => item.url === '/tabs/favorites');
-    if (favoritesItem) {
-      favoritesItem.badge = this.userStats.favoritesCount;
+  private updateCapturedBadge() {
+    const capturedItem = this.menuItems.find(item => item.url === '/tabs/captured');
+    if (capturedItem) {
+      capturedItem.badge = this.userStats.capturedCount;
     }
   }
 
