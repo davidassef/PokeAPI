@@ -216,7 +216,8 @@
     "about_app": "About the App",
     "version": "Version",
     "data_source": "Data Source",
-    "clear_all_favorites": "Clear all favorites"
+    "clear_all_favorites": "Clear all favorites",
+    "theme_update": "Theme updated successfully!"
   },
   "ranking_page": {
     "most_loved_pokemon": "Most loved Pokémon",

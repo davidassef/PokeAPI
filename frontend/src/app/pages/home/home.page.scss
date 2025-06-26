@@ -1,11 +1,11 @@
 ion-content {
-  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --background: var(--background);
 }
 
 // Search container
 .search-container {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--card-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -32,7 +32,7 @@ ion-content {
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
-  color: var(--ion-color-medium);
+  color: var(--text-color);
 
   ion-icon {
     font-size: 64px;
@@ -44,7 +44,7 @@ ion-content {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 8px;
-    color: var(--ion-color-dark);
+    color: var(--text-color);
   }
 
   p {
@@ -69,7 +69,7 @@ ion-content {
   gap: 8px;
   margin: 16px auto 8px auto;
   padding: 8px 0;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   max-width: 600px;
@@ -198,17 +198,17 @@ ion-content {
 
   .empty-state {
     h2 {
-      color: var(--ion-color-light);
+      color: var(--text-color);
     }
   }
 
   .pagination-controls {
-    background: rgba(44, 62, 80, 0.85);
+    background: var(--card-bg);
   }
 
   .pagination-sides-row {
     .page-info {
-      color: #fff;
+      color: var(--text-color);
     }
   }
 }

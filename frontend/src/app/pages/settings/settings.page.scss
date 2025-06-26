@@ -1,13 +1,13 @@
 ion-content {
-  --background: linear-gradient(135deg, #6c5ce7 0%, #74b9ff 100%);
+  --background: var(--background);
 }
 
 // Cards de configurações
 .settings-card {
   margin: 16px;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.95);
+  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
   backdrop-filter: blur(10px);
 
   ion-card-header {
@@ -19,7 +19,7 @@ ion-content {
       gap: 12px;
       font-size: 1.2rem;
       font-weight: 600;
-      color: var(--ion-color-dark);
+      color: var(--text-color);
 
       ion-icon {
         font-size: 24px;
@@ -35,7 +35,8 @@ ion-content {
 // Itens de configuração
 ion-item {
   --background: transparent;
-  --border-color: rgba(0, 0, 0, 0.1);
+  --border-color: var(--input-border);
+  color: var(--text-color);
   --padding-start: 0;
   --padding-end: 0;
   margin-bottom: 8px;
@@ -68,90 +69,13 @@ ion-item {
   }
 }
 
-// Player de música
-.music-player {
-  background: rgba(108, 92, 231, 0.1);
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 16px;
-  max-width: 420px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
-}
-
-@media (max-width: 576px) {
-  .music-player {
-    max-width: 98vw;
-    padding: 8px;
-  }
-}
-
-.player-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 12px 0;
-
-  ion-button {
-    --border-radius: 50%;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --padding-top: 12px;
-    --padding-bottom: 12px;
-  }
-}
-
-.volume-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-
-  ion-range {
-    flex: 1;
-    --bar-background: rgba(108, 92, 231, 0.3);
-    --bar-background-active: var(--ion-color-primary);
-    --knob-background: var(--ion-color-primary);
-  }
-
-  ion-icon {
-    color: var(--ion-color-medium);
-    font-size: 18px;
-  }
-}
-
-.track-info {
-  margin-top: 12px;
-}
-
+// Remove estilos do player de música
+.music-player,
+.player-controls,
+.volume-control,
+.track-info,
 .track-progress {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  color: var(--ion-color-medium);
-
-  span {
-    min-width: 40px;
-    font-weight: 500;
-
-    &:first-child {
-      text-align: right;
-    }
-
-    &:last-child {
-      text-align: left;
-    }
-  }
-
-  ion-progress-bar {
-    flex: 1;
-    --background: rgba(108, 92, 231, 0.3);
-    --progress-background: var(--ion-color-primary);
-    height: 4px;
-    border-radius: 2px;
-  }
+  display: none !important;
 }
 
 // Seletores customizados
@@ -368,6 +292,74 @@ body.dark-theme {
       color: rgba(255, 255, 255, 0.9);
     }
   }
+}
+
+// Tema escuro para página de configurações
+@media (prefers-color-scheme: dark) {
+  ion-content {
+    --background: linear-gradient(135deg, #232946 0%, #16161a 100%);
+  }
+  .settings-card {
+    background: rgba(30, 30, 40, 0.98);
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    ion-card-title, ion-label, ion-icon, ion-note {
+      color: #fff !important;
+    }
+    ion-item {
+      --background: transparent;
+      --color: #fff;
+      --border-color: rgba(255,255,255,0.08);
+    }
+    ion-toggle {
+      --background: rgba(255,255,255,0.1);
+      --background-checked: var(--ion-color-primary);
+      --handle-background: #fff;
+      --handle-background-checked: #fff;
+    }
+    ion-select {
+      --background: #232946;
+      --placeholder-color: #ccc;
+    }
+    ion-select::part(text) { color: #fff; }
+  }
+}
+
+.dark-theme {
+  ion-content {
+    --background: linear-gradient(135deg, #232946 0%, #16161a 100%);
+  }
+  .settings-card {
+    background: rgba(30, 30, 40, 0.98);
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    ion-card-title, ion-label, ion-icon, ion-note {
+      color: #fff !important;
+    }
+    ion-item {
+      --background: transparent;
+      --color: #fff;
+      --border-color: rgba(255,255,255,0.08);
+    }
+    ion-toggle {
+      --background: rgba(255,255,255,0.1);
+      --background-checked: var(--ion-color-primary);
+      --handle-background: #fff;
+      --handle-background-checked: #fff;
+    }
+    ion-select {
+      --background: #232946;
+      --placeholder-color: #ccc;
+    }
+    ion-select::part(text) { color: #fff; }
+  }
+}
+
+// Animação suave para troca de tema
+.theme-transition {
+  transition: background 0.4s cubic-bezier(0.4,0,0.2,1),
+    color 0.4s cubic-bezier(0.4,0,0.2,1),
+    background-color 0.4s cubic-bezier(0.4,0,0.2,1);
 }
 
 // Responsividade
