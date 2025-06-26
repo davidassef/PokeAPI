@@ -5,10 +5,10 @@ Baseado na análise das telas atuais do aplicativo, este plano apresenta melhori
 ## 1. 🎨 Melhorias Visuais e UI
 
 ### 1.1 Consistência Visual
-- [ ] Padronizar cores de fundo entre páginas (atualmente Ranking tem fundo amarelo, Favoritos vermelho)
-- [ ] Implementar sistema de cores baseado nos tipos de Pokémon em todo o aplicativo
-- [ ] Padronizar componentes de cabeçalho entre telas (títulos, botões de ação)
-- [ ] Adicionar animações suaves nas transições entre páginas
+- [x] Padronizar cores de fundo entre páginas (atualmente Ranking tem fundo amarelo, Favoritos vermelho)
+- [x] Implementar sistema de cores baseado nos tipos de Pokémon em todo o aplicativo
+- [x] Padronizar componentes de cabeçalho entre telas (títulos, botões de ação)
+- [x] Adicionar animações suaves nas transições entre páginas
 
 ### 1.2 Aprimoramento de Cards
 - [ ] Adicionar efeito de hover/tap nos cards com leve elevação e brilho

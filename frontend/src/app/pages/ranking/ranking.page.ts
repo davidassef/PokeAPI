@@ -6,6 +6,7 @@ import { Pokemon } from '../../models/pokemon.model';
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { FavoritesService } from '../../core/services/favorites.service';
 import { AudioService } from '../../core/services/audio.service';
+import { SyncService } from '../../core/services/sync.service';
 
 interface PokemonRanking {
   pokemon: Pokemon;
@@ -47,7 +48,8 @@ export class RankingPage implements OnInit, OnDestroy {
     private audioService: AudioService,
     private loadingController: LoadingController,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private syncService: SyncService // Adicionado para feedback de sincronização
   ) {}
 
   ngOnInit() {
@@ -89,16 +91,32 @@ export class RankingPage implements OnInit, OnDestroy {
     }
   }
 
+  // Substitui o mock por busca real do backend + detalhes da PokeAPI
   async loadRanking() {
     this.loading = true;
     const loading = await this.loadingController.create({
       message: await this.translate.get('ranking_page.loading_ranking').toPromise()
     });
     await loading.present();
-
     try {
-      this.globalRanking = await this.loadRankingData('getGlobalRanking');
-      this.localRanking = await this.loadRankingData('getLocalRanking', 'default-region');
+      // Antes de buscar ranking, tenta sincronizar pendências
+      await this.syncService.syncPending();
+      // Busca ranking global do backend
+      const backendRanking = await this.pokeApiService.getGlobalRankingFromBackend(10).toPromise();
+      // Busca detalhes de cada pokémon na PokeAPI
+      const pokemonPromises = (backendRanking ?? []).map(async (item, idx) => {
+        const pokemon = await this.pokeApiService.getPokemon(item.pokemon_id).toPromise();
+        return {
+          pokemon: pokemon!,
+          favoriteCount: item.favorite_count,
+          rank: idx + 1,
+          trend: 'stable' as const // Corrige tipagem para o enum
+        };
+      });
+      this.globalRanking = await Promise.all(pokemonPromises);
+    } catch (error) {
+      console.error('Erro ao carregar ranking global:', error);
+      await this.showErrorToast('ERROR_LOADING_RANKING');
     } finally {
       this.loading = false;
       await loading.dismiss();

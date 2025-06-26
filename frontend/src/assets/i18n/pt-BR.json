@@ -253,7 +253,10 @@
     "ranking_info": "Sobre o Ranking",
     "global_ranking_info": "Ranking global atualizado diariamente.",
     "local_ranking_info": "Ranking baseado nos seus capturados.",
-    "updated_daily": "Atualizado diariamente"
+    "updated_daily": "Atualizado diariamente",
+    "no_global_ranking": "Nenhum ranking global disponível.",
+    "no_global_ranking_desc": "Ainda não há dados suficientes para exibir o ranking global. Capture e favorite Pokémons para participar!",
+    "EXPLORE_POKEMON": "EXPLORAR POKÉMONS"
   },
   "details": {
     "back": "Voltar",

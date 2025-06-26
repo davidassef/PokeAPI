@@ -1,12 +1,15 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>{{ 'tabs.ranking' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
-    <ion-toolbar>
+    <ion-toolbar color="primary">
       <ion-title size="large">{{ 'tabs.ranking' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
@@ -137,7 +140,16 @@
     <h2>{{ 'ranking_page.no_local_ranking' | translate }}</h2>
     <p>{{ 'ranking_page.add_favorites_for_ranking' | translate }}</p>
     <ion-button fill="outline" routerLink="/tabs/home">
-      {{ 'ranking_page.explore_pokemon' | translate }}
+      {{ 'ranking_page.EXPLORE_POKEMON' | translate }}
+    </ion-button>
+  </div>
+
+  <div *ngIf="!loading && viewMode === 'global' && currentRanking.length === 0" class="empty-state">
+    <ion-icon name="trophy" size="large" color="medium"></ion-icon>
+    <h2>{{ 'ranking_page.no_global_ranking' | translate }}</h2>
+    <p>{{ 'ranking_page.no_global_ranking_desc' | translate }}</p>
+    <ion-button fill="outline" routerLink="/tabs/home">
+      {{ 'ranking_page.EXPLORE_POKEMON' | translate }}
     </ion-button>
   </div>
 

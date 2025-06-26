@@ -1,55 +1,86 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar color="danger">
-    <ion-title>{{ 'captured.title' | translate }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'tabs.captured' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleSearch()">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
+  <!-- Search and Filter Component -->
+  <div *ngIf="showSearch" class="search-container">
+    <app-search-filter
+      [currentFilters]="currentFilterOptions"
+      (filtersChanged)="onFiltersChanged($event)"
+      (searchChanged)="onSearchChanged($event)">
+    </app-search-filter>
+  </div>
 </ion-header>
 
-<ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar color="danger">
+      <ion-title size="large">{{ 'tabs.captured' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-  <div class="captured-actions ion-padding">
-    <ion-button size="small" color="danger" (click)="clearAllCaptured()">
-      <ion-icon name="trash-outline" slot="start"></ion-icon>
-      {{ 'captured.clear_all' | translate }}
+  <!-- Loading -->
+  <app-loading-spinner
+    *ngIf="loading && capturedPokemon.length === 0"
+    [overlay]="true"
+    size="large"
+    [message]="'captured.loading' | translate">
+  </app-loading-spinner>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-controls" *ngIf="paginatedCaptured.length > 0">
+    <ion-button fill="outline" size="small" (click)="firstPage()" [disabled]="currentPage === 1">
+      <ion-icon name="play-back-outline"></ion-icon>
+      <span class="hide-on-mobile">Primeira</span>
     </ion-button>
-    <ion-button size="small" color="primary" (click)="exportCaptured()">
-      <ion-icon name="download-outline" slot="start"></ion-icon>
-      {{ 'captured.export' | translate }}
+    <ion-button fill="outline" size="small" (click)="prevPage()" [disabled]="currentPage === 1">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+      <span class="hide-on-mobile">Anterior</span>
     </ion-button>
-    <ion-button size="small" color="secondary" (click)="importFileInput.click()">
-      <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
-      {{ 'captured.import' | translate }}
+    <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    <ion-button fill="outline" size="small" (click)="nextPage()" [disabled]="currentPage === totalPages">
+      <span class="hide-on-mobile">Próxima</span>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
     </ion-button>
-    <input #importFileInput type="file" accept=".json" style="display:none" (change)="importCaptured($event)">
+    <ion-button fill="outline" size="small" (click)="lastPage()" [disabled]="currentPage === totalPages">
+      <span class="hide-on-mobile">Última</span>
+      <ion-icon name="play-forward-outline"></ion-icon>
+    </ion-button>
   </div>
 
-  <div class="sort-controls ion-padding">
-    <ion-select [(ngModel)]="sortBy" (ionChange)="onSortChange()" interface="popover">
-      <ion-select-option value="id">{{ 'captured.sort_id' | translate }}</ion-select-option>
-      <ion-select-option value="name">{{ 'captured.sort_name' | translate }}</ion-select-option>
-    </ion-select>
-    <ion-button fill="clear" (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; onSortChange()">
-      <ion-icon [name]="sortOrder === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon>
-    </ion-button>
-  </div>
-
-  <ion-searchbar [(ngModel)]="searchTerm" placeholder="{{ 'captured.search' | translate }}" (ionInput)="applyFilters()"></ion-searchbar>
-
-  <ion-list *ngIf="filteredCaptured.length > 0">
+  <!-- Pokemon Grid -->
+  <div class="pokemon-grid" *ngIf="!loading && paginatedCaptured.length > 0">
     <app-pokemon-card
-      *ngFor="let pokemon of filteredCaptured; trackBy: trackByPokemonId"
-      [pokemon]="pokemon"
+      *ngFor="let poke of paginatedCaptured; trackBy: trackByPokemonId; let i = index"
+      [pokemon]="poke"
       [isFavorite]="true"
-      [showFavoriteButton]="true"
-      (favoriteToggle)="removeCaptured(pokemon)"
-      (cardClick)="goToDetails(pokemon.id)">
+      [animationDelay]="getAnimationDelay(i)"
+      (cardClick)="navigateToDetails(poke.id)"
+      (favoriteClick)="onFavoriteToggle(poke)">
     </app-pokemon-card>
-  </ion-list>
-
-  <div *ngIf="filteredCaptured.length === 0" class="ion-text-center ion-padding">
-    <ion-icon name="help-circle-outline" size="large" color="medium"></ion-icon>
-    <p>{{ 'captured.empty' | translate }}</p>
   </div>
+
+  <!-- Empty State Message -->
+  <div class="empty-state" *ngIf="!loading && paginatedCaptured.length === 0">
+    <ion-icon name="sad-outline" size="large" color="medium"></ion-icon>
+    <p>{{ 'captured.empty' | translate }}</p>
+    <ion-button color="primary" routerLink="/home">
+      {{ 'captured.goToHome' | translate }}
+    </ion-button>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="scrollToTop()">
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

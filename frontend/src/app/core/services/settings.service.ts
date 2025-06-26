@@ -8,7 +8,8 @@ import { AppSettings } from '../../models/app.model';
   providedIn: 'root'
 })
 export class SettingsService {
-  private readonly SETTINGS_KEY = 'app-settings';  private settingsSubject = new BehaviorSubject<AppSettings>({
+  private readonly SETTINGS_KEY = 'app-settings';
+  private settingsSubject = new BehaviorSubject<AppSettings>({
     language: 'pt-BR',
     theme: 'light',
     darkMode: false,
@@ -22,15 +23,22 @@ export class SettingsService {
   });
 
   public settings$ = this.settingsSubject.asObservable();
+  private storageReady: Promise<void>;
 
   constructor(
     private storage: Storage,
     private translate: TranslateService
   ) {
+    this.storageReady = this.initStorage();
     this.loadSettings();
   }
 
+  private async initStorage(): Promise<void> {
+    await this.storage.create();
+  }
+
   async loadSettings(): Promise<void> {
+    await this.storageReady;
     try {
       const settings = await this.storage.get(this.SETTINGS_KEY);
       if (settings) {
@@ -43,10 +51,10 @@ export class SettingsService {
   }
 
   async saveSettings(settings: Partial<AppSettings>): Promise<void> {
+    await this.storageReady;
     try {
       const currentSettings = this.settingsSubject.value;
       const newSettings = { ...currentSettings, ...settings };
-
       await this.storage.set(this.SETTINGS_KEY, newSettings);
       this.settingsSubject.next(newSettings);
       this.applySettings(newSettings);
@@ -54,7 +62,10 @@ export class SettingsService {
       console.error('Erro ao salvar configurações:', error);
       throw error;
     }
-  }  async updateLanguage(language: 'pt-BR' | 'en-US' | 'es-ES'): Promise<void> {
+  }
+
+  async updateLanguage(language: 'pt-BR' | 'en-US' | 'es-ES'): Promise<void> {
+    await this.storageReady;
     await this.storage.set('app-language', language);
     await this.saveSettings({ language });
     this.translate.use(language);
@@ -72,12 +83,8 @@ export class SettingsService {
 
   private applyTheme(theme: 'light' | 'dark' | 'auto'): void {
     const body = document.body;
-
-    // Remove classes de tema existentes
     body.classList.remove('dark-theme', 'light-theme');
-
     if (theme === 'auto') {
-      // Detectar preferência do sistema
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       body.classList.add(prefersDark ? 'dark-theme' : 'light-theme');
     } else {
@@ -89,7 +96,9 @@ export class SettingsService {
     return this.settingsSubject.value;
   }
 
-  async resetSettings(): Promise<void> {    const defaultSettings: AppSettings = {
+  async resetSettings(): Promise<void> {
+    await this.storageReady;
+    const defaultSettings: AppSettings = {
       language: 'pt-BR',
       theme: 'light',
       darkMode: false,
@@ -101,7 +110,6 @@ export class SettingsService {
       autoPlayMusic: false,
       favoriteType: 'all'
     };
-
     await this.storage.remove(this.SETTINGS_KEY);
     await this.storage.remove('app-language');
     this.settingsSubject.next(defaultSettings);
@@ -109,11 +117,13 @@ export class SettingsService {
   }
 
   async exportSettings(): Promise<string> {
+    await this.storageReady;
     const settings = this.getCurrentSettings();
     return JSON.stringify(settings, null, 2);
   }
 
   async importSettings(settingsJson: string): Promise<void> {
+    await this.storageReady;
     try {
       const settings = JSON.parse(settingsJson) as AppSettings;
       await this.saveSettings(settings);

@@ -9,6 +9,7 @@ import { PokeApiService } from '../../core/services/pokeapi.service';
 import { FavoritesService } from '../../core/services/favorites.service';
 import { AudioService } from '../../core/services/audio.service';
 import { FilterOptions } from '../../shared/components/search-filter/search-filter.component';
+import { SyncService, SyncAction } from '../../core/services/sync.service';
 
 @Component({
   selector: 'app-home',
@@ -59,7 +60,8 @@ export class HomePage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private alertController: AlertController,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private syncService: SyncService // Adicionado para sincronização automática
   ) {}
 
   ngOnInit() {
@@ -206,13 +208,28 @@ export class HomePage implements OnInit, OnDestroy {
   async toggleFavorite(pokemon: Pokemon) {
     try {
       const isFavorite = this.isFavorite(pokemon.id);
-
       if (isFavorite) {
         await this.favoritesService.removeFromFavorites(pokemon.id);
         this.showToast(this.translate.instant('HOME.REMOVED_FROM_FAVORITES'));
+        // Adiciona ação de sincronização (remoção de favorito)
+        const action: SyncAction = {
+          pokemonId: pokemon.id,
+          action: 'favorite',
+          timestamp: Date.now(),
+          payload: { removed: true }
+        };
+        await this.syncService.addToQueue(action);
       } else {
         await this.favoritesService.addToFavorites(pokemon);
         this.showToast(this.translate.instant('HOME.ADDED_TO_FAVORITES'));
+        // Adiciona ação de sincronização (adição de favorito)
+        const action: SyncAction = {
+          pokemonId: pokemon.id,
+          action: 'favorite',
+          timestamp: Date.now(),
+          payload: { added: true }
+        };
+        await this.syncService.addToQueue(action);
       }
     } catch (error) {
       console.error('Erro ao alterar favorito:', error);
@@ -273,5 +290,17 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.content) {
       this.content.scrollToTop(500);
     }
+  }
+
+  // Atualiza favoritos sempre que a página Home for exibida
+  ionViewWillEnter() {
+    this.loadFavorites();
+  }
+
+  /**
+   * Retorna a quantidade de capturas/favoritos pendentes de sincronização
+   */
+  getPendingSyncCount(): Promise<number> {
+    return this.syncService.getPendingCount();
   }
 }

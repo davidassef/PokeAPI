@@ -5,6 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AppSettings } from '../../models/app.model';
 import { SettingsService } from '../../core/services/settings.service';
 import { CapturedService } from '../../core/services/captured.service';
+import { SyncService } from '../../core/services/sync.service';
 
 @Component({
   selector: 'app-settings',
@@ -34,22 +35,30 @@ export class SettingsPage implements OnInit, OnDestroy {
   pokemonPerPageOptions = [10, 20, 30, 50, 100];
 
   private destroy$ = new Subject<void>();
+  syncPending = false;
 
   constructor(
     private settingsService: SettingsService,
     private translate: TranslateService,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
-    private capturedService: CapturedService
+    private capturedService: CapturedService,
+    private syncService: SyncService // Adicionado para status de sincronização
   ) {}
 
   ngOnInit() {
     this.loadSettings();
+    this.checkSyncStatus();
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  async checkSyncStatus() {
+    const pending = await this.syncService.getPendingCount();
+    this.syncPending = pending > 0;
   }
 
   /**

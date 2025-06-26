@@ -1,12 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { IonContent, AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { Pokemon, FavoritePokemon } from '../../models/pokemon.model';
+import { Pokemon } from '../../models/pokemon.model';
 import { CapturedService } from '../../core/services/captured.service';
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { AudioService } from '../../core/services/audio.service';
+import { FilterOptions } from '../../shared/components/search-filter/search-filter.component';
+import { PokemonFilters } from '../../models/app.model';
+import { SyncService, SyncAction } from '../../core/services/sync.service';
 
 @Component({
   selector: 'app-captured',
@@ -14,15 +17,39 @@ import { AudioService } from '../../core/services/audio.service';
   styleUrls: ['./captured.page.scss'],
 })
 export class CapturedPage implements OnInit, OnDestroy {
+  @ViewChild(IonContent, { static: false }) content!: IonContent;
+
   capturedPokemon: Pokemon[] = [];
-  filteredCaptured: Pokemon[] = [];
-  capturedData: FavoritePokemon[] = [];
-  searchTerm = '';
-  sortBy: 'id' | 'name' = 'id';
-  sortOrder: 'asc' | 'desc' = 'asc';
   loading = false;
+  showSearch = false;
+  // Paginação
+  currentPage = 1;
+  totalPages = 1;
+  capturedPerPage = 12;
+  paginatedCaptured: Pokemon[] = [];
+
+  // Tipagem igual à Pokédex
+  currentFilters: PokemonFilters = {
+    name: '',
+    elementTypes: [],
+    movementTypes: [],
+    generation: undefined,
+    sortBy: 'id',
+    sortOrder: 'asc'
+  };
 
   private destroy$ = new Subject<void>();
+
+  get currentFilterOptions(): FilterOptions {
+    return {
+      searchTerm: this.currentFilters.name || '',
+      selectedElementTypes: this.currentFilters.elementTypes || [],
+      selectedMovementTypes: this.currentFilters.movementTypes || [],
+      selectedGeneration: this.currentFilters.generation || null,
+      sortBy: this.currentFilters.sortBy,
+      sortOrder: this.currentFilters.sortOrder
+    };
+  }
 
   constructor(
     private capturedService: CapturedService,
@@ -31,7 +58,8 @@ export class CapturedPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private toastController: ToastController,
     private translate: TranslateService,
-    public router: Router // Make router public for template access
+    public router: Router,
+    private syncService: SyncService // Adicionado para sincronização automática
   ) {}
 
   ngOnInit() {
@@ -49,13 +77,12 @@ export class CapturedPage implements OnInit, OnDestroy {
       this.capturedService.captured$
         .pipe(takeUntil(this.destroy$))
         .subscribe(async (captured) => {
-          this.capturedData = captured;
           const pokemonPromises = captured.map(c =>
             this.pokeApiService.getPokemon(c.pokemon_id).toPromise()
           );
           const pokemonData = await Promise.all(pokemonPromises);
           this.capturedPokemon = pokemonData.filter(p => p !== undefined) as Pokemon[];
-          this.applyFilters();
+          this.applyFiltersAndPaginate();
           this.loading = false;
         });
     } catch (error) {
@@ -64,152 +91,69 @@ export class CapturedPage implements OnInit, OnDestroy {
     }
   }
 
-  onSearch(event: any) {
-    this.searchTerm = event.target.value.toLowerCase().trim();
-    this.applyFilters();
+  toggleSearch() {
+    this.showSearch = !this.showSearch;
   }
 
-  onSortChange() {
-    this.applyFilters();
+  onFiltersChanged(filters: FilterOptions) {
+    this.currentFilters = {
+      name: filters.searchTerm || '',
+      elementTypes: filters.selectedElementTypes || [],
+      movementTypes: filters.selectedMovementTypes || [],
+      generation: filters.selectedGeneration || undefined,
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder
+    };
+    this.currentPage = 1;
+    this.applyFiltersAndPaginate();
   }
 
-  applyFilters() {
+  onSearchChanged(searchTerm: string) {
+    this.currentFilters.name = searchTerm;
+    this.currentPage = 1;
+    this.applyFiltersAndPaginate();
+  }
+
+  applyFiltersAndPaginate() {
     let filtered = [...this.capturedPokemon];
-    if (this.searchTerm) {
+    if (this.currentFilters.name) {
       filtered = filtered.filter(pokemon =>
-        pokemon.name.toLowerCase().includes(this.searchTerm)
+        (pokemon.name?.toLowerCase() || '').includes((this.currentFilters.name || '').toLowerCase())
       );
     }
-    filtered.sort((a, b) => {
-      let comparison = 0;
-      if (this.sortBy === 'name') {
-        comparison = a.name.localeCompare(b.name);
-      } else {
-        comparison = a.id - b.id;
-      }
-      return this.sortOrder === 'desc' ? -comparison : comparison;
-    });
-    this.filteredCaptured = filtered;
-  }
-
-  async removeCaptured(pokemon: Pokemon, event?: Event) {
-    if (event) {
-      event.stopPropagation();
+    // Filtros adicionais podem ser aplicados aqui se necessário
+    if (this.currentFilters.sortBy === 'name') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      filtered.sort((a, b) => a.id - b.id);
     }
-    const alert = await this.alertController.create({
-      header: await this.translate.get('captured.confirm_removal').toPromise(),
-      message: await this.translate.get('captured.confirm_release_captured', { name: pokemon.name }).toPromise(),
-      buttons: [
-        {
-          text: await this.translate.get('captured.cancel').toPromise(),
-          role: 'cancel'
-        },
-        {
-          text: await this.translate.get('captured.release').toPromise(),
-          handler: async () => {
-            try {
-              await this.capturedService.removeFromCaptured(pokemon.id);
-              await this.audioService.playSound('/assets/audio/remove.wav');
-              await this.showToast('captured.released_captured', pokemon.name);
-            } catch (error) {
-              console.error('Erro ao soltar capturado:', error);
-              await this.showErrorToast('captured.error_release_captured');
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  async clearAllCaptured() {
-    if (this.capturedPokemon.length === 0) {
-      return;
+    if (this.currentFilters.sortOrder === 'desc') {
+      filtered.reverse();
     }
-    const alert = await this.alertController.create({
-      header: await this.translate.get('captured.confirm_clear_all').toPromise(),
-      message: await this.translate.get('captured.confirm_clear_all_captured').toPromise(),
-      buttons: [
-        {
-          text: await this.translate.get('captured.cancel').toPromise(),
-          role: 'cancel'
-        },
-        {
-          text: await this.translate.get('captured.clear_all').toPromise(),
-          handler: async () => {
-            try {
-              await this.capturedService.clearAllCaptured();
-              await this.audioService.playSound('/assets/audio/clear.wav');
-              await this.showToast('captured.cleared_all_captured');
-            } catch (error) {
-              console.error('Erro ao limpar capturados:', error);
-              await this.showErrorToast('captured.error_clear_captured');
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
+    this.totalPages = Math.max(1, Math.ceil(filtered.length / this.capturedPerPage));
+    const start = (this.currentPage - 1) * this.capturedPerPage;
+    const end = start + this.capturedPerPage;
+    this.paginatedCaptured = filtered.slice(start, end);
   }
 
-  async exportCaptured() {
-    try {
-      const exported = await this.capturedService.exportCaptured();
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exported);
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", "pokemon-captured.json");
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
-      await this.showToast('captured.captured_exported');
-    } catch (error) {
-      console.error('Erro ao exportar capturados:', error);
-      await this.showErrorToast('captured.error_export_captured');
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.applyFiltersAndPaginate();
+  }
+  nextPage() { this.goToPage(this.currentPage + 1); }
+  prevPage() { this.goToPage(this.currentPage - 1); }
+
+  firstPage() {
+    if (this.currentPage !== 1) {
+      this.goToPage(1);
     }
   }
 
-  async importCaptured(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const content = e.target?.result as string;
-        await this.capturedService.importCaptured(content);
-        await this.showToast('captured.captured_imported');
-        event.target.value = '';
-      } catch (error) {
-        console.error('Erro ao importar capturados:', error);
-        await this.showErrorToast('captured.error_import_captured');
-      }
-    };
-    reader.readAsText(file);
-  }
-
-  async onRefresh(event: any) {
-    await this.loadCaptured();
-    event.target.complete();
-  }
-
-  getStatsTotal(pokemon: Pokemon): number {
-    return pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
-  }
-
-  getUniqueTypes(): string[] {
-    const types = new Set<string>();
-    this.capturedPokemon.forEach(pokemon => {
-      pokemon.types.forEach(type => types.add(type.type.name));
-    });
-    return Array.from(types);
-  }
-
-  getAverageStats(): number {
-    if (this.capturedPokemon.length === 0) return 0;
-    const totalStats = this.capturedPokemon.reduce((sum, pokemon) => {
-      return sum + this.getStatsTotal(pokemon);
-    }, 0);
-    return Math.round(totalStats / this.capturedPokemon.length);
+  lastPage() {
+    if (this.currentPage !== this.totalPages) {
+      this.goToPage(this.totalPages);
+    }
   }
 
   trackByPokemonId(index: number, pokemon: Pokemon): number {
@@ -224,23 +168,29 @@ export class CapturedPage implements OnInit, OnDestroy {
     this.router.navigate(['/pokemon', pokemonId]);
   }
 
-  goToDetails(id: number) {
-    this.router.navigate(['/details', id]);
+  async onFavoriteToggle(pokemon: Pokemon) {
+    try {
+      await this.capturedService.removeFromCaptured(pokemon.id);
+      await this.audioService.playSound('/assets/audio/remove.wav');
+      // Adiciona ação de sincronização (remoção de favorito/captura)
+      const action: SyncAction = {
+        pokemonId: pokemon.id,
+        action: 'capture', // ou 'favorite' se for favorito
+        timestamp: Date.now(),
+        payload: { removed: true }
+      };
+      await this.syncService.addToQueue(action);
+      this.loadCaptured();
+    } catch (error) {
+      console.error('Erro ao remover capturado:', error);
+      await this.showErrorToast('captured.error_release_captured');
+    }
   }
 
-  async onCapturedToggle(pokemon: Pokemon) {
-    this.loadCaptured();
-  }
-
-  private async showToast(messageKey: string, pokemonName?: string) {
-    const message = await this.translate.get(messageKey, { name: pokemonName }).toPromise();
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      position: 'bottom',
-      color: 'success'
-    });
-    await toast.present();
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(500);
+    }
   }
 
   private async showErrorToast(messageKey: string) {

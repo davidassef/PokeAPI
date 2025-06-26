@@ -2,6 +2,170 @@ ion-content {
   --background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
 }
 
+// Search container
+.search-container {
+  padding: 16px;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+// Pokemon Grid
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto 24px auto;
+}
+.grid-pagination {
+  grid-column: 1 / -1;
+  margin-bottom: 8px;
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-color);
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  ion-button {
+    margin-top: 12px;
+  }
+}
+
+// Pagination Controls
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 16px auto 8px auto;
+  padding: 8px 0;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  max-width: 600px;
+
+  ion-button {
+    min-width: 80px;
+  }
+
+  .page-info {
+    font-weight: 500;
+    font-size: 16px;
+    color: #1976d2; // azul padrão para tema claro
+  }
+
+  .hide-on-mobile {
+    display: inline;
+  }
+}
+
+.pagination-sides-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  max-width: 900px;
+  margin: 16px auto 0 auto;
+  padding: 0 0 8px 0;
+  box-sizing: border-box;
+  column-gap: 0;
+
+  .side-btn.left {
+    justify-self: start;
+  }
+
+  .side-btn.right {
+    justify-self: end;
+  }
+
+  .page-info {
+    text-align: center;
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .hide-on-mobile {
+    display: inline;
+  }
+}
+
+// Responsive design
+@media (max-width: 900px) {
+  .pokemon-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
+  }
+  .pagination-sides-row {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pokemon-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pokemon-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    padding: 8px;
+  }
+  .pagination-sides-row {
+    max-width: 100%;
+    padding: 0 4px 8px 4px;
+  }
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  ion-content {
+    --background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  }
+  .search-container {
+    background: var(--card-bg-dark, #222);
+  }
+  .empty-state {
+    color: #fff;
+  }
+  .pagination-controls {
+    background: var(--card-bg-dark, #222);
+    .page-info {
+      color: #fff !important;
+    }
+  }
+  .pagination-sides-row {
+    background: transparent;
+  }
+}
+
 // Cards de capturados
 .favorite-card {
   position: relative;

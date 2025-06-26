@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { FavoritesPageRoutingModule } from './favorites-routing.module';
-import { FavoritesPage } from './favorites.page';
+/* import { FavoritesPage } from './favorites.page'; */
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
 
@@ -19,6 +19,8 @@ import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
     SharedComponentsModule,
     SharedPipesModule
   ],
-  declarations: [FavoritesPage]
+  /* declarations: [FavoritesPage] */
 })
 export class FavoritesPageModule {}
+
+/* Página de favoritos comentada temporariamente por não ser mais utilizada. */
