@@ -63,19 +63,6 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <!-- Pokémon por página -->
-      <ion-item>
-        <ion-label>{{ 'settings_page.pokemon_per_page' | translate }}</ion-label>
-        <ion-select
-          [(ngModel)]="settings.pokemonPerPage"
-          (ionChange)="onSettingChange('pokemonPerPage', $event.detail.value)"
-          interface="action-sheet">
-          <ion-select-option *ngFor="let option of pokemonPerPageOptions" [value]="option">
-            {{ option }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
       <!-- Mostrar chance de shiny -->
       <ion-item>
         <ion-icon name="star" slot="start" color="tertiary"></ion-icon>
@@ -97,21 +84,14 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-item button (click)="exportFavorites()">
-        <ion-icon name="download" slot="start" color="success"></ion-icon>
-        <ion-label>{{ 'settings_page.export_favorites' | translate }}</ion-label>
-        <ion-note slot="end">JSON</ion-note>
+      <ion-item button (click)="exportCaptured()">
+        <ion-label>{{ 'settings_page.export_captured' | translate }}</ion-label>
       </ion-item>
-
-      <ion-item button (click)="importFavorites()">
-        <ion-icon name="cloud-upload" slot="start" color="primary"></ion-icon>
-        <ion-label>{{ 'settings_page.import_favorites' | translate }}</ion-label>
-        <ion-note slot="end">JSON</ion-note>
+      <ion-item button (click)="importCaptured()">
+        <ion-label>{{ 'settings_page.import_captured' | translate }}</ion-label>
       </ion-item>
-
-      <ion-item button (click)="clearAllFavorites()">
-        <ion-icon name="trash" slot="start" color="danger"></ion-icon>
-        <ion-label color="danger">{{ 'settings_page.clear_all_favorites' | translate }}</ion-label>
+      <ion-item button (click)="clearAllCaptured()">
+        <ion-label color="danger">{{ 'settings_page.clear_all_captured' | translate }}</ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>

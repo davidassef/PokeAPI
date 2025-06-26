@@ -9,13 +9,24 @@
          class="pokemon-image"
          loading="lazy">
 
-    <!-- Favorite Button -->
+    <!-- Capture Button -->
     <button *ngIf="showFavoriteButton"
-            class="favorite-btn"
-            [class.active]="isFavorite"
+            class="capture-btn"
+            [class.captured]="isFavorite"
             [disabled]="isLoading"
             (click)="onFavoriteClick($event)">
-      <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+      <img *ngIf="!isFavorite && !isLoading"
+           src="assets/img/opened_pokeball.png"
+           alt="Pokébola aberta"
+           class="pokeball-icon">
+      <img *ngIf="isLoading"
+           src="assets/img/pokeball-capture.gif"
+           alt="Capturando..."
+           class="pokeball-icon">
+      <img *ngIf="isFavorite && !isLoading"
+           src="assets/img/closed_pokeball.png"
+           alt="Pokébola fechada"
+           class="pokeball-icon">
     </button>
   </div>
 

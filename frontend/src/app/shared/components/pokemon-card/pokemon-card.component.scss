@@ -112,6 +112,40 @@
         cursor: not-allowed;
       }
     }
+
+    .capture-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      z-index: 2;
+      padding: 4px 8px;
+      border-radius: 16px;
+      transition: background 0.2s;
+      font-family: inherit;
+      font-size: 1rem;
+
+      &.captured {
+        background: #ef5350;
+        color: #fff;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    .pokeball-icon {
+      width: 32px;
+      height: 32px;
+      display: inline-block;
+    }
   }
 
   .pokemon-info {
@@ -291,6 +325,16 @@
           font-size: 18px;
         }
       }
+
+      .capture-btn {
+        padding: 2px 4px;
+        font-size: 0.9rem;
+
+        .pokeball-icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
     }
 
     .pokemon-info {
@@ -322,7 +366,7 @@
 
     .pokemon-info {
       .pokemon-header {
-        .pokemon-name {
+        .pokemon_name {
           color: #fff;
         }
 

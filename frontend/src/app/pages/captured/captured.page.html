@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-title>{{ 'captured.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="captured-actions ion-padding">
+    <ion-button size="small" color="danger" (click)="clearAllCaptured()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      {{ 'captured.clear_all' | translate }}
+    </ion-button>
+    <ion-button size="small" color="primary" (click)="exportCaptured()">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      {{ 'captured.export' | translate }}
+    </ion-button>
+    <ion-button size="small" color="secondary" (click)="importFileInput.click()">
+      <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+      {{ 'captured.import' | translate }}
+    </ion-button>
+    <input #importFileInput type="file" accept=".json" style="display:none" (change)="importCaptured($event)">
+  </div>
+
+  <div class="sort-controls ion-padding">
+    <ion-select [(ngModel)]="sortBy" (ionChange)="onSortChange()" interface="popover">
+      <ion-select-option value="id">{{ 'captured.sort_id' | translate }}</ion-select-option>
+      <ion-select-option value="name">{{ 'captured.sort_name' | translate }}</ion-select-option>
+    </ion-select>
+    <ion-button fill="clear" (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; onSortChange()">
+      <ion-icon [name]="sortOrder === 'asc' ? 'arrow-up' : 'arrow-down'"></ion-icon>
+    </ion-button>
+  </div>
+
+  <ion-searchbar [(ngModel)]="searchTerm" placeholder="{{ 'captured.search' | translate }}" (ionInput)="applyFilters()"></ion-searchbar>
+
+  <ion-list *ngIf="filteredCaptured.length > 0">
+    <app-pokemon-card
+      *ngFor="let pokemon of filteredCaptured; trackBy: trackByPokemonId"
+      [pokemon]="pokemon"
+      [isFavorite]="true"
+      [showFavoriteButton]="true"
+      (favoriteToggle)="removeCaptured(pokemon)"
+      (cardClick)="goToDetails(pokemon.id)">
+    </app-pokemon-card>
+  </ion-list>
+
+  <div *ngIf="filteredCaptured.length === 0" class="ion-text-center ion-padding">
+    <ion-icon name="help-circle-outline" size="large" color="medium"></ion-icon>
+    <p>{{ 'captured.empty' | translate }}</p>
+  </div>
+</ion-content>
