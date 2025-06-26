@@ -35,19 +35,29 @@
     [message]="'home.loading' | translate">
   </app-loading-spinner>
 
+  <!-- Pagination Controls -->
+  <div class="pagination-controls" *ngIf="paginatedPokemons.length > 0">
+    <ion-button fill="outline" size="small" (click)="firstPage()" [disabled]="currentPage === 1">
+      <ion-icon name="play-back-outline"></ion-icon>
+      <span class="hide-on-mobile">Primeira</span>
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="prevPage()" [disabled]="currentPage === 1">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+      <span class="hide-on-mobile">Anterior</span>
+    </ion-button>
+    <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    <ion-button fill="outline" size="small" (click)="nextPage()" [disabled]="currentPage === totalPages">
+      <span class="hide-on-mobile">Próxima</span>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="lastPage()" [disabled]="currentPage === totalPages">
+      <span class="hide-on-mobile">Última</span>
+      <ion-icon name="play-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+
   <!-- Pokemon Grid -->
   <div class="pokemon-grid" *ngIf="!loading || paginatedPokemons.length > 0">
-    <div class="pagination-sides-row grid-pagination" *ngIf="totalPages > 1">
-      <ion-button fill="outline" size="default" class="side-btn left" (click)="prevPage()" [disabled]="currentPage === 1">
-        <ion-icon name="chevron-back-outline"></ion-icon>
-        <span class="hide-on-mobile">Anterior</span>
-      </ion-button>
-      <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
-      <ion-button fill="outline" size="default" class="side-btn right" (click)="nextPage()" [disabled]="currentPage === totalPages">
-        <span class="hide-on-mobile">Próxima</span>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
-      </ion-button>
-    </div>
     <app-pokemon-card
       *ngFor="let poke of paginatedPokemons; trackBy: trackByPokemonId; let i = index"
       [pokemon]="poke"

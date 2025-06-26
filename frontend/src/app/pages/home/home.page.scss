@@ -75,25 +75,13 @@ ion-content {
   max-width: 600px;
 
   ion-button {
-    --border-radius: 8px;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    min-width: 40px;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    min-width: 80px;
   }
 
   .page-info {
-    font-size: 15px;
     font-weight: 500;
-    color: #232323;
-    margin: 0 8px;
-    min-width: 120px;
-    text-align: center;
+    font-size: 16px;
+    color: #1976d2; // azul padrão para tema claro
   }
 
   .hide-on-mobile {
@@ -101,6 +89,7 @@ ion-content {
   }
 }
 
+// Pagination Sides Row
 .pagination-sides-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -204,6 +193,13 @@ ion-content {
 
   .pagination-controls {
     background: var(--card-bg);
+  }
+
+  .pagination-controls {
+    background: var(--card-bg-dark, #222);
+    .page-info {
+      color: #fff !important;
+    }
   }
 
   .pagination-sides-row {

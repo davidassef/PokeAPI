@@ -1,125 +1,68 @@
+<!--
+Página de favoritos comentada temporariamente por não ser mais utilizada.
+Para reativar, remova os comentários deste arquivo e dos arquivos relacionados.
+
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>{{ 'tabs.favorites' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="exportFavorites()" [disabled]="favoritesPokemon.length === 0">
-        <ion-icon name="download" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button (click)="fileInput.click()">
-        <ion-icon name="cloud-upload" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button (click)="clearAllFavorites()" [disabled]="favoritesPokemon.length === 0">
-        <ion-icon name="trash" slot="icon-only"></ion-icon>
+      <ion-button (click)="toggleSearch()">
+        <ion-icon name="search-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <div *ngIf="showSearch" class="search-container">
+    <app-search-filter
+      [currentFilters]="currentFilterOptions"
+      (filtersChanged)="onFiltersChanged($event)"
+      (searchChanged)="onSearchChanged($event)">
+    </app-search-filter>
+  </div>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
-    <ion-toolbar>
+    <ion-toolbar color="danger">
       <ion-title size="large">{{ 'tabs.favorites' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <!-- Input file escondido para importar -->
-  <input #fileInput type="file" accept=".json" (change)="importFavorites($event)" style="display: none;">
-
-  <!-- Barra de pesquisa -->
-  <ion-searchbar
-    [placeholder]="'favorites_page.search_favorites' | translate"
-    (ionInput)="onSearch($event)"
-    [value]="searchTerm"
-    show-clear-button="focus">
-  </ion-searchbar>
-
-  <!-- Controles de ordenação -->
-  <div class="sort-controls">
-    <ion-segment [(ngModel)]="sortBy" (ionChange)="onSortChange()">
-      <ion-segment-button value="id">
-        <ion-label>{{ 'favorites_page.sort_by_id' | translate }}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="name">
-        <ion-label>{{ 'favorites_page.sort_by_name' | translate }}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-    <ion-button
-      fill="clear"
-      (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; onSortChange()">
-      <ion-icon [name]="sortOrder === 'asc' ? 'arrow-up' : 'arrow-down'" slot="icon-only"></ion-icon>
-    </ion-button>
-  </div>
-
-  <!-- Pull to refresh -->
-  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
-    <ion-refresher-content
-      [pullingText]="'favorites_page.pull_to_refresh' | translate"
-      [refreshingText]="'favorites_page.refreshing' | translate">
-    </ion-refresher-content>
-  </ion-refresher>
-  <!-- Lista de Pokémon favoritos -->
-  <div class="pokemon-grid" *ngIf="!loading && filteredFavorites.length > 0">
-    <app-pokemon-card
-      *ngFor="let pokemon of filteredFavorites; trackBy: trackByPokemonId; let i = index"
-      [pokemon]="pokemon"
-      [isFavorite]="true"
-      [animationDelay]="getAnimationDelay(i)"
-      (cardClick)="navigateToDetails(pokemon.id)"
-      (favoriteToggle)="onFavoriteToggle(pokemon)">
-    </app-pokemon-card>
-  </div>
-  <!-- Loading spinner -->
   <app-loading-spinner
-    *ngIf="loading"
-    [overlay]="false"
+    *ngIf="loading && paginatedFavorites.length === 0"
+    [overlay]="true"
     size="large"
-    type="pokeball"
     [message]="'favorites_page.loading_favorites' | translate">
   </app-loading-spinner>
 
-  <!-- Estado vazio -->
-  <div *ngIf="!loading && favoritesPokemon.length === 0" class="empty-state">
-    <ion-icon name="heart-outline" size="large" color="medium"></ion-icon>
-    <h2>{{ 'favorites_page.no_favorites_yet' | translate }}</h2>
-    <p>{{ 'favorites_page.add_favorites_hint' | translate }}</p>
-    <ion-button fill="outline" routerLink="/tabs/home">
-      {{ 'favorites_page.explore_pokemon' | translate }}
-    </ion-button>
+  <div class="pokemon-grid" *ngIf="!loading || paginatedFavorites.length > 0">
+    <div class="pagination-sides-row grid-pagination" *ngIf="totalPages > 1">
+      <ion-button fill="outline" size="default" class="side-btn left" (click)="prevPage()" [disabled]="currentPage === 1">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <span class="hide-on-mobile">Anterior</span>
+      </ion-button>
+      <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+      <ion-button fill="outline" size="default" class="side-btn right" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        <span class="hide-on-mobile">Próxima</span>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+    <app-pokemon-card
+      *ngFor="let poke of paginatedFavorites; trackBy: trackByPokemonId; let i = index"
+      [pokemon]="poke"
+      [isFavorite]="true"
+      [animationDelay]="getAnimationDelay(i)"
+      (cardClick)="navigateToDetails(poke.id)"
+      (favoriteClick)="onFavoriteToggle(poke)">
+    </app-pokemon-card>
   </div>
 
-  <!-- Sem resultados na busca -->
-  <div *ngIf="!loading && favoritesPokemon.length > 0 && filteredFavorites.length === 0" class="empty-state">
-    <ion-icon name="search" size="large" color="medium"></ion-icon>
-    <h2>{{ 'favorites_page.no_favorites_found' | translate }}</h2>
-    <p>{{ 'favorites_page.try_different_search' | translate }}</p>
-    <ion-button fill="outline" (click)="searchTerm = ''; onSearch({ target: { value: '' } })">
-      {{ 'favorites_page.clear_search' | translate }}
-    </ion-button>
-  </div>
-
-  <!-- Estatísticas dos favoritos -->
-  <div *ngIf="!loading && favoritesPokemon.length > 0" class="favorites-stats">
-    <ion-card class="stats-card">
-      <ion-card-header>
-        <ion-card-title>{{ 'favorites_page.favorites_statistics' | translate }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <span class="stat-number">{{ favoritesPokemon.length }}</span>
-            <span class="stat-label">{{ 'favorites_page.total_favorites' | translate }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">{{ getUniqueTypes().length }}</span>
-            <span class="stat-label">{{ 'favorites_page.different_types' | translate }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">{{ getAverageStats() }}</span>
-            <span class="stat-label">{{ 'favorites_page.average_stats' | translate }}</span>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="scrollToTop()">
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
+-->

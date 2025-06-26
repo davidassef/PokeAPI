@@ -213,7 +213,8 @@ export class PokeApiService {
    * @returns Observable com lista de rankings locais
    */
   getLocalRanking(region: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/ranking/local`, {
+    // Ajuste: usar backend FastAPI
+    return this.http.get<any[]>(`http://localhost:8000/api/v1/ranking/local`, {
       params: new HttpParams().set('region', region)
     }).pipe(
       catchError(error => {
@@ -357,5 +358,32 @@ export class PokeApiService {
         return { pokemons, total, page, totalPages };
       })
     );
+  }
+
+  /**
+   * Busca ranking global de pokémons mais capturados do backend
+   */
+  getGlobalRankingFromBackend(limit: number = 10): Observable<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>> {
+    // Corrigido para o prefixo correto do backend
+    return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
+      'http://localhost:8000/api/v1/ranking/?limit=' + limit
+    );
+  }
+
+  /**
+   * Sincroniza captura/favorito com o backend (usado pelo SyncService)
+   * @param action Objeto SyncAction
+   * @returns Promise<void>
+   */
+  async syncCapture(action: { pokemonId: number; action: 'capture' | 'favorite'; timestamp: number; payload?: any }): Promise<void> {
+    const url = 'http://localhost:8000/api/v1/sync-capture/';
+    try {
+      console.log('[SYNC] Enviando ação para backend:', action);
+      await this.http.post(url, action).toPromise();
+      console.log('[SYNC] Sucesso ao sincronizar com backend');
+    } catch (error) {
+      console.error('[SYNC] Erro ao sincronizar com backend:', error);
+      throw error;
+    }
   }
 }

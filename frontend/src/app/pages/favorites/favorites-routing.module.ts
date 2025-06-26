@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { FavoritesPage } from './favorites.page';
+// import { FavoritesPage } from './favorites.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: FavoritesPage
+    // component: FavoritesPage
   }
 ];
 
@@ -15,3 +15,12 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class FavoritesPageRoutingModule {}
+
+/* Página de favoritos comentada temporariamente por não ser mais utilizada.
+const routes: Routes = [
+  {
+    path: '',
+    component: FavoritesPage
+  }
+];
+*/

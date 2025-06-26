@@ -1,16 +1,17 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Pokemon } from '../../../models/pokemon.model';
-import { FavoritesService } from '../../../core/services/favorites.service';
+import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pokemon-card',
   templateUrl: './pokemon-card.component.html',
   styleUrls: ['./pokemon-card.component.scss']
 })
-export class PokemonCardComponent implements OnInit {
+export class PokemonCardComponent implements OnInit, OnDestroy {
   @Input() pokemon!: Pokemon;
   @Input() showFavoriteButton = true;
   @Input() showStats = false;
@@ -20,23 +21,23 @@ export class PokemonCardComponent implements OnInit {
   @Output() cardClick = new EventEmitter<Pokemon>();
   isLoading = false;
   imageUrl: string = '';
+  private capturedSub?: Subscription;
 
   constructor(
     private router: Router,
-    private favoritesService: FavoritesService,
     private audioService: AudioService,
-    private pokeApiService: PokeApiService
+    private pokeApiService: PokeApiService,
+    private capturedService: CapturedService
   ) {}
   ngOnInit() {
-    // Se isFavorite não foi passado como input, verifica através do serviço
-    if (!this.isFavorite) {
-      this.checkIfFavorite();
-    }
+    this.capturedSub = this.capturedService.captured$.subscribe(() => {
+      this.isFavorite = this.capturedService.isCaptured(this.pokemon.id);
+    });
     this.loadPokemonImage();
   }
 
-  private checkIfFavorite() {
-    this.isFavorite = this.favoritesService.isFavorite(this.pokemon.id);
+  ngOnDestroy() {
+    this.capturedSub?.unsubscribe();
   }
 
   private loadPokemonImage() {
@@ -54,14 +55,14 @@ export class PokemonCardComponent implements OnInit {
   async onFavoriteClick(event: Event) {
     event.stopPropagation();
     this.isLoading = true;
-
     try {
-      const isFavorite = await this.favoritesService.toggleFavorite(this.pokemon);
-      this.isFavorite = isFavorite;
+      // Usar CapturedService para capturar/descapturar
+      const isCaptured = await this.capturedService.toggleCaptured(this.pokemon);
+      this.isFavorite = isCaptured;
       this.favoriteToggle.emit(this.pokemon);
-      this.audioService.playSound(isFavorite ? 'favorite_add' : 'favorite_remove');
+      this.audioService.playSound(isCaptured ? 'favorite_add' : 'favorite_remove');
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      console.error('Error toggling captured:', error);
     } finally {
       this.isLoading = false;
     }
