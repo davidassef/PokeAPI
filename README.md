@@ -210,6 +210,11 @@ ng e2e
 | 🌐 Deploy | ⏳ Pendente | 0% |
 
 ### Últimas Atualizações
+- 🛡️ **[2025-06-26]** Página de favoritos desativada e removida dos módulos do frontend para build limpo
+- 🛠️ **[2025-06-26]** Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
+- 🧹 **[2025-06-26]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
+- ✅ **[2025-06-26]** Build do frontend validado e funcionando sem erros após remoção da página de favoritos
+- ⚠️ **[2025-06-26]** Pendente: ajuste do backend do ranking global para integração completa
 - 🌍 **[2025-06-23]** Padronização e cobertura total de i18n (títulos, menus, labels, botões)
 - 🏷️ **[2025-06-23]** Adição de todas as chaves de tradução faltantes nas páginas principais e configurações
 - 🖼️ **[2025-06-23]** Substituição do logo do menu lateral por Pokédex em alta definição
