@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, LoadingController, AlertController, ToastController, InfiniteScrollCustomEvent } from '@ionic/angular';
+import { IonContent, LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { Pokemon, PokemonListResponse } from '../../models/pokemon.model';
@@ -21,7 +21,12 @@ export class HomePage implements OnInit, OnDestroy {
   pokemon: Pokemon[] = [];
   loading = false;
   showSearch = false;
-  hasMoreData = true;
+  // Paginação
+  currentPage = 1;
+  totalPages = 1;
+  totalPokemons = 0;
+  pokemonPerPage = 12;
+  paginatedPokemons: any[] = [];
 
   currentFilters: PokemonFilters = {
     name: '',
@@ -33,8 +38,6 @@ export class HomePage implements OnInit, OnDestroy {
   };
 
   favorites: number[] = [];
-  currentPage = 1;
-  pokemonPerPage = 20;
   private destroy$ = new Subject<void>();
 
   get currentFilterOptions(): FilterOptions {
@@ -60,7 +63,7 @@ export class HomePage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadInitialPokemon();
+    this.loadPaginatedPokemons();
     this.loadFavorites();
   }
 
@@ -70,47 +73,44 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega os primeiros Pokémons
+   * Carrega Pokémons paginados
    */
-  private async loadInitialPokemon() {
+  loadPaginatedPokemons(resetPage: boolean = false) {
+    if (resetPage) this.currentPage = 1;
     this.loading = true;
-    try {
-      const response = await this.pokeApiService.getPokemonList(this.pokemonPerPage, 0).toPromise();
-      if (response?.results) {
-        this.pokemon = await this.loadPokemonDetails(response.results);
-        this.hasMoreData = response.results.length === this.pokemonPerPage;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar Pokémons:', error);
-      this.showErrorToast();
-    } finally {
-      this.loading = false;
-    }
+    const filters = {
+      name: this.currentFilters.name,
+      type: this.currentFilters.elementTypes?.[0], // Suporte básico para 1 tipo
+      generation: this.currentFilters.generation,
+      orderBy: this.currentFilters.sortBy,
+      sortOrder: this.currentFilters.sortOrder // Passa o sortOrder corretamente
+    };
+    this.pokeApiService.getPokemonsPaginated(this.currentPage, this.pokemonPerPage, filters)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async (result) => {
+        this.totalPokemons = result.total;
+        this.totalPages = result.totalPages;
+        // Carregar detalhes dos pokémons da página
+        this.paginatedPokemons = await this.loadPokemonDetails(result.pokemons);
+        this.loading = false;
+      }, err => {
+        this.loading = false;
+        this.paginatedPokemons = [];
+        this.totalPokemons = 0;
+        this.totalPages = 1;
+      });
   }
 
-  /**
-   * Carrega mais Pokémons (scroll infinito)
-   */
-  async loadMorePokemon(event: InfiniteScrollCustomEvent) {
-    try {
-      const offset = this.currentPage * this.pokemonPerPage;
-      const response = await this.pokeApiService.getPokemonList(this.pokemonPerPage, offset).toPromise();
-
-      if (response?.results) {
-        const newPokemon = await this.loadPokemonDetails(response.results);
-        this.pokemon = [...this.pokemon, ...newPokemon];
-        this.currentPage++;
-        this.hasMoreData = response.results.length === this.pokemonPerPage;
-      } else {
-        this.hasMoreData = false;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar mais Pokémons:', error);
-      this.hasMoreData = false;
-    } finally {
-      event.target.complete();
-    }
+  // Navegação de página
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.loadPaginatedPokemons();
   }
+  nextPage() { this.goToPage(this.currentPage + 1); }
+  prevPage() { this.goToPage(this.currentPage - 1); }
+  firstPage() { this.goToPage(1); }
+  lastPage() { this.goToPage(this.totalPages); }
 
   /**
    * Carrega detalhes de uma lista de Pokémons
@@ -157,7 +157,6 @@ export class HomePage implements OnInit, OnDestroy {
    * Manipula mudanças nos filtros
    */
   onFiltersChanged(filters: FilterOptions) {
-    console.log('[HomePage] Filtros recebidos:', filters);
     this.currentFilters = {
       name: filters.searchTerm || '',
       elementTypes: filters.selectedElementTypes || [],
@@ -166,7 +165,7 @@ export class HomePage implements OnInit, OnDestroy {
       sortBy: filters.sortBy,
       sortOrder: filters.sortOrder
     };
-    this.applyFilters();
+    this.loadPaginatedPokemons(true); // Resetar para página 1
   }
 
   /**
@@ -174,88 +173,7 @@ export class HomePage implements OnInit, OnDestroy {
    */
   onSearchChanged(searchTerm: string) {
     this.currentFilters.name = searchTerm;
-    this.applyFilters();
-  }
-
-  /**
-   * Aplica filtros aos Pokémons
-   */
-  private async applyFilters() {
-    console.log('[HomePage] Aplicando filtros:', this.currentFilters);
-    this.loading = true;
-    try {
-      let pokemons: Pokemon[] = [];
-      // Busca por nome tem prioridade
-      if (this.currentFilters.name) {
-        pokemons = (await this.pokeApiService.searchPokemon(this.currentFilters.name, 1000).toPromise()) || [];
-      } else {
-        // Carrega uma lista grande para filtrar localmente
-        const response = await this.pokeApiService.getPokemonList(1000, 0).toPromise();
-        if (response?.results) {
-          pokemons = await this.loadPokemonDetails(response.results);
-        }
-      }
-      // Filtro por tipos de elemento
-      if (this.currentFilters.elementTypes && this.currentFilters.elementTypes.length > 0) {
-        pokemons = pokemons.filter(pokemon =>
-          Array.isArray(pokemon.types) &&
-          Array.isArray(this.currentFilters.elementTypes) &&
-          pokemon.types.length > 0 &&
-          pokemon.types.some(t => t && t.type && typeof t.type.name === 'string' && (this.currentFilters.elementTypes?.includes?.(t.type.name)))
-        );
-      }
-      // Filtro por tipos de movimentação
-      if (this.currentFilters.movementTypes && this.currentFilters.movementTypes.length > 0) {
-        pokemons = pokemons.filter(pokemon =>
-          Array.isArray(pokemon.types) &&
-          Array.isArray(this.currentFilters.movementTypes) &&
-          pokemon.types.length > 0 &&
-          pokemon.types.some(t => t && t.type && typeof t.type.name === 'string' && (this.currentFilters.movementTypes?.includes?.(t.type.name)))
-        );
-      }
-      // Filtro por geração
-      if (this.currentFilters.generation) {
-        // Busca espécies da geração e filtra por id
-        const speciesList = await this.pokeApiService.getPokemonsByGeneration(this.currentFilters.generation).toPromise();
-        const allowedNames = (speciesList || []).map(s => s.name);
-        pokemons = pokemons.filter(p => allowedNames.includes(p.name));
-      }
-      // Ordenação
-      if (this.currentFilters.sortBy === 'name') {
-        pokemons = pokemons.sort((a, b) =>
-          this.currentFilters.sortOrder === 'asc'
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name)
-        );
-      } else if (this.currentFilters.sortBy === 'height') {
-        pokemons = pokemons.sort((a, b) =>
-          this.currentFilters.sortOrder === 'asc'
-            ? a.height - b.height
-            : b.height - a.height
-        );
-      } else if (this.currentFilters.sortBy === 'weight') {
-        pokemons = pokemons.sort((a, b) =>
-          this.currentFilters.sortOrder === 'asc'
-            ? a.weight - b.weight
-            : b.weight - a.weight
-        );
-      } else {
-        pokemons = pokemons.sort((a, b) =>
-          this.currentFilters.sortOrder === 'asc'
-            ? a.id - b.id
-            : b.id - a.id
-        );
-      }
-      // Garante que todos os pokémons possuem dados completos (types, stats, etc)
-      pokemons = pokemons.filter(p => p && Array.isArray(p.types) && p.types.length > 0 && Array.isArray(p.stats) && p.stats.length > 0);
-      this.pokemon = pokemons;
-      console.log('[HomePage] Lista final de pokémons:', this.pokemon);
-    } catch (error) {
-      console.error('Erro ao aplicar filtros:', error);
-      this.showErrorToast();
-    } finally {
-      this.loading = false;
-    }
+    this.loadPaginatedPokemons(true);
   }
 
   /**
@@ -272,7 +190,7 @@ export class HomePage implements OnInit, OnDestroy {
     };
     this.showSearch = false;
     this.currentPage = 1;
-    this.loadInitialPokemon();
+    this.loadPaginatedPokemons(true);
   }
 
   /**
@@ -307,13 +225,6 @@ export class HomePage implements OnInit, OnDestroy {
    */
   isFavorite(pokemonId: number): boolean {
     return this.favorites.includes(pokemonId);
-  }
-
-  /**
-   * Rola para o topo
-   */
-  async scrollToTop() {
-    await this.content.scrollToTop(500);
   }
 
   /**
@@ -353,5 +264,14 @@ export class HomePage implements OnInit, OnDestroy {
       position: 'bottom'
     });
     await toast.present();
+  }
+
+  /**
+   * Rola para o topo da página
+   */
+  scrollToTop() {
+    if (this.content) {
+      this.content.scrollToTop(500);
+    }
   }
 }

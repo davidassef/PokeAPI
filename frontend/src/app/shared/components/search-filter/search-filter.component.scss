@@ -186,74 +186,16 @@
         }
       }
 
-      // Controles de ordenação (select + segment)
+      // Controles de ordenação (apenas select agora)
       .sort-controls {
         display: flex;
-        gap: 8px; // Reduzido
+        flex-direction: column;
         align-items: center;
+        justify-content: flex-start;
+        gap: 4px;
 
         .sort-select {
           flex: 1;
-        }
-
-        // Botões de ordenação lado a lado, largura automática e centralizados
-        .sort-order {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: center;
-          gap: 4px;
-          min-width: 0;
-          width: auto;
-
-          ion-segment {
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: center !important;
-            align-items: center !important;
-            width: auto !important;
-            min-width: fit-content !important;
-            max-width: 100% !important;
-          }
-          ion-segment-button {
-            display: inline-flex !important;
-            flex-direction: row !important;
-            justify-content: center !important;
-            align-items: center !important;
-            width: auto !important;
-            min-width: fit-content !important;
-            max-width: none !important;
-            height: 36px !important;
-            white-space: nowrap !important;
-            padding: 0 10px !important;
-            margin: 0 2px !important;
-            font-size: 12px !important;
-            font-weight: 600;
-            border-radius: 6px;
-            box-sizing: border-box;
-            background: #232323 !important;
-          }
-          ion-segment-button ion-icon {
-            font-size: 16px !important;
-            margin-bottom: 0 !important;
-            margin-right: 6px !important;
-            margin-left: 0 !important;
-            vertical-align: middle;
-            order: 0;
-          }
-          ion-segment-button .centered-label {
-            font-size: 12px !important;
-            font-weight: 600;
-            /* Removido max-width e ellipsis para autoajuste real */
-            overflow: visible;
-            text-overflow: unset;
-            white-space: nowrap;
-            display: block;
-            text-align: center;
-            line-height: 1.1;
-            order: 1;
-            padding: 0 2px;
-          }
         }
       }
 
@@ -300,6 +242,31 @@
           text-align: center;
         }
       }
+    }
+  }
+
+  // Controles de paginação
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px; // Gap maior para espaçamento amplo
+    width: 100%;
+    margin: 0 auto 16px auto;
+
+    button, ion-button {
+      margin: 0 !important; // Remove margens laterais indesejadas
+      min-width: 90px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    span, .pagination-text {
+      display: inline-block;
+      min-width: 120px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
   }
 }
@@ -390,14 +357,9 @@
         }
 
         .sort-controls {
-          .sort-order {
+          .sort-select {
             --background: #1a1a1a;
             border-color: #444;
-
-            ion-segment-button {
-              --color: #ccc;
-              --color-checked: white;
-            }
           }
         }
       }
@@ -472,32 +434,4 @@
 }
 ::ng-deep .sort-controls {
   gap: 10px !important;
-}
-::ng-deep .sort-order {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 4px !important;
-  min-width: 0 !important;
-  width: auto !important;
-}
-::ng-deep ion-select,
-::ng-deep ion-segment,
-::ng-deep ion-segment-button {
-  width: auto !important;
-  min-width: fit-content !important;
-  max-width: 100% !important;
-  white-space: nowrap !important;
-}
-::ng-deep ion-segment-button {
-  display: inline-flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 0 16px !important;
-  margin: 0 2px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  border-radius: 8px !important;
-  box-sizing: border-box !important;
 }
