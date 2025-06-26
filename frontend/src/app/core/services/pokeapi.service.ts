@@ -233,4 +233,129 @@ export class PokeApiService {
       map(pokemon => pokemon.sprites?.other?.['official-artwork']?.front_default || '')
     );
   }
+
+  /**
+   * Busca Pokémons paginados com filtros opcionais (nome, tipo, geração)
+   * @param page Página atual (1-based)
+   * @param pageSize Quantidade por página
+   * @param filters Objeto com filtros: { name, type, generation, orderBy }
+   * @returns Observable com { pokemons, total, page, totalPages }
+   */
+  getPokemonsPaginated(
+    page: number = 1,
+    pageSize: number = 20,
+    filters: { name?: string; type?: string; generation?: string | number; orderBy?: string; sortOrder?: 'asc' | 'desc' } = {}
+  ): Observable<{ pokemons: PokemonListItem[]; total: number; page: number; totalPages: number }> {
+    // Se houver filtro por nome, buscar localmente (API não suporta search paginado)
+    if (filters.name && filters.name.length > 1) {
+      return this.getPokemonList(1000, 0).pipe(
+        map(response => {
+          let filtered = response.results.filter(p => p.name.toLowerCase().includes(filters.name!.toLowerCase()));
+          // Ordenação opcional
+          if (filters.orderBy === 'name') {
+            filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+          } else if (filters.orderBy === 'id') {
+            filtered = filtered.sort((a, b) => {
+              const idA = Number(a.url.split('/').filter(Boolean).pop());
+              const idB = Number(b.url.split('/').filter(Boolean).pop());
+              return idA - idB;
+            });
+          }
+          if (filters.sortOrder === 'desc') {
+            filtered = filtered.reverse();
+          }
+          const total = filtered.length;
+          const totalPages = Math.ceil(total / pageSize);
+          const start = (page - 1) * pageSize;
+          const end = start + pageSize;
+          const pokemons = filtered.slice(start, end);
+          return { pokemons, total, page, totalPages };
+        })
+      );
+    }
+
+    // Filtro por tipo
+    if (filters.type) {
+      return this.getPokemonsByType(filters.type).pipe(
+        map(list => {
+          let filtered = list;
+          if (filters.name) {
+            filtered = filtered.filter(p => p.name.toLowerCase().includes(filters.name!.toLowerCase()));
+          }
+          if (filters.orderBy === 'name') {
+            filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+          } else if (filters.orderBy === 'id') {
+            filtered = filtered.sort((a, b) => {
+              const idA = Number(a.url.split('/').filter(Boolean).pop());
+              const idB = Number(b.url.split('/').filter(Boolean).pop());
+              return idA - idB;
+            });
+          }
+          if (filters.sortOrder === 'desc') {
+            filtered = filtered.reverse();
+          }
+          const total = filtered.length;
+          const totalPages = Math.ceil(total / pageSize);
+          const start = (page - 1) * pageSize;
+          const end = start + pageSize;
+          const pokemons = filtered.slice(start, end);
+          return { pokemons, total, page, totalPages };
+        })
+      );
+    }
+
+    // Filtro por geração
+    if (filters.generation) {
+      return this.getPokemonsByGeneration(filters.generation).pipe(
+        map(list => {
+          let filtered = list;
+          if (filters.name) {
+            filtered = filtered.filter(p => p.name.toLowerCase().includes(filters.name!.toLowerCase()));
+          }
+          if (filters.orderBy === 'name') {
+            filtered = filtered.sort((a, b) => a.name.localeCompare(b.name));
+          } else if (filters.orderBy === 'id') {
+            filtered = filtered.sort((a, b) => {
+              const idA = Number(a.url.split('/').filter(Boolean).pop());
+              const idB = Number(b.url.split('/').filter(Boolean).pop());
+              return idA - idB;
+            });
+          }
+          if (filters.sortOrder === 'desc') {
+            filtered = filtered.reverse();
+          }
+          const total = filtered.length;
+          const totalPages = Math.ceil(total / pageSize);
+          const start = (page - 1) * pageSize;
+          const end = start + pageSize;
+          const pokemons = filtered.slice(start, end);
+          return { pokemons, total, page, totalPages };
+        })
+      );
+    }
+
+    // Sem filtros: paginação real da API
+    const offset = (page - 1) * pageSize;
+    return this.getPokemonList(pageSize, offset).pipe(
+      map(response => {
+        let pokemons = response.results;
+        if (filters.orderBy === 'name') {
+          pokemons = pokemons.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (filters.orderBy === 'id') {
+          pokemons = pokemons.sort((a, b) => {
+            const idA = Number(a.url.split('/').filter(Boolean).pop());
+            const idB = Number(b.url.split('/').filter(Boolean).pop());
+            return idA - idB;
+          });
+        }
+        if (filters.sortOrder === 'desc') {
+          pokemons = pokemons.reverse();
+        }
+        // A API retorna o total de Pokémons
+        const total = response.count;
+        const totalPages = Math.ceil(total / pageSize);
+        return { pokemons, total, page, totalPages };
+      })
+    );
+  }
 }

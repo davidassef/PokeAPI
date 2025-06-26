@@ -36,9 +36,20 @@
   </app-loading-spinner>
 
   <!-- Pokemon Grid -->
-  <div class="pokemon-grid" *ngIf="!loading || pokemon.length > 0">
+  <div class="pokemon-grid" *ngIf="!loading || paginatedPokemons.length > 0">
+    <div class="pagination-sides-row grid-pagination" *ngIf="totalPages > 1">
+      <ion-button fill="outline" size="default" class="side-btn left" (click)="prevPage()" [disabled]="currentPage === 1">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <span class="hide-on-mobile">Anterior</span>
+      </ion-button>
+      <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+      <ion-button fill="outline" size="default" class="side-btn right" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        <span class="hide-on-mobile">Próxima</span>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
     <app-pokemon-card
-      *ngFor="let poke of pokemon; trackBy: trackByPokemonId; let i = index"
+      *ngFor="let poke of paginatedPokemons; trackBy: trackByPokemonId; let i = index"
       [pokemon]="poke"
       [isFavorite]="isFavorite(poke.id)"
       [animationDelay]="getAnimationDelay(i)"
@@ -46,27 +57,6 @@
       (favoriteClick)="toggleFavorite(poke)">
     </app-pokemon-card>
   </div>
-
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!loading && pokemon.length === 0">
-    <ion-icon name="search-outline" size="large"></ion-icon>
-    <h2>{{ 'home.no_results' | translate }}</h2>
-    <p>{{ 'home.no_results_message' | translate }}</p>
-    <ion-button fill="outline" (click)="clearFilters()">
-      {{ 'home.clear_filters' | translate }}
-    </ion-button>
-  </div>
-
-  <!-- Infinite Scroll -->
-  <ion-infinite-scroll
-    threshold="100px"
-    (ionInfinite)="loadMorePokemon($event)"
-    [disabled]="!hasMoreData">
-    <ion-infinite-scroll-content
-      loadingSpinner="bubbles"
-      [loadingText]="'home.loading_more' | translate">
-    </ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 
   <!-- Floating Action Button -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

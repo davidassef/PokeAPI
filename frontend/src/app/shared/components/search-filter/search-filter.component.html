@@ -108,19 +108,6 @@
             {{ ('filters.sort_by_' + option.value) | translate }}
           </ion-select-option>
         </ion-select>
-        <ion-segment
-          formControlName="sortOrder"
-          class="sort-order auto-center"
-          (ionChange)="filterForm.get('sortOrder')?.setValue($event.detail.value)">
-          <ion-segment-button value="asc">
-            <ion-icon name="arrow-up-outline"></ion-icon>
-            <ion-label class="centered-label">{{ 'filters.ascending' | translate }}</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="desc">
-            <ion-icon name="arrow-down-outline"></ion-icon>
-            <ion-label class="centered-label">{{ 'filters.descending' | translate }}</ion-label>
-          </ion-segment-button>
-        </ion-segment>
       </div>
     </div>
   </div>
