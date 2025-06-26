@@ -47,101 +47,10 @@
         <ion-label>{{ 'settings_page.dark_theme' | translate }}</ion-label>
         <ion-toggle
           [(ngModel)]="settings.darkMode"
-          (ionChange)="onThemeChange()"
+          (ionChange)="onThemeChange($event)"
           slot="end">
         </ion-toggle>
       </ion-item>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Seção de Áudio -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="musical-notes" color="secondary"></ion-icon>
-        {{ 'settings_page.audio_settings' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <!-- Música habilitada -->
-      <ion-item>
-        <ion-icon name="music-note" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'settings_page.enable_music' | translate }}</ion-label>
-        <ion-toggle
-          [(ngModel)]="settings.musicEnabled"
-          (ionChange)="onSettingChange('musicEnabled', $event.detail.checked)">
-        </ion-toggle>
-      </ion-item>
-
-      <!-- Sons habilitados -->
-      <ion-item>
-        <ion-icon name="volume-high" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'settings_page.enable_sounds' | translate }}</ion-label>
-        <ion-toggle
-          [(ngModel)]="settings.soundEnabled"
-          (ionChange)="onSettingChange('soundEnabled', $event.detail.checked)">
-        </ion-toggle>
-      </ion-item>
-
-      <!-- Vibração -->
-      <ion-item>
-        <ion-icon name="phone-portrait" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'settings_page.enable_vibration' | translate }}</ion-label>
-        <ion-toggle
-          [(ngModel)]="settings.vibrationEnabled"
-          (ionChange)="onSettingChange('vibrationEnabled', $event.detail.checked)">
-        </ion-toggle>
-      </ion-item>
-
-      <!-- Auto-play música -->
-      <ion-item>
-        <ion-icon name="play-circle" slot="start" color="secondary"></ion-icon>
-        <ion-label>{{ 'settings_page.auto_play_music' | translate }}</ion-label>
-        <ion-toggle
-          [(ngModel)]="settings.autoPlayMusic"
-          (ionChange)="onSettingChange('autoPlayMusic', $event.detail.checked)">
-        </ion-toggle>
-      </ion-item>
-
-      <!-- Player de música -->
-      <div class="music-player" *ngIf="settings.musicEnabled">
-        <ion-item>
-          <ion-label>{{ 'settings_page.current_track' | translate }}</ion-label>
-          <ion-button fill="outline" size="small" (click)="selectTrack()">
-            {{ audioState.currentTrack?.name || ('settings_page.select_track' | translate) }}
-          </ion-button>
-        </ion-item>
-
-        <div class="player-controls">
-          <ion-button
-            fill="clear"
-            (click)="togglePlayPause()"
-            [disabled]="!audioState.currentTrack">
-            <ion-icon [name]="audioState.isPlaying ? 'pause' : 'play'" slot="icon-only"></ion-icon>
-          </ion-button>
-
-          <div class="volume-control">
-            <ion-icon name="volume-low"></ion-icon>
-            <ion-range
-              min="0"
-              max="100"
-              [value]="audioState.volume * 100"
-              (ionChange)="onVolumeChange($event)">
-            </ion-range>
-            <ion-icon name="volume-high"></ion-icon>
-          </div>
-        </div>
-
-        <div class="track-info" *ngIf="audioState.currentTrack">
-          <div class="track-progress">
-            <span>{{ formatTime(audioState.currentTime) }}</span>
-            <ion-progress-bar
-              [value]="audioState.duration > 0 ? audioState.currentTime / audioState.duration : 0">
-            </ion-progress-bar>
-            <span>{{ formatTime(audioState.duration) }}</span>
-          </div>
-        </div>
-      </div>
     </ion-card-content>
   </ion-card>
 

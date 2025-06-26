@@ -6,9 +6,9 @@
 
 // Container principal do filtro
 .search-filter-container {
-  background: white;
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
   border-radius: 16px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
   margin: 24px auto 16px auto;
   overflow: hidden;
   max-width: 900px;
@@ -18,17 +18,17 @@
     display: flex;
     align-items: center;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: linear-gradient(135deg, var(--input-bg) 0%, var(--input-border) 100%);
 
     // Estilo do ion-searchbar
     ion-searchbar {
       flex: 1;
       margin: 0;
       padding: 0;
-      --background: transparent;
+      --background: var(--input-bg);
       --border-radius: 12px;
       --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      --color: #2c3e50;
+      --color: var(--text-color);
       --placeholder-color: #6c757d;
       --icon-color: #6c757d;
       --clear-button-color: #6c757d;

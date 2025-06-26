@@ -1,2 +1,32 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+:root {
+  --background: #f5f5f5;
+  --text-color: #222;
+  --card-bg: #fff;
+  --card-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  --input-bg: #f8f9fa;
+  --input-border: #e9ecef;
+  --primary: #ef5350;
+  --secondary: #42a5f5;
+  --badge-type-bg: #eee;
+  --badge-type-color: #222;
+  --ion-background-color: var(--background);
+  --ion-text-color: var(--text-color);
+}
+
+.dark-theme {
+  --background: #23272f;
+  --text-color: #fff;
+  --card-bg: #2c2f36;
+  --card-shadow: 0 2px 20px rgba(0,0,0,0.25);
+  --input-bg: #23272f;
+  --input-border: #333a4d;
+  --primary: #ef5350;
+  --secondary: #42a5f5;
+  --badge-type-bg: #333a4d;
+  --badge-type-color: #fff;
+  --ion-background-color: var(--background);
+  --ion-text-color: var(--text-color);
+}

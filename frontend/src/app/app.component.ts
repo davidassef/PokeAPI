@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Storage } from '@ionic/storage-angular';
+import { SettingsService } from './core/services/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -13,13 +14,16 @@ export class AppComponent implements OnInit {
   constructor(
     private platform: Platform,
     private translate: TranslateService,
-    private storage: Storage
+    private storage: Storage,
+    private settingsService: SettingsService // injetar serviço de configurações
   ) {
     this.initializeApp();
   }
 
   async ngOnInit() {
     await this.storage.create();
+    // Garante que as configurações (incluindo tema) sejam carregadas e aplicadas
+    await this.settingsService.loadSettings();
   }
 
   async initializeApp() {
@@ -38,6 +42,7 @@ export class AppComponent implements OnInit {
         const langToUse = supportedLangs.includes(browserLang || '') ? browserLang : 'pt-BR';
         this.translate.use(langToUse || 'pt-BR');
       }
+      // O tema será aplicado pelo settingsService.loadSettings() em ngOnInit
     });
   }
 }

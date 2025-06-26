@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AppSettings } from '../../models/app.model';
 import { SettingsService } from '../../core/services/settings.service';
-import { AudioService, AudioState } from '../../core/services/audio.service';
 import { FavoritesService } from '../../core/services/favorites.service';
 
 @Component({
@@ -26,15 +25,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     autoPlayMusic: false
   };
 
-  audioState: AudioState = {
-    isPlaying: false,
-    currentTrack: null,
-    currentTime: 0,
-    duration: 0,
-    volume: 0.7,
-    isLoading: false
-  };
-
   languages = [
     { code: 'pt-BR', name: 'Português (Brasil)', flag: '🇧🇷' },
     { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
@@ -50,15 +40,11 @@ export class SettingsPage implements OnInit, OnDestroy {
     private translate: TranslateService,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
-    private audioService: AudioService,
     private favoritesService: FavoritesService
   ) {}
 
   ngOnInit() {
     this.loadSettings();
-    this.audioService.audioState$.pipe(takeUntil(this.destroy$)).subscribe(state => {
-      this.audioState = { ...state };
-    });
   }
 
   ngOnDestroy() {
@@ -121,10 +107,23 @@ export class SettingsPage implements OnInit, OnDestroy {
   /**
    * Altera tema
    */
-  async onThemeChange() {
+  async onThemeChange(event: any) {
     try {
-      await this.settingsService.updateTheme(this.settings.darkMode ? 'dark' : 'light');
-      this.showToast('SETTINGS.THEME_UPDATED');
+      // O toggle envia o novo valor (true/false)
+      const darkMode = event.detail ? event.detail.checked : event;
+      this.settings.darkMode = darkMode;
+      this.settings.theme = darkMode ? 'dark' : 'light';
+      await this.settingsService.saveSettings({ darkMode, theme: this.settings.theme });
+      // Aplica/remover classe global
+      if (darkMode) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+      // Animação de transição suave
+      document.body.classList.add('theme-transition');
+      setTimeout(() => document.body.classList.remove('theme-transition'), 400);
+      this.showToast('settings_page.theme_update');
     } catch (error) {
       console.error('Erro ao alterar tema:', error);
     }
@@ -132,31 +131,6 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   onSettingChange(setting: keyof AppSettings, value: any) {
     this.settingsService.saveSettings({ [setting]: value });
-  }
-
-  selectTrack() {
-    // Exemplo: seleciona próxima faixa
-    const tracks = this.audioService.getAvailableTracks();
-    const current = this.audioState.currentTrack;
-    let idx = tracks.findIndex(t => t.id === current?.id);
-    idx = (idx + 1) % tracks.length;
-    this.audioService.loadTrack(tracks[idx].id);
-  }
-
-  togglePlayPause() {
-    this.audioService.togglePlayPause();
-  }
-
-  onVolumeChange(event: any) {
-    const value = event.detail?.value ?? event;
-    this.audioService.setVolume(value / 100);
-  }
-
-  formatTime(seconds: number): string {
-    if (!seconds) return '0:00';
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
   }
 
   exportFavorites() {
@@ -231,7 +205,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom',
+      position: 'top', // Alterado para exibir o toast no topo
       color: 'success'
     });
     await toast.present();

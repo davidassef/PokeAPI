@@ -1,1 +1,24 @@
+ion-tab-bar {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+  --color-selected: #fff;
+}
+
+.dark-theme ion-tab-bar {
+  --background: #23272f;
+  --color: #fff;
+  --color-selected: #fff;
+}
+
+ion-tab-button {
+  color: var(--text-color);
+}
+
+.dark-theme ion-tab-button {
+  color: #fff;
+}
+
+ion-tab-bar ion-icon, ion-tab-bar ion-label {
+  color: inherit !important;
+}
 
