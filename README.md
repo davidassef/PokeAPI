@@ -266,7 +266,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 **David Assef**
 - GitHub: [@davidassef](https://github.com/davidassef)
 - Repositório: [PokeAPI](https://github.com/davidassef/PokeAPI)
-- LinkedIn: [David Assef](https://linkedin.com/in/davidassef)
+- LinkedIn: [David Assef](https://www.linkedin.com/in/david-assef-carneiro-2a2891b9/)
 
 ---
 
