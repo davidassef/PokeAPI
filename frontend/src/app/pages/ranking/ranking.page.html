@@ -14,120 +14,56 @@
     </ion-toolbar>
   </ion-header>
 
-  <div class="ranking-header" *ngIf="!loading && currentRanking.length > 0">
-    <h2>
-      {{ viewMode === 'global' ? ('ranking_page.most_loved_pokemon' | translate) : ('ranking_page.your_favorite_pokemon' | translate) }}
-    </h2>
-    <p>
-      {{ viewMode === 'global' ? ('ranking_page.global_popularity_desc' | translate) : ('ranking_page.local_favorites_desc' | translate) }}
-    </p>
+  <div class="ranking-header">
+    <div class="ranking-title-row">
+      <ion-icon name="trophy" class="ranking-title-icon"></ion-icon>
+      <h2>Pokémons mais amados</h2>
+    </div>
+    <p>Ranking global dos Pokémons mais capturados.</p>
+    <div class="ranking-title-underline"></div>
   </div>
 
-  <div class="podium-container" *ngIf="!loading && currentRanking.length >= 3">
-    <div class="podium">
-      <div class="podium-item second" [routerLink]="['/pokemon', currentRanking[1].pokemon.id]">
-        <div class="pokemon-image-container">
-          <img
-            [src]="'https://pokeapi.co/media/sprites/pokemon/' + currentRanking[1].pokemon.id + '.png'"
-            [alt]="currentRanking[1].pokemon.name"
-            class="pokemon-image">
-        </div>
-        <div class="rank-badge silver">
-          <ion-icon name="medal"></ion-icon>
-          <span>2</span>
-        </div>
-        <h3>{{ currentRanking[1].pokemon.name | titlecase }}</h3>
-        <p>{{ currentRanking[1].favoriteCount }} {{ 'favorites' | translate }}</p>
+  <div class="ranking-list" *ngIf="!loading && currentRanking.length > 0">
+    <!-- Pódio real centralizado -->
+    <div class="ranking-podium-flex">
+      <div *ngIf="currentRanking.length > 1" class="podium-card podium-second">
+        <span class="podium-medal floating" title="Medalha de Prata">🥈</span>
+        <span class="capture-count-badge">
+          <ion-icon name="heart" color="danger"></ion-icon>
+          {{ currentRanking[1].favoriteCount }}
+        </span>
+        <app-pokemon-card [pokemon]="currentRanking[1].pokemon"></app-pokemon-card>
       </div>
-
-      <div class="podium-item first" [routerLink]="['/pokemon', currentRanking[0].pokemon.id]">
-        <div class="pokemon-image-container">
-          <img
-            [src]="'https://pokeapi.co/media/sprites/pokemon/' + currentRanking[0].pokemon.id + '.png'"
-            [alt]="currentRanking[0].pokemon.name"
-            class="pokemon-image">
-        </div>
-        <div class="rank-badge gold">
-          <ion-icon name="trophy"></ion-icon>
-          <span>1</span>
-        </div>
-        <h3>{{ currentRanking[0].pokemon.name | titlecase }}</h3>
-        <p>{{ currentRanking[0].favoriteCount }} {{ 'favorites' | translate }}</p>
-        <div class="crown">👑</div>
+      <div *ngIf="currentRanking.length > 0" class="podium-card podium-first">
+        <span class="podium-crown floating" title="Campeão">👑</span>
+        <span class="capture-count-badge">
+          <ion-icon name="heart" color="danger"></ion-icon>
+          {{ currentRanking[0].favoriteCount }}
+        </span>
+        <app-pokemon-card [pokemon]="currentRanking[0].pokemon"></app-pokemon-card>
       </div>
-
-      <div class="podium-item third" [routerLink]="['/pokemon', currentRanking[2].pokemon.id]">
-        <div class="pokemon-image-container">
-          <img
-            [src]="'https://pokeapi.co/media/sprites/pokemon/' + currentRanking[2].pokemon.id + '.png'"
-            [alt]="currentRanking[2].pokemon.name"
-            class="pokemon-image">
-        </div>
-        <div class="rank-badge bronze">
-          <ion-icon name="medal"></ion-icon>
-          <span>3</span>
-        </div>
-        <h3>{{ currentRanking[2].pokemon.name | titlecase }}</h3>
-        <p>{{ currentRanking[2].favoriteCount }} {{ 'favorites' | translate }}</p>
+      <div *ngIf="currentRanking.length > 2" class="podium-card podium-third">
+        <span class="podium-medal floating" title="Medalha de Bronze">🥉</span>
+        <span class="capture-count-badge">
+          <ion-icon name="heart" color="danger"></ion-icon>
+          {{ currentRanking[2].favoriteCount }}
+        </span>
+        <app-pokemon-card [pokemon]="currentRanking[2].pokemon"></app-pokemon-card>
       </div>
     </div>
-  </div>
-
-  <div class="ranking-list" *ngIf="!loading && currentRanking.length > 3">
-    <ion-card
-      *ngFor="let item of currentRanking.slice(3); trackBy: trackByPokemonId"
-      class="ranking-card"
-      [routerLink]="['/pokemon', item.pokemon.id]">
-
-      <div class="rank-info">
-        <div class="rank-number">
-          <span>{{ item.rank }}</span>
+    <!-- Grid dos demais cards -->
+    <div class="ranking-grid-flex">
+      <div *ngFor="let item of currentRanking.slice(3); let i = index" class="ranking-card-grid">
+        <span class="capture-count-badge">
+          <ion-icon name="heart" color="danger"></ion-icon>
+          {{ item.favoriteCount }}
+        </span>
+        <div class="grid-badge" [title]="(i+4) + 'º Lugar'">
+          <span>{{ i + 4 }}</span>
         </div>
-        <div class="trend-indicator">
-          <ion-icon
-            [name]="item.trend === 'up' ? 'trending-up' : item.trend === 'down' ? 'trending-down' : 'remove'"
-            [color]="item.trend === 'up' ? 'success' : item.trend === 'down' ? 'danger' : 'medium'">
-          </ion-icon>
-        </div>
+        <app-pokemon-card [pokemon]="item.pokemon"></app-pokemon-card>
       </div>
-
-      <div class="pokemon-image-small">
-        <img
-          [src]="'https://pokeapi.co/media/sprites/pokemon/' + item.pokemon.id + '.png'"
-          [alt]="item.pokemon.name"
-          loading="lazy">
-      </div>
-
-      <div class="pokemon-info">
-        <h3>{{ item.pokemon.name | titlecase }}</h3>
-        <div class="pokemon-types">
-          <ion-chip
-            *ngFor="let type of item.pokemon.types || []"
-            [class]="'type-' + (type.type.name || 'unknown')"
-            class="pokemon-type">
-            <ion-label>{{ (type.type.name || 'unknown') | translate | uppercase }}</ion-label>
-          </ion-chip>
-        </div>
-        <div class="stats-summary">
-          <span class="total-stats">{{ getStatsTotal(item.pokemon) }} {{ 'ranking_page.total_stats' | translate }}</span>
-        </div>
-      </div>
-
-      <div class="favorite-count">
-        <div class="count-number">{{ item.favoriteCount }}</div>
-        <div class="count-label">{{ 'favorites' | translate }}</div>
-      </div>
-
-      <ion-button
-        fill="clear"
-        class="favorite-btn"
-        (click)="toggleFavorite(item.pokemon, $event)">
-        <ion-icon
-          [name]="isFavoriteSync(item.pokemon.id) ? 'heart' : 'heart-outline'"
-          [color]="isFavoriteSync(item.pokemon.id) ? 'danger' : 'medium'">
-        </ion-icon>
-      </ion-button>
-    </ion-card>
+    </div>
   </div>
 
   <div *ngIf="loading" class="loading-container">
@@ -173,3 +109,4 @@
     </ion-card>
   </div>
 </ion-content>
+
