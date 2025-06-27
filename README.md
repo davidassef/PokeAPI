@@ -95,9 +95,9 @@ backend/
 - [x] 🌐 **Internacionalização** - Português, Inglês e Espanhol
 - [x] 🎨 **Componentes Reutilizáveis** - Pokemon Card, Loading Spinner, etc.
 - [x] 🔧 **Backend API** - Endpoints para usuários, favoritos e ranking
+- [x] 🏆 **Página de Ranking** - Pokémon mais populares (carregamento otimizado, aguardando detalhes finais dos pokémons)
 
 ### 🚧 Em Desenvolvimento
-- [ ] 🏆 **Página de Ranking** - Pokémon mais populares
 - [ ] 🔐 **Sistema de Autenticação** - Login e perfis de usuário
 - [ ] 📊 **Dashboard Analytics** - Estatísticas de uso
 - [ ] 🔄 **Sincronização** - Backup automático de favoritos
@@ -197,7 +197,7 @@ ng e2e
 
 ## 📊 Status de Desenvolvimento
 
-### Progresso Geral: 75% ✅
+### Progresso Geral: 80% ✅
 
 | Módulo | Status | Progresso |
 |--------|--------|-----------|
@@ -210,6 +210,16 @@ ng e2e
 | 🌐 Deploy | ⏳ Pendente | 0% |
 
 ### Últimas Atualizações
+
+<details>
+<summary><strong>Clique para expandir o histórico</strong></summary>
+
+- 🚀 **[2025-06-27]** Refatoração completa da página de ranking para evitar loop infinito no Angular
+- 🚀 **[2025-06-27]** Melhoria de performance e uso de cache para favoritos e imagens
+- 🚀 **[2025-06-27]** Template do ranking simplificado para evitar expressões complexas
+- 🚀 **[2025-06-27]** Ranking agora carrega sem travar, exibindo placeholders enquanto aguarda detalhes dos pokémons
+- 🚀 **[2025-06-27]** Estrutura pronta para reabilitar carregamento dos detalhes reais dos pokémons
+- 🚀 **[2025-06-27]** Commit e push do progresso total do projeto até o momento
 - 🛡️ **[2025-06-26]** Página de favoritos desativada e removida dos módulos do frontend para build limpo
 - 🛠️ **[2025-06-26]** Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
 - 🧹 **[2025-06-26]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
@@ -220,6 +230,8 @@ ng e2e
 - 🖼️ **[2025-06-23]** Substituição do logo do menu lateral por Pokédex em alta definição
 - 📝 **[2025-06-23]** Atualização do plano de melhorias e README
 - 🛠️ **[2025-06-23]** Correção de labels e menus para uso de chaves minúsculas e com ponto
+
+</details>
 
 ---
 
