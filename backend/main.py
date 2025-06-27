@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.database import engine
 from app.models.models import Base
-from app.routes import users, favorites, ranking, pokemon
+from app.routes import users, favorites, ranking, pokemon, sync_capture
 from app.services.pokeapi_service import pokeapi_service
 
 
@@ -31,7 +31,7 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["*"],  # Libera para qualquer origem para desenvolvimento local
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,6 +42,7 @@ app.include_router(users.router, prefix="/api/v1")
 app.include_router(favorites.router, prefix="/api/v1")
 app.include_router(ranking.router, prefix="/api/v1")
 app.include_router(pokemon.router, prefix="/api/v1")
+app.include_router(sync_capture.router, prefix="/api/v1")
 
 
 @app.get("/")

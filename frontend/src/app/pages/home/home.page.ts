@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, LoadingController, AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { Pokemon, PokemonListResponse } from '../../models/pokemon.model';
-import { PokemonFilters } from '../../models/app.model';
-import { PokeApiService } from '../../core/services/pokeapi.service';
-import { FavoritesService } from '../../core/services/favorites.service';
 import { AudioService } from '../../core/services/audio.service';
+import { FavoritesService } from '../../core/services/favorites.service';
+import { PokeApiService } from '../../core/services/pokeapi.service';
+import { SyncAction, SyncService } from '../../core/services/sync.service';
+import { PokemonFilters } from '../../models/app.model';
+import { Pokemon } from '../../models/pokemon.model';
 import { FilterOptions } from '../../shared/components/search-filter/search-filter.component';
-import { SyncService, SyncAction } from '../../core/services/sync.service';
 
 @Component({
   selector: 'app-home',
