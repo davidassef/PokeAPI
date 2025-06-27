@@ -3,6 +3,15 @@
 <details>
 <summary><strong>Expandir/Minimizar Histórico</strong></summary>
 
+### 2025-06-27
+- 🚀 Refatoração e otimização da página de ranking:
+  - Correção do loop infinito causado por detecção de mudanças no Angular
+  - Melhoria de performance e uso de cache para favoritos e imagens
+  - Template simplificado para evitar expressões complexas
+  - Ranking agora carrega sem travar, exibindo placeholders enquanto aguarda detalhes dos pokémons
+  - Estrutura pronta para reabilitar carregamento dos detalhes reais dos pokémons
+- 🛠️ Commit e push do progresso total do projeto até o momento
+
 ### 2025-06-26
 - 🛡️ Página de favoritos desativada e removida dos módulos do frontend para build limpo
 - 🛠️ Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
