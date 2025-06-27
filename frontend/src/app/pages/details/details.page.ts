@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { Pokemon } from '../../models/pokemon.model';
-import { PokeApiService } from '../../core/services/pokeapi.service';
-import { FavoritesService } from '../../core/services/favorites.service';
 import { AudioService } from '../../core/services/audio.service';
+import { FavoritesService } from '../../core/services/favorites.service';
+import { PokeApiService } from '../../core/services/pokeapi.service';
+import { Pokemon } from '../../models/pokemon.model';
 
 interface ImageVariant {
   url: string;

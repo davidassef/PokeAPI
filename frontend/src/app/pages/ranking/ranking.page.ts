@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, takeUntil } from 'rxjs';
-import { Pokemon } from '../../models/pokemon.model';
-import { PokeApiService } from '../../core/services/pokeapi.service';
-import { FavoritesService } from '../../core/services/favorites.service';
+import { Subject, firstValueFrom, timeout } from 'rxjs';
 import { AudioService } from '../../core/services/audio.service';
+import { FavoritesService } from '../../core/services/favorites.service';
+import { PokeApiService } from '../../core/services/pokeapi.service';
 import { SyncService } from '../../core/services/sync.service';
+import { Pokemon } from '../../models/pokemon.model';
 
 interface PokemonRanking {
   pokemon: Pokemon;
@@ -23,8 +23,48 @@ interface PokemonRanking {
 export class RankingPage implements OnInit, OnDestroy {
   globalRanking: PokemonRanking[] = [];
   localRanking: PokemonRanking[] = [];
+  currentRanking: PokemonRanking[] = [];
   viewMode: 'global' | 'local' = 'global';
   loading = false;
+
+  // Cache para evitar chamadas repetidas
+  private favoriteCache = new Map<number, boolean>();
+  private pokemonImageCache = new Map<number, string>();
+  // Propriedade para armazenar favoritos de forma síncrona
+  favoriteStates = new Map<number, boolean>();
+
+  // Objeto placeholder estático para evitar loop infinito
+  private static readonly PLACEHOLDER_POKEMON: Pokemon = {
+    id: 0,
+    name: 'Unknown',
+    types: [],
+    stats: [],
+    height: 0,
+    weight: 0,
+    base_experience: 0,
+    order: 0,
+    sprites: {
+      front_default: 'assets/images/placeholder.png',
+      front_shiny: 'assets/images/placeholder.png',
+      back_default: 'assets/images/placeholder.png',
+      back_shiny: 'assets/images/placeholder.png',
+      other: {
+        'official-artwork': {
+          front_default: 'assets/images/placeholder.png'
+        },
+        home: {
+          front_default: 'assets/images/placeholder.png',
+          front_shiny: 'assets/images/placeholder.png'
+        }
+      }
+    },
+    abilities: [],
+    species: {
+      name: 'Unknown',
+      url: ''
+    },
+    moves: [],
+  };
 
   // Mock data para demonstração (em um app real, viria do backend)
   private mockGlobalData = [
@@ -55,6 +95,7 @@ export class RankingPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadRanking();
     this.loadLocalRanking('default-region'); // Adicionando região padrão
+    this.loadFavoriteStates(); // Carrega estados dos favoritos
   }
 
   ngOnDestroy() {
@@ -95,28 +136,37 @@ export class RankingPage implements OnInit, OnDestroy {
   async loadRanking() {
     this.loading = true;
     const loading = await this.loadingController.create({
-      message: await this.translate.get('ranking_page.loading_ranking').toPromise()
+      message: await firstValueFrom(this.translate.get('ranking_page.loading_ranking'))
     });
     await loading.present();
     try {
-      // Antes de buscar ranking, tenta sincronizar pendências
-      await this.syncService.syncPending();
-      // Busca ranking global do backend
-      const backendRanking = await this.pokeApiService.getGlobalRankingFromBackend(10).toPromise();
-      // Busca detalhes de cada pokémon na PokeAPI
-      const pokemonPromises = (backendRanking ?? []).map(async (item, idx) => {
-        const pokemon = await this.pokeApiService.getPokemon(item.pokemon_id).toPromise();
-        return {
-          pokemon: pokemon!,
-          favoriteCount: item.favorite_count,
-          rank: idx + 1,
-          trend: 'stable' as const // Corrige tipagem para o enum
-        };
-      });
-      this.globalRanking = await Promise.all(pokemonPromises);
+      // await this.syncService.syncPending(); // COMENTADO TEMPORARIAMENTE PARA TESTE
+      const backendRanking = await firstValueFrom(
+        this.pokeApiService.getGlobalRankingFromBackend(10).pipe(timeout(10000))
+      );
+      if (!backendRanking || backendRanking.length === 0) {
+        this.globalRanking = [];
+        this.currentRanking = [];
+        return;
+      }
+      // Exibe o ranking imediatamente com placeholders
+      this.globalRanking = backendRanking.map((item, idx) => ({
+        pokemon: RankingPage.PLACEHOLDER_POKEMON,
+        favoriteCount: item.favorite_count,
+        rank: idx + 1,
+        trend: 'stable' as const
+      }));
+      
+      // Atualiza currentRanking
+      this.currentRanking = this.globalRanking;
     } catch (error) {
-      console.error('Erro ao carregar ranking global:', error);
-      await this.showErrorToast('ERROR_LOADING_RANKING');
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        await this.showErrorToast('Tempo limite ao carregar ranking. Tente novamente.');
+      } else {
+        await this.showErrorToast('ERROR_LOADING_RANKING');
+      }
+      this.globalRanking = [];
+      this.currentRanking = [];
     } finally {
       this.loading = false;
       await loading.dismiss();
@@ -125,11 +175,14 @@ export class RankingPage implements OnInit, OnDestroy {
 
   private async loadLocalRanking(region: string) {
     try {
-      const response = await this.pokeApiService.getLocalRanking(region).toPromise();
+      const response = await firstValueFrom(
+        this.pokeApiService.getLocalRanking(region).pipe(timeout(10000))
+      );
       if (!response) throw new Error('Resposta indefinida ao buscar ranking local');
-
       const pokemonPromises = response.map(async (item) => {
-        const pokemon = await this.pokeApiService.getPokemon(item.pokemonId).toPromise();
+        const pokemon = await firstValueFrom(
+          this.pokeApiService.getPokemon(item.pokemonId).pipe(timeout(10000))
+        );
         return {
           pokemon: pokemon!,
           favoriteCount: item.favoriteCount,
@@ -137,25 +190,25 @@ export class RankingPage implements OnInit, OnDestroy {
           trend: item.trend
         };
       });
-
       this.localRanking = await Promise.all(pokemonPromises);
     } catch (error) {
-      console.error('Erro ao carregar ranking local:', error);
-      await this.showErrorToast('ERROR_LOADING_LOCAL_RANKING');
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        await this.showErrorToast('Tempo limite ao carregar ranking local. Tente novamente.');
+      } else {
+        await this.showErrorToast('ERROR_LOADING_LOCAL_RANKING');
+      }
+      this.localRanking = [];
     }
   }
 
   switchView(mode: 'global' | 'local') {
     this.viewMode = mode;
+    this.currentRanking = mode === 'global' ? this.globalRanking : this.localRanking;
     this.playSound();
   }
 
   getCurrentRanking(): PokemonRanking[] {
     return this.viewMode === 'global' ? this.globalRanking : this.localRanking;
-  }
-
-  get currentRanking(): PokemonRanking[] {
-    return this.getCurrentRanking();
   }
 
   getRankBadgeColor(rank: number): string {
@@ -200,6 +253,10 @@ export class RankingPage implements OnInit, OnDestroy {
       await this.audioService.playSound('/assets/audio/click.wav');
 
       const isFavorite = await this.favoritesService.isFavorite(pokemon.id);
+      // Atualiza o cache
+      this.favoriteCache.set(pokemon.id, isFavorite);
+      this.favoriteStates.set(pokemon.id, isFavorite);
+      
       const message = isFavorite ? 'ADDED_TO_FAVORITES' : 'REMOVED_FROM_FAVORITES';
       await this.showToast(message, pokemon.name);
 
@@ -210,12 +267,31 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   async isFavorite(pokemonId: number): Promise<boolean> {
-    return await this.favoritesService.isFavorite(pokemonId);
+    // Verifica cache primeiro
+    if (this.favoriteCache.has(pokemonId)) {
+      return this.favoriteCache.get(pokemonId)!;
+    }
+    
+    const result = await this.favoritesService.isFavorite(pokemonId);
+    this.favoriteCache.set(pokemonId, result);
+    this.favoriteStates.set(pokemonId, result);
+    return result;
+  }
+
+  // Método síncrono para verificar favoritos no template
+  isFavoriteSync(pokemonId: number): boolean {
+    return this.favoriteStates.get(pokemonId) || false;
   }
 
   async onRefresh(event: any) {
+    // Limpa o cache ao atualizar
+    this.favoriteCache.clear();
+    this.pokemonImageCache.clear();
+    this.favoriteStates.clear();
+    
     await this.loadRanking();
     await this.loadLocalRanking('default-region'); // Adicionando região padrão
+    await this.loadFavoriteStates(); // Recarrega estados dos favoritos
     event.target.complete();
   }
 
@@ -241,7 +317,7 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   private async showToast(messageKey: string, pokemonName?: string) {
-    const message = await this.translate.get(messageKey, { name: pokemonName }).toPromise();
+    const message = await firstValueFrom(this.translate.get(messageKey, { name: pokemonName }));
     const toast = await this.toastController.create({
       message,
       duration: 2000,
@@ -252,7 +328,7 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   private async showErrorToast(messageKey: string) {
-    const message = await this.translate.get(messageKey).toPromise();
+    const message = await firstValueFrom(this.translate.get(messageKey));
     const toast = await this.toastController.create({
       message,
       duration: 3000,
@@ -263,41 +339,20 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   getSafePokemon(pokemon: Pokemon | null): Pokemon {
-    return pokemon || {
-      id: 0,
-      name: 'Unknown',
-      types: [],
-      stats: [],
-      height: 0,
-      weight: 0,
-      base_experience: 0,
-      order: 0,
-      sprites: {
-        front_default: 'assets/images/placeholder.png',
-        front_shiny: 'assets/images/placeholder.png',
-        back_default: 'assets/images/placeholder.png',
-        back_shiny: 'assets/images/placeholder.png',
-        other: {
-          'official-artwork': {
-            front_default: 'assets/images/placeholder.png'
-          },
-          home: {
-            front_default: 'assets/images/placeholder.png',
-            front_shiny: 'assets/images/placeholder.png'
-          }
-        }
-      },
-      abilities: [],
-      species: {
-        name: 'Unknown',
-        url: ''
-      },
-      moves: [],
-    };
+    return pokemon || RankingPage.PLACEHOLDER_POKEMON;
   }
 
   getSafePokemonImage(pokemon: Pokemon | null): string {
-    return pokemon ? `https://pokeapi.co/media/sprites/pokemon/${pokemon.id}.png` : 'assets/images/placeholder.png';
+    if (!pokemon) return 'assets/images/placeholder.png';
+    
+    // Verifica cache primeiro
+    if (this.pokemonImageCache.has(pokemon.id)) {
+      return this.pokemonImageCache.get(pokemon.id)!;
+    }
+    
+    const imageUrl = `https://pokeapi.co/media/sprites/pokemon/${pokemon.id}.png`;
+    this.pokemonImageCache.set(pokemon.id, imageUrl);
+    return imageUrl;
   }
 
   getSafePokemonName(pokemon: Pokemon | null): string {
@@ -314,5 +369,26 @@ export class RankingPage implements OnInit, OnDestroy {
 
   getSafeTrend(trend: 'up' | 'down' | 'stable' | null): 'up' | 'down' | 'stable' {
     return trend || 'stable';
+  }
+
+  // Método para otimizar o ngFor
+  trackByPokemonId(index: number, item: PokemonRanking): number {
+    return item.pokemon.id;
+  }
+
+  // Carrega os estados dos favoritos para os pokémons no ranking
+  private async loadFavoriteStates() {
+    try {
+      const favoritePokemons = await this.favoritesService.getFavorites();
+      favoritePokemons.forEach((favorite: any) => {
+        const pokemonId = favorite.pokemon_id || favorite.id;
+        if (pokemonId) {
+          this.favoriteStates.set(pokemonId, true);
+          this.favoriteCache.set(pokemonId, true);
+        }
+      });
+    } catch (error) {
+      console.warn('Erro ao carregar estados dos favoritos:', error);
+    }
   }
 }

@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { Pokemon } from '../../models/pokemon.model';
+import { AudioService } from '../../core/services/audio.service';
 import { CapturedService } from '../../core/services/captured.service';
 import { PokeApiService } from '../../core/services/pokeapi.service';
-import { AudioService } from '../../core/services/audio.service';
-import { FilterOptions } from '../../shared/components/search-filter/search-filter.component';
+import { SyncAction, SyncService } from '../../core/services/sync.service';
 import { PokemonFilters } from '../../models/app.model';
-import { SyncService, SyncAction } from '../../core/services/sync.service';
+import { Pokemon } from '../../models/pokemon.model';
+import { FilterOptions } from '../../shared/components/search-filter/search-filter.component';
 
 @Component({
   selector: 'app-captured',

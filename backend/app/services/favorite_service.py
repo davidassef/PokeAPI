@@ -6,6 +6,7 @@ from sqlalchemy import func
 from typing import List
 from app.models.models import FavoritePokemon, PokemonRanking
 from app.schemas.schemas import FavoritePokemonCreate
+from datetime import datetime
 
 
 class FavoriteService:
@@ -32,8 +33,8 @@ class FavoriteService:
         )
         db.add(db_favorite)
 
-        # Atualiza ranking
-        FavoriteService._update_ranking(
+        # Atualiza ranking baseado em capturas (não favoritos)
+        FavoriteService._update_ranking_from_captures(
             db, favorite.pokemon_id, favorite.pokemon_name)
 
         db.commit()
@@ -54,8 +55,8 @@ class FavoriteService:
         pokemon_name = favorite.pokemon_name
         db.delete(favorite)
 
-        # Atualiza ranking
-        FavoriteService._update_ranking(
+        # Atualiza ranking baseado em capturas (não favoritos)
+        FavoriteService._update_ranking_from_captures(
             db, pokemon_id, pokemon_name, increment=False)
 
         db.commit()
@@ -78,46 +79,67 @@ class FavoriteService:
         return favorite is not None
 
     @staticmethod
-    def get_ranking(db: Session, limit: int = 10) -> List[PokemonRanking]:
-        """Busca ranking dos Pokémons mais favoritados."""
-        return db.query(PokemonRanking).order_by(
-            PokemonRanking.favorite_count.desc()
+    def get_ranking(db: Session, limit: int = 10) -> list[dict]:
+        """Busca ranking dos Pokémons mais capturados (não favoritados)."""
+        capture_counts = db.query(
+            FavoritePokemon.pokemon_id,
+            FavoritePokemon.pokemon_name,
+            func.count(FavoritePokemon.id).label('capture_count')
+        ).group_by(
+            FavoritePokemon.pokemon_id,
+            FavoritePokemon.pokemon_name
+        ).order_by(
+            func.count(FavoritePokemon.id).desc()
         ).limit(limit).all()
 
+        rankings = []
+        now = datetime.now()
+        for pokemon_id, pokemon_name, capture_count in capture_counts:
+            ranking = {
+                'id': 0,  # Valor dummy
+                'pokemon_id': pokemon_id,
+                'pokemon_name': pokemon_name,
+                'favorite_count': capture_count,
+                'last_updated': now
+            }
+            rankings.append(ranking)
+
+        return rankings
+
     @staticmethod
-    def _update_ranking(db: Session, pokemon_id: int, pokemon_name: str,
+    def _update_ranking_from_captures(db: Session, pokemon_id: int, pokemon_name: str,
                         increment: bool = True):
-        """Atualiza ranking do Pokémon."""
-        ranking = db.query(PokemonRanking).filter(
-            PokemonRanking.pokemon_id == pokemon_id
-        ).first()
-
-        if not ranking:
-            # Cria nova entrada no ranking
-            ranking = PokemonRanking(
-                pokemon_id=pokemon_id,
-                pokemon_name=pokemon_name,
-                favorite_count=1 if increment else 0
-            )
-            db.add(ranking)
-        else:
-            # Atualiza contagem
-            if increment:
-                ranking.favorite_count += 1
-            else:
-                ranking.favorite_count = max(0, ranking.favorite_count - 1)
-
-            ranking.last_updated = func.now()
+        """Atualiza ranking do Pokémon baseado em capturas."""
+        # Este método agora é usado apenas para manter compatibilidade
+        # O ranking real é calculado dinamicamente em get_ranking()
+        pass
 
     @staticmethod
     def get_stats(db: Session) -> dict:
-        """Busca estatísticas gerais."""
-        total_favorites = db.query(FavoritePokemon).count()
-        most_popular = db.query(PokemonRanking).order_by(
-            PokemonRanking.favorite_count.desc()
+        """Busca estatísticas gerais baseadas em capturas."""
+        total_captures = db.query(FavoritePokemon).count()
+        
+        # Busca o Pokémon mais capturado
+        most_captured = db.query(
+            FavoritePokemon.pokemon_id,
+            FavoritePokemon.pokemon_name,
+            func.count(FavoritePokemon.id).label('capture_count')
+        ).group_by(
+            FavoritePokemon.pokemon_id,
+            FavoritePokemon.pokemon_name
+        ).order_by(
+            func.count(FavoritePokemon.id).desc()
         ).first()
 
+        most_popular = None
+        if most_captured:
+            most_popular = PokemonRanking(
+                pokemon_id=most_captured.pokemon_id,
+                pokemon_name=most_captured.pokemon_name,
+                favorite_count=most_captured.capture_count
+            )
+
         return {
-            "total_favorites": total_favorites,
+            "total_favorites": total_captures,  # Mantém nome para compatibilidade
             "most_popular_pokemon": most_popular
         }
