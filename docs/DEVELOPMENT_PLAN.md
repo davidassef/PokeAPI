@@ -229,7 +229,7 @@ $type-colors: (
 
 **Objetivo:** Pokédex completa, moderna e segura, com:
 - ✅ Interface responsiva e animada
-- ✅ Sistema de favoritos sincronizado
+- ✅ Sistema de capturados (favoritos) sincronizado
 - ✅ Player musical persistente
 - ✅ Temas claro/escuro
 - ✅ Suporte a 3 idiomas
