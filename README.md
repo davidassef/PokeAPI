@@ -220,6 +220,15 @@ ng e2e
 - 🚀 **[2025-06-27]** Ranking agora carrega sem travar, exibindo placeholders enquanto aguarda detalhes dos pokémons
 - 🚀 **[2025-06-27]** Estrutura pronta para reabilitar carregamento dos detalhes reais dos pokémons
 - 🚀 **[2025-06-27]** Commit e push do progresso total do projeto até o momento
+- 🏆 **[2024-06-27] Novidades visuais no Ranking:**
+  - Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
+  - Badges de posição e contagem de capturas integrados aos cards
+  - Grid responsivo e centralizado para os demais Pokémons
+  - Título criativo com ícone, gradiente e espaçamento aprimorado
+  - Alinhamento refinado e visual moderno, sem afetar outras páginas
+  - Para customizar o visual do ranking, edite apenas os arquivos:
+    - `frontend/src/app/pages/ranking/ranking.page.html`
+    - `frontend/src/app/pages/ranking/ranking.page.scss`
 - 🛡️ **[2025-06-26]** Página de favoritos desativada e removida dos módulos do frontend para build limpo
 - 🛠️ **[2025-06-26]** Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
 - 🧹 **[2025-06-26]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
@@ -230,8 +239,26 @@ ng e2e
 - 🖼️ **[2025-06-23]** Substituição do logo do menu lateral por Pokédex em alta definição
 - 📝 **[2025-06-23]** Atualização do plano de melhorias e README
 - 🛠️ **[2025-06-23]** Correção de labels e menus para uso de chaves minúsculas e com ponto
+- 🚀 **[2025-06-28]** Sistema de ranking 100% finalizado e padronizado visualmente
+  - Espaçamento dos cards do ranking igual ao das outras páginas
+  - Responsividade e grid centralizado revisados
+  - Documentação reorganizada: docs/ no backend e frontend
+  - Novo: README_RANKING_SYSTEM detalhando funcionamento e arquitetura do ranking
 
 </details>
+
+## Novidades no Ranking (2024)
+
+- Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
+- Badges de posição e contagem de capturas integrados aos cards
+- Grid responsivo e centralizado para os demais Pokémons
+- Título criativo com ícone, gradiente e espaçamento aprimorado
+- Alinhamento refinado e visual moderno, sem afetar outras páginas
+
+### Customização do Ranking
+- Para customizar o visual do ranking, edite apenas os arquivos:
+  - `frontend/src/app/pages/ranking/ranking.page.html`
+  - `frontend/src/app/pages/ranking/ranking.page.scss`
 
 ---
 

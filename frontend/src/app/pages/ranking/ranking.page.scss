@@ -316,7 +316,7 @@ ion-content {
     font-size: 1.1rem;
     font-weight: 700;
     margin: 0 0 8px 0;
-    color: var(--ion-color-dark);
+    color: #ffffff;
   }
 }
 
@@ -588,13 +588,13 @@ body.dark-theme {
 // Grid responsivo para os cards do ranking (exceto Top 3)
 .ranking-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   justify-items: center;
   align-items: stretch;
   margin: 0 auto;
-  max-width: 1200px;
-  padding: 24px 0 32px 0;
+  max-width: 900px;
+  padding: 16px;
 }
 
 // Linha especial para o Top 3
@@ -726,8 +726,10 @@ body.dark-theme {
     margin-bottom: 8px;
   }
   .ranking-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
     gap: 16px;
-    padding: 16px 0 24px 0;
+    padding: 16px;
   }
   .ranking-card-wrapper, .ranking-card-wrapper.top3 {
     width: 160px;
@@ -745,8 +747,9 @@ body.dark-theme {
   }
   .ranking-grid {
     grid-template-columns: 1fr;
+    max-width: 100%;
     gap: 12px;
-    padding: 8px 0 16px 0;
+    padding: 8px;
   }
   .ranking-card-wrapper, .ranking-card-wrapper.top3 {
     width: 98vw;
@@ -851,43 +854,24 @@ body.dark-theme {
 // Grid centralizado dos demais cards (abaixo do pódio)
 .ranking-grid-flex {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   justify-items: center;
   align-items: stretch;
   margin: 0 auto;
-  max-width: 1200px;
-  padding: 32px 0 32px 0;
+  max-width: 900px;
+  padding: 16px;
 }
+
 .ranking-card-grid {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 220px;
+  width: 100%;
+  max-width: 220px;
   background: none;
-}
-
-@media (max-width: 900px) {
-  .ranking-grid-flex {
-    gap: 12px;
-    padding: 16px 0 24px 0;
-  }
-  .ranking-card-grid {
-    width: 160px;
-  }
-}
-@media (max-width: 600px) {
-  .ranking-grid-flex {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 8px 0 16px 0;
-  }
-  .ranking-card-grid {
-    width: 98vw;
-    min-width: 0;
-    max-width: 98vw;
-  }
+  margin: 8px;
 }
 
 .capture-count-badge {
