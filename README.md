@@ -61,7 +61,7 @@ backend/
 ## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
-- **Framework**: Ionic 8 + Angular 19
+- **Framework**: Ionic 8 + Angular 17
 - **Linguagem**: TypeScript
 - **Estilização**: SCSS + CSS Variables
 - **Estado**: RxJS + Services
