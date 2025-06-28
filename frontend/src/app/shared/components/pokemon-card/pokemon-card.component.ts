@@ -13,15 +13,18 @@ import { Subscription } from 'rxjs';
 })
 export class PokemonCardComponent implements OnInit, OnDestroy {
   @Input() pokemon!: Pokemon;
-  @Input() showFavoriteButton = true;
+  @Input() showCaptureButton = true;
   @Input() showStats = false;
   @Input() animationDelay = 0;
-  @Input() isFavorite = false;
-  @Output() favoriteToggle = new EventEmitter<Pokemon>();
+  @Input() isCaptured = false;
+  @Input() customBadge?: number;
+  @Input() favoriteCount?: number;
+  @Output() captureToggle = new EventEmitter<{ pokemon: Pokemon, isCaptured: boolean }>();
   @Output() cardClick = new EventEmitter<Pokemon>();
   isLoading = false;
   imageUrl: string = '';
   private capturedSub?: Subscription;
+  private isProcessing = false;
 
   constructor(
     private router: Router,
@@ -29,9 +32,10 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     private pokeApiService: PokeApiService,
     private capturedService: CapturedService
   ) {}
+
   ngOnInit() {
     this.capturedSub = this.capturedService.captured$.subscribe(() => {
-      this.isFavorite = this.capturedService.isCaptured(this.pokemon.id);
+      this.isCaptured = this.capturedService.isCaptured(this.pokemon.id);
     });
     this.loadPokemonImage();
   }
@@ -52,19 +56,22 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     this.cardClick.emit(this.pokemon);
     this.router.navigate(['/tabs/details', this.pokemon.id]);
   }
-  async onFavoriteClick(event: Event) {
+
+  async onCaptureClick(event: Event) {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
     event.stopPropagation();
     this.isLoading = true;
     try {
-      // Usar CapturedService para capturar/descapturar
       const isCaptured = await this.capturedService.toggleCaptured(this.pokemon);
-      this.isFavorite = isCaptured;
-      this.favoriteToggle.emit(this.pokemon);
-      this.audioService.playSound(isCaptured ? 'favorite_add' : 'favorite_remove');
+      this.isCaptured = isCaptured;
+      this.captureToggle.emit({ pokemon: this.pokemon, isCaptured });
+      await this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release');
     } catch (error) {
       console.error('Error toggling captured:', error);
     } finally {
       this.isLoading = false;
+      this.isProcessing = false;
     }
   }
 

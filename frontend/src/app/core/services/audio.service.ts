@@ -173,6 +173,87 @@ export class AudioService {
     }
   }
 
+  /**
+   * Reproduz som de captura ou descaptura
+   * @param action 'capture' para capturar, 'release' para soltar
+   */
+  async playCaptureSound(action: 'capture' | 'release'): Promise<void> {
+    const settings = this.settingsService.getCurrentSettings();
+    if (!settings.soundEnabled) {
+      return;
+    }
+
+    try {
+      // Usar sons padrão do sistema ou sons existentes
+      let soundPath: string;
+      
+      if (action === 'capture') {
+        // Som de captura - usar um som curto e agradável
+        soundPath = '/assets/audio/capture.mp3'; // Se existir
+        // Fallback para som padrão do navegador
+        if (!this.fileExists(soundPath)) {
+          // Usar um beep simples ou som de sucesso
+          await this.playBeep(800, 100); // Frequência 800Hz por 100ms
+          return;
+        }
+      } else {
+        // Som de descaptura
+        soundPath = '/assets/audio/release.mp3'; // Se existir
+        if (!this.fileExists(soundPath)) {
+          // Usar um beep simples ou som de remoção
+          await this.playBeep(400, 100); // Frequência 400Hz por 100ms
+          return;
+        }
+      }
+
+      const soundAudio = new Audio(soundPath);
+      soundAudio.volume = (settings.soundVolume || 0.5) * 0.3; // Volume menor para sons de efeito
+      await soundAudio.play();
+    } catch (error) {
+      console.error('Erro ao reproduzir som de captura:', error);
+      // Fallback para beep
+      try {
+        await this.playBeep(action === 'capture' ? 800 : 400, 100);
+      } catch (beepError) {
+        console.error('Erro ao reproduzir beep de fallback:', beepError);
+      }
+    }
+  }
+
+  /**
+   * Reproduz um beep simples usando Web Audio API
+   */
+  private async playBeep(frequency: number, duration: number): Promise<void> {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = frequency;
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration / 1000);
+    } catch (error) {
+      console.error('Erro ao reproduzir beep:', error);
+    }
+  }
+
+  /**
+   * Verifica se um arquivo existe (método simples)
+   */
+  private fileExists(url: string): boolean {
+    // Método simples - na prática, você pode implementar uma verificação mais robusta
+    // Por enquanto, vamos assumir que os arquivos não existem e usar o fallback
+    return false;
+  }
+
   getAvailableTracks(): AudioTrack[] {
     return [...this.tracks];
   }

@@ -78,7 +78,7 @@ ion-menu {
 
       .stats-cards {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
         margin-bottom: 20px;
 
@@ -238,41 +238,6 @@ ion-menu {
       }
     }
   }
-
-  .menu-footer {
-    background: white;
-    border-top: 1px solid #e9ecef;
-
-    .footer-content {
-      padding: 16px;
-      text-align: center;
-
-      p {
-        margin: 0 0 12px 0;
-        font-size: 12px;
-        color: #6c757d;
-        line-height: 1.4;
-      }
-
-      .social-links {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-
-        ion-button {
-          --color: #6c757d;
-          --background: transparent;
-          --background-hover: #f8f9fa;
-          width: 36px;
-          height: 36px;
-
-          ion-icon {
-            font-size: 18px;
-          }
-        }
-      }
-    }
-  }
 }
 
 // Dark theme support
@@ -334,24 +299,6 @@ ion-menu {
             .chevron {
               color: #6c757d;
             }
-          }
-        }
-      }
-    }
-
-    .menu-footer {
-      background: #2c2c2c;
-      border-top-color: #404040;
-
-      .footer-content {
-        p {
-          color: #adb5bd;
-        }
-
-        .social-links {
-          ion-button {
-            --color: #adb5bd;
-            --background-hover: #404040;
           }
         }
       }
@@ -441,23 +388,6 @@ ion-menu {
         }
       }
     }
-
-    .menu-footer {
-      .footer-content {
-        padding: 12px;
-
-        .social-links {
-          ion-button {
-            width: 32px;
-            height: 32px;
-
-            ion-icon {
-              font-size: 16px;
-            }
-          }
-        }
-      }
-    }
   }
 }
 
@@ -496,3 +426,4 @@ ion-menu {
 .menu-content::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }
+

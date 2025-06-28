@@ -4,7 +4,7 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../core/services/audio.service';
-import { FavoritesService } from '../../core/services/favorites.service';
+import { CapturedService } from '../../core/services/captured.service';
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { Pokemon } from '../../models/pokemon.model';
 
@@ -20,18 +20,20 @@ interface ImageVariant {
 })
 export class DetailsPage implements OnInit, OnDestroy {
   pokemon: Pokemon | null = null;
-  loading = false;  isFavorite = false;
+  loading = false;
+  isCaptured = false;
   selectedImageType = 'default';
   currentImageUrl = '';
-  showFavoriteAnimation = false;
+  showCaptureAnimation = false;
 
   private pokemonId: number = 0;
   private destroy$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private pokeApiService: PokeApiService,
-    private favoritesService: FavoritesService,
+    private capturedService: CapturedService,
     private loadingController: LoadingController,
     private toastController: ToastController,
     private translate: TranslateService,
@@ -43,7 +45,7 @@ export class DetailsPage implements OnInit, OnDestroy {
       this.pokemonId = parseInt(params['id'], 10);
       if (this.pokemonId) {
         this.loadPokemonDetails();
-        this.checkIfFavorite();
+        this.checkIfCaptured();
       }
     });
   }
@@ -55,7 +57,8 @@ export class DetailsPage implements OnInit, OnDestroy {
 
   /**
    * Carrega detalhes do Pokémon
-   */  private async loadPokemonDetails() {
+   */
+  private async loadPokemonDetails() {
     this.loading = true;
     try {
       const pokemonData = await this.pokeApiService.getPokemon(this.pokemonId).toPromise();
@@ -72,35 +75,36 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Verifica se o Pokémon é favorito
+   * Verifica se o Pokémon está capturado
    */
-  private checkIfFavorite() {
-    this.favoritesService.getFavorites()
+  private checkIfCaptured() {
+    this.capturedService.getCaptured()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(favorites => {
-        this.isFavorite = favorites.some(fav => fav.pokemon_id === this.pokemonId);
+      .subscribe(captured => {
+        this.isCaptured = captured.some(cap => cap.pokemon_id === this.pokemonId);
       });
   }
+
   /**
-   * Alterna status de favorito
+   * Alterna status de captura
    */
   async toggleFavorite() {
     if (!this.pokemon) return;
 
     try {
-      if (this.isFavorite) {
-        await this.favoritesService.removeFromFavorites(this.pokemon.id);
-        await this.audioService.playSound('favorite_remove');
-        this.showToast(this.translate.instant('DETAILS.REMOVED_FROM_FAVORITES'));
+      if (this.isCaptured) {
+        await this.capturedService.removeFromCaptured(this.pokemon.id);
+        await this.audioService.playCaptureSound('release');
+        this.showToast(this.translate.instant('details.removed_from_captured'));
       } else {
-        await this.favoritesService.addToFavorites(this.pokemon);
-        await this.audioService.playSound('favorite_add');
-        this.showFavoriteAnimation = true;
-        setTimeout(() => this.showFavoriteAnimation = false, 1000);
-        this.showToast(this.translate.instant('DETAILS.ADDED_TO_FAVORITES'));
+        await this.capturedService.addToCaptured(this.pokemon);
+        await this.audioService.playCaptureSound('capture');
+        this.showCaptureAnimation = true;
+        setTimeout(() => this.showCaptureAnimation = false, 1000);
+        this.showToast(this.translate.instant('details.added_to_captured'));
       }
     } catch (error) {
-      console.error('Erro ao alterar favorito:', error);
+      console.error('Erro ao alterar captura:', error);
       this.showErrorToast();
     }
   }
@@ -198,14 +202,14 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Seleciona uma imagem
+   * Seleciona imagem
    */
   selectImage(url: string) {
     this.currentImageUrl = url;
   }
 
   /**
-   * Mudança do tipo de imagem
+   * Altera tipo de imagem
    */
   onImageTypeChange(event: any) {
     this.selectedImageType = event.detail.value;
@@ -216,49 +220,52 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Obtém nome traduzido do stat
+   * Obtém nome da stat
    */
   getStatName(statName: string): string {
     const statNames: { [key: string]: string } = {
-      'hp': 'HP',
-      'attack': 'Attack',
-      'defense': 'Defense',
-      'special-attack': 'Sp. Attack',
-      'special-defense': 'Sp. Defense',
-      'speed': 'Speed'
+      hp: 'HP',
+      attack: 'Ataque',
+      defense: 'Defesa',
+      'special-attack': 'Ataque Especial',
+      'special-defense': 'Defesa Especial',
+      speed: 'Velocidade'
     };
     return statNames[statName] || statName;
   }
 
   /**
-   * Calcula porcentagem do stat
+   * Obtém porcentagem da stat
    */
   getStatPercentage(statValue: number): number {
-    return Math.min((statValue / 200) * 100, 100);
+    return Math.min((statValue / 255) * 100, 100);
   }
 
   /**
-   * Calcula total dos stats
+   * Obtém total de stats
    */
   getTotalStats(): number {
     if (!this.pokemon?.stats) return 0;
     return this.pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0);
-  }  /**
-   * Obtém movimentos recentes
-   */
-  getRecentMoves(): { move: { name: string } }[] {
-    return this.pokemon?.moves?.slice(0, 10) || [];
   }
 
   /**
-   * Manipula erro de imagem
+   * Obtém movimentos recentes
+   */
+  getRecentMoves(): { move: { name: string } }[] {
+    if (!this.pokemon?.moves) return [];
+    return this.pokemon.moves.slice(0, 4);
+  }
+
+  /**
+   * Trata erro de imagem
    */
   onImageError(event: any) {
     event.target.src = 'assets/images/pokeball.png';
   }
 
   /**
-   * Recarrega a página
+   * Tenta carregar novamente
    */
   retry() {
     this.loadPokemonDetails();
@@ -269,7 +276,7 @@ export class DetailsPage implements OnInit, OnDestroy {
    */
   private async showErrorToast() {
     const toast = await this.toastController.create({
-      message: this.translate.instant('DETAILS.ERROR_LOADING'),
+      message: this.translate.instant('details.error_loading'),
       duration: 3000,
       color: 'danger',
       position: 'bottom'
@@ -290,24 +297,24 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Compartilha o Pokémon
+   * Compartilha Pokémon
    */
   async sharePokemon() {
     if (!this.pokemon) return;
 
-    try {
-      const shareData = {
-        title: `${this.pokemon.name} - Pokédex`,
-        text: `Confira ${this.pokemon.name} (#${this.pokemon.id}) na Pokédex!`,
-        url: window.location.href
-      };
+    const shareData = {
+      title: `${this.pokemon.name} - Pokédex`,
+      text: `Confira ${this.pokemon.name} na Pokédex!`,
+      url: window.location.href
+    };
 
+    try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // Fallback para navegadores que não suportam Web Share API
-        await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-        this.showToast('Link copiado para área de transferência!');
+        // Fallback para copiar URL
+        await navigator.clipboard.writeText(window.location.href);
+        this.showToast(this.translate.instant('details.url_copied'));
       }
     } catch (error) {
       console.error('Erro ao compartilhar:', error);

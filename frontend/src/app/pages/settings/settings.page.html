@@ -63,15 +63,7 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <!-- Mostrar chance de shiny -->
-      <ion-item>
-        <ion-icon name="star" slot="start" color="tertiary"></ion-icon>
-        <ion-label>{{ 'settings_page.show_shiny_chance' | translate }}</ion-label>
-        <ion-toggle
-          [(ngModel)]="settings.showShinyChance"
-          (ionChange)="onSettingChange('showShinyChance', $event.detail.checked)">
-        </ion-toggle>
-      </ion-item>
+      <!-- Removido toggle de shiny -->
     </ion-card-content>
   </ion-card>
 
@@ -149,6 +141,15 @@
         <ion-label>{{ 'settings_page.data_source' | translate }}</ion-label>
         <ion-note slot="end">PokéAPI</ion-note>
       </ion-item>
+
+      <!-- Informações de créditos -->
+      <ion-item lines="none">
+        <ion-icon name="heart" slot="start" color="danger"></ion-icon>
+        <ion-label>
+          <h3>{{ 'MADE_WITH_LOVE' | translate }}</h3>
+          <p>{{ 'POWERED_BY_POKEAPI' | translate }}</p>
+        </ion-label>
+      </ion-item>
     </ion-card-content>
   </ion-card>
 
@@ -170,10 +171,4 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
-
-  <!-- Rodapé com link para GitHub -->
-  <div class="footer-info">
-    <p>{{ 'MADE_WITH_LOVE' | translate }}</p>
-    <p>{{ 'POWERED_BY_POKEAPI' | translate }}</p>
-  </div>
 </ion-content>

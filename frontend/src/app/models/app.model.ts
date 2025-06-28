@@ -6,12 +6,12 @@ export interface AppSettings {
   theme: 'light' | 'dark' | 'auto';
   darkMode: boolean;
   musicVolume?: number;
+  soundVolume?: number;
   musicEnabled: boolean;
   soundEnabled: boolean;
   vibrationEnabled: boolean;
   currentTrack?: string;
   pokemonPerPage: number;
-  showShinyChance: boolean;
   autoPlayMusic: boolean;
   favoriteType?: string;
 }

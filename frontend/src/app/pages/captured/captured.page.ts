@@ -168,18 +168,15 @@ export class CapturedPage implements OnInit, OnDestroy {
     this.router.navigate(['/pokemon', pokemonId]);
   }
 
+  /**
+   * Remove Pokémon dos capturados (apenas local)
+   * @param pokemon Pokémon para remover dos capturados
+   */
   async onFavoriteToggle(pokemon: Pokemon) {
     try {
       await this.capturedService.removeFromCaptured(pokemon.id);
       await this.audioService.playSound('/assets/audio/remove.wav');
-      // Adiciona ação de sincronização (remoção de favorito/captura)
-      const action: SyncAction = {
-        pokemonId: pokemon.id,
-        action: 'capture', // ou 'favorite' se for favorito
-        timestamp: Date.now(),
-        payload: { removed: true }
-      };
-      await this.syncService.addToQueue(action);
+      // Não sincroniza mais com backend - apenas local
       this.loadCaptured();
     } catch (error) {
       console.error('Erro ao remover capturado:', error);
@@ -198,7 +195,7 @@ export class CapturedPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 3000,
-      position: 'bottom',
+      position: 'top',
       color: 'danger'
     });
     await toast.present();

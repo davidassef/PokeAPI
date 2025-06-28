@@ -35,7 +35,6 @@ export class CapturedService {
       const captured = await this.storage.get(this.CAPTURED_KEY) || [];
       this.capturedSubject.next(captured);
     } catch (error) {
-      console.error('Erro ao carregar capturados:', error);
       this.capturedSubject.next([]);
     }
   }
@@ -48,7 +47,6 @@ export class CapturedService {
       await this.storage.set(this.CAPTURED_KEY, captured);
       this.capturedSubject.next(captured);
     } catch (error) {
-      console.error('Erro ao salvar capturados:', error);
     }
   }
 
@@ -67,7 +65,6 @@ export class CapturedService {
       await this.saveCaptured(updated);
       return true;
     } catch (error) {
-      console.error('Erro ao capturar:', error);
       return false;
     }
   }
@@ -80,7 +77,6 @@ export class CapturedService {
       await this.saveCaptured(updated);
       return true;
     } catch (error) {
-      console.error('Erro ao soltar:', error);
       return false;
     }
   }
@@ -124,7 +120,6 @@ export class CapturedService {
       await this.saveCaptured(captured);
       return true;
     } catch (error) {
-      console.error('Erro ao importar capturados:', error);
       return false;
     }
   }
