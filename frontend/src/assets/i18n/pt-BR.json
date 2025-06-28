@@ -12,7 +12,7 @@
     "sort": "Ordenar",
     "clear": "Limpar",
     "version": "Versão",
-    "footer_text": "Desenvolvido com ❤️ por PokéAPIApp"
+    "footer_text": "Desenvolvido com ❤️ por David Assef"
   },
   "tabs": {
     "home": "Pokédex",
@@ -93,7 +93,11 @@
     "captured_imported": "Capturados importados com sucesso!",
     "error_import_captured": "Erro ao importar capturados.",
     "captured_exported": "Capturados exportados!",
-    "error_export_captured": "Erro ao exportar capturados."
+    "error_export_captured": "Erro ao exportar capturados.",
+    "loading": "Carregando capturados...",
+    "goToHome": "Ir para Pokédex",
+    "imported": "Capturados importados com sucesso!",
+    "cleared": "Todos os capturados foram removidos!"
   },
   "ranking": {
     "title": "Ranking Global",
@@ -115,7 +119,11 @@
     "light": "Claro",
     "dark": "Escuro",
     "enabled": "Habilitada",
-    "disabled": "Desabilitada"
+    "disabled": "Desabilitada",
+    "select_language": "Selecionar Idioma",
+    "language_updated": "Idioma atualizado com sucesso!",
+    "imported": "Configurações importadas com sucesso!",
+    "reset": "Configurações redefinidas!"
   },
   "music": {
     "play": "Tocar",
@@ -176,7 +184,7 @@
     "type_chart": "Tabela de Tipos",
     "stats": "Estatísticas",
     "language": "Idioma",
-    "footer_text": "Desenvolvido com ❤️ por PokéAPIApp"
+    "footer_text": "Desenvolvido com ❤️ por David Assef"
   },
   "languages": {
     "pt-BR": "Português",
@@ -189,7 +197,10 @@
     "no_results_message": "Tente ajustar os filtros ou pesquisar outro nome.",
     "clear_filters": "Limpar filtros",
     "loading_more": "Carregando mais...",
-    "placeholder": "Digite o nome do Pokémon ou ID..."
+    "placeholder": "Digite o nome do Pokémon ou ID...",
+    "added_to_captured": "Pokémon adicionado aos capturados!",
+    "removed_from_captured": "Pokémon removido dos capturados!",
+    "error_loading": "Erro ao carregar Pokémons"
   },
   "captured_page": {
     "search_captured": "Buscar nos capturados",
@@ -276,8 +287,12 @@
     "recent_moves": "Movimentos Recentes",
     "error_title": "Erro ao carregar",
     "error_message": "Não foi possível carregar os detalhes do Pokémon.",
-    "retry": "Tentar novamente"
+    "retry": "Tentar novamente",
+    "removed_from_captured": "Pokémon removido dos capturados!",
+    "added_to_captured": "Pokémon adicionado aos capturados!",
+    "error_loading": "Erro ao carregar detalhes",
+    "url_copied": "URL copiada para a área de transferência!"
   },
-  "MADE_WITH_LOVE": "Feito com ❤️ por PokéAPIApp",
+  "MADE_WITH_LOVE": "Feito com ❤️ por David Assef",
   "POWERED_BY_POKEAPI": "Powered by PokéAPI"
 }

@@ -22,7 +22,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     soundEnabled: true,
     vibrationEnabled: true,
     pokemonPerPage: 20,
-    showShinyChance: true,
     autoPlayMusic: false
   };
 
@@ -85,14 +84,14 @@ export class SettingsPage implements OnInit, OnDestroy {
    */
   async openLanguageModal() {
     const actionSheet = await this.actionSheetController.create({
-      header: await this.translate.get('SETTINGS.SELECT_LANGUAGE').toPromise(),
+      header: await this.translate.get('settings.select_language').toPromise(),
       buttons: [
         ...this.languages.map(lang => ({
           text: `${lang.flag} ${lang.name}`,
           handler: () => this.changeLanguage(lang.code as any)
         })),
         {
-          text: await this.translate.get('CANCEL').toPromise(),
+          text: await this.translate.get('app.cancel').toPromise(),
           role: 'cancel'
         }
       ]
@@ -107,7 +106,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     try {
       await this.settingsService.updateLanguage(language);
       this.settings.language = language;
-      this.showToast('SETTINGS.LANGUAGE_UPDATED');
+      this.showToast('settings.language_updated');
     } catch (error) {
       console.error('Erro ao alterar idioma:', error);
     }
@@ -162,14 +161,14 @@ export class SettingsPage implements OnInit, OnDestroy {
       if (!file) return;
       const text = await file.text();
       await this.capturedService.importCaptured(text);
-      this.showToast('CAPTURED.IMPORTED');
+      this.showToast('captured.imported');
     };
     input.click();
   }
 
   clearAllCaptured() {
     this.capturedService.clearAllCaptured();
-    this.showToast('CAPTURED.CLEARED');
+    this.showToast('captured.cleared');
   }
 
   async exportSettings() {
@@ -192,18 +191,18 @@ export class SettingsPage implements OnInit, OnDestroy {
       if (!file) return;
       const text = await file.text();
       await this.settingsService.importSettings(text);
-      this.showToast('SETTINGS.IMPORTED');
+      this.showToast('settings.imported');
     };
     input.click();
   }
 
   async resetSettings() {
     await this.settingsService.resetSettings();
-    this.showToast('SETTINGS.RESET');
+    this.showToast('settings.reset');
   }
 
   showAbout() {
-    alert('PokéAPIApp\nDesenvolvido com Angular + Ionic.\nPowered by PokéAPI.');
+    alert('David Assef\nDesenvolvido com Angular + Ionic.\nPowered by PokéAPI.');
   }
 
   /**

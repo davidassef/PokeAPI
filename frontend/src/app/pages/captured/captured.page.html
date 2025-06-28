@@ -57,22 +57,24 @@
   </div>
 
   <!-- Pokemon Grid -->
-  <div class="pokemon-grid" *ngIf="!loading && paginatedCaptured.length > 0">
-    <app-pokemon-card
-      *ngFor="let poke of paginatedCaptured; trackBy: trackByPokemonId; let i = index"
-      [pokemon]="poke"
-      [isFavorite]="true"
-      [animationDelay]="getAnimationDelay(i)"
-      (cardClick)="navigateToDetails(poke.id)"
-      (favoriteClick)="onFavoriteToggle(poke)">
-    </app-pokemon-card>
+  <div class="page-container">
+    <div class="pokemon-grid" *ngIf="!loading && paginatedCaptured.length > 0">
+      <app-pokemon-card
+        *ngFor="let poke of paginatedCaptured; trackBy: trackByPokemonId; let i = index"
+        [pokemon]="poke"
+        [isCaptured]="true"
+        [animationDelay]="getAnimationDelay(i)"
+        (cardClick)="navigateToDetails(poke.id)"
+        (captureToggle)="onFavoriteToggle(poke)">
+      </app-pokemon-card>
+    </div>
   </div>
 
   <!-- Empty State Message -->
   <div class="empty-state" *ngIf="!loading && paginatedCaptured.length === 0">
     <ion-icon name="sad-outline" size="large" color="medium"></ion-icon>
     <p>{{ 'captured.empty' | translate }}</p>
-    <ion-button color="primary" routerLink="/home">
+    <ion-button color="primary" routerLink="/tabs/home">
       {{ 'captured.goToHome' | translate }}
     </ion-button>
   </div>

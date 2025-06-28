@@ -126,24 +126,6 @@ ion-item[button]:hover ion-label[color="warning"] {
   --color: var(--ion-color-warning-shade);
 }
 
-// Rodapé
-.footer-info {
-  text-align: center;
-  padding: 32px 20px;
-  color: rgba(255, 255, 255, 0.8);
-
-  p {
-    margin: 8px 0;
-    font-size: 0.9rem;
-    font-weight: 500;
-
-    &:first-child {
-      font-size: 1rem;
-      color: rgba(255, 255, 255, 0.9);
-    }
-  }
-}
-
 // Grupos de configurações com cores
 .settings-card:nth-child(1) {
   border-left: 4px solid var(--ion-color-primary);
@@ -282,14 +264,6 @@ body.dark-theme {
   .volume-control {
     ion-range {
       --bar-background: rgba(255, 255, 255, 0.2);
-    }
-  }
-
-  .footer-info {
-    color: rgba(255, 255, 255, 0.7);
-
-    p:first-child {
-      color: rgba(255, 255, 255, 0.9);
     }
   }
 }

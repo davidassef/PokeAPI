@@ -21,12 +21,17 @@
     </div>
     <p>Ranking global dos Pokémons mais capturados.</p>
     <div class="ranking-title-underline"></div>
+    <!-- Informação discreta sobre o ranking -->
+    <div class="ranking-info-discreet">
+      <ion-icon name="information-circle" color="primary"></ion-icon>
+      <span>Ranking global atualizado diariamente.</span>
+    </div>
   </div>
 
   <div class="ranking-list" *ngIf="!loading && currentRanking.length > 0">
     <!-- Pódio real centralizado -->
     <div class="ranking-podium-flex">
-      <div *ngIf="currentRanking.length > 1" class="podium-card podium-second">
+      <div *ngIf="currentRanking.length > 1 && currentRanking[1].pokemon && currentRanking[1].pokemon.id > 0" class="podium-card podium-second">
         <span class="podium-medal floating" title="Medalha de Prata">🥈</span>
         <span class="capture-count-badge">
           <ion-icon name="heart" color="danger"></ion-icon>
@@ -34,7 +39,7 @@
         </span>
         <app-pokemon-card [pokemon]="currentRanking[1].pokemon"></app-pokemon-card>
       </div>
-      <div *ngIf="currentRanking.length > 0" class="podium-card podium-first">
+      <div *ngIf="currentRanking.length > 0 && currentRanking[0].pokemon && currentRanking[0].pokemon.id > 0" class="podium-card podium-first">
         <span class="podium-crown floating" title="Campeão">👑</span>
         <span class="capture-count-badge">
           <ion-icon name="heart" color="danger"></ion-icon>
@@ -42,7 +47,7 @@
         </span>
         <app-pokemon-card [pokemon]="currentRanking[0].pokemon"></app-pokemon-card>
       </div>
-      <div *ngIf="currentRanking.length > 2" class="podium-card podium-third">
+      <div *ngIf="currentRanking.length > 2 && currentRanking[2].pokemon && currentRanking[2].pokemon.id > 0" class="podium-card podium-third">
         <span class="podium-medal floating" title="Medalha de Bronze">🥉</span>
         <span class="capture-count-badge">
           <ion-icon name="heart" color="danger"></ion-icon>
@@ -52,16 +57,17 @@
       </div>
     </div>
     <!-- Grid dos demais cards -->
-    <div class="ranking-grid-flex">
-      <div *ngFor="let item of currentRanking.slice(3); let i = index" class="ranking-card-grid">
-        <span class="capture-count-badge">
-          <ion-icon name="heart" color="danger"></ion-icon>
-          {{ item.favoriteCount }}
-        </span>
-        <div class="grid-badge" [title]="(i+4) + 'º Lugar'">
-          <span>{{ i + 4 }}</span>
+    <div class="page-container">
+      <div class="pokemon-grid">
+        <div *ngFor="let item of currentRanking.slice(3); let i = index" class="ranking-card-wrapper">
+          <div class="ranking-badge" [ngClass]="getRankingBadgeClass(i + 4)">
+            {{ i + 4 }}
+          </div>
+          <app-pokemon-card
+            [pokemon]="item.pokemon"
+            [favoriteCount]="item.favoriteCount">
+          </app-pokemon-card>
         </div>
-        <app-pokemon-card [pokemon]="item.pokemon"></app-pokemon-card>
       </div>
     </div>
   </div>
@@ -87,26 +93,6 @@
     <ion-button fill="outline" routerLink="/tabs/home">
       {{ 'ranking_page.EXPLORE_POKEMON' | translate }}
     </ion-button>
-  </div>
-
-  <div class="ranking-info" *ngIf="!loading && currentRanking.length > 0">
-    <ion-card class="info-card">
-      <ion-card-header>
-        <ion-card-title>{{ 'ranking_page.ranking_info' | translate }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="info-item">
-          <ion-icon name="information-circle" color="primary"></ion-icon>
-          <span>
-            {{ viewMode === 'global' ? ('ranking_page.global_ranking_info' | translate) : ('ranking_page.local_ranking_info' | translate) }}
-          </span>
-        </div>
-        <div class="info-item">
-          <ion-icon name="time" color="medium"></ion-icon>
-          <span>{{ 'ranking_page.updated_daily' | translate }}</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
   </div>
 </ion-content>
 

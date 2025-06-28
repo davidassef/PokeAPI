@@ -17,9 +17,10 @@ export class SettingsService {
     musicEnabled: true,
     vibrationEnabled: true,
     pokemonPerPage: 20,
-    showShinyChance: true,
     autoPlayMusic: false,
-    favoriteType: 'all'
+    favoriteType: 'all',
+    musicVolume: 0.7,
+    soundVolume: 0.5
   });
 
   public settings$ = this.settingsSubject.asObservable();
@@ -106,9 +107,10 @@ export class SettingsService {
       musicEnabled: true,
       vibrationEnabled: true,
       pokemonPerPage: 20,
-      showShinyChance: true,
       autoPlayMusic: false,
-      favoriteType: 'all'
+      favoriteType: 'all',
+      musicVolume: 0.7,
+      soundVolume: 0.5
     };
     await this.storage.remove(this.SETTINGS_KEY);
     await this.storage.remove('app-language');

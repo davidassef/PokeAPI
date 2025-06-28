@@ -12,7 +12,7 @@
     "sort": "Sort",
     "clear": "Clear",
     "version": "Version",
-    "footer_text": "Made with ❤️ by PokéAPIApp"
+    "footer_text": "Made with ❤️ by David Assef"
   },
   "tabs": {
     "home": "Pokédex",
@@ -93,7 +93,11 @@
     "captured_imported": "Captured imported successfully!",
     "error_import_captured": "Error importing captured.",
     "captured_exported": "Captured exported!",
-    "error_export_captured": "Error exporting captured."
+    "error_export_captured": "Error exporting captured.",
+    "loading": "Loading captured...",
+    "goToHome": "Go to Pokédex",
+    "imported": "Captured imported successfully!",
+    "cleared": "All captured have been removed!"
   },
   "ranking": {
     "title": "Global Ranking",
@@ -115,7 +119,11 @@
     "light": "Light",
     "dark": "Dark",
     "enabled": "Enabled",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "select_language": "Select Language",
+    "language_updated": "Language updated successfully!",
+    "imported": "Settings imported successfully!",
+    "reset": "Settings reset!"
   },
   "music": {
     "play": "Play",
@@ -176,7 +184,7 @@
     "type_chart": "Type Chart",
     "stats": "Stats",
     "language": "Language",
-    "footer_text": "Made with ❤️ by PokéAPIApp"
+    "footer_text": "Made with ❤️ by David Assef"
   },
   "languages": {
     "pt-BR": "Portuguese",
@@ -189,7 +197,10 @@
     "no_results_message": "Try adjusting filters or searching another name.",
     "clear_filters": "Clear filters",
     "loading_more": "Loading more...",
-    "placeholder": "Type Pokémon name or ID..."
+    "placeholder": "Type Pokémon name or ID...",
+    "added_to_captured": "Pokémon added to captured!",
+    "removed_from_captured": "Pokémon removed from captured!",
+    "error_loading": "Error loading Pokémon"
   },
   "captured_page": {
     "search_captured": "Search captured",
@@ -253,7 +264,10 @@
     "ranking_info": "About Ranking",
     "global_ranking_info": "Global ranking updated daily.",
     "local_ranking_info": "Ranking based on your captured.",
-    "updated_daily": "Updated daily"
+    "updated_daily": "Updated daily",
+    "no_global_ranking": "No global ranking available.",
+    "no_global_ranking_desc": "There's not enough data yet to display the global ranking. Capture and favorite Pokémon to participate!",
+    "EXPLORE_POKEMON": "EXPLORE POKÉMON"
   },
   "details": {
     "back": "Back",
@@ -273,9 +287,13 @@
     "recent_moves": "Recent Moves",
     "error_title": "Error loading",
     "error_message": "Could not load Pokémon details.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "removed_from_captured": "Pokémon removed from captured!",
+    "added_to_captured": "Pokémon added to captured!",
+    "error_loading": "Error loading details",
+    "url_copied": "URL copied to clipboard!"
   },
-  "MADE_WITH_LOVE": "Made with ❤️ by PokéAPIApp",
+  "MADE_WITH_LOVE": "Made with ❤️ by David Assef",
   "POWERED_BY_POKEAPI": "Powered by PokéAPI",
   "translations": {
     "en-US": {

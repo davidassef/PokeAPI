@@ -11,12 +11,20 @@ ion-content {
 }
 
 // Pokemon Grid
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
 .pokemon-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  padding: 16px;
-  max-width: 900px;
+  padding: 0;
+  max-width: 100%;
   margin: 0 auto 24px auto;
 }
 .grid-pagination {
@@ -116,31 +124,37 @@ ion-content {
 
 // Responsive design
 @media (max-width: 900px) {
-  .pokemon-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 600px;
+  .page-container {
+    padding-left: 12px;
+    padding-right: 12px;
   }
-  .pagination-sides-row {
-    max-width: 600px;
+  .pokemon-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 100vw;
   }
 }
 
 @media (max-width: 768px) {
+  .page-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
   .pokemon-grid {
-    grid-template-columns: 1fr;
-    max-width: 400px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 0;
   }
 }
 
 @media (max-width: 600px) {
-  .pokemon-grid {
-    grid-template-columns: 1fr;
-    max-width: 100%;
-    padding: 8px;
+  .page-container {
+    padding-left: 4px;
+    padding-right: 4px;
   }
-  .pagination-sides-row {
-    max-width: 100%;
-    padding: 0 4px 8px 4px;
+  .pokemon-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0;
   }
 }
 

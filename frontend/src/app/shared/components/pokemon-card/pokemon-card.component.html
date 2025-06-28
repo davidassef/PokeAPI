@@ -2,6 +2,15 @@
      [style.animation-delay]="animationDelay + 'ms'"
      (click)="onCardClick()">
 
+  <!-- Badges de ranking -->
+  <span *ngIf="favoriteCount !== undefined" class="capture-count-badge">
+    <ion-icon name="heart" color="danger"></ion-icon>
+    {{ favoriteCount }}
+  </span>
+  <div *ngIf="customBadge !== undefined" class="grid-badge" [title]="customBadge + 'º Lugar'">
+    <span>{{ customBadge }}</span>
+  </div>
+
   <!-- Pokemon Image -->
   <div class="pokemon-image-container">
     <img [src]="imageUrl || 'assets/img/pokemon-placeholder.png'"
@@ -10,12 +19,12 @@
          loading="lazy">
 
     <!-- Capture Button -->
-    <button *ngIf="showFavoriteButton"
+    <button *ngIf="showCaptureButton"
             class="capture-btn"
-            [class.captured]="isFavorite"
+            [class.captured]="isCaptured"
             [disabled]="isLoading"
-            (click)="onFavoriteClick($event)">
-      <img *ngIf="!isFavorite && !isLoading"
+            (click)="onCaptureClick($event)">
+      <img *ngIf="!isCaptured && !isLoading"
            src="assets/img/opened_pokeball.png"
            alt="Pokébola aberta"
            class="pokeball-icon">
@@ -23,7 +32,7 @@
            src="assets/img/pokeball-capture.gif"
            alt="Capturando..."
            class="pokeball-icon"> -->
-      <img *ngIf="isFavorite && !isLoading"
+      <img *ngIf="isCaptured && !isLoading"
            src="assets/img/closed_pokeball.png"
            alt="Pokébola fechada"
            class="pokeball-icon">

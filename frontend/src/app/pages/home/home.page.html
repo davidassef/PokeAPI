@@ -57,15 +57,17 @@
   </div>
 
   <!-- Pokemon Grid -->
-  <div class="pokemon-grid" *ngIf="!loading || paginatedPokemons.length > 0">
-    <app-pokemon-card
-      *ngFor="let poke of paginatedPokemons; trackBy: trackByPokemonId; let i = index"
-      [pokemon]="poke"
-      [isFavorite]="isFavorite(poke.id)"
-      [animationDelay]="getAnimationDelay(i)"
-      (cardClick)="navigateToDetails(poke.id)"
-      (favoriteClick)="toggleFavorite(poke)">
-    </app-pokemon-card>
+  <div class="page-container">
+    <div class="pokemon-grid" *ngIf="!loading || paginatedPokemons.length > 0">
+      <app-pokemon-card
+        *ngFor="let poke of paginatedPokemons; trackBy: trackByPokemonId; let i = index"
+        [pokemon]="poke"
+        [isCaptured]="isCaptured(poke.id)"
+        [animationDelay]="getAnimationDelay(i)"
+        (cardClick)="navigateToDetails(poke.id)"
+        (captureToggle)="onCaptureToggled($event)">
+      </app-pokemon-card>
+    </div>
   </div>
 
   <!-- Floating Action Button -->

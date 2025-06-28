@@ -165,7 +165,7 @@
         margin: 4px 0 0 0;
         font-size: 18px;
         font-weight: 700;
-        color: #2c3e50;
+        color: #fff;
         text-transform: capitalize;
       }
     }
@@ -282,6 +282,41 @@
       --color: var(--ion-color-primary);
     }
   }
+}
+
+.capture-count-badge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255,255,255,0.92);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e74c3c;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.grid-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  background: var(--ion-color-primary);
+  padding: 2px 10px;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 // Animations

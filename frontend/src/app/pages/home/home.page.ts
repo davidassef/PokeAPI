@@ -4,7 +4,7 @@ import { AlertController, IonContent, LoadingController, ToastController } from 
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../core/services/audio.service';
-import { FavoritesService } from '../../core/services/favorites.service';
+import { CapturedService } from '../../core/services/captured.service';
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { SyncAction, SyncService } from '../../core/services/sync.service';
 import { PokemonFilters } from '../../models/app.model';
@@ -38,7 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
     sortOrder: 'asc'
   };
 
-  favorites: number[] = [];
+  captured: number[] = [];
   private destroy$ = new Subject<void>();
 
   get currentFilterOptions(): FilterOptions {
@@ -55,18 +55,18 @@ export class HomePage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private pokeApiService: PokeApiService,
-    private favoritesService: FavoritesService,
+    private capturedService: CapturedService,
     private audioService: AudioService,
     private loadingController: LoadingController,
     private alertController: AlertController,
     private toastController: ToastController,
     private translate: TranslateService,
-    private syncService: SyncService // Adicionado para sincronização automática
+    private syncService: SyncService
   ) {}
 
   ngOnInit() {
     this.loadPaginatedPokemons();
-    this.loadFavorites();
+    this.loadCaptured();
   }
 
   ngOnDestroy() {
@@ -85,7 +85,7 @@ export class HomePage implements OnInit, OnDestroy {
       type: this.currentFilters.elementTypes?.[0], // Suporte básico para 1 tipo
       generation: this.currentFilters.generation,
       orderBy: this.currentFilters.sortBy,
-      sortOrder: this.currentFilters.sortOrder // Passa o sortOrder corretamente
+      sortOrder: this.currentFilters.sortOrder
     };
     this.pokeApiService.getPokemonsPaginated(this.currentPage, this.pokemonPerPage, filters)
       .pipe(takeUntil(this.destroy$))
@@ -140,13 +140,13 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega lista de favoritos
+   * Carrega lista de capturados
    */
-  private loadFavorites() {
-    this.favoritesService.getFavorites()
+  private loadCaptured() {
+    this.capturedService.getCaptured()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(favorites => {
-        this.favorites = favorites.map(fav => fav.pokemon_id).filter((id): id is number => id !== undefined);
+      .subscribe(captured => {
+        this.captured = captured.map(cap => cap.pokemon_id).filter((id): id is number => id !== undefined);
       });
   }
 
@@ -155,7 +155,9 @@ export class HomePage implements OnInit, OnDestroy {
    */
   toggleSearch() {
     this.showSearch = !this.showSearch;
-  }  /**
+  }
+
+  /**
    * Manipula mudanças nos filtros
    */
   onFiltersChanged(filters: FilterOptions) {
@@ -203,45 +205,37 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   /**
-   * Alterna favorito
+   * Alterna captura
    */
-  async toggleFavorite(pokemon: Pokemon) {
-    try {
-      const isFavorite = this.isFavorite(pokemon.id);
-      if (isFavorite) {
-        await this.favoritesService.removeFromFavorites(pokemon.id);
-        this.showToast(this.translate.instant('HOME.REMOVED_FROM_FAVORITES'));
-        // Adiciona ação de sincronização (remoção de favorito)
-        const action: SyncAction = {
-          pokemonId: pokemon.id,
-          action: 'favorite',
-          timestamp: Date.now(),
-          payload: { removed: true }
-        };
-        await this.syncService.addToQueue(action);
-      } else {
-        await this.favoritesService.addToFavorites(pokemon);
-        this.showToast(this.translate.instant('HOME.ADDED_TO_FAVORITES'));
-        // Adiciona ação de sincronização (adição de favorito)
-        const action: SyncAction = {
-          pokemonId: pokemon.id,
-          action: 'favorite',
-          timestamp: Date.now(),
-          payload: { added: true }
-        };
-        await this.syncService.addToQueue(action);
-      }
-    } catch (error) {
-      console.error('Erro ao alterar favorito:', error);
-      this.showErrorToast();
+  onCaptureToggled(event: { pokemon: Pokemon, isCaptured: boolean }) {
+    const { pokemon, isCaptured } = event;
+    if (isCaptured) {
+      this.showToast(this.translate.instant('home.added_to_captured'));
+      const action: SyncAction = {
+        pokemonId: pokemon.id,
+        action: 'capture',
+        timestamp: Date.now(),
+        payload: { added: true }
+      };
+      this.syncService.addToQueue(action);
+    } else {
+      this.showToast(this.translate.instant('home.removed_from_captured'));
+      const action: SyncAction = {
+        pokemonId: pokemon.id,
+        action: 'capture',
+        timestamp: Date.now(),
+        payload: { removed: true }
+      };
+      this.syncService.addToQueue(action);
     }
+    this.loadCaptured();
   }
 
   /**
-   * Verifica se Pokémon é favorito
+   * Verifica se Pokémon está capturado
    */
-  isFavorite(pokemonId: number): boolean {
-    return this.favorites.includes(pokemonId);
+  isCaptured(pokemonId: number): boolean {
+    return this.captured.includes(pokemonId);
   }
 
   /**
@@ -263,10 +257,10 @@ export class HomePage implements OnInit, OnDestroy {
    */
   private async showErrorToast() {
     const toast = await this.toastController.create({
-      message: this.translate.instant('HOME.ERROR_LOADING'),
+      message: this.translate.instant('home.error_loading'),
       duration: 3000,
       color: 'danger',
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }
@@ -278,7 +272,7 @@ export class HomePage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }
@@ -292,13 +286,13 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  // Atualiza favoritos sempre que a página Home for exibida
+  // Atualiza capturados sempre que a página Home for exibida
   ionViewWillEnter() {
-    this.loadFavorites();
+    this.loadCaptured();
   }
 
   /**
-   * Retorna a quantidade de capturas/favoritos pendentes de sincronização
+   * Retorna a quantidade de capturas pendentes de sincronização
    */
   getPendingSyncCount(): Promise<number> {
     return this.syncService.getPendingCount();
