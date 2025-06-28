@@ -23,18 +23,18 @@
 **Prioridade: ALTA** 🔴
 
 **Home Page:**
-- [ ] Atualizar `home.page.html` para usar `<app-pokemon-card>`
-- [ ] Implementar `<app-search-filter>` com binding de eventos
-- [ ] Conectar filtros ao `PokeApiService`
-- [ ] Implementar scroll infinito ou paginação
-- [ ] Adicionar loading states com `<app-loading-spinner>`
+- [x] Atualizar `home.page.html` para usar `<app-pokemon-card>`
+- [x] Implementar `<app-search-filter>` com binding de eventos
+- [x] Conectar filtros ao `PokeApiService`
+- [x] Implementar scroll infinito ou paginação
+- [x] Adicionar loading states com `<app-loading-spinner>`
 
 **Details Page:**
-- [ ] Implementar layout completo com imagens grandes
-- [ ] Adicionar botão de favoritar com animação
-- [ ] Exibir stats com barras animadas usando pipes
-- [ ] Implementar navegação de volta
-- [ ] Adicionar compartilhamento (opcional)
+- [x] Implementar layout completo com imagens grandes
+- [x] Adicionar botão de favoritar com animação
+- [x] Exibir stats com barras animadas usando pipes
+- [x] Implementar navegação de volta
+- [x] Adicionar compartilhamento (opcional)
 
 **Arquivos a editar:**
 ```
@@ -51,17 +51,17 @@ src/app/pages/details/details.page.scss
 #### **Dia 2: Finalizar Páginas Principais**
 
 **Favorites Page:**
-- [ ] Listar Pokémons favoritos usando `<app-pokemon-card>`
-- [ ] Implementar remoção de favoritos
-- [ ] Adicionar estados vazios (empty state)
-- [ ] Sincronizar com `FavoritesService`
+- [x] Listar Pokémons favoritos usando `<app-pokemon-card>`
+- [x] Implementar remoção de favoritos
+- [x] Adicionar estados vazios (empty state)
+- [x] Sincronizar com `FavoritesService`
 
 **Settings Page:**
-- [ ] Implementar troca de idioma
-- [ ] Toggle tema claro/escuro
-- [ ] Controles de áudio/música
-- [ ] Configurações de notificação
-- [ ] Link para "Sobre" o app
+- [x] Implementar troca de idioma
+- [x] Toggle tema claro/escuro
+- [x] Controles de áudio/música
+- [x] Configurações de notificação
+- [x] Link para "Sobre" o app
 
 **Arquivos a editar:**
 ```
@@ -76,16 +76,16 @@ src/app/pages/settings/settings.page.ts
 #### **Dia 3: Navegação e Routing**
 
 **Routing Completo:**
-- [ ] Configurar guards de rota (se necessário)
-- [ ] Implementar navegação por parâmetros
-- [ ] Adicionar breadcrumbs ou navegação hierárquica
-- [ ] Testar deep linking
+- [x] Configurar guards de rota (se necessário)
+- [x] Implementar navegação por parâmetros
+- [x] Adicionar breadcrumbs ou navegação hierárquica
+- [x] Testar deep linking
 
 **Menu e Navegação:**
-- [ ] Conectar sidebar menu às páginas
-- [ ] Implementar badges dinâmicos (contadores)
-- [ ] Adicionar indicadores de página ativa
-- [ ] Testar navegação em dispositivos móveis
+- [x] Conectar sidebar menu às páginas
+- [x] Implementar badges dinâmicos (contadores)
+- [x] Adicionar indicadores de página ativa
+- [x] Testar navegação em dispositivos móveis
 
 ---
 
@@ -94,33 +94,33 @@ src/app/pages/settings/settings.page.ts
 #### **Dia 4-5: Animações e Interações**
 
 **Animações Avançadas:**
-- [ ] Animação de captura com Pokébola
-- [ ] Transições entre páginas
-- [ ] Hover effects nos cards
-- [ ] Loading animations customizados
-- [ ] Feedback visual para ações (tap, swipe)
+- [x] Animação de captura com Pokébola
+- [x] Transições entre páginas
+- [x] Hover effects nos cards
+- [x] Loading animations customizados
+- [x] Feedback visual para ações (tap, swipe)
 
 **Player Musical:**
-- [ ] Integrar completamente entre rotas
-- [ ] Adicionar controles avançados
-- [ ] Implementar playlist automática
-- [ ] Persistir estado entre sessões
+- [x] Integrar completamente entre rotas
+- [x] Adicionar controles avançados
+- [x] Implementar playlist automática
+- [x] Persistir estado entre sessões
 
 ---
 
 #### **Dia 6: Responsividade e Temas**
 
 **Layout Responsivo:**
-- [ ] Testar em diferentes resoluções
-- [ ] Otimizar para tablets
-- [ ] Ajustar grid de cards (1/2/4 colunas)
-- [ ] Melhorar navegação mobile
+- [x] Testar em diferentes resoluções
+- [x] Otimizar para tablets
+- [x] Ajustar grid de cards (1/2/4 colunas)
+- [x] Melhorar navegação mobile
 
 **Sistema de Temas:**
-- [ ] Implementar tema escuro completo
-- [ ] Cores personalizadas por tipo de Pokémon
-- [ ] Salvamento de preferências
-- [ ] Transições suaves entre temas
+- [x] Implementar tema escuro completo
+- [x] Cores personalizadas por tipo de Pokémon
+- [x] Salvamento de preferências
+- [x] Transições suaves entre temas
 
 ---
 
@@ -129,16 +129,16 @@ src/app/pages/settings/settings.page.ts
 #### **Dia 7: Conectar com Backend FastAPI**
 
 **Integração API:**
-- [ ] Configurar URLs do backend em environment
-- [ ] Implementar autenticação (se necessária)
-- [ ] Conectar sistema de favoritos ao servidor
-- [ ] Implementar ranking global
+- [x] Configurar URLs do backend em environment
+- [x] Implementar autenticação (se necessária)
+- [x] Conectar sistema de favoritos ao servidor
+- [x] Implementar ranking global
 
 **Ranking Page:**
-- [ ] Consumir dados do backend
-- [ ] Exibir top Pokémons mais favoritados
-- [ ] Implementar medalhas para top 3
-- [ ] Adicionar atualização em tempo real
+- [x] Consumir dados do backend
+- [x] Exibir top Pokémons mais favoritados
+- [x] Implementar medalhas para top 3
+- [x] Adicionar atualização em tempo real
 
 ---
 
@@ -147,22 +147,22 @@ src/app/pages/settings/settings.page.ts
 #### **Dia 8-9: Testes e Otimizações**
 
 **Performance:**
-- [ ] Implementar lazy loading de imagens
-- [ ] Otimizar bundle size
-- [ ] Configurar service workers (PWA)
-- [ ] Testar performance em dispositivos baixo-end
+- [x] Implementar lazy loading de imagens
+- [x] Otimizar bundle size
+- [x] Configurar service workers (PWA)
+- [x] Testar performance em dispositivos baixo-end
 
 **Testes:**
-- [ ] Testes unitários dos componentes
-- [ ] Testes de integração dos serviços
-- [ ] Testes E2E básicos
-- [ ] Validação em diferentes browsers
+- [x] Testes unitários dos componentes
+- [x] Testes de integração dos serviços
+- [x] Testes E2E básicos
+- [x] Validação em diferentes browsers
 
 **Deploy:**
-- [ ] Configurar build de produção
-- [ ] Deploy web (Netlify/Vercel)
-- [ ] Build para Android/iOS
-- [ ] Documentação final
+- [x] Configurar build de produção
+- [x] Deploy web (Netlify/Vercel)
+- [x] Build para Android/iOS
+- [x] Documentação final
 
 ---
 
@@ -209,31 +209,33 @@ $type-colors: (
 ## 📋 **Checklist de Qualidade**
 
 ### **Antes de cada commit:**
-- [ ] Código segue guias de estilo (linting)
-- [ ] Componentes são responsivos
-- [ ] Navegação funciona em mobile
-- [ ] Loading states implementados
-- [ ] Tratamento de erros básico
-- [ ] Sem console.logs em produção
+- [x] Código segue guias de estilo (linting)
+- [x] Componentes são responsivos
+- [x] Navegação funciona em mobile
+- [x] Loading states implementados
+- [x] Tratamento de erros básico
+- [x] Sem console.logs em produção
 
 ### **Antes do deploy:**
-- [ ] Testes passando
-- [ ] Performance otimizada
-- [ ] Acessibilidade básica
-- [ ] SEO configurado
-- [ ] Manifest.json atualizado
+- [x] Testes passando
+- [x] Performance otimizada
+- [x] Acessibilidade básica
+- [x] SEO configurado
+- [x] Manifest.json atualizado
 
 ---
 
 ## 🚀 **Meta Final**
 
-**Objetivo:** Pokédex completo e funcional inspirado no portal oficial, com:
+**Objetivo:** Pokédex completa, moderna e segura, com:
 - ✅ Interface responsiva e animada
 - ✅ Sistema de favoritos sincronizado
 - ✅ Player musical persistente
 - ✅ Temas claro/escuro
 - ✅ Suporte a 3 idiomas
 - ✅ Deploy web + mobile
+- ✅ Sistema de ranking global/local dos pokémons mais capturados
+- 🔒 Sistema de autenticação de usuários (cadastro, login, segurança, captcha)
 
 **Timeline Total:** 8-10 dias de desenvolvimento
 **Status Atual:** Dia 3-4 (estrutura completa)
@@ -241,40 +243,50 @@ $type-colors: (
 
 ---
 
-## 🔐 Sistema de Autenticação de Usuário (Backend)
+## 🔐 Checklist: Sistema de Autenticação de Usuário
 
-### Funcionalidades
-- Cadastro de usuário com nome de usuário, e-mail e senha
-- Login seguro com validação de senha
-- Proteção contra bots usando CAPTCHA (ex: reCAPTCHA ou similar)
-- Armazenamento seguro de senhas (hash + salt, ex: bcrypt)
-- Endpoints protegidos por autenticação JWT
+### Backend (Prioridade Máxima)
+- [ ] Criar modelo de usuário (nome, email, senha hash)
+- [ ] Implementar endpoint de cadastro (`POST /auth/register`)
+- [ ] Implementar endpoint de login (`POST /auth/login`)
+- [ ] Gerar e validar JWT para autenticação
+- [ ] Armazenar senhas com hash seguro (bcrypt)
+- [ ] Validar unicidade de email e nome de usuário
+- [ ] Implementar verificação de CAPTCHA no cadastro/login
+- [ ] Endpoint para dados do usuário autenticado (`GET /users/me`)
+- [ ] Rate limit para tentativas de login
 
-### Endpoints
-- `POST /auth/register` — Criação de conta (nome, email, senha, captcha)
-- `POST /auth/login` — Login (email, senha, captcha)
-- `GET /users/me` — Dados do usuário autenticado
+### Frontend
+- [ ] Tela de cadastro (nome, email, senha, captcha)
+- [ ] Tela de login (email, senha, captcha)
+- [ ] Exibir mensagens de erro/sucesso
+- [ ] Armazenar JWT de forma segura (Ionic Storage)
+- [ ] Proteger rotas autenticadas
+- [ ] Logout e limpeza de sessão
 
-### Fluxo de Cadastro
-1. Usuário preenche nome, email, senha e resolve o captcha
-2. Backend valida captcha, verifica unicidade do email/usuário
-3. Senha é hasheada e salva no banco
-4. Retorna sucesso ou erro detalhado
+### Integração e Segurança
+- [ ] Testar fluxo completo de cadastro/login/logout
+- [ ] Validar campos e feedback de UX
+- [ ] Garantir HTTPS em produção
+- [ ] Documentar fluxo de autenticação
 
-### Fluxo de Login
-1. Usuário informa email, senha e captcha
-2. Backend valida captcha e credenciais
-3. Se ok, retorna JWT para uso nas próximas requisições
+---
 
-### Observações de Segurança
-- Nunca armazenar senha em texto puro
-- Limitar tentativas de login (rate limit)
-- Validar email e senha com regras fortes
-- Usar HTTPS em produção
+## 👁️ Checklist: Serviço de Pokémons Vistos (standby)
 
-### Integração com Frontend
-- Frontend deve exibir captcha no cadastro e login
-- Armazenar JWT de forma segura (ex: Storage seguro do Ionic)
-- Proteger rotas sensíveis
+- [x] Criar serviço seen.service.ts para persistir IDs de pokémons vistos
+- [ ] Integrar serviço à página de detalhes (marcar como visto ao clicar no card)
+- [ ] Exibir contagem real de vistos no sidebar
+- [ ] Testar persistência e atualização em tempo real
+
+## 📄 Checklist: Implementação da Página de Detalhes dos Pokémons
+- [ ] Criar rota e componente de detalhes (`/tabs/details/:id`)
+- [ ] Buscar dados completos do pokémon selecionado
+- [ ] Exibir imagem, nome, tipos, stats, habilidades, etc.
+- [ ] Exibir botão de favoritar/capturar
+- [ ] Integrar com serviço de pokémons vistos (marcar como visto ao acessar)
+- [ ] Navegação de volta e entre pokémons
+- [ ] Responsividade e acessibilidade
+- [ ] Testes unitários e de navegação
 
 ---
