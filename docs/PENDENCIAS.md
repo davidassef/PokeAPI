@@ -4,9 +4,11 @@
   - [x] O filtro de busca na Home não está funcionando corretamente.
   - [x] Revisar lógica de filtragem e integração com o serviço de Pokémons.
 
-- [ ] **Ajustar os elementos dos details**
-  - [ ] Refinar o layout e responsividade do modal de detalhes do Pokémon, mantendo o mesmo css que está atualmente
-  - [ ] Ajustar espaçamentos, tipografia, elementos, proporcionalidade.
+- [x] **Ajustar os elementos dos details**
+  - [x] Refinar o layout e responsividade do modal de detalhes do Pokémon, mantendo o mesmo css que está atualmente
+  - [x] Ajustar espaçamentos, tipografia, elementos, proporcionalidade.
+  - [x] Adicionar mais descrições e imagens relacionadas (6+ descrições e múltiplas imagens).
+  - [x] Refatorar CSS removendo elementos sci-fi excessivos e seguindo padrão do app.
 
 - [ ] **Adicionar mais textos e chaves de tradução ao sistema i18n**
   - [ ] Mapear textos fixos que ainda não estão internacionalizados.

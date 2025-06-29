@@ -149,4 +149,37 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     return icons[type] || '';
   }
+
+  // Método para obter nome da geração
+  getGenerationName(): string {
+    if (!this.pokemon?.id) return 'N/A';
+    
+    const generationRanges: { [key: string]: { min: number; max: number; name: string } } = {
+      'I': { min: 1, max: 151, name: 'I' },
+      'II': { min: 152, max: 251, name: 'II' },
+      'III': { min: 252, max: 386, name: 'III' },
+      'IV': { min: 387, max: 493, name: 'IV' },
+      'V': { min: 494, max: 649, name: 'V' },
+      'VI': { min: 650, max: 721, name: 'VI' },
+      'VII': { min: 722, max: 809, name: 'VII' },
+      'VIII': { min: 810, max: 898, name: 'VIII' },
+      'IX': { min: 899, max: 1025, name: 'IX' }
+    };
+
+    for (const gen of Object.values(generationRanges)) {
+      if (this.pokemon.id >= gen.min && this.pokemon.id <= gen.max) {
+        return gen.name;
+      }
+    }
+    
+    return 'N/A';
+  }
+
+  // Método para obter movimentos recentes
+  getRecentMoves(): any[] {
+    if (!this.pokemon?.moves) return [];
+    
+    // Retorna os primeiros 8 movimentos para não sobrecarregar a interface
+    return this.pokemon.moves.slice(0, 8);
+  }
 } 
