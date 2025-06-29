@@ -39,19 +39,19 @@
   <div class="pagination-controls" *ngIf="paginatedPokemons.length > 0">
     <ion-button fill="outline" size="small" (click)="firstPage()" [disabled]="currentPage === 1">
       <ion-icon name="play-back-outline"></ion-icon>
-      <span class="hide-on-mobile">Primeira</span>
+      <span class="hide-on-mobile">{{ 'pagination.first' | translate }}</span>
     </ion-button>
     <ion-button fill="outline" size="small" (click)="prevPage()" [disabled]="currentPage === 1">
       <ion-icon name="chevron-back-outline"></ion-icon>
-      <span class="hide-on-mobile">Anterior</span>
+      <span class="hide-on-mobile">{{ 'pagination.previous' | translate }}</span>
     </ion-button>
-    <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    <span class="page-info">{{ 'pagination.page' | translate }} {{ currentPage }} {{ 'pagination.of' | translate }} {{ totalPages }}</span>
     <ion-button fill="outline" size="small" (click)="nextPage()" [disabled]="currentPage === totalPages">
-      <span class="hide-on-mobile">Próxima</span>
+      <span class="hide-on-mobile">{{ 'pagination.next' | translate }}</span>
       <ion-icon name="chevron-forward-outline"></ion-icon>
     </ion-button>
     <ion-button fill="outline" size="small" (click)="lastPage()" [disabled]="currentPage === totalPages">
-      <span class="hide-on-mobile">Última</span>
+      <span class="hide-on-mobile">{{ 'pagination.last' | translate }}</span>
       <ion-icon name="play-forward-outline"></ion-icon>
     </ion-button>
   </div>

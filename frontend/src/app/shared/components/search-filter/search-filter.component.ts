@@ -12,7 +12,7 @@ export interface FilterOptions {
   searchTerm: string;
   /** Tipos de elemento selecionados (ex: fogo, água) */
   selectedElementTypes: string[];
-  /** Tipos de movimentação selecionados (ex: voador, terrestre) */
+  /** Tipos de movimentação selecionados (ex: voador) */
   selectedMovementTypes: string[];
   /** Geração selecionada (1 a 8) ou null para todas */
   selectedGeneration: number | null;
@@ -139,8 +139,8 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       'fighting', 'poison', 'psychic', 'bug',
       'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
     ];
-    // Tipos de movimentação (flying, ground)
-    this.movementTypes = ['flying', 'ground'];
+    // Tipos de movimentação (flying)
+    this.movementTypes = ['flying'];
     try {
       const types = await this.pokeApiService.getTypes();
       this.elementTypes = this.elementTypes.filter(type => types.includes(type));

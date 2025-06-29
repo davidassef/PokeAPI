@@ -10,7 +10,7 @@
           [src]="getCurrentImage()"
           [alt]="pokemon?.name"
           class="pokemon-main-image bounce-animation"
-          (error)="onImageError($event)">
+          (error)="onImageError($event)" />
       </div>
       <h1 class="pokemon-name sci-fi-title">{{ pokemon?.name | titlecase }}</h1>
       <div class="type-chips-premium">
