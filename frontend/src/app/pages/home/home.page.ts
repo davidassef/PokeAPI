@@ -85,22 +85,30 @@ export class HomePage implements OnInit, OnDestroy {
   loadPaginatedPokemons(resetPage: boolean = false) {
     if (resetPage) this.currentPage = 1;
     this.loading = true;
+    
     const filters = {
       name: this.currentFilters.name,
-      type: this.currentFilters.elementTypes?.[0], // Suporte básico para 1 tipo
+      type: this.currentFilters.elementTypes?.[0], // Mantém compatibilidade
       generation: this.currentFilters.generation,
       orderBy: this.currentFilters.sortBy,
-      sortOrder: this.currentFilters.sortOrder
+      sortOrder: this.currentFilters.sortOrder,
+      elementTypes: this.currentFilters.elementTypes,
+      movementTypes: this.currentFilters.movementTypes
     };
+    
+    console.log('[HOME] Aplicando filtros:', filters);
+    
     this.pokeApiService.getPokemonsPaginated(this.currentPage, this.pokemonPerPage, filters)
       .pipe(takeUntil(this.destroy$))
       .subscribe(async (result) => {
+        console.log('[HOME] Resultado da busca:', result);
         this.totalPokemons = result.total;
         this.totalPages = result.totalPages;
         // Carregar detalhes dos pokémons da página
         this.paginatedPokemons = await this.loadPokemonDetails(result.pokemons);
         this.loading = false;
       }, err => {
+        console.error('[HOME] Erro ao carregar Pokémons:', err);
         this.loading = false;
         this.paginatedPokemons = [];
         this.totalPokemons = 0;

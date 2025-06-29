@@ -166,7 +166,9 @@
     "page": "Page",
     "of": "of",
     "showing": "Showing",
-    "results": "results"
+    "results": "results",
+    "first": "First",
+    "last": "Last"
   },
   "menu": {
     "home": "Pokédex",

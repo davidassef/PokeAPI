@@ -1,114 +1,116 @@
-<div class="search-filter-container">
-  <!-- Search Bar -->
-  <div class="search-bar">
-    <ion-searchbar
-      formControlName="searchTerm"
-      [placeholder]="placeholder | translate"
-      debounce="300"
-      clear-input="true"
-      show-clear-button="focus">
-    </ion-searchbar>
+<form [formGroup]="filterForm">
+  <div class="search-filter-container">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <ion-searchbar
+        formControlName="searchTerm"
+        [placeholder]="placeholder | translate"
+        debounce="300"
+        clear-input="true"
+        show-clear-button="focus">
+      </ion-searchbar>
 
-    <ion-button
-      *ngIf="showAdvancedFilters"
-      fill="clear"
-      class="filter-toggle-btn"
-      (click)="toggleAdvancedFilters()">
-      <ion-icon name="options-outline"></ion-icon>
-      <ion-badge
-        *ngIf="getActiveFiltersCount() > 0"
-        color="primary"
-        class="filter-badge">
-        {{ getActiveFiltersCount() }}
-      </ion-badge>
-    </ion-button>
-  </div>
-
-  <!-- Advanced Filters Panel -->
-  <div class="advanced-filters"
-       [class.expanded]="isAdvancedFiltersOpen"
-       *ngIf="showAdvancedFilters">
-
-    <!-- Filter Header -->
-    <div class="filter-header">
-      <h4>{{ 'filters.advanced_filters' | translate }}</h4>
       <ion-button
+        *ngIf="showAdvancedFilters"
         fill="clear"
-        color="danger"
-        size="small"
-        (click)="onClearFilters()">
-        <ion-icon name="refresh-outline" slot="start"></ion-icon>
-        {{ 'filters.clear_all' | translate }}
+        class="filter-toggle-btn"
+        (click)="toggleAdvancedFilters()">
+        <ion-icon name="options-outline"></ion-icon>
+        <ion-badge
+          *ngIf="getActiveFiltersCount() > 0"
+          color="primary"
+          class="filter-badge">
+          {{ getActiveFiltersCount() }}
+        </ion-badge>
       </ion-button>
     </div>
 
-    <!-- Element Types Filter -->
-    <div class="filter-section">
-      <h5>{{ 'filters.types_elements' | translate }}</h5>
-      <div class="types-grid">
-        <ion-chip
-          *ngFor="let type of elementTypes"
-          [class.selected]="isElementTypeSelected(type)"
-          [style.background-color]="isElementTypeSelected(type) ? getTypeColor(type) : 'transparent'"
-          [style.color]="isElementTypeSelected(type) ? 'white' : getTypeColor(type)"
-          [style.border-color]="getTypeColor(type)"
-          (click)="onElementTypeToggle(type)"
-          class="auto-width-center">
-          {{ ('types.' + type) | translate }}
-        </ion-chip>
-      </div>
-    </div>
+    <!-- Advanced Filters Panel -->
+    <div class="advanced-filters"
+         [class.expanded]="isAdvancedFiltersOpen"
+         *ngIf="showAdvancedFilters">
 
-    <!-- Movement Types Filter -->
-    <div class="filter-section">
-      <h5>{{ 'filters.types_movement' | translate }}</h5>
-      <div class="types-grid">
-        <ion-chip
-          *ngFor="let type of movementTypes"
-          [class.selected]="isMovementTypeSelected(type)"
-          [style.background-color]="isMovementTypeSelected(type) ? getTypeColor(type) : 'transparent'"
-          [style.color]="isMovementTypeSelected(type) ? 'white' : getTypeColor(type)"
-          [style.border-color]="getTypeColor(type)"
-          (click)="onMovementTypeToggle(type)"
-          class="auto-width-center">
-          {{ ('types.' + type) | translate }}
-        </ion-chip>
+      <!-- Filter Header -->
+      <div class="filter-header">
+        <h4>{{ 'filters.advanced_filters' | translate }}</h4>
+        <ion-button
+          fill="clear"
+          color="danger"
+          size="small"
+          (click)="onClearFilters()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          {{ 'filters.clear_all' | translate }}
+        </ion-button>
       </div>
-    </div>
 
-    <!-- Generation + Sort Options (lado a lado, compactos) -->
-    <div class="filter-section row-group">
-      <!-- Geração -->
-      <div class="generation-select">
-        <h5>{{ 'filters.generation' | translate }}</h5>
-        <ion-select
-          formControlName="selectedGeneration"
-          [placeholder]="'filters.select_generation' | translate"
-          interface="popover"
-          (ionChange)="filterForm.get('selectedGeneration')?.setValue($event.detail.value)">
-          <ion-select-option [value]="null">{{ 'filters.all_generations' | translate }}</ion-select-option>
-          <ion-select-option
-            *ngFor="let gen of generations"
-            [value]="gen.id">
-            {{ gen.name | translate }}
-          </ion-select-option>
-        </ion-select>
+      <!-- Element Types Filter -->
+      <div class="filter-section">
+        <h5>{{ 'filters.types_elements' | translate }}</h5>
+        <div class="types-grid">
+          <ion-chip
+            *ngFor="let type of elementTypes"
+            [class.selected]="isElementTypeSelected(type)"
+            [style.background-color]="isElementTypeSelected(type) ? getTypeColor(type) : 'transparent'"
+            [style.color]="isElementTypeSelected(type) ? 'white' : getTypeColor(type)"
+            [style.border-color]="getTypeColor(type)"
+            (click)="onElementTypeToggle(type)"
+            class="auto-width-center">
+            {{ ('types.' + type) | translate }}
+          </ion-chip>
+        </div>
       </div>
-      <!-- Ordenação -->
-      <div class="sort-controls">
-        <h5>{{ 'filters.sort_by' | translate }}</h5>
-        <ion-select
-          formControlName="sortBy"
-          [placeholder]="'filters.sort_by' | translate"
-          interface="popover"
-          class="sort-select">
-          <ion-select-option
-            *ngFor="let option of sortOptions"
-            [value]="option.value">
-            {{ ('filters.sort_by_' + option.value) | translate }}
-          </ion-select-option>
-        </ion-select>
+
+      <!-- Movement Types Filter -->
+      <div class="filter-section">
+        <h5>{{ 'filters.types_movement' | translate }}</h5>
+        <div class="types-grid">
+          <ion-chip
+            *ngFor="let type of movementTypes"
+            [class.selected]="isMovementTypeSelected(type)"
+            [style.background-color]="isMovementTypeSelected(type) ? getTypeColor(type) : 'transparent'"
+            [style.color]="isMovementTypeSelected(type) ? 'white' : getTypeColor(type)"
+            [style.border-color]="getTypeColor(type)"
+            (click)="onMovementTypeToggle(type)"
+            class="auto-width-center">
+            {{ ('types.' + type) | translate }}
+          </ion-chip>
+        </div>
+      </div>
+
+      <!-- Generation + Sort Options (lado a lado, compactos) -->
+      <div class="filter-section row-group">
+        <!-- Geração -->
+        <div class="generation-select">
+          <h5>{{ 'filters.generation' | translate }}</h5>
+          <ion-select
+            formControlName="selectedGeneration"
+            [placeholder]="'filters.select_generation' | translate"
+            interface="popover"
+            (ionChange)="filterForm.get('selectedGeneration')?.setValue($event.detail.value)">
+            <ion-select-option [value]="null">{{ 'filters.all_generations' | translate }}</ion-select-option>
+            <ion-select-option
+              *ngFor="let gen of generations"
+              [value]="gen.id">
+              {{ gen.name | translate }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+        <!-- Ordenação -->
+        <div class="sort-controls">
+          <h5>{{ 'filters.sort_by' | translate }}</h5>
+          <ion-select
+            formControlName="sortBy"
+            [placeholder]="'filters.sort_by' | translate"
+            interface="popover"
+            class="sort-select">
+            <ion-select-option
+              *ngFor="let option of sortOptions"
+              [value]="option.value">
+              {{ ('filters.sort_by_' + option.value) | translate }}
+            </ion-select-option>
+          </ion-select>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</form>
