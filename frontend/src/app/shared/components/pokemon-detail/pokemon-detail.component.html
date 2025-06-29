@@ -1,0 +1,21 @@
+<div class="pokemon-detail-container">
+  <div class="pokemon-header">
+    <h2>{{ pokemon.name | titlecase }} #{{ pokemon.id }}</h2>
+    <app-pokemon-types [types]="pokemonTypeNames"></app-pokemon-types>
+  </div>
+
+  <div class="pokemon-content">
+    <div class="pokemon-image-section">
+      <app-pokemon-image 
+        [imageUrl]="pokemonImageUrl"
+        [name]="pokemon.name">
+      </app-pokemon-image>
+    </div>
+
+    <div class="pokemon-info-section">
+      <app-pokemon-info-card [pokemon]="pokemon"></app-pokemon-info-card>
+      <app-pokemon-stats [stats]="statList"></app-pokemon-stats>
+      <app-pokemon-abilities [abilities]="pokemon.abilities"></app-pokemon-abilities>
+    </div>
+  </div>
+</div> 

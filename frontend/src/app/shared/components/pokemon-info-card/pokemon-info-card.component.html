@@ -14,15 +14,11 @@
       </div>
       <div class="info-item">
         <span class="label">Experiência</span>
-        <span class="value">{{ pokemon.baseExperience }}</span>
+        <span class="value">{{ pokemon.base_experience }}</span>
       </div>
-      <div class="info-item" *ngIf="pokemon['category']">
-        <span class="label">Categoria</span>
-        <span class="value">{{ pokemon['category'] }}</span>
-      </div>
-      <div class="info-item" *ngIf="pokemon['gender']">
-        <span class="label">Gênero</span>
-        <span class="value">{{ pokemon['gender'] }}</span>
+      <div class="info-item">
+        <span class="label">Ordem</span>
+        <span class="value">{{ pokemon.order }}</span>
       </div>
     </div>
   </ion-card-content>

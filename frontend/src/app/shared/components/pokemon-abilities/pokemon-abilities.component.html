@@ -4,10 +4,10 @@
   </ion-card-header>
   <ion-card-content>
     <div class="abilities-list">
-      <ion-chip *ngFor="let ability of abilities; trackBy: ability.name" [color]="ability.isHidden ? 'warning' : 'primary'" tabindex="0" aria-label="Habilidade {{ ability.name }}{{ ability.isHidden ? ' (Oculta)' : '' }}">
+      <ion-chip *ngFor="let ability of abilities; trackBy: trackByAbility" [color]="ability.is_hidden ? 'warning' : 'primary'" tabindex="0">
         <ion-label>
-          {{ ability.name | titlecase }}
-          <span *ngIf="ability.isHidden"> (Oculta)</span>
+          {{ ability.ability.name | titlecase }}
+          <span *ngIf="ability.is_hidden"> (Oculta)</span>
         </ion-label>
       </ion-chip>
     </div>
