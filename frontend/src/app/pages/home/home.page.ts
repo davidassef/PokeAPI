@@ -320,4 +320,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.showDetailsModal = false;
     this.selectedPokemonId = null;
   }
+
+  surpreendaMe() {
+    const maxId = 898;
+    const randomId = Math.floor(Math.random() * maxId) + 1;
+    this.openDetailsModal(randomId);
+  }
 }

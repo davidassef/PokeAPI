@@ -50,24 +50,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   ];
 
   additionalItems: MenuItem[] = [
-    {
-      title: 'menu.random_pokemon',
-      url: '',
-      icon: 'shuffle-outline',
-      color: 'success'
-    },
-    {
-      title: 'menu.type_chart',
-      url: '',
-      icon: 'grid-outline',
-      color: 'tertiary'
-    },
-    {
-      title: 'menu.stats',
-      url: '',
-      icon: 'stats-chart-outline',
-      color: 'secondary'
-    }
+    // Removido: Estatísticas, Tabela de Tipos e Pokémon Aleatório
   ];
 
   userStats = {
@@ -165,8 +148,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
   async changeLanguage(languageCode: string) {
     const validLanguage = languageCode as 'pt-BR' | 'en-US' | 'es-ES';
-    await this.settingsService.saveSettings({ language: validLanguage });
-    this.translate.use(languageCode);
+    await this.settingsService.updateLanguage(validLanguage);
     this.currentLanguage = languageCode;
   }
 

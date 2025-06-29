@@ -232,7 +232,8 @@
     "placeholder": "Escribe el nombre del Pokémon o ID...",
     "added_to_captured": "¡Pokémon agregado a capturados!",
     "removed_from_captured": "¡Pokémon removido de capturados!",
-    "error_loading": "Error al cargar Pokémon"
+    "error_loading": "Error al cargar Pokémon",
+    "surpreenda_me": "¡Sorpréndeme!"
   },
   "capturados_page": {
     "search_capturados": "Buscar en capturados",
@@ -322,6 +323,7 @@
     "no_global_ranking": "No hay ranking global disponible.",
     "no_global_ranking_desc": "Aún no hay suficientes datos para mostrar el ranking global. ¡Captura y favorita Pokémon para participar!",
     "EXPLORE_POKEMON": "EXPLORAR POKÉMON",
+    "champion": "¡Campeón!",
     "timeout_error": "Tiempo de espera agotado al cargar ranking. Inténtalo de nuevo.",
     "error_loading_ranking": "Error al cargar ranking",
     "error_loading_local_ranking": "Error al cargar ranking local",

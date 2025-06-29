@@ -193,6 +193,13 @@ ion-content {
       display: none;
     }
   }
+
+  .surpreenda-label {
+    left: 56px;
+    bottom: 12px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
 }
 
 // Dark theme support
@@ -228,4 +235,45 @@ ion-content {
       color: var(--text-color);
     }
   }
+}
+
+.surpreenda-fab {
+  box-shadow: 0 4px 24px #ffd70099, 0 0 0 4px #fffbe6 inset;
+  border-radius: 50%;
+  animation: flashGlow 1.5s infinite alternate;
+}
+.surpreenda-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 72px;
+  bottom: 12px;
+  background: linear-gradient(90deg, #ffe066 0%, #ffd700 60%, #fffbe6 100%);
+  color: #222;
+  font-weight: bold;
+  font-size: 1.05rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px #ffd70055;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 10;
+  pointer-events: auto;
+  user-select: none;
+  white-space: nowrap;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+.surpreenda-label:active, .surpreenda-label:focus {
+  filter: brightness(0.95) drop-shadow(0 0 8px #ffd700cc);
+  box-shadow: 0 4px 24px #ffd700cc;
+}
+@keyframes flashGlow {
+  0% { box-shadow: 0 4px 24px #ffd70099, 0 0 0 4px #fffbe6 inset; }
+  100% { box-shadow: 0 8px 32px #ffd700cc, 0 0 0 8px #fffbe6cc inset; }
 }
