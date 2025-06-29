@@ -758,87 +758,153 @@ body.dark-theme {
 // Corrigir pódio centralizado
 .ranking-podium-flex {
   display: flex;
-  flex-direction: row;
   justify-content: center;
   align-items: flex-end;
-  gap: 32px;
-  margin: 72px auto 32px auto;
-  width: 100%;
-  max-width: 900px;
-  min-height: 260px;
-  position: relative;
-  z-index: 2;
+  gap: 48px;
+  margin-bottom: 40px;
 }
+
 .podium-card {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: none;
-  width: 100%;
-  transition: transform 0.3s;
+  justify-content: flex-end;
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  border-radius: 32px 32px 20px 20px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18), 0 0 24px 0 #ffd70022;
+  position: relative;
+  transition: box-shadow 0.3s, transform 0.3s;
+  z-index: 1;
+  overflow: visible;
+  padding: 0;
+  border: none;
+  min-height: 0;
 }
+
 .podium-first {
   z-index: 3;
-  transform: translateY(-32px) scale(1.12);
+  height: 440px;
+  min-width: 270px;
+  max-width: 340px;
+  border-top: 8px solid #ffd700;
+  box-shadow: 0 12px 48px 0 #ffd70055, 0 0 32px 0 #fff8;
+  filter: drop-shadow(0 0 24px #ffd70088);
+  transform: translateY(-24px) scale(1.06);
+  background: linear-gradient(135deg, #fffbe6 0%, #ffe066 100%);
 }
 .podium-second {
   z-index: 2;
-  transform: translateY(0) scale(1.02);
+  height: 360px;
+  min-width: 230px;
+  max-width: 270px;
+  border-top: 8px solid #c0c0c0;
+  box-shadow: 0 8px 32px 0 #c0c0c055, 0 0 16px 0 #fff6;
+  filter: drop-shadow(0 0 12px #c0c0c088);
+  background: linear-gradient(135deg, #f5f5f5 0%, #bdbdbd 100%);
 }
 .podium-third {
-  z-index: 2;
-  transform: translateY(16px) scale(0.98);
+  z-index: 1;
+  height: 340px;
+  min-width: 210px;
+  max-width: 250px;
+  border-top: 8px solid #cd7f32;
+  box-shadow: 0 8px 32px 0 #cd7f3255, 0 0 12px 0 #fff4;
+  filter: drop-shadow(0 0 8px #cd7f3288);
+  background: linear-gradient(135deg, #fff3e0 0%, #ffb74d 100%);
+}
+
+.podium-card .podium-medal,
+.podium-card .podium-crown {
+  font-size: 3rem;
+  margin-top: 12px;
+  margin-bottom: 10px;
+  text-align: center;
+  filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 0 16px currentColor);
+  animation: glowMedal 2s infinite alternate;
+}
+
+@keyframes glowMedal {
+  0% { filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 0 16px currentColor); }
+  100% { filter: drop-shadow(0 0 16px #fff8) drop-shadow(0 0 32px currentColor); }
+}
+
+.podium-card .capture-count-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-bottom: 10px;
+  background: #fff8;
+  border-radius: 16px;
+  padding: 4px 14px;
+  min-width: 60px;
+  justify-content: center;
+  box-shadow: 0 2px 8px #ffd70022;
+}
+
+.podium-card app-pokemon-card {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px #0002;
+  background: transparent;
+}
+
+.podium-card:hover, .podium-card:focus-within {
+  box-shadow: 0 16px 64px 0 #ffd70055, 0 0 48px 0 #fff8;
+  transform: scale(1.03) translateY(-8px);
+  z-index: 10;
 }
 
 @media (max-width: 900px) {
   .ranking-podium-flex {
-    gap: 12px;
-    max-width: 100vw;
-    min-height: 180px;
+    gap: 16px;
   }
-  .podium-card {
-    width: 100%;
+  .podium-first {
+    height: 320px;
+    min-width: 180px;
+    max-width: 220px;
   }
-}
-@media (max-width: 600px) {
-  .ranking-podium-flex {
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    margin-top: 8px;
-    margin-bottom: 16px;
-    min-height: 0;
+  .podium-second {
+    height: 240px;
+    min-width: 130px;
+    max-width: 160px;
   }
-  .podium-card {
-    width: 100%;
+  .podium-third {
+    height: 200px;
+    min-width: 110px;
+    max-width: 130px;
   }
 }
 
 @media (max-width: 600px) {
-  .ranking-header {
-    margin-top: 18px;
-    margin-bottom: 48px;
-    .ranking-title-row {
-      gap: 8px;
-    }
-    .ranking-title-icon {
-      font-size: 1.5rem;
-    }
-    h2 {
-      font-size: 1.3rem;
-    }
-    p {
-      font-size: 1rem;
-    }
-    .ranking-title-underline {
-      width: 60px;
-      height: 3px;
-      margin: 10px auto 0 auto;
-    }
-  }
   .ranking-podium-flex {
-    margin-bottom: 16px;
+    gap: 4px;
+  }
+  .podium-first {
+    height: 160px;
+    min-width: 80px;
+    max-width: 100px;
+  }
+  .podium-second {
+    height: 120px;
+    min-width: 60px;
+    max-width: 80px;
+  }
+  .podium-third {
+    height: 100px;
+    min-width: 50px;
+    max-width: 70px;
   }
 }
 
@@ -1037,4 +1103,31 @@ body.dark-theme {
   min-height: 32px;
   width: 100%;
   max-width: 600px;
+}
+
+.champion-banner {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-4deg);
+  background: linear-gradient(90deg, #ffe066 0%, #ffd700 60%, #fffbe6 100%);
+  color: #222;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 10px 38px;
+  border-radius: 22px;
+  box-shadow: 0 2px 16px #ffd70088, 0 0 8px #fff8;
+  border: 2.5px solid #fffbe6;
+  text-shadow: 0 2px 8px #fff8, 0 1px 0 #ffd700;
+  z-index: 30;
+  font-family: inherit;
+  text-transform: uppercase;
+  animation: championBannerGlow 2s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes championBannerGlow {
+  0% { box-shadow: 0 2px 16px #ffd70088, 0 0 8px #fff8; }
+  100% { box-shadow: 0 4px 32px #ffd700cc, 0 0 16px #fff8; }
 }
