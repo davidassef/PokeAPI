@@ -106,35 +106,6 @@
       </ion-list>
     </div>
 
-    <!-- Additional Features -->
-    <div class="features-section">
-      <h3>{{ 'menu.features' | translate }}</h3>
-      <ion-list class="menu-list">
-        <ion-item
-          *ngFor="let item of additionalItems"
-          button
-          (click)="onMenuItemClick(item)"
-          class="menu-item">
-
-          <ion-icon
-            [name]="item.icon"
-            [color]="item.color"
-            slot="start">
-          </ion-icon>
-
-          <ion-label>
-            <h3>{{ item.title | translate }}</h3>
-          </ion-label>
-
-          <ion-icon
-            name="chevron-forward-outline"
-            slot="end"
-            class="chevron">
-          </ion-icon>
-        </ion-item>
-      </ion-list>
-    </div>
-
     <!-- Language Selector -->
     <div class="language-section">
       <h3>{{ 'menu.language' | translate }}</h3>

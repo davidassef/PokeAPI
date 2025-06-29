@@ -202,7 +202,8 @@
     "placeholder": "Type Pokémon name or ID...",
     "added_to_captured": "Pokémon added to captured!",
     "removed_from_captured": "Pokémon removed from captured!",
-    "error_loading": "Error loading Pokémon"
+    "error_loading": "Error loading Pokémon",
+    "surpreenda_me": "Surprise me!"
   },
   "captured_page": {
     "search_captured": "Search captured",
@@ -270,6 +271,7 @@
     "no_global_ranking": "No global ranking available.",
     "no_global_ranking_desc": "There's not enough data yet to display the global ranking. Capture and favorite Pokémon to participate!",
     "EXPLORE_POKEMON": "EXPLORE POKÉMON",
+    "champion": "Champion!",
     "timeout_error": "Timeout loading ranking. Try again.",
     "error_loading_ranking": "Error loading ranking",
     "error_loading_local_ranking": "Error loading local ranking",

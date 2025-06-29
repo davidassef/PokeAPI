@@ -77,6 +77,16 @@
     </ion-fab-button>
   </ion-fab>
 
+  <!-- Botão Surpreenda-me -->
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button color="warning" (click)="surpreendaMe()" class="surpreenda-fab">
+      <ion-icon name="flash-outline"></ion-icon>
+    </ion-fab-button>
+    <button class="surpreenda-label" (click)="surpreendaMe()">
+      {{ 'home.surpreenda_me' | translate }}
+    </button>
+  </ion-fab>
+
   <app-details-modal
     *ngIf="showDetailsModal && selectedPokemonId"
     [pokemonId]="selectedPokemonId"
