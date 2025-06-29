@@ -269,7 +269,13 @@
     "updated_daily": "Atualizado diariamente",
     "no_global_ranking": "Nenhum ranking global disponível.",
     "no_global_ranking_desc": "Ainda não há dados suficientes para exibir o ranking global. Capture e favorite Pokémons para participar!",
-    "EXPLORE_POKEMON": "EXPLORAR POKÉMONS"
+    "EXPLORE_POKEMON": "EXPLORAR POKÉMONS",
+    "timeout_error": "Tempo limite ao carregar ranking. Tente novamente.",
+    "error_loading_ranking": "Erro ao carregar ranking",
+    "error_loading_local_ranking": "Erro ao carregar ranking local",
+    "error_toggle_capture": "Erro ao alternar captura",
+    "added_to_captured": "Pokémon adicionado aos capturados!",
+    "removed_from_captured": "Pokémon removido dos capturados!"
   },
   "details": {
     "back": "Voltar",

@@ -168,9 +168,9 @@ export class RankingPage implements OnInit, OnDestroy {
       this.currentRanking = this.globalRanking.filter(item => item.pokemon && item.pokemon.id > 0);
     } catch (error) {
       if (error instanceof Error && error.name === 'TimeoutError') {
-        await this.showErrorToast('Tempo limite ao carregar ranking. Tente novamente.');
+        await this.showErrorToast('ranking_page.timeout_error');
       } else {
-        await this.showErrorToast('ERROR_LOADING_RANKING');
+        await this.showErrorToast('ranking_page.error_loading_ranking');
       }
       this.globalRanking = [];
       this.currentRanking = [];
@@ -254,12 +254,12 @@ export class RankingPage implements OnInit, OnDestroy {
       this.capturedCache.set(pokemon.id, isCaptured);
       this.capturedStates.set(pokemon.id, isCaptured);
       
-      const message = isCaptured ? 'ADDED_TO_CAPTURED' : 'REMOVED_FROM_CAPTURED';
+      const message = isCaptured ? 'ranking_page.added_to_captured' : 'ranking_page.removed_from_captured';
       await this.showToast(message, pokemon.name);
 
     } catch (error) {
       console.error('Erro ao alternar captura:', error);
-      await this.showErrorToast('ERROR_TOGGLE_CAPTURE');
+      await this.showErrorToast('ranking_page.error_toggle_capture');
     }
   }
 

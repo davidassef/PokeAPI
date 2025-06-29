@@ -255,10 +255,10 @@
     "clear_all_captured": "Clear all captured"
   },
   "ranking_page": {
-    "most_loved_pokemon": "Most loved Pokémon",
-    "your_favorite_pokemon": "Your captured",
+    "most_loved_pokemon": "Most Loved Pokémon",
+    "your_favorite_pokemon": "Your Captured",
     "global_popularity_desc": "Global ranking of most captured Pokémon.",
-    "local_favorites_desc": "Your local captured Pokémon.",
+    "local_favorites_desc": "Your locally captured Pokémon.",
     "total_stats": "Total Stats",
     "loading_ranking": "Loading ranking...",
     "no_local_ranking": "No local ranking found",
@@ -269,7 +269,13 @@
     "updated_daily": "Updated daily",
     "no_global_ranking": "No global ranking available.",
     "no_global_ranking_desc": "There's not enough data yet to display the global ranking. Capture and favorite Pokémon to participate!",
-    "EXPLORE_POKEMON": "EXPLORE POKÉMON"
+    "EXPLORE_POKEMON": "EXPLORE POKÉMON",
+    "timeout_error": "Timeout loading ranking. Try again.",
+    "error_loading_ranking": "Error loading ranking",
+    "error_loading_local_ranking": "Error loading local ranking",
+    "error_toggle_capture": "Error toggling capture",
+    "added_to_captured": "Pokémon added to captured!",
+    "removed_from_captured": "Pokémon removed from captured!"
   },
   "details": {
     "back": "Back",

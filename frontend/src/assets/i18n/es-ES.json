@@ -307,21 +307,27 @@
     "clear_all_captured": "Limpiar todos los capturados"
   },
   "ranking_page": {
-    "most_loved_pokemon": "Pokémon más queridos",
-    "your_favorite_pokemon": "Tus capturados",
+    "most_loved_pokemon": "Pokémon Más Amados",
+    "your_favorite_pokemon": "Tus Capturados",
     "global_popularity_desc": "Ranking global de los Pokémon más capturados.",
-    "local_favorites_desc": "Tus Pokémon capturados locales.",
-    "total_stats": "Total de Stats",
+    "local_favorites_desc": "Tus Pokémon capturados localmente.",
+    "total_stats": "Total de Estadísticas",
     "loading_ranking": "Cargando ranking...",
     "no_local_ranking": "No se encontró ranking local",
-    "add_favorites_for_ranking": "Agrega capturados para ver el ranking.",
+    "add_favorites_for_ranking": "Añade capturados para ver el ranking.",
     "ranking_info": "Sobre el Ranking",
     "global_ranking_info": "Ranking global actualizado diariamente.",
     "local_ranking_info": "Ranking basado en tus capturados.",
     "updated_daily": "Actualizado diariamente",
     "no_global_ranking": "No hay ranking global disponible.",
     "no_global_ranking_desc": "Aún no hay suficientes datos para mostrar el ranking global. ¡Captura y favorita Pokémon para participar!",
-    "EXPLORE_POKEMON": "EXPLORAR POKÉMON"
+    "EXPLORE_POKEMON": "EXPLORAR POKÉMON",
+    "timeout_error": "Tiempo de espera agotado al cargar ranking. Inténtalo de nuevo.",
+    "error_loading_ranking": "Error al cargar ranking",
+    "error_loading_local_ranking": "Error al cargar ranking local",
+    "error_toggle_capture": "Error al alternar captura",
+    "added_to_captured": "¡Pokémon añadido a capturados!",
+    "removed_from_captured": "¡Pokémon removido de capturados!"
   },
   "details": {
     "back": "Volver",
