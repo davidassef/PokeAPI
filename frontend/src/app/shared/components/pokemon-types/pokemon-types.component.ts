@@ -8,6 +8,10 @@ import { Component, Input } from '@angular/core';
 export class PokemonTypesComponent {
   @Input() types: string[] = [];
 
+  trackByType(index: number, type: string): string {
+    return type;
+  }
+
   getTypeIcon(type: string): string {
     // Retorne SVG inline ou use lógica de ícone por tipo
     // Exemplo simplificado:

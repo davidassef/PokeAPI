@@ -1,26 +1,10 @@
 import { Component, Input } from '@angular/core';
+import { Pokemon } from '../../../models/pokemon.model';
 
-export interface Pokemon {
-  id: number;
-  name: string;
-  image: string;
-  types: string[];
-  height: number;
-  weight: number;
-  baseExperience: number;
-  stats: {
-    hp: number;
-    attack: number;
-    defense: number;
-    specialAttack: number;
-    specialDefense: number;
-    speed: number;
-  };
-  abilities: {
-    name: string;
-    isHidden: boolean;
-  }[];
-  themeSongUrl?: string;
+export interface Stat {
+  label: string;
+  value: number;
+  tooltip: string;
 }
 
 @Component({
@@ -31,14 +15,22 @@ export interface Pokemon {
 export class PokemonDetailComponent {
   @Input() pokemon!: Pokemon;
 
-  get statList() {
+  get pokemonTypeNames(): string[] {
+    return this.pokemon?.types?.map(t => t.type.name) || [];
+  }
+
+  get pokemonImageUrl(): string {
+    return this.pokemon?.sprites?.other?.['official-artwork']?.front_default || '';
+  }
+
+  get statList(): Stat[] {
     return [
-      { label: 'HP', value: this.pokemon?.stats.hp, tooltip: 'Pontos de vida' },
-      { label: 'Ataque', value: this.pokemon?.stats.attack, tooltip: 'Dano físico' },
-      { label: 'Defesa', value: this.pokemon?.stats.defense, tooltip: 'Resistência física' },
-      { label: 'Ataque Especial', value: this.pokemon?.stats.specialAttack, tooltip: 'Dano especial' },
-      { label: 'Defesa Especial', value: this.pokemon?.stats.specialDefense, tooltip: 'Resistência especial' },
-      { label: 'Velocidade', value: this.pokemon?.stats.speed, tooltip: 'Ordem de ataque' },
+      { label: 'HP', value: this.pokemon?.stats.find(s => s.stat.name === 'hp')?.base_stat || 0, tooltip: 'Pontos de vida' },
+      { label: 'Ataque', value: this.pokemon?.stats.find(s => s.stat.name === 'attack')?.base_stat || 0, tooltip: 'Dano físico' },
+      { label: 'Defesa', value: this.pokemon?.stats.find(s => s.stat.name === 'defense')?.base_stat || 0, tooltip: 'Resistência física' },
+      { label: 'Ataque Especial', value: this.pokemon?.stats.find(s => s.stat.name === 'special-attack')?.base_stat || 0, tooltip: 'Dano especial' },
+      { label: 'Defesa Especial', value: this.pokemon?.stats.find(s => s.stat.name === 'special-defense')?.base_stat || 0, tooltip: 'Resistência especial' },
+      { label: 'Velocidade', value: this.pokemon?.stats.find(s => s.stat.name === 'speed')?.base_stat || 0, tooltip: 'Ordem de ataque' },
     ];
   }
 
