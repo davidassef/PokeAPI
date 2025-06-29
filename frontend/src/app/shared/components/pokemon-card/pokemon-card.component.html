@@ -1,6 +1,6 @@
 <div class="pokemon-card"
      [style.animation-delay]="animationDelay + 'ms'"
-     (click)="onCardClick()">
+     (click)="onCardClick($event)">
 
   <!-- Badges de ranking -->
   <span *ngIf="favoriteCount !== undefined" class="capture-count-badge">
@@ -23,6 +23,7 @@
             class="capture-btn"
             [class.captured]="isCaptured"
             [disabled]="isLoading"
+            type="button"
             (click)="onCaptureClick($event)">
       <img *ngIf="!isCaptured && !isLoading"
            src="assets/img/opened_pokeball.png"

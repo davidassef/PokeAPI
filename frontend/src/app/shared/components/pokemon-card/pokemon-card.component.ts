@@ -51,10 +51,10 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     );
   }
 
-  onCardClick() {
-    this.audioService.playSound('click');
+  onCardClick(event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
     this.cardClick.emit(this.pokemon);
-    this.router.navigate(['/tabs/details', this.pokemon.id]);
   }
 
   async onCaptureClick(event: Event) {

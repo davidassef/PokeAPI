@@ -172,15 +172,14 @@ export class CapturedPage implements OnInit, OnDestroy {
    * Remove Pokémon dos capturados (apenas local)
    * @param pokemon Pokémon para remover dos capturados
    */
-  async onFavoriteToggle(pokemon: Pokemon) {
+  async removeFromCaptured(pokemon: Pokemon) {
     try {
       await this.capturedService.removeFromCaptured(pokemon.id);
-      await this.audioService.playSound('/assets/audio/remove.wav');
-      // Não sincroniza mais com backend - apenas local
+      this.showToast(this.translate.instant('captured.removed_from_captured'));
       this.loadCaptured();
     } catch (error) {
-      console.error('Erro ao remover capturado:', error);
-      await this.showErrorToast('captured.error_release_captured');
+      console.error('Erro ao remover dos capturados:', error);
+      this.showErrorToast();
     }
   }
 
@@ -190,13 +189,22 @@ export class CapturedPage implements OnInit, OnDestroy {
     }
   }
 
-  private async showErrorToast(messageKey: string) {
-    const message = await this.translate.get(messageKey).toPromise();
+  private async showErrorToast() {
+    const toast = await this.toastController.create({
+      message: this.translate.instant('captured.error_release_captured'),
+      duration: 3000,
+      position: 'top',
+      color: 'danger'
+    });
+    await toast.present();
+  }
+
+  private async showToast(message: string) {
     const toast = await this.toastController.create({
       message,
       duration: 3000,
       position: 'top',
-      color: 'danger'
+      color: 'success'
     });
     await toast.present();
   }

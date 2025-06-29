@@ -1,0 +1,8 @@
+<div class="pokemon-types-badges">
+  <ng-container *ngFor="let type of types; trackBy: trackByType">
+    <ion-chip [style.background]="type | typeColor" class="type-badge" [ngClass]="'type-' + type" tabindex="0" aria-label="Tipo {{ type }}">
+      <span class="type-icon" [innerHTML]="getTypeIcon(type)"></span>
+      <ion-label>{{ type | titlecase }}</ion-label>
+    </ion-chip>
+  </ng-container>
+</div> 

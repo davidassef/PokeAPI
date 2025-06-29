@@ -133,8 +133,6 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
 
   async onMenuItemClick(item: MenuItem) {
-    this.audioService.playSound('/assets/audio/menu-click.mp3');
-
     if (item.url) {
       await this.router.navigate([item.url]);
       await this.menuController.close();
@@ -166,7 +164,6 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     await this.router.navigate(['/tabs/details', randomId]);
   }
   async changeLanguage(languageCode: string) {
-    this.audioService.playSound('/assets/audio/menu-click.mp3');
     const validLanguage = languageCode as 'pt-BR' | 'en-US' | 'es-ES';
     await this.settingsService.saveSettings({ language: validLanguage });
     this.translate.use(languageCode);

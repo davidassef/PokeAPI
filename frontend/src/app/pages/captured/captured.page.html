@@ -65,7 +65,7 @@
         [isCaptured]="true"
         [animationDelay]="getAnimationDelay(i)"
         (cardClick)="navigateToDetails(poke.id)"
-        (captureToggle)="onFavoriteToggle(poke)">
+        (captureToggle)="removeFromCaptured(poke)">
       </app-pokemon-card>
     </div>
   </div>

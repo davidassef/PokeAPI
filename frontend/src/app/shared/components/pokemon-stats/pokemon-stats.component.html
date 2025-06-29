@@ -1,0 +1,19 @@
+<ion-card class="stats-card">
+  <ion-card-header>
+    <ion-card-title>Estatísticas</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <div class="stats-list">
+      <div class="stat-row" *ngFor="let stat of stats; trackBy: trackByLabel">
+        <span class="stat-label" [attr.ion-tooltip]="stat.tooltip">{{ stat.label }}</span>
+        <div class="stat-bar">
+          <div class="stat-fill" [style.width.%]="(stat.value / 255) * 100"></div>
+        </div>
+        <span class="stat-value">{{ stat.value }}</span>
+      </div>
+    </div>
+    <div class="stats-total">
+      <strong>Total: {{ total }}</strong>
+    </div>
+  </ion-card-content>
+</ion-card> 

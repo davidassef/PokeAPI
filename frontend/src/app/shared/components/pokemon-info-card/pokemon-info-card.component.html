@@ -1,0 +1,29 @@
+<ion-card class="info-card">
+  <ion-card-header>
+    <ion-card-title>{{ pokemon.name | titlecase }} <span class="pokemon-number">#{{ pokemon.id }}</span></ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="label">Altura</span>
+        <span class="value">{{ pokemon.height / 10 }} m</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Peso</span>
+        <span class="value">{{ pokemon.weight / 10 }} kg</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Experiência</span>
+        <span class="value">{{ pokemon.baseExperience }}</span>
+      </div>
+      <div class="info-item" *ngIf="pokemon['category']">
+        <span class="label">Categoria</span>
+        <span class="value">{{ pokemon['category'] }}</span>
+      </div>
+      <div class="info-item" *ngIf="pokemon['gender']">
+        <span class="label">Gênero</span>
+        <span class="value">{{ pokemon['gender'] }}</span>
+      </div>
+    </div>
+  </ion-card-content>
+</ion-card> 
