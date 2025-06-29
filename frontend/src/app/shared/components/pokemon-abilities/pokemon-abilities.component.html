@@ -1,0 +1,15 @@
+<ion-card class="abilities-card">
+  <ion-card-header>
+    <ion-card-title>Habilidades</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <div class="abilities-list">
+      <ion-chip *ngFor="let ability of abilities; trackBy: ability.name" [color]="ability.isHidden ? 'warning' : 'primary'" tabindex="0" aria-label="Habilidade {{ ability.name }}{{ ability.isHidden ? ' (Oculta)' : '' }}">
+        <ion-label>
+          {{ ability.name | titlecase }}
+          <span *ngIf="ability.isHidden"> (Oculta)</span>
+        </ion-label>
+      </ion-chip>
+    </div>
+  </ion-card-content>
+</ion-card> 

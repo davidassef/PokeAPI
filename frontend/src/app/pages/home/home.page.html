@@ -64,7 +64,7 @@
         [pokemon]="poke"
         [isCaptured]="isCaptured(poke.id)"
         [animationDelay]="getAnimationDelay(i)"
-        (cardClick)="navigateToDetails(poke.id)"
+        (cardClick)="openDetailsModal(poke.id)"
         (captureToggle)="onCaptureToggled($event)">
       </app-pokemon-card>
     </div>
@@ -76,4 +76,10 @@
       <ion-icon name="chevron-up-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+  <app-details-modal
+    *ngIf="showDetailsModal && selectedPokemonId"
+    [pokemonId]="selectedPokemonId"
+    (close)="closeDetailsModal()">
+  </app-details-modal>
 </ion-content>

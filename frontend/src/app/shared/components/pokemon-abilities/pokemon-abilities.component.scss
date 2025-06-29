@@ -1,0 +1,31 @@
+.abilities-card {
+  margin-bottom: 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.abilities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+ion-chip {
+  font-size: 0.98rem;
+  font-weight: 600;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  outline: none;
+  &:hover, &:focus {
+    transform: scale(1.06);
+    box-shadow: 0 0 8px #222a;
+  }
+}
+@media (max-width: 600px) {
+  .abilities-list {
+    gap: 4px;
+  }
+  ion-chip {
+    font-size: 0.88rem;
+    border-radius: 10px;
+  }
+} 

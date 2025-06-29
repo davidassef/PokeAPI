@@ -248,7 +248,6 @@ export class RankingPage implements OnInit, OnDestroy {
 
     try {
       await this.capturedService.toggleCaptured(pokemon);
-      await this.audioService.playSound('/assets/audio/click.wav');
 
       const isCaptured = await this.isCaptured(pokemon.id);
       // Atualiza o cache
@@ -303,14 +302,6 @@ export class RankingPage implements OnInit, OnDestroy {
       return (count / 1000).toFixed(1) + 'K';
     }
     return count.toString();
-  }
-
-  private async playSound() {
-    try {
-      await this.audioService.playSound('/assets/audio/click.wav');
-    } catch (error) {
-      console.error('Erro ao tocar som:', error);
-    }
   }
 
   private async showToast(messageKey: string, pokemonName?: string) {

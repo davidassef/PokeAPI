@@ -10,6 +10,7 @@ import { SyncAction, SyncService } from '../../core/services/sync.service';
 import { PokemonFilters } from '../../models/app.model';
 import { Pokemon } from '../../models/pokemon.model';
 import { FilterOptions } from '../../shared/components/search-filter/search-filter.component';
+import { DetailsModalComponent } from '../details/details-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +19,7 @@ import { FilterOptions } from '../../shared/components/search-filter/search-filt
 })
 export class HomePage implements OnInit, OnDestroy {
   @ViewChild(IonContent, { static: false }) content!: IonContent;
+  @ViewChild(DetailsModalComponent) detailsModal!: DetailsModalComponent;
 
   pokemon: Pokemon[] = [];
   loading = false;
@@ -40,6 +42,9 @@ export class HomePage implements OnInit, OnDestroy {
 
   captured: number[] = [];
   private destroy$ = new Subject<void>();
+
+  showDetailsModal = false;
+  selectedPokemonId: number | null = null;
 
   get currentFilterOptions(): FilterOptions {
     return {
@@ -296,5 +301,15 @@ export class HomePage implements OnInit, OnDestroy {
    */
   getPendingSyncCount(): Promise<number> {
     return this.syncService.getPendingCount();
+  }
+
+  openDetailsModal(pokemonId: number) {
+    this.selectedPokemonId = pokemonId;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedPokemonId = null;
   }
 }

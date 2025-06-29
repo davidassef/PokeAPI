@@ -1,0 +1,11 @@
+<div class="pokemon-image-wrapper">
+  <ng-container *ngIf="!errored; else errorTpl">
+    <img [src]="imageUrl" [alt]="name" (load)="onLoad()" (error)="onError()" [class.loading]="loading" />
+    <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+  </ng-container>
+  <ng-template #errorTpl>
+    <div class="image-placeholder" aria-label="Imagem não disponível">
+      <ion-icon name="image-outline"></ion-icon>
+    </div>
+  </ng-template>
+</div> 

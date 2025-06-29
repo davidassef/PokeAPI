@@ -1,0 +1,122 @@
+<div class="details-modal-overlay" (click)="onClose($event)">
+  <div class="details-modal-container" (click)="$event.stopPropagation()">
+    <!-- Header do Modal -->
+    <div class="modal-header">
+      <button #closeBtn class="close-btn" type="button" (click)="onClose($event)" tabindex="0">&times;</button>
+      <div class="modal-title">
+        <span *ngIf="pokemon">{{ pokemon.name | titlecase }}</span>
+        <span *ngIf="!pokemon && !loading">Pokémon não encontrado</span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="modal-content" *ngIf="loading">
+      <app-loading-spinner [overlay]="false" size="medium"></app-loading-spinner>
+    </div>
+
+    <!-- Conteúdo do Pokémon -->
+    <div class="modal-content modal-content-horizontal" *ngIf="!loading && pokemon">
+      <!-- Lado esquerdo: Imagem -->
+      <div class="pokemon-image-side">
+        <div class="hero-section" [style.background]="getBackgroundGradient()">
+          <div class="pokemon-id">{{ pokemon.id | pokemonId }}</div>
+          <div class="pokemon-main-image-container">
+            <img
+              [src]="getCurrentImage()"
+              [alt]="pokemon.name"
+              class="pokemon-main-image bounce-animation"
+              (error)="onImageError($event)">
+          </div>
+          <div class="pokemon-types">
+            <ion-chip
+              *ngFor="let type of pokemon.types"
+              [style.background]="type.type.name | typeColor"
+              class="type-chip"
+              [ngClass]="'type-' + type.type.name">
+              <span class="type-icon" [innerHTML]="getTypeIcon(type.type.name)"></span>
+              <ion-label>{{ type.type.name | titlecase }}</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+      </div>
+      <!-- Lado direito: Infos -->
+      <div class="pokemon-info-side">
+        <div class="info-header-row">
+          <h1 class="pokemon-name">{{ pokemon.name | titlecase }}</h1>
+        </div>
+        <ion-card class="info-card">
+          <ion-card-header>
+            <ion-card-title>Informações Básicas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Altura</span>
+                <span class="value">{{ pokemon.height | pokemonHeight }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Peso</span>
+                <span class="value">{{ pokemon.weight | pokemonWeight }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Experiência Base</span>
+                <span class="value">{{ pokemon.base_experience || 'N/A' }}</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <ion-card class="stats-card">
+          <ion-card-header>
+            <ion-card-title>Estatísticas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="stats-list">
+              <div class="stat-item" *ngFor="let stat of pokemon.stats">
+                <div class="stat-header">
+                  <span class="stat-name">{{ getStatName(stat.stat.name) }}</span>
+                  <span class="stat-value">{{ stat.base_stat }}</span>
+                </div>
+                <div class="stat-bar" [attr.title]="stat.base_stat">
+                  <div class="stat-fill animated-stat-fill"
+                       [style.width.%]="getStatPercentage(stat.base_stat)"
+                       [style.background]="stat.base_stat | statColor">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="stats-total">
+              <strong>Total: {{ getTotalStats() }}</strong>
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <ion-card class="abilities-card">
+          <ion-card-header>
+            <ion-card-title>Habilidades</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="abilities-list">
+              <ion-chip
+                *ngFor="let ability of pokemon.abilities"
+                [outline]="ability.is_hidden"
+                [color]="ability.is_hidden ? 'warning' : 'primary'">
+                <ion-label>
+                  {{ ability.ability.name | titlecase }}
+                  <span *ngIf="ability.is_hidden"> (Oculta)</span>
+                </ion-label>
+              </ion-chip>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="modal-content" *ngIf="!loading && !pokemon">
+      <div class="error-state">
+        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+        <h2>Erro ao carregar</h2>
+        <p>Não foi possível carregar os detalhes do Pokémon.</p>
+      </div>
+    </div>
+  </div>
+</div> 

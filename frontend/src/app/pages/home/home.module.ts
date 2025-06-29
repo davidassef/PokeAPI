@@ -8,6 +8,7 @@ import { HomePageRoutingModule } from './home-routing.module';
 import { HomePage } from './home.page';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
+import { DetailsPageModule } from '../details/details.module';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
     TranslateModule,
     HomePageRoutingModule,
     SharedComponentsModule,
-    SharedPipesModule
+    SharedPipesModule,
+    DetailsPageModule
   ],
   declarations: [HomePage]
 })

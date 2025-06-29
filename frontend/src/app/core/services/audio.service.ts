@@ -165,11 +165,41 @@ export class AudioService {
     }
 
     try {
-      const soundAudio = new Audio(soundPath);
+      // Garantir que o caminho seja um arquivo de áudio válido
+      let fullPath: string;
+      
+      // Se o caminho já começa com /assets/, usar como está
+      if (soundPath.startsWith('/assets/')) {
+        fullPath = soundPath;
+      } else {
+        // Caso contrário, assumir que é um nome de arquivo e adicionar o caminho base
+        fullPath = `/assets/audio/${soundPath}.wav`;
+      }
+      
+      // Tentar carregar o arquivo específico
+      const soundAudio = new Audio(fullPath);
       soundAudio.volume = settings.musicVolume || 0.7;
+      
+      // Adicionar listener de erro para fallback
+      soundAudio.addEventListener('error', async () => {
+        console.warn(`Arquivo de áudio não encontrado: ${fullPath}, usando fallback`);
+        // Usar um som existente como fallback ou beep
+        try {
+          await this.playBeep(800, 100); // Beep simples como fallback
+        } catch (beepError) {
+          console.error('Erro ao reproduzir beep de fallback:', beepError);
+        }
+      });
+      
       await soundAudio.play();
     } catch (error) {
       console.error('Erro ao reproduzir som:', error);
+      // Fallback para beep em caso de erro
+      try {
+        await this.playBeep(800, 100);
+      } catch (beepError) {
+        console.error('Erro ao reproduzir beep de fallback:', beepError);
+      }
     }
   }
 

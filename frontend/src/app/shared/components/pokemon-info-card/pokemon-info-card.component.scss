@@ -1,0 +1,36 @@
+.info-card {
+  margin-bottom: 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 18px;
+}
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+.value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+.pokemon-number {
+  font-size: 1rem;
+  color: #888;
+  margin-left: 8px;
+}
+@media (max-width: 600px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+} 
