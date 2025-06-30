@@ -10,6 +10,7 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
 import { MusicPlayerComponent } from './music-player/music-player.component';
 import { SearchFilterComponent } from './search-filter/search-filter.component';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
+import { DetailsModalComponent } from '../../pages/details/details-modal.component';
 
 // Shared Pipes Module
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -20,7 +21,8 @@ import { SharedPipesModule } from '../pipes/shared-pipes.module';
     LoadingSpinnerComponent,
     MusicPlayerComponent,
     SearchFilterComponent,
-    SidebarMenuComponent
+    SidebarMenuComponent,
+    DetailsModalComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -35,7 +37,8 @@ import { SharedPipesModule } from '../pipes/shared-pipes.module';
     MusicPlayerComponent,
     SearchFilterComponent,
     SidebarMenuComponent,
-    SharedPipesModule
+    SharedPipesModule,
+    DetailsModalComponent
   ]
 })
 export class SharedComponentsModule { }

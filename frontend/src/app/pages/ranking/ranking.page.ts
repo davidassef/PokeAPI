@@ -82,6 +82,9 @@ export class RankingPage implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
+  showDetailsModal = false;
+  selectedPokemonId: number | null = null;
+
   constructor(
     private pokeApiService: PokeApiService,
     private capturedService: CapturedService,
@@ -386,5 +389,15 @@ export class RankingPage implements OnInit, OnDestroy {
     if (rank === 2) return 'silver';
     if (rank === 3) return 'bronze';
     return 'blue';
+  }
+
+  openDetailsModal(pokemonId: number) {
+    this.selectedPokemonId = pokemonId;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedPokemonId = null;
   }
 }
