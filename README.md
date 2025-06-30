@@ -214,6 +214,15 @@ ng e2e
 <details>
 <summary><strong>Clique para expandir o histórico</strong></summary>
 
+- 🏆 **[2024-06-27] Novidades visuais no Ranking:**
+  - Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
+  - Badges de posição e contagem de capturas integrados aos cards
+  - Grid responsivo e centralizado para os demais Pokémons
+  - Título criativo com ícone, gradiente e espaçamento aprimorado
+  - Alinhamento refinado e visual moderno, sem afetar outras páginas
+  - Para customizar o visual do ranking, edite apenas os arquivos:
+    - `frontend/src/app/pages/ranking/ranking.page.html`
+    - `frontend/src/app/pages/ranking/ranking.page.scss`
 - 🎨 **[2025-01-29] Sistema de Detalhes Finalizado:**
   - Carrossel de imagens com ordem correta: Artwork Oficial, Sprite Normal, Sprite Shiny, Costas Normal, Costas Shiny, Dream World, Home, Home Shiny
   - Navegação fluida: setas, swipe, thumbnails com loop infinito
@@ -233,15 +242,6 @@ ng e2e
 - 🧹 **[2025-06-26]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
 - ✅ **[2025-06-26]** Build do frontend validado e funcionando sem erros após remoção da página de favoritos
 - ⚠️ **[2025-06-26]** Pendente: ajuste do backend do ranking global para integração completa
-- 🏆 **[2024-06-27] Novidades visuais no Ranking:**
-  - Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
-  - Badges de posição e contagem de capturas integrados aos cards
-  - Grid responsivo e centralizado para os demais Pokémons
-  - Título criativo com ícone, gradiente e espaçamento aprimorado
-  - Alinhamento refinado e visual moderno, sem afetar outras páginas
-  - Para customizar o visual do ranking, edite apenas os arquivos:
-    - `frontend/src/app/pages/ranking/ranking.page.html`
-    - `frontend/src/app/pages/ranking/ranking.page.scss`
 - 🚀 **[2025-06-27]** Refatoração completa da página de ranking para evitar loop infinito no Angular
 - 🚀 **[2025-06-27]** Melhoria de performance e uso de cache para favoritos e imagens
 - 🚀 **[2025-06-27]** Template do ranking simplificado para evitar expressões complexas
