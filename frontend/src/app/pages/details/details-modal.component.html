@@ -61,14 +61,23 @@
           <button class="flavor-arrow left" (click)="prevFlavorText()" [disabled]="flavorTexts.length <= 1">
             <ion-icon name="chevron-back-outline"></ion-icon>
           </button>
-          <span class="flavor-content">{{ flavorTexts[currentFlavorIndex] }}</span>
+          <span class="flavor-content">
+            <span *ngIf="isTranslating" class="translating-indicator">
+              <ion-spinner name="dots"></ion-spinner>
+              Traduzindo...
+            </span>
+            {{ flavorTexts[currentFlavorIndex] }}
+          </span>
           <button class="flavor-arrow right" (click)="nextFlavorText()" [disabled]="flavorTexts.length <= 1">
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </button>
           <div class="flavor-info">
             <span class="flavor-count">{{ currentFlavorIndex + 1 }}/{{ flavorTexts.length }}</span>
-            <span class="language-badge" [class.es]="currentFlavorLanguage === 'es'" [class.en]="currentFlavorLanguage === 'en'">
-              {{ currentFlavorLanguage === 'es' ? 'ES' : 'EN' }}
+            <span class="language-badge" 
+                  [class.es]="currentFlavorLanguage === 'es'" 
+                  [class.en]="currentFlavorLanguage === 'en'"
+                  [class.pt]="currentFlavorLanguage === 'pt'">
+              {{ currentFlavorLanguage === 'es' ? 'ES' : currentFlavorLanguage === 'pt' ? 'PT' : 'EN' }}
             </span>
           </div>
         </div>

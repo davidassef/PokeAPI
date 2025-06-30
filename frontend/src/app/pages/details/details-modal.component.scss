@@ -1137,6 +1137,22 @@ ion-chip.rainbow-chip-border::before {
   color: #fff;
   text-align: center;
   font-weight: 400;
+  position: relative;
+}
+
+.translating-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #ffd700;
+  margin-bottom: 8px;
+  
+  ion-spinner {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .flavor-arrow {
@@ -1197,6 +1213,11 @@ ion-chip.rainbow-chip-border::before {
   
   &.es {
     background: #10b981;
+    color: white;
+  }
+  
+  &.pt {
+    background: #f59e0b;
     color: white;
   }
 } 
