@@ -65,7 +65,12 @@
           <button class="flavor-arrow right" (click)="nextFlavorText()" [disabled]="flavorTexts.length <= 1">
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </button>
-          <span class="flavor-count">{{ currentFlavorIndex + 1 }}/{{ flavorTexts.length }}</span>
+          <div class="flavor-info">
+            <span class="flavor-count">{{ currentFlavorIndex + 1 }}/{{ flavorTexts.length }}</span>
+            <span class="language-badge" [class.es]="currentFlavorLanguage === 'es'" [class.en]="currentFlavorLanguage === 'en'">
+              {{ currentFlavorLanguage === 'es' ? 'ES' : 'EN' }}
+            </span>
+          </div>
         </div>
         <div class="info-grid compact">
           <div class="info-item"><span class="label">{{ 'details.height' | translate }}</span><span class="value">{{ (pokemon?.height ?? 0) | pokemonHeight }}</span></div>

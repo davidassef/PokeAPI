@@ -2,6 +2,8 @@ import { Component, Input, OnInit, EventEmitter, Output, ElementRef, ViewChild, 
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { Pokemon } from '../../models/pokemon.model';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from '../../core/services/settings.service';
 
 @Component({
   selector: 'app-details-modal',
@@ -33,6 +35,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   flavorText: string = '';
   flavorTexts: string[] = [];
   currentFlavorIndex: number = 0;
+  currentFlavorLanguage: string = 'en'; // Idioma atual do flavor
 
   private escListener = (event: KeyboardEvent) => {
     if (event.key === 'Escape') {
@@ -66,7 +69,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   isDragging = false;
   mouseStartX = 0;
 
-  constructor(private pokeApiService: PokeApiService, private http: HttpClient) {}
+  constructor(
+    private pokeApiService: PokeApiService, 
+    private http: HttpClient,
+    private translate: TranslateService,
+    private settingsService: SettingsService
+  ) {}
 
   ngOnInit(): void {
     if (this.pokemonId) {
@@ -282,15 +290,43 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flavorText = '';
     this.flavorTexts = [];
     this.currentFlavorIndex = 0;
+    
+    // Obter idioma atual do app
+    const currentAppLanguage = this.translate.currentLang || 'pt-BR';
+    
     this.http.get<any>(`https://pokeapi.co/api/v2/pokemon-species/${this.pokemonId}/`).subscribe({
       next: (data) => {
-        // Filtra por PT-BR, se não houver, pega EN
-        const ptEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'pt');
-        const enEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
-        const entries = ptEntries.length > 0 ? ptEntries : enEntries;
-        this.flavorTexts = entries.map((e: any) => e.flavor_text.replace(/\f|\n/g, ' ')).filter((txt: string, idx: number, arr: string[]) => arr.indexOf(txt) === idx);
+        let entries: any[] = [];
+        
+        // Lógica de idiomas para flavors:
+        // - PT-BR: usa inglês (fallback)
+        // - EN: usa inglês
+        // - ES: usa espanhol quando disponível, senão inglês
+        if (currentAppLanguage === 'es-ES') {
+          // Para espanhol, tentar ES primeiro, depois EN
+          const esEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'es');
+          const enEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
+          entries = esEntries.length > 0 ? esEntries : enEntries;
+          this.currentFlavorLanguage = esEntries.length > 0 ? 'es' : 'en';
+        } else {
+          // Para PT-BR e EN, sempre usar inglês
+          entries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
+          this.currentFlavorLanguage = 'en';
+        }
+        
+        // Processar e limpar os textos
+        this.flavorTexts = entries
+          .map((e: any) => e.flavor_text.replace(/\f|\n/g, ' '))
+          .filter((txt: string, idx: number, arr: string[]) => arr.indexOf(txt) === idx);
+        
         this.flavorText = this.flavorTexts[0] || '';
         this.currentFlavorIndex = 0;
+      },
+      error: (error) => {
+        console.error('Erro ao buscar flavor text:', error);
+        this.flavorTexts = [];
+        this.flavorText = '';
+        this.currentFlavorLanguage = 'en';
       }
     });
   }
