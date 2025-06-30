@@ -3,7 +3,7 @@
 Script para debug do banco de dados e ranking.
 """
 from sqlalchemy.orm import Session
-from app.core.database import engine, get_db
+from app.core.database import engine, get_db, Base
 from app.models.models import FavoritePokemon
 from app.services.favorite_service import FavoriteService
 from app.schemas.schemas import FavoritePokemonCreate
@@ -74,5 +74,6 @@ def test_add_favorite():
         db.close()
 
 if __name__ == "__main__":
-    debug_database()
-    test_add_favorite() 
+    print("Criando todas as tabelas do banco de dados...")
+    Base.metadata.create_all(bind=engine)
+    print("Tabelas criadas com sucesso!") 
