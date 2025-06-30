@@ -9,6 +9,14 @@
   - [x] Ajustar espaçamentos, tipografia, elementos, proporcionalidade.
   - [x] Adicionar mais descrições e imagens relacionadas (6+ descrições e múltiplas imagens).
   - [x] Refatorar CSS removendo elementos sci-fi excessivos e seguindo padrão do app.
+  - [x] **SISTEMA FINALIZADO:** Carrossel de imagens e descrições, visual premium, responsividade completa
+
+- [ ] **Melhorias futuras no sistema de detalhes**
+  - [ ] Adicionar animações de transição entre imagens do carrossel
+  - [ ] Implementar zoom nas imagens ao clicar
+  - [ ] Adicionar modo de visualização em tela cheia
+  - [ ] Implementar cache de imagens para melhor performance
+  - [ ] Adicionar indicadores visuais para imagens favoritas
 
 - [ ] **Adicionar mais textos e chaves de tradução ao sistema i18n**
   - [ ] Mapear textos fixos que ainda não estão internacionalizados.
@@ -19,8 +27,6 @@
   - [ ] Backend: endpoints de cadastro, login, geração e validação de JWT.
   - [ ] Frontend: telas de login/cadastro, armazenamento seguro do token, proteção de rotas.
   - [ ] Testar fluxo completo de autenticação e logout. 
-
-
 
 - [ ] **Criar e implementar sistema de pokemon Lendário**
  - [ ] Implementar lógica de chance aleatória para spawnar Pokémons lendários ao navegar pelas páginas.
