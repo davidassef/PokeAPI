@@ -214,25 +214,17 @@ ng e2e
 <details>
 <summary><strong>Clique para expandir o histórico</strong></summary>
 
-- 🎨 **[29/01/2025] Sistema de Detalhes Finalizado:**
-  - Carrossel de imagens com ordem correta: Artwork Oficial, Sprite Normal, Sprite Shiny, Costas Normal, Costas Shiny, Dream World, Home, Home Shiny
-  - Navegação fluida: setas, swipe, thumbnails com loop infinito
-  - Carrossel de descrições (flavor text) com filtro por idioma (PT-BR com fallback EN)
-  - Contador de descrições (ex: 1/12) e navegação por setas
-  - Visual premium: fundo gradiente escuro compatível com habilidades, glass effect, bordas arredondadas
-  - Layout compacto e centralizado com espaçamento refinado
-  - Responsividade aprimorada para diferentes orientações
-  - Código limpo, modular e pronto para melhorias futuras
-- 🌍 **[23/06/2025]** Padronização e cobertura total de i18n (títulos, menus, labels, botões)
-- 🏷️ **[23/06/2025]** Adição de todas as chaves de tradução faltantes nas páginas principais e configurações
-- 🖼️ **[23/06/2025]** Substituição do logo do menu lateral por Pokédex em alta definição
-- 📝 **[23/06/2025]** Atualização do plano de melhorias e README
-- 🛠️ **[23/06/2025]** Correção de labels e menus para uso de chaves minúsculas e com ponto
-- 🛡️ **[26/06/2025]** Página de favoritos desativada e removida dos módulos do frontend para build limpo
-- 🛠️ **[26/06/2025]** Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
-- 🧹 **[26/06/2025]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
-- ✅ **[26/06/2025]** Build do frontend validado e funcionando sem erros após remoção da página de favoritos
-- ⚠️ **[26/06/2025]** Pendente: ajuste do backend do ranking global para integração completa
+- 🚀 **[28/06/2025]** Sistema de ranking 100% finalizado e padronizado visualmente
+  - Espaçamento dos cards do ranking igual ao das outras páginas
+  - Responsividade e grid centralizado revisados
+  - Documentação reorganizada: docs/ no backend e frontend
+  - Novo: README_RANKING_SYSTEM detalhando funcionamento e arquitetura do ranking
+- 🚀 **[27/06/2025]** Commit e push do progresso total do projeto até o momento
+- 🚀 **[27/06/2025]** Estrutura pronta para reabilitar carregamento dos detalhes reais dos pokémons
+- 🚀 **[27/06/2025]** Ranking agora carrega sem travar, exibindo placeholders enquanto aguarda detalhes dos pokémons
+- 🚀 **[27/06/2025]** Template do ranking simplificado para evitar expressões complexas
+- 🚀 **[27/06/2025]** Melhoria de performance e uso de cache para favoritos e imagens
+- 🚀 **[27/06/2025]** Refatoração completa da página de ranking para evitar loop infinito no Angular
 - 🏆 **[27/06/2025] Novidades visuais no Ranking:**
   - Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
   - Badges de posição e contagem de capturas integrados aos cards
@@ -242,17 +234,25 @@ ng e2e
   - Para customizar o visual do ranking, edite apenas os arquivos:
     - `frontend/src/app/pages/ranking/ranking.page.html`
     - `frontend/src/app/pages/ranking/ranking.page.scss`
-- 🚀 **[27/06/2025]** Refatoração completa da página de ranking para evitar loop infinito no Angular
-- 🚀 **[27/06/2025]** Melhoria de performance e uso de cache para favoritos e imagens
-- 🚀 **[27/06/2025]** Template do ranking simplificado para evitar expressões complexas
-- 🚀 **[27/06/2025]** Ranking agora carrega sem travar, exibindo placeholders enquanto aguarda detalhes dos pokémons
-- 🚀 **[27/06/2025]** Estrutura pronta para reabilitar carregamento dos detalhes reais dos pokémons
-- 🚀 **[27/06/2025]** Commit e push do progresso total do projeto até o momento
-- 🚀 **[28/06/2025]** Sistema de ranking 100% finalizado e padronizado visualmente
-  - Espaçamento dos cards do ranking igual ao das outras páginas
-  - Responsividade e grid centralizado revisados
-  - Documentação reorganizada: docs/ no backend e frontend
-  - Novo: README_RANKING_SYSTEM detalhando funcionamento e arquitetura do ranking
+- ⚠️ **[26/06/2025]** Pendente: ajuste do backend do ranking global para integração completa
+- ✅ **[26/06/2025]** Build do frontend validado e funcionando sem erros após remoção da página de favoritos
+- 🧹 **[26/06/2025]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
+- 🛠️ **[26/06/2025]** Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
+- 🛡️ **[26/06/2025]** Página de favoritos desativada e removida dos módulos do frontend para build limpo
+- 🛠️ **[23/06/2025]** Correção de labels e menus para uso de chaves minúsculas e com ponto
+- 📝 **[23/06/2025]** Atualização do plano de melhorias e README
+- 🖼️ **[23/06/2025]** Substituição do logo do menu lateral por Pokédex em alta definição
+- 🏷️ **[23/06/2025]** Adição de todas as chaves de tradução faltantes nas páginas principais e configurações
+- 🌍 **[23/06/2025]** Padronização e cobertura total de i18n (títulos, menus, labels, botões)
+- 🎨 **[29/01/2025] Sistema de Detalhes Finalizado:**
+  - Carrossel de imagens com ordem correta: Artwork Oficial, Sprite Normal, Sprite Shiny, Costas Normal, Costas Shiny, Dream World, Home, Home Shiny
+  - Navegação fluida: setas, swipe, thumbnails com loop infinito
+  - Carrossel de descrições (flavor text) com filtro por idioma (PT-BR com fallback EN)
+  - Contador de descrições (ex: 1/12) e navegação por setas
+  - Visual premium: fundo gradiente escuro compatível com habilidades, glass effect, bordas arredondadas
+  - Layout compacto e centralizado com espaçamento refinado
+  - Responsividade aprimorada para diferentes orientações
+  - Código limpo, modular e pronto para melhorias futuras
 
 </details>
 
