@@ -214,6 +214,15 @@ ng e2e
 <details>
 <summary><strong>Clique para expandir o histórico</strong></summary>
 
+- 🎨 **[2025-01-29] Sistema de Detalhes Finalizado:**
+  - Carrossel de imagens com ordem correta: Artwork Oficial, Sprite Normal, Sprite Shiny, Costas Normal, Costas Shiny, Dream World, Home, Home Shiny
+  - Navegação fluida: setas, swipe, thumbnails com loop infinito
+  - Carrossel de descrições (flavor text) com filtro por idioma (PT-BR com fallback EN)
+  - Contador de descrições (ex: 1/12) e navegação por setas
+  - Visual premium: fundo gradiente escuro compatível com habilidades, glass effect, bordas arredondadas
+  - Layout compacto e centralizado com espaçamento refinado
+  - Responsividade aprimorada para diferentes orientações
+  - Código limpo, modular e pronto para melhorias futuras
 - 🌍 **[2025-06-23]** Padronização e cobertura total de i18n (títulos, menus, labels, botões)
 - 🏷️ **[2025-06-23]** Adição de todas as chaves de tradução faltantes nas páginas principais e configurações
 - 🖼️ **[2025-06-23]** Substituição do logo do menu lateral por Pokédex em alta definição
@@ -244,15 +253,6 @@ ng e2e
   - Responsividade e grid centralizado revisados
   - Documentação reorganizada: docs/ no backend e frontend
   - Novo: README_RANKING_SYSTEM detalhando funcionamento e arquitetura do ranking
-- 🎨 **[2025-01-29] Sistema de Detalhes Finalizado:**
-  - Carrossel de imagens com ordem correta: Artwork Oficial, Sprite Normal, Sprite Shiny, Costas Normal, Costas Shiny, Dream World, Home, Home Shiny
-  - Navegação fluida: setas, swipe, thumbnails com loop infinito
-  - Carrossel de descrições (flavor text) com filtro por idioma (PT-BR com fallback EN)
-  - Contador de descrições (ex: 1/12) e navegação por setas
-  - Visual premium: fundo gradiente escuro compatível com habilidades, glass effect, bordas arredondadas
-  - Layout compacto e centralizado com espaçamento refinado
-  - Responsividade aprimorada para diferentes orientações
-  - Código limpo, modular e pronto para melhorias futuras
 
 </details>
 
