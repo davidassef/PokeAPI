@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../core/services/settings.service';
 import { TranslationService } from '../../core/services/translation.service';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Component({
@@ -73,6 +73,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   isDragging = false;
   mouseStartX = 0;
 
+  private langChangeSub?: Subscription;
+
   constructor(
     private pokeApiService: PokeApiService, 
     private http: HttpClient,
@@ -98,6 +100,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     window.addEventListener('keydown', this.escListener);
+    // Listener para mudança de idioma
+    this.langChangeSub = this.translate.onLangChange.subscribe(() => {
+      this.fetchFlavorText();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -108,6 +114,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     window.removeEventListener('keydown', this.escListener);
+    this.langChangeSub?.unsubscribe();
   }
 
   onClose(event?: Event) {
@@ -296,85 +303,21 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flavorTexts = [];
     this.currentFlavorIndex = 0;
     this.isTranslating = false;
-    
-    // Obter idioma atual do app
+
     const currentAppLanguage = this.translate.currentLang || 'pt-BR';
-    
-    this.http.get<any>(`https://pokeapi.co/api/v2/pokemon-species/${this.pokemonId}/`).subscribe({
+
+    // Buscar flavor traduzido do backend
+    this.http.get<any>(`/api/v1/pokemon/${this.pokemonId}/flavor?lang=${currentAppLanguage}`).subscribe({
       next: (data) => {
-        let entries: any[] = [];
-        
-        // Lógica de idiomas para flavors:
-        // - PT-BR: usa inglês + tradução automática para português
-        // - EN: usa inglês
-        // - ES: usa espanhol quando disponível, senão inglês
-        if (currentAppLanguage === 'es-ES') {
-          // Para espanhol, tentar ES primeiro, depois EN
-          const esEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'es');
-          const enEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
-          entries = esEntries.length > 0 ? esEntries : enEntries;
-          this.currentFlavorLanguage = esEntries.length > 0 ? 'es' : 'en';
-        } else if (currentAppLanguage === 'pt-BR') {
-          // Para português, sempre usar inglês e traduzir
-          entries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
-          this.currentFlavorLanguage = 'pt'; // Será traduzido para português
-        } else {
-          // Para EN, sempre usar inglês
-          entries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
-          this.currentFlavorLanguage = 'en';
-        }
-        
-        // Processar e limpar os textos
-        const originalTexts = entries
-          .map((e: any) => e.flavor_text.replace(/\f|\n/g, ' '))
-          .filter((txt: string, idx: number, arr: string[]) => arr.indexOf(txt) === idx);
-        
-        // Se for português, traduzir os textos
-        if (currentAppLanguage === 'pt-BR' && originalTexts.length > 0) {
-          this.isTranslating = true;
-          this.translateFlavorTexts(originalTexts);
-        } else {
-          this.flavorTexts = originalTexts;
-          this.flavorText = this.flavorTexts[0] || '';
-          this.currentFlavorIndex = 0;
-        }
+        this.flavorTexts = data.flavors;
+        this.flavorText = this.flavorTexts[0] || '';
+        this.currentFlavorIndex = 0;
+        this.currentFlavorLanguage = currentAppLanguage.startsWith('pt') ? 'pt' : currentAppLanguage.startsWith('es') ? 'es' : 'en';
       },
       error: (error) => {
         console.error('Erro ao buscar flavor text:', error);
         this.flavorTexts = [];
         this.flavorText = '';
-        this.currentFlavorLanguage = 'en';
-        this.isTranslating = false;
-      }
-    });
-  }
-
-  /**
-   * Traduz os flavor texts para português
-   */
-  private translateFlavorTexts(originalTexts: string[]) {
-    // Criar array de observables de tradução
-    const translationObservables = originalTexts.map(text => 
-      this.translationService.translateText(text, 'en').pipe(
-        catchError(() => of(text)) // Se falhar, usar texto original
-      )
-    );
-
-    // Executar todas as traduções em paralelo
-    forkJoin(translationObservables).subscribe({
-      next: (translatedTexts) => {
-        this.flavorTexts = translatedTexts;
-        this.flavorText = this.flavorTexts[0] || '';
-        this.currentFlavorIndex = 0;
-        this.currentFlavorLanguage = 'pt';
-        this.isTranslating = false;
-      },
-      error: (error) => {
-        console.error('Erro na tradução:', error);
-        // Em caso de erro, usar textos originais
-        this.flavorTexts = originalTexts;
-        this.flavorText = this.flavorTexts[0] || '';
-        this.currentFlavorIndex = 0;
         this.currentFlavorLanguage = 'en';
         this.isTranslating = false;
       }
