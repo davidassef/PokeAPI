@@ -1,9 +1,13 @@
 """
 Rotas da API para integração com PokeAPI.
 """
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Dict, List
+from sqlalchemy.orm import Session
 from app.services.pokeapi_service import pokeapi_service
+from app.core.database import get_db
+from app.services.translation_service import get_or_translate_flavor
+import requests
 
 router = APIRouter(prefix="/pokemon", tags=["pokemon"])
 
@@ -72,3 +76,40 @@ async def get_type_details(type_name: str) -> Dict:
             detail="Tipo não encontrado"
         )
     return type_data
+
+
+@router.get("/{pokemon_id_or_name}/flavor")
+async def get_pokemon_flavor_translated(
+    pokemon_id_or_name: str, lang: str = "pt-BR", db: Session = Depends(get_db)
+):
+    """Retorna todos os flavors traduzidos para PT-BR, ou nativos para EN/ES."""
+    url = f"https://pokeapi.co/api/v2/pokemon-species/{pokemon_id_or_name}"
+    resp = requests.get(url, timeout=10)
+    if not resp.ok:
+        raise HTTPException(status_code=404, detail="Pokémon não encontrado na PokéAPI")
+    data = resp.json()
+
+    # Define idioma base para busca
+    if lang == "es-ES":
+        lang_api = "es"
+    else:
+        lang_api = "en"
+
+    # Busca todos os flavors no idioma base
+    flavors = [
+        entry["flavor_text"].replace('\n', ' ').replace('\f', ' ')
+        for entry in data["flavor_text_entries"] if entry["language"]["name"] == lang_api
+    ]
+    # Remove duplicados mantendo a ordem
+    flavors = list(dict.fromkeys(flavors))
+
+    # Se for PT-BR, traduzir todos os flavors do inglês para português
+    if lang == "pt-BR":
+        flavors_translated = [
+            get_or_translate_flavor(db, int(data["id"]), flavor, lang)
+            for flavor in flavors
+        ]
+        return {"flavors": flavors_translated, "lang": lang}
+    else:
+        # Para EN ou ES, retorna nativo
+        return {"flavors": flavors, "lang": lang}

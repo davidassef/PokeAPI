@@ -1,7 +1,7 @@
 """
 Modelos do banco de dados para o PokeAPI App.
 """
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..core.database import Base
@@ -47,3 +47,15 @@ class PokemonRanking(Base):
     pokemon_name = Column(String(100), nullable=False)
     favorite_count = Column(Integer, default=0)
     last_updated = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class PokemonFlavorTranslation(Base):
+    """Modelo para cache persistente de traduções de flavor de Pokémon."""
+    __tablename__ = "pokemon_flavor_translation"
+    id = Column(Integer, primary_key=True, index=True)
+    pokemon_id = Column(Integer, index=True)
+    flavor_en = Column(Text, nullable=False)
+    flavor_translated = Column(Text, nullable=False)
+    lang = Column(String(10), nullable=False)  # 'pt-BR', 'es-ES', etc
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    __table_args__ = (UniqueConstraint('pokemon_id', 'flavor_en', 'lang', name='_pokemon_flavor_lang_uc'),)
