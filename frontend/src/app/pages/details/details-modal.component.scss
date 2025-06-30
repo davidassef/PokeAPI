@@ -16,48 +16,59 @@
   position: relative;
   background: var(--ion-background-color);
   border-radius: 16px;
-  max-width: 900px;
-  max-height: 90vh;
-  width: 90vw;
+  max-width: 600px;
+  max-height: 80vh;
+  width: 96vw;
+  padding: 0;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  animation: modalFadeIn 0.3s ease-out;
+  box-shadow: 0 8px 32px 0 #0005, 0 0 0 2px #fff2;
+  border: 2.5px solid #fff3;
+  animation: modalFadeIn 0.35s cubic-bezier(0.4,0,0.2,1);
   display: flex;
   flex-direction: column;
 }
 
 @keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96) translateY(24px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.rainbow-text {
+  background: linear-gradient(90deg, #ff5f6d, #ffc371, #47e6ff, #43e97b, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.rainbow-border {
+  border: 2px solid;
+  border-image: linear-gradient(90deg, #ff5f6d, #ffc371, #47e6ff, #43e97b, #ffd700) 1;
 }
 
 .close-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: var(--ion-color-light);
-  border: none;
-  color: var(--ion-color-dark);
-  font-size: 24px;
+  top: 8px;
+  right: 8px;
+  background: #23272f;
+  color: #fff;
+  @extend .rainbow-border;
+  box-shadow: 0 2px 8px #0004;
+  font-size: 1.1rem;
   cursor: pointer;
-  padding: 8px;
+  padding: 2px;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   z-index: 1002;
-  
-  &:hover {
-    background: var(--ion-color-medium);
+  &:hover, &:focus {
+    background: #fff1;
+    box-shadow: 0 4px 16px #fff8;
+    filter: brightness(1.2) drop-shadow(0 0 8px #fff8);
   }
 }
 
@@ -66,7 +77,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px 16px;
+  padding: 12px 8px 8px;
   background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
   color: white;
   text-align: center;
@@ -91,25 +102,40 @@
 }
 
 .pokemon-main-image {
-  width: 120px;
-  height: 120px;
+  width: 90px;
+  height: 90px;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  margin-bottom: 4px;
+}
+
+.pokemon-name-types-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
 .sci-fi-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: white;
-  margin: 0 0 16px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: left;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(30, 32, 38, 0.7);
 }
 
 .type-chips-premium {
   display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 2px;
+  margin-right: 16px;
 }
 
 .type-chip-premium {
@@ -129,30 +155,16 @@
 .info-panels-premium {
   display: flex;
   flex-direction: row;
-  gap: 24px;
-  padding: 24px;
+  gap: 10px;
+  padding: 10px;
   justify-content: center;
   align-items: flex-start;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-  }
 }
 
-.basic-info-panel-premium {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 280px;
-  max-width: 320px;
-}
-
-.stats-panel-premium {
-  min-width: 300px;
-  max-width: 360px;
-  width: 100%;
+.basic-info-panel-premium, .stats-panel-premium {
+  gap: 8px;
+  min-width: 180px;
+  max-width: 260px;
 }
 
 .premium-glass {
@@ -160,35 +172,57 @@
   border-radius: 12px !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
   border: 1px solid var(--ion-color-light-shade) !important;
+  padding: 0 !important;
+  margin: 0 0 8px 0 !important;
+}
+
+.premium-glass.rainbow-bg {
+  background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 20%, #47e6ff 50%, #43e97b 80%, #ffd700 100%);
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.premium-glass.rainbow-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 32, 38, 0.70);
+  backdrop-filter: blur(8px) saturate(1.2);
+  z-index: 1;
+}
+.premium-glass.rainbow-bg > * {
+  position: relative;
+  z-index: 2;
 }
 
 ion-card {
   margin: 0;
-  border-radius: 12px;
+  border-radius: 10px !important;
   background: var(--ion-color-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08) !important;
   border: 1px solid var(--ion-color-light-shade);
+  padding: 0 !important;
 }
 
 ion-card-header {
-  padding: 16px 16px 8px;
+  padding: 10px 10px 4px;
   border-bottom: 1px solid var(--ion-color-light-shade);
 }
 
 ion-card-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--ion-color-dark);
 }
 
 ion-card-content {
-  padding: 16px;
+  padding: 10px;
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px 16px;
+  gap: 6px 8px;
 }
 
 .info-item {
@@ -214,7 +248,7 @@ ion-card-content {
 .stats-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .stat-item {
@@ -268,14 +302,14 @@ ion-card-content {
 .abilities-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }
 
 // Imagens relacionadas
 .images-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 12px;
+  gap: 4px;
   margin-top: 8px;
 }
 
@@ -317,7 +351,7 @@ ion-card-content {
 .moves-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   margin-bottom: 8px;
 }
 
@@ -330,14 +364,19 @@ ion-card-content {
 }
 
 // Responsividade
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .details-modal-container {
-    width: 95vw;
-    max-height: 95vh;
+    max-width: 98vw;
+    max-height: 92vh;
+    padding: 0;
   }
-  
-  .hero-section-premium {
-    padding: 16px 12px 12px;
+  .info-panels-premium {
+    gap: 6px;
+    padding: 4px;
+  }
+  .basic-info-panel-premium, .stats-panel-premium {
+    min-width: 0;
+    max-width: 100vw;
   }
   
   .pokemon-main-image {
@@ -347,12 +386,6 @@ ion-card-content {
   
   .sci-fi-title {
     font-size: 1.6rem;
-  }
-  
-  .basic-info-panel-premium,
-  .stats-panel-premium {
-    min-width: unset;
-    max-width: 100%;
   }
   
   .images-grid {
@@ -392,4 +425,686 @@ ion-card-content {
   .images-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.details-modal-content-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  gap: 10px;
+}
+
+.carousel-panel {
+  flex: 0 0 170px;
+}
+
+.info-panel {
+  margin-top: 18px;
+  align-items: flex-start;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pokemon-header-row {
+  margin-bottom: 10px;
+}
+
+.pokemon-name-types-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.carousel-image-container {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  background: linear-gradient(135deg, #181a20 70%, #43e97b33 85%, #47e6ff33 100%, #ff5f6d33 90%);
+  border-radius: 18px;
+  box-shadow: 0 4px 16px #0008, 0 0 0 2px #fff2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: box-shadow 0.3s;
+  animation: fadeInImg 0.5s;
+}
+
+@keyframes fadeInImg {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.carousel-main-image {
+  max-width: 140px;
+  max-height: 140px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: 0 2px 8px #0002;
+  transition: box-shadow 0.2s;
+}
+
+.carousel-thumbnails {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.carousel-thumb {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 7px;
+  border: 2px solid transparent;
+  background: #fff3;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 1px 4px #0001;
+  opacity: 0.85;
+}
+
+.carousel-thumb.selected {
+  border: 2px solid var(--ion-color-primary);
+  box-shadow: 0 0 8px var(--ion-color-primary-shade), 0 2px 8px #ffd70055;
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.carousel-thumb:hover, .carousel-thumb:focus {
+  border: 2px solid var(--ion-color-primary-shade);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.pokemon-id-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.pokemon-id {
+  font-size: 1.1rem;
+  color: var(--ion-color-medium);
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+.type-chips-premium {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.type-chip-premium {
+  font-size: 0.85rem;
+  border-radius: 14px;
+  padding: 0 10px;
+  height: 24px;
+  min-width: 48px;
+  box-shadow: 0 1px 4px #0001;
+}
+
+.flavor-text,
+.info-grid.compact,
+.abilities-row {
+  margin-bottom: 6px !important;
+  padding-bottom: 0 !important;
+}
+
+.stats-horizontal-panel {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Debug visual temporário */
+/*
+.flavor-text { background: rgba(255,0,0,0.1) !important; }
+.info-grid.compact { background: rgba(0,255,0,0.1) !important; }
+.abilities-row { background: rgba(0,0,255,0.1) !important; }
+.stats-horizontal-panel { background: rgba(255,255,0,0.1) !important; }
+*/
+
+.flavor-text.premium-glass {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 16px 0;
+  font-size: 15px;
+  color: var(--ion-color-dark);
+  background: linear-gradient(90deg, #181a20 65%, #23272f 80%, #43e97b22 100%) !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+  box-shadow: 0 2px 8px #0002 !important;
+  min-height: 48px;
+  border: none !important;
+  position: relative;
+
+  .flavor-icon {
+    font-size: 22px;
+    color: var(--ion-color-primary);
+    margin-right: 6px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+  .flavor-arrow {
+    background: rgba(255,255,255,0.7);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+    font-size: 18px;
+    margin: 0 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    &:hover:not(:disabled) {
+      background: var(--ion-color-primary-tint);
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+    }
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    ion-icon {
+      font-size: 22px;
+      color: var(--ion-color-primary);
+    }
+  }
+  .flavor-content {
+    flex: 1;
+    text-align: left;
+    font-size: 15.5px;
+    color: #fff;
+    padding: 0 10px;
+    min-width: 0;
+    word-break: break-word;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.08);
+  }
+  .flavor-count {
+    font-size: 13px;
+    color: var(--ion-color-medium);
+    margin-left: 8px;
+    min-width: 38px;
+    text-align: right;
+    font-weight: 500;
+    background: rgba(255,255,255,0.18);
+    border-radius: 8px;
+    padding: 2px 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+}
+
+@media (max-width: 600px) {
+  .flavor-text.premium-glass {
+    font-size: 14px;
+    padding: 8px 8px !important;
+    min-height: 44px;
+    .flavor-content {
+      font-size: 14px;
+      padding: 0 4px;
+    }
+    .flavor-arrow {
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+    }
+    .flavor-count {
+      font-size: 12px;
+      min-width: 28px;
+      padding: 1px 5px;
+    }
+  }
+}
+
+.flavor-icon {
+  margin-right: 10px;
+  align-self: flex-start;
+  font-size: 1.3em;
+  color: #fff;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.flavor-nav-arrow {
+  background: none;
+  border: none;
+  color: #ffd700;
+  font-size: 1.5em;
+  cursor: pointer;
+  margin: 0 4px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.flavor-nav-arrow:disabled {
+  color: #aaa;
+  opacity: 0.5;
+  cursor: default;
+}
+
+.flavor-nav-arrow:hover:not(:disabled), .flavor-nav-arrow:focus:not(:disabled) {
+  background: #ffd70033;
+}
+
+.info-grid.compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 8px auto;
+  text-align: center;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.label {
+  font-size: 0.95em;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+.abilities-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.abilities-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 6px 0 0;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.abilities-list.compact {
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+}
+
+.abilities-list ion-chip {
+  font-size: 0.85rem;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 12px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+}
+
+.abilities-list ion-chip[outline] {
+  border: 1.5px dashed #ffd700;
+  color: #b8860b;
+  background: #fffbe6;
+}
+
+.stats-horizontal-panel {
+  margin: 4px 0 0 0;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(90deg, #181a20 65%, #23272f 80%, #ff5f6d44 85%, #47e6ff44 100%) !important;
+}
+
+.stats-horizontal-list {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.stat-horizontal-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 54px;
+  max-width: 70px;
+  position: relative;
+}
+
+.stat-name {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.stat-bar-horizontal {
+  width: 100%;
+  height: 12px;
+  background: #eee;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px #0001;
+}
+
+.stat-fill-horizontal {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s;
+}
+
+/* Cores para cada atributo */
+.stat-horizontal-item:nth-child(1) .stat-fill-horizontal { background: #e74c3c; }
+.stat-horizontal-item:nth-child(2) .stat-fill-horizontal { background: #f39c12; }
+.stat-horizontal-item:nth-child(3) .stat-fill-horizontal { background: #3498db; }
+.stat-horizontal-item:nth-child(4) .stat-fill-horizontal { background: #9b59b6; }
+.stat-horizontal-item:nth-child(5) .stat-fill-horizontal { background: #27ae60; }
+.stat-horizontal-item:nth-child(6) .stat-fill-horizontal { background: #e67e22; }
+
+.stat-value {
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  margin-top: 1px;
+}
+
+.stats-total-horizontal {
+  margin-top: 8px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  text-align: center;
+  width: 100%;
+}
+
+.moves-panel {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.moves-card {
+  background: linear-gradient(90deg, #181a20 65%, #23272f 80%, #ff5f6d44 85%, #47e6ff44 100%) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px #0002 !important;
+  padding: 0 12px 12px 12px !important;
+}
+
+.moves-card.rainbow-bg {
+  background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 20%, #47e6ff 50%, #43e97b 80%, #ffd700 100%);
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.moves-card.rainbow-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 32, 38, 0.70);
+  backdrop-filter: blur(8px) saturate(1.2);
+  z-index: 1;
+}
+.moves-card.rainbow-bg > * {
+  position: relative;
+  z-index: 2;
+}
+
+.moves-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 2px;
+  justify-content: center;
+}
+
+.moves-list ion-chip {
+  font-size: 0.95rem;
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 14px;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  background: #fffbe6;
+  color: #23272f;
+  border: 1.5px solid #ffd700;
+  box-shadow: 0 1px 4px #ffd70033;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.moves-note {
+  font-size: 0.93rem;
+  color: #ffd700;
+  font-style: italic;
+  margin-top: 4px;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .details-modal-content-row {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 2px;
+  }
+  .info-panel {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 100vw;
+    align-items: center;
+  }
+  .carousel-panel {
+    flex: none;
+    width: 100%;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .carousel-image-container {
+    width: 110px;
+    height: 110px;
+  }
+  .carousel-main-image {
+    max-width: 90px;
+    max-height: 90px;
+  }
+  .flavor-text.premium-glass {
+    font-size: 0.92rem;
+    padding: 8px 6px 8px 32px;
+    min-height: 36px;
+  }
+}
+
+.abilities-title {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  margin-bottom: 2px;
+  margin-left: 2px;
+  letter-spacing: 0.5px;
+}
+
+.pokemon-header-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+.pokemon-name-types-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.sci-fi-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: left;
+  line-height: 1.1;
+  padding-bottom: 2px;
+}
+.info-panel {
+  margin-bottom: 6px;
+}
+.stats-horizontal-panel {
+  margin-top: 8px;
+}
+
+.pokemon-id {
+  font-size: 1.1rem;
+  color: var(--ion-color-medium);
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0.85;
+  min-width: 48px;
+  text-align: left;
+  margin: 0;
+  align-self: center;
+}
+
+.pokemon-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 0;
+}
+
+.type-chips-premium {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.pokemon-name-types-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.abilities-panel {
+  background: linear-gradient(90deg, #181a20 65%, #23272f 80%, #43e97b22 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #0002;
+  padding: 12px 18px 10px 18px;
+  margin: 10px 0 0 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+ion-chip.rainbow-chip-border {
+  position: relative;
+  background: #23272f !important;
+  border: none !important;
+  box-shadow: none;
+  z-index: 1;
+  border-radius: 999px !important;
+  overflow: visible;
+}
+
+ion-chip.rainbow-chip-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b96a56, #2fa4ab, #bfa940);
+}
+
+::ng-deep ion-chip.rainbow-chip-border {
+  border-radius: 999px !important;
+}
+
+.ability-chip-premium {
+  background: rgba(30, 32, 38, 0.7);
+  color: #111;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 999px;
+  padding: 0 16px;
+  min-height: 24px;
+  letter-spacing: 0.5px;
+  transition: none;
+  pointer-events: none;
+  cursor: default;
+  user-select: none;
+}
+
+.pokemon-title-chip {
+  @extend .type-chip-premium;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  background: rgba(30, 32, 38, 0.7) !important;
+  color: #fff !important;
+  letter-spacing: 1px;
+  min-width: unset;
+  padding: 0 18px;
+  margin-right: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(30,32,38,0.7);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  z-index: 2;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.carousel-arrow.left { left: 8px; }
+.carousel-arrow.right { right: 8px; }
+.carousel-arrow:active, .carousel-arrow:focus {
+  background: #23272f;
+  box-shadow: 0 0 8px #fff4;
 } 
