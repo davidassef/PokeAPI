@@ -22,8 +22,7 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.storage.create();
-    // Garante que as configurações (incluindo tema) sejam carregadas e aplicadas
-    await this.settingsService.loadSettings();
+    // As configurações já são carregadas no initializeApp
   }
 
   async initializeApp() {
@@ -31,8 +30,13 @@ export class AppComponent implements OnInit {
       // Configurar idioma padrão
       this.translate.setDefaultLang('pt-BR');
 
-      // Verificar idioma salvo
-      const savedLanguage = await this.storage.get('app-language');
+      // Aguardar o carregamento das configurações
+      await this.settingsService.loadSettings();
+      
+      // Obter idioma das configurações
+      const settings = this.settingsService.getCurrentSettings();
+      const savedLanguage = settings.language;
+      
       if (savedLanguage) {
         this.translate.use(savedLanguage);
       } else {
@@ -41,8 +45,11 @@ export class AppComponent implements OnInit {
         const supportedLangs = ['pt-BR', 'en-US', 'es-ES'];
         const langToUse = supportedLangs.includes(browserLang || '') ? browserLang : 'pt-BR';
         this.translate.use(langToUse || 'pt-BR');
+        
+        // Salvar o idioma detectado nas configurações
+        const detectedLanguage = (langToUse || 'pt-BR') as 'pt-BR' | 'en-US' | 'es-ES';
+        await this.settingsService.saveSettings({ language: detectedLanguage });
       }
-      // O tema será aplicado pelo settingsService.loadSettings() em ngOnInit
     });
   }
 }

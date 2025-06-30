@@ -8,7 +8,6 @@ import { DetailsPageRoutingModule } from './details-routing.module';
 import { DetailsPage } from './details.page';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { SharedPipesModule } from '../../shared/pipes/shared-pipes.module';
-import { DetailsModalComponent } from './details-modal.component';
 
 @NgModule({
   imports: [
@@ -20,8 +19,7 @@ import { DetailsModalComponent } from './details-modal.component';
     SharedComponentsModule,
     SharedPipesModule
   ],
-  declarations: [DetailsPage, DetailsModalComponent],
-  exports: [DetailsModalComponent],
+  declarations: [DetailsPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DetailsPageModule {}

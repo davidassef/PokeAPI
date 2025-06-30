@@ -37,7 +37,7 @@
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ currentRanking[1].favoriteCount }}
         </span>
-        <app-pokemon-card [pokemon]="currentRanking[1].pokemon"></app-pokemon-card>
+        <app-pokemon-card [pokemon]="currentRanking[1].pokemon" (cardClick)="openDetailsModal(currentRanking[1].pokemon.id)"></app-pokemon-card>
       </div>
       <div *ngIf="currentRanking.length > 0 && currentRanking[0].pokemon && currentRanking[0].pokemon.id > 0" class="podium-card podium-first">
         <span class="podium-crown floating" title="Campeão">👑</span>
@@ -45,7 +45,8 @@
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ currentRanking[0].favoriteCount }}
         </span>
-        <app-pokemon-card [pokemon]="currentRanking[0].pokemon"></app-pokemon-card>
+        <app-pokemon-card [pokemon]="currentRanking[0].pokemon" (cardClick)="openDetailsModal(currentRanking[0].pokemon.id)"></app-pokemon-card>
+        <div class="champion-banner">{{ 'ranking_page.champion' | translate }}</div>
       </div>
       <div *ngIf="currentRanking.length > 2 && currentRanking[2].pokemon && currentRanking[2].pokemon.id > 0" class="podium-card podium-third">
         <span class="podium-medal floating" title="Medalha de Bronze">🥉</span>
@@ -53,7 +54,7 @@
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ currentRanking[2].favoriteCount }}
         </span>
-        <app-pokemon-card [pokemon]="currentRanking[2].pokemon"></app-pokemon-card>
+        <app-pokemon-card [pokemon]="currentRanking[2].pokemon" (cardClick)="openDetailsModal(currentRanking[2].pokemon.id)"></app-pokemon-card>
       </div>
     </div>
     <!-- Grid dos demais cards -->
@@ -65,7 +66,8 @@
           </div>
           <app-pokemon-card
             [pokemon]="item.pokemon"
-            [favoriteCount]="item.favoriteCount">
+            [favoriteCount]="item.favoriteCount"
+            (cardClick)="openDetailsModal(item.pokemon.id)">
           </app-pokemon-card>
         </div>
       </div>
@@ -94,5 +96,11 @@
       {{ 'ranking_page.EXPLORE_POKEMON' | translate }}
     </ion-button>
   </div>
+
+  <app-details-modal
+    *ngIf="showDetailsModal"
+    [pokemonId]="selectedPokemonId || 0"
+    (close)="closeDetailsModal()">
+  </app-details-modal>
 </ion-content>
 

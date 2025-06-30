@@ -40,6 +40,9 @@ export class CapturedPage implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
+  showDetailsModal = false;
+  selectedPokemonId: number | null = null;
+
   get currentFilterOptions(): FilterOptions {
     return {
       searchTerm: this.currentFilters.name || '',
@@ -165,7 +168,13 @@ export class CapturedPage implements OnInit, OnDestroy {
   }
 
   navigateToDetails(pokemonId: number) {
-    this.router.navigate(['/pokemon', pokemonId]);
+    this.selectedPokemonId = pokemonId;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedPokemonId = null;
   }
 
   /**

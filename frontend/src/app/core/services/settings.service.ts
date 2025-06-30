@@ -67,7 +67,6 @@ export class SettingsService {
 
   async updateLanguage(language: 'pt-BR' | 'en-US' | 'es-ES'): Promise<void> {
     await this.storageReady;
-    await this.storage.set('app-language', language);
     await this.saveSettings({ language });
     this.translate.use(language);
   }
@@ -113,7 +112,6 @@ export class SettingsService {
       soundVolume: 0.5
     };
     await this.storage.remove(this.SETTINGS_KEY);
-    await this.storage.remove('app-language');
     this.settingsSubject.next(defaultSettings);
     this.applySettings(defaultSettings);
   }
