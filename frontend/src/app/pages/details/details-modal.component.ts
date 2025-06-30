@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, EventEmitter, Output, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { PokeApiService } from '../../core/services/pokeapi.service';
 import { Pokemon } from '../../models/pokemon.model';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-details-modal',
@@ -17,13 +18,55 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedImageType: 'default' | 'shiny' = 'default';
   currentImageUrl: string = '';
 
+  // Carrossel de imagens
+  carouselImages: { url: string, label: string }[] = [];
+  currentCarouselIndex = 0;
+  get currentCarouselImage() {
+    const image = this.carouselImages[this.currentCarouselIndex]?.url || '';
+    return image;
+  }
+  selectCarouselImage(idx: number) {
+    this.currentCarouselIndex = idx;
+  }
+
+  // Flavor text
+  flavorText: string = '';
+  flavorTexts: string[] = [];
+  currentFlavorIndex: number = 0;
+
   private escListener = (event: KeyboardEvent) => {
     if (event.key === 'Escape') {
       this.onClose();
     }
   };
 
-  constructor(private pokeApiService: PokeApiService) {}
+  private typeColorMap: { [key: string]: string } = {
+    normal: '#A8A77A',
+    fire: '#EE8130',
+    water: '#6390F0',
+    electric: '#F7D02C',
+    grass: '#7AC74C',
+    ice: '#96D9D6',
+    fighting: '#C22E28',
+    poison: '#A33EA1',
+    ground: '#E2BF65',
+    flying: '#A98FF3',
+    psychic: '#F95587',
+    bug: '#A6B91A',
+    rock: '#B6A136',
+    ghost: '#735797',
+    dragon: '#6F35FC',
+    dark: '#705746',
+    steel: '#B7B7CE',
+    fairy: '#D685AD'
+  };
+
+  touchStartX = 0;
+  touchEndX = 0;
+  isDragging = false;
+  mouseStartX = 0;
+
+  constructor(private pokeApiService: PokeApiService, private http: HttpClient) {}
 
   ngOnInit(): void {
     if (this.pokemonId) {
@@ -32,6 +75,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (data) => {
           this.pokemon = data;
           this.currentImageUrl = this.getCurrentImage();
+          this.setupCarouselImages();
+          this.fetchFlavorText();
           this.loading = false;
         },
         error: () => {
@@ -87,16 +132,16 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return (this.pokemon.sprites?.other?.['official-artwork'] as any)?.front_shiny ||
              (this.pokemon.sprites as any)?.front_shiny ||
              this.pokemon.sprites?.front_default ||
-             'assets/images/pokemon-placeholder.png';
+             'assets/img/pokemon-placeholder.png';
     }
     
     return (this.pokemon.sprites?.other?.['official-artwork'] as any)?.front_default ||
            this.pokemon.sprites?.front_default ||
-           'assets/images/pokemon-placeholder.png';
+           'assets/img/pokemon-placeholder.png';
   }
 
   onImageError(event: any) {
-    event.target.src = 'assets/images/pokemon-placeholder.png';
+    event.target.src = 'assets/img/pokemon-placeholder.png';
   }
 
   // Métodos para cores e gradientes
@@ -181,5 +226,222 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Retorna os primeiros 8 movimentos para não sobrecarregar a interface
     return this.pokemon.moves.slice(0, 8);
+  }
+
+  setupCarouselImages() {
+    if (!this.pokemon) return;
+    const sprites = this.pokemon.sprites;
+    this.carouselImages = [];
+
+    // 1. Artwork oficial (MESMA DOS CARDS - melhor qualidade)
+    if (sprites?.other?.['official-artwork']?.front_default) {
+      this.carouselImages.push({ url: sprites.other['official-artwork'].front_default, label: 'Artwork Oficial' });
+    }
+
+    // 2. Sprite normal (frente) - BÁSICO
+    if (sprites?.front_default) {
+      this.carouselImages.push({ url: sprites.front_default, label: 'Sprite Normal' });
+    }
+
+    // 3. Sprite shiny (frente) - BÁSICO SHINY
+    if (sprites?.front_shiny) {
+      this.carouselImages.push({ url: sprites.front_shiny, label: 'Sprite Shiny' });
+    }
+
+    // 4. Sprite normal (costas) - BÁSICO COSTAS
+    if (sprites?.back_default) {
+      this.carouselImages.push({ url: sprites.back_default, label: 'Costas Normal' });
+    }
+
+    // 5. Sprite shiny (costas) - BÁSICO SHINY COSTAS
+    if (sprites?.back_shiny) {
+      this.carouselImages.push({ url: sprites.back_shiny, label: 'Costas Shiny' });
+    }
+
+    // 6. Dream World (ESPECIAL)
+    const otherSprites = sprites?.other as any;
+    if (otherSprites?.dream_world?.front_default) {
+      this.carouselImages.push({ url: otherSprites.dream_world.front_default, label: 'Dream World' });
+    }
+
+    // 7. Home (ESPECIAL)
+    if (otherSprites?.home?.front_default) {
+      this.carouselImages.push({ url: otherSprites.home.front_default, label: 'Home' });
+    }
+
+    // 8. Home Shiny (ESPECIAL)
+    if (otherSprites?.home?.front_shiny) {
+      this.carouselImages.push({ url: otherSprites.home.front_shiny, label: 'Home Shiny' });
+    }
+
+    // Reset para primeira imagem
+    this.currentCarouselIndex = 0;
+  }
+
+  fetchFlavorText() {
+    this.flavorText = '';
+    this.flavorTexts = [];
+    this.currentFlavorIndex = 0;
+    this.http.get<any>(`https://pokeapi.co/api/v2/pokemon-species/${this.pokemonId}/`).subscribe({
+      next: (data) => {
+        // Filtra por PT-BR, se não houver, pega EN
+        const ptEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'pt');
+        const enEntries = data.flavor_text_entries.filter((e: any) => e.language.name === 'en');
+        const entries = ptEntries.length > 0 ? ptEntries : enEntries;
+        this.flavorTexts = entries.map((e: any) => e.flavor_text.replace(/\f|\n/g, ' ')).filter((txt: string, idx: number, arr: string[]) => arr.indexOf(txt) === idx);
+        this.flavorText = this.flavorTexts[0] || '';
+        this.currentFlavorIndex = 0;
+      }
+    });
+  }
+
+  getTypeGradientBackground(): string {
+    const mainType = this.pokemon?.types?.[0]?.type?.name || 'normal';
+    const typeColor = this.typeColorMap[mainType] || '#A8A77A';
+    return `linear-gradient(135deg, #181a20 70%, ${typeColor} 100%)`;
+  }
+
+  onMouseDown(event: MouseEvent) {
+    // Não iniciar drag se clicou em um botão
+    if ((event.target as HTMLElement).closest('button')) {
+      this.isDragging = false;
+      return;
+    }
+    
+    this.mouseStartX = event.clientX;
+    this.isDragging = true;
+  }
+
+  onMouseMove(event: MouseEvent) {
+    if (!this.isDragging) return;
+    this.touchEndX = event.clientX;
+  }
+
+  onMouseUp(event: MouseEvent) {
+    if (!this.isDragging) return;
+    
+    // Não processar drag se clicou em um botão
+    if ((event.target as HTMLElement).closest('button')) {
+      this.isDragging = false;
+      this.mouseStartX = 0;
+      this.touchEndX = 0;
+      return;
+    }
+    
+    const deltaX = this.touchEndX - this.mouseStartX;
+    console.log('🖱️ Mouse up - deltaX:', deltaX);
+    
+    // Só processar se foi um drag significativo (mais de 50px)
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        console.log('🖱️ Drag direita - voltando');
+        this.prevCarouselImage();
+      } else {
+        console.log('🖱️ Drag esquerda - avançando');
+        this.nextCarouselImage();
+      }
+    }
+    
+    this.isDragging = false;
+    this.mouseStartX = 0;
+    this.touchEndX = 0;
+  }
+
+  onTouchStart(event: TouchEvent) {
+    // Não iniciar touch se clicou em um botão
+    if ((event.target as HTMLElement).closest('button')) {
+      this.isDragging = false;
+      return;
+    }
+    
+    this.touchStartX = event.touches[0].clientX;
+    this.isDragging = true;
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (!this.isDragging) return;
+    this.touchEndX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    if (!this.isDragging) return;
+    
+    // Não processar touch se clicou em um botão
+    if ((event.target as HTMLElement).closest('button')) {
+      this.isDragging = false;
+      this.touchStartX = 0;
+      this.touchEndX = 0;
+      return;
+    }
+    
+    const deltaX = this.touchEndX - this.touchStartX;
+    console.log('📱 Touch end - deltaX:', deltaX);
+    
+    // Só processar se foi um swipe significativo (mais de 50px)
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        console.log('📱 Swipe direita - voltando');
+        this.prevCarouselImage();
+      } else {
+        console.log('📱 Swipe esquerda - avançando');
+        this.nextCarouselImage();
+      }
+    }
+    
+    this.isDragging = false;
+    this.touchStartX = 0;
+    this.touchEndX = 0;
+  }
+
+  prevCarouselImage(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    
+    if (this.carouselImages.length === 0) return;
+    
+    if (this.currentCarouselIndex > 0) {
+      this.currentCarouselIndex--;
+    } else {
+      // Volta para a última imagem (loop)
+      this.currentCarouselIndex = this.carouselImages.length - 1;
+    }
+  }
+
+  nextCarouselImage(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    
+    if (this.carouselImages.length === 0) return;
+    
+    if (this.currentCarouselIndex < this.carouselImages.length - 1) {
+      this.currentCarouselIndex++;
+    } else {
+      // Vai para a primeira imagem (loop)
+      this.currentCarouselIndex = 0;
+    }
+  }
+
+  prevFlavorText() {
+    if (this.flavorTexts.length === 0) return;
+    if (this.currentFlavorIndex > 0) {
+      this.currentFlavorIndex--;
+    } else {
+      this.currentFlavorIndex = this.flavorTexts.length - 1;
+    }
+    this.flavorText = this.flavorTexts[this.currentFlavorIndex];
+  }
+
+  nextFlavorText() {
+    if (this.flavorTexts.length === 0) return;
+    if (this.currentFlavorIndex < this.flavorTexts.length - 1) {
+      this.currentFlavorIndex++;
+    } else {
+      this.currentFlavorIndex = 0;
+    }
+    this.flavorText = this.flavorTexts[this.currentFlavorIndex];
   }
 } 
