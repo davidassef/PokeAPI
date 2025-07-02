@@ -87,7 +87,7 @@ backend/
 
 ### ✅ Implementadas
 - [x] 🏠 **Página Home** - Lista e busca de Pokémon
-- [x] 🔍 **Página de Detalhes** - Informações completas com stats animados
+- [x] 🔍 **Página de Detalhes** - Modal moderno com abas temáticas e animações
 - [x] ⭐ **Sistema de Capturas (Favoritos)** - Adicionar/remover favoritos
 - [x] ⚙️ **Configurações** - Troca de idioma e tema
 - [x] 🎵 **Player Musical** - Música ambiente persistente
@@ -95,7 +95,9 @@ backend/
 - [x] 🌐 **Internacionalização** - Português, Inglês e Espanhol
 - [x] 🎨 **Componentes Reutilizáveis** - Pokemon Card, Loading Spinner, etc.
 - [x] 🔧 **Backend API** - Endpoints para usuários, favoritos e ranking
-- [x] 🏆 **Página de Ranking** - Pokémon mais populares (carregamento otimizado, aguardando detalhes finais dos pokémons)
+- [x] 🏆 **Página de Ranking** - Pokémon mais populares (carregamento otimizado)
+- [x] ⚡ **Botão Surpreenda-me** - Pokémon aleatório com cooldown inteligente
+- [x] 📖 **Flavor Texts Otimizados** - Container fixo com scroll e indicadores visuais
 
 ### 🚧 Em Desenvolvimento
 - [ ] 🔐 **Sistema de Autenticação** - Login e perfis de usuário
@@ -197,22 +199,58 @@ ng e2e
 
 ## 📊 Status de Desenvolvimento
 
-### Progresso Geral: 80% ✅
+### Progresso Geral: 85% ✅
 
 | Módulo | Status | Progresso |
 |--------|--------|-----------|
 | 🎨 UI/UX Design | ✅ Completo | 100% |
 | 🏗️ Arquitetura | ✅ Completo | 100% |
-| 📱 Frontend Core | ✅ Completo | 95% |
-| 🔧 Backend API | ✅ Completo | 90% |
-| 🧪 Testes | 🚧 Em andamento | 60% |
-| 📱 Mobile Build | 🚧 Em andamento | 40% |
+| 📱 Frontend Core | ✅ Completo | 98% |
+| 🔧 Backend API | ✅ Completo | 92% |
+| 🧪 Testes | 🚧 Em andamento | 65% |
+| 📱 Mobile Build | 🚧 Em andamento | 45% |
 | 🌐 Deploy | ⏳ Pendente | 0% |
 
 ### Últimas Atualizações
 
 <details>
 <summary><strong>📋 Clique para expandir o histórico completo de atualizações</strong></summary>
+
+- 🚀 **[02/07/2025] Sistema de Cooldown do Botão Surpreenda-me:**
+  - Implementado cooldown de 3 segundos entre usos para evitar spam de requisições
+  - Reabertura automática: fecha modal atual e abre novo Pokémon aleatório
+  - Animações visuais: pulso, rotação do ícone e contador visual durante cooldown
+  - Estados visuais distintos (ativo/cooldown) com cores diferentes (warning/medium)
+  - Traduções em PT-BR, EN-US e ES-ES para estado de espera ("Aguarde", "Wait", "Espera")
+  - Limpeza adequada de intervals no ngOnDestroy para evitar memory leaks
+
+- 📱 **[02/07/2025] Otimização Avançada dos Flavor Texts:**
+  - Container de altura fixa (120px) para evitar reposicionamento dos controles de navegação
+  - Sistema de scroll interno quando o texto excede a altura do container
+  - Indicador visual animado com ícone e texto "Há mais texto" quando necessário
+  - Auto-ocultação do indicador após scroll ou automaticamente em 3 segundos
+  - Scrollbar customizada com estilo verde temático consistente com a interface
+  - Reset automático da posição de scroll ao navegar entre flavors
+  - Animações CSS: pulse contínuo e bounce no ícone do indicador
+
+- 🐛 **[02/07/2025] Correções Críticas de Tradução:**
+  - Integração com traduções locais (flavors_ptbr.json) via backend
+  - Detecção inteligente de textos em inglês mesmo com lang=pt-BR
+  - Fallback automático para arquivo local quando backend retorna inglês
+  - Endpoint /static/flavors_ptbr.json adicionado no backend para servir traduções
+  - Método isTextInPortuguese() para validação precisa de idioma
+  - Logs detalhados para debugging de problemas de tradução
+  - Correção do BrowserAnimationsModule no app.module.ts
+
+- 🎨 **[01/07/2025] Modal de Detalhes - Refatoração Completa (v3.2.0):**
+  - Header refatorado com layout lado a lado: imagem + informações centralizadas
+  - Sistema de abas implementado: Visão Geral, Combate, Evolução, Curiosidades
+  - Carrossel de imagens com miniaturas em linha (máximo 3 visíveis)
+  - Informações básicas organizadas em duas seções centralizadas no header
+  - Remoção de redundâncias entre header e abas para layout limpo
+  - Sistema de tradução para stats, badges, habilidades e flavor texts
+  - Navegação por teclado (setas, Tab, Escape) e acessibilidade completa
+  - Animações de entrada/saída do modal e transições entre abas
 
 - 🎨 **[29/06/2025] Sistema de Detalhes Finalizado:**
   - Carrossel de imagens com ordem correta: Artwork Oficial, Sprite Normal, Sprite Shiny, Costas Normal, Costas Shiny, Dream World, Home, Home Shiny
