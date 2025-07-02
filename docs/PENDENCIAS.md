@@ -7,7 +7,7 @@
 - ✅ **Carrossel de Descrições**: Implementado com filtro por idioma e navegação
 - ✅ **Layout Premium**: Glass effect, gradientes dinâmicos, visual moderno
 - ✅ **Responsividade**: Adaptado para diferentes orientações de dispositivos
-- ✅ **Sistema de Idiomas para Flavors**: 
+- ✅ **Sistema de Idiomas para Flavors**:
   - PT-BR/EN: flavors em inglês (fallback)
   - ES: flavors em espanhol quando disponível, senão inglês
   - Indicador visual do idioma (EN/ES)
@@ -132,7 +132,7 @@
   - [ ] **Criar e implementar sistema de autenticação JWT**
   - [ ] Backend: endpoints de cadastro, login, geração e validação de JWT.
   - [ ] Frontend: telas de login/cadastro, armazenamento seguro do token, proteção de rotas.
-  - [ ] Testar fluxo completo de autenticação e logout. 
+  - [ ] Testar fluxo completo de autenticação e logout.
 
 - [ ] **Criar e implementar sistema de pokemon Lendário**
  - [ ] Implementar lógica de chance aleatória para spawnar Pokémons lendários ao navegar pelas páginas.
@@ -142,15 +142,17 @@
  - [ ] Implementar sistema de notificação para alertar sobre Pokémons lendários.
  - [ ] Criar animações de transição e efeitos de partículas para cards lendários.
  - [ ] Testar balanceamento da chance de aparecimento e experiência do usuário.
+ - [ ] Documentar o sistema de Pokémons lendários, incluindo regras de spawn e características visuais.
+ - [ ] Garantir que o sistema funcione em todas as páginas de Pokémons, mantendo a performance e responsividade.
+ - [ ] Implementar testes unitários e de integração para o sistema de Pokémons lendários.
+ - [ ] Revisar e otimizar o código para garantir que o sistema de Pokémons lendários não afete a performance geral do app.
+ - [ ] Adicionar suporte a Pokémons lendários em diferentes idiomas, garantindo que as descrições e nomes sejam traduzidos corretamente.
+ - [ ] Implementar um sistema de cache para os Pokémons lendários, evitando chamadas excessivas à API.
+ - [ ] Adicionar um mini-game ou desafio especial ao capturar um Pokémon lendário, aumentando a interatividade.
+ - [ ] Criar um sistema de recompensas para capturas de Pokémons lendários, incentivando os usuários a participar ativamente.
+ - [ ] Implementar um sistema de leaderboard para capturas de Pokémons lendários, permitindo que os usuários comparem suas conquistas.
 
-- [ ] **Melhorias futuras no sistema de detalhes**
-  - [ ] Adicionar animações de transição entre imagens do carrossel
-  - [ ] Implementar zoom nas imagens ao clicar
-  - [ ] Adicionar modo de visualização em tela cheia
-  - [ ] Implementar cache de imagens para melhor performance
-  - [ ] Adicionar indicadores visuais para imagens favoritas
-
-- [ ] **Adicionar mais textos e chaves de tradução ao sistema i18n**
+- [ ] **Revisão de mais textos e chaves de tradução ao sistema i18n**
   - [ ] Mapear textos fixos que ainda não estão internacionalizados.
   - [ ] Adicionar novas chaves nos arquivos de tradução (pt-BR, en-US, es-ES).
   - [ ] Garantir cobertura de todos os fluxos principais.

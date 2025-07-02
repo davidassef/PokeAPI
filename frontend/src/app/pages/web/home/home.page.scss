@@ -288,6 +288,66 @@ ion-content {
   100% { box-shadow: 0 8px 32px #ffd700cc, 0 0 0 8px #fffbe6cc inset; }
 }
 
+// Estilos do cooldown do botão Surpreenda-me
+.surpreenda-fab.cooldown {
+  animation: cooldownPulse 1s infinite ease-in-out;
+  box-shadow: 0 4px 24px #888888aa, 0 0 0 4px #e0e0e0 inset;
+
+  .surpreenda-icon {
+    animation: cooldownRotate 1s infinite linear;
+  }
+}
+
+.cooldown-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+
+  .cooldown-number {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.surpreenda-label:disabled {
+  background: linear-gradient(90deg, #cccccc 0%, #aaaaaa 60%, #e0e0e0 100%);
+  color: #666;
+  cursor: not-allowed;
+  filter: none;
+  box-shadow: 0 2px 12px #cccccc55;
+
+  &:active, &:focus {
+    filter: none;
+    box-shadow: 0 2px 12px #cccccc55;
+  }
+}
+
+@keyframes cooldownPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes cooldownRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 ion-fab[vertical="bottom"][horizontal="start"] {
   margin-bottom: 70px;
 }

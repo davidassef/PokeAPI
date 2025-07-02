@@ -1,158 +1,399 @@
-<div class="details-modal-overlay" (click)="onClose($event)">
+<div class="details-modal-overlay" (click)="onClose($event)" [@modalEnter]>
   <div class="details-modal-container" (click)="$event.stopPropagation()">
-    <!-- Botão de fechar -->
-    <button #closeBtn class="close-btn" type="button" (click)="onClose($event)" tabindex="0">&times;</button>
-    
-    <!-- Hero centralizado -->
-    <div class="details-modal-content-row">
-      <!-- Carrossel de imagens à esquerda -->
-      <div class="carousel-panel">
-        <div
-          class="carousel-image-container"
-          [ngStyle]="{ 'background': getTypeGradientBackground() }"
-          (touchstart)="onTouchStart($event)"
-          (touchmove)="onTouchMove($event)"
-          (touchend)="onTouchEnd($event)"
-          (mousedown)="onMouseDown($event)"
-          (mousemove)="onMouseMove($event)"
-          (mouseup)="onMouseUp($event)"
-        >
-          <button class="carousel-arrow left" (click)="prevCarouselImage($event)">
-            <ion-icon name="chevron-back-outline"></ion-icon>
+
+    <!-- Header otimizado com layout lado a lado -->
+    <div class="pokemon-header-optimized" [@headerPulse]="headerState"
+         [style.background]="pokemonTheme?.gradient">
+
+      <!-- Seção da imagem com carrossel -->
+      <div class="pokemon-image-section">
+        <div class="image-carousel-container">
+          <!-- Setas de navegação -->
+          <button class="carousel-nav prev"
+                  (click)="previousCarouselImage()"
+                  [disabled]="carouselImages.length <= 1"
+                  *ngIf="carouselImages.length > 1">
+            <i class="fas fa-chevron-left"></i>
           </button>
-          <img [src]="currentCarouselImage" [alt]="pokemon?.name" class="carousel-main-image" (error)="onImageError($event)" />
-          <button class="carousel-arrow right" (click)="nextCarouselImage($event)">
-            <ion-icon name="chevron-forward-outline"></ion-icon>
+
+          <!-- Imagem principal -->
+          <div class="main-image-container">
+            <img
+              *ngIf="currentCarouselImage"
+              [src]="currentCarouselImage"
+              [alt]="pokemon?.name"
+              class="pokemon-main-image-large"
+              (error)="onImageError($event)"
+            />
+            <div *ngIf="!currentCarouselImage" class="pokemon-placeholder-large">
+              <i class="fas fa-question"></i>
+            </div>
+          </div>
+
+          <button class="carousel-nav next"
+                  (click)="nextCarouselImage()"
+                  [disabled]="carouselImages.length <= 1"
+                  *ngIf="carouselImages.length > 1">
+            <i class="fas fa-chevron-right"></i>
           </button>
         </div>
-        <div class="carousel-thumbnails">
-          <img *ngFor="let img of carouselImages; let idx = index"
-               [src]="img.url"
-               [alt]="img.label"
-               [class.selected]="currentCarouselIndex === idx"
-               (click)="selectCarouselImage(idx)"
-               class="carousel-thumb" />
+
+        <!-- Miniaturas em linha (máximo 3 visíveis) -->
+        <div class="carousel-thumbnails-inline" *ngIf="carouselImages.length > 1">
+          <div class="thumbnails-slider"
+               [style.transform]="'translateX(' + getThumbnailSlideOffset() + 'px)'">
+            <button
+              *ngFor="let image of carouselImages; let i = index"
+              class="thumbnail-btn-inline"
+              [class.active]="i === currentCarouselIndex"
+              (click)="selectCarouselImage(i)">
+              <img [src]="image.url" [alt]="image.label" (error)="onImageError($event)">
+            </button>
+          </div>
         </div>
       </div>
-      <!-- Informações à direita -->
-      <div class="info-panel">
-        <div class="pokemon-header-row">
-          <span class="pokemon-id" *ngIf="pokemon && pokemon.id !== undefined">{{ pokemon.id | pokemonId }}</span>
-          <div class="pokemon-header-center">
-            <div class="pokemon-name-types-row">
-              <ion-chip class="pokemon-title-chip">
-                <ion-label>{{ pokemon?.name | titlecase }}</ion-label>
-              </ion-chip>
-              <div class="type-chips-premium">
-                <ion-chip *ngFor="let type of pokemon?.types"
-                          [style.background]="type.type.name | typeColor"
-                          class="type-chip-premium"
-                          [ngClass]="'type-' + type.type.name">
-                  <span class="type-icon" [innerHTML]="getTypeIcon(type.type.name)"></span>
-                  <ion-label>{{ ('types.' + type.type.name) | translate }}</ion-label>
-                </ion-chip>
+
+      <!-- Seção das informações dividida em duas partes -->
+      <div class="pokemon-info-section">
+        <!-- Info Section 1: Nome e Badges -->
+        <div class="pokemon-info-section-1">
+          <div class="pokemon-name-header">
+            <h1>{{ pokemon?.name | titlecase }}</h1>
+            <div class="pokemon-id-badge">#{{ (pokemon?.id ?? 0) | pokemonId }}</div>
+          </div>
+
+          <div class="pokemon-types-container">
+            <span
+              *ngFor="let type of pokemon?.types"
+              class="type-badge interactive-element"
+              [ngClass]="'type-' + type.type.name">
+              {{ getTranslatedTypeName(type.type.name) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Info Section 2: Informações Básicas -->
+        <div class="pokemon-info-section-2">
+          <div class="pokemon-info-horizontal">
+            <div class="info-item">
+              <i class="fas fa-ruler-vertical"></i>
+              <span class="info-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
+              <span class="info-label">Altura</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-weight"></i>
+              <span class="info-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
+              <span class="info-label">Peso</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-star"></i>
+              <span class="info-value">{{ getBaseExperience() }}</span>
+              <span class="info-label">EXP Base</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sistema de abas -->
+    <div class="modal-tabs" role="tablist" aria-label="Informações do Pokémon">
+      <button
+        role="tab"
+        [attr.aria-selected]="activeTab === 'overview'"
+        [class.active]="activeTab === 'overview'"
+        (click)="setActiveTab('overview')"
+        (keydown)="onTabKeydown($event)">
+        <i class="fas fa-eye"></i>
+        Visão Geral
+      </button>
+      <button
+        role="tab"
+        [attr.aria-selected]="activeTab === 'combat'"
+        [class.active]="activeTab === 'combat'"
+        (click)="setActiveTab('combat')"
+        (keydown)="onTabKeydown($event)">
+        <i class="fas fa-sword"></i>
+        Combate
+      </button>
+      <button
+        role="tab"
+        [attr.aria-selected]="activeTab === 'evolution'"
+        [class.active]="activeTab === 'evolution'"
+        (click)="setActiveTab('evolution')"
+        (keydown)="onTabKeydown($event)">
+        <i class="fas fa-arrow-up"></i>
+        Evolução
+      </button>
+      <button
+        role="tab"
+        [attr.aria-selected]="activeTab === 'curiosities'"
+        [class.active]="activeTab === 'curiosities'"
+        (click)="setActiveTab('curiosities')"
+        (keydown)="onTabKeydown($event)">
+        <i class="fas fa-star"></i>
+        Curiosidades
+      </button>
+    </div>
+
+    <!-- Conteúdo das abas -->
+    <div class="tab-content" [@tabSlide]="activeTab">
+      <ng-container *ngIf="activeTab === 'overview'">
+        <div class="overview-content" [@fadeInStagger]>
+          <div class="stats-grid">
+            <div class="stat-card interactive-element" *ngFor="let stat of pokemon?.stats">
+              <span class="stat-label">{{ getTranslatedStatName(stat.stat.name) }}</span>
+              <div class="stat-bar">
+                <div class="stat-fill"
+                     [style.width.%]="(stat.base_stat / 255) * 100"
+                     [@statBarFill]="{ value: '', params: { percentage: (stat.base_stat / 255) * 100 } }">
+                </div>
+              </div>
+              <span class="stat-value">{{ stat.base_stat }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'combat'">
+        <div class="combat-content" [@fadeInStagger]>
+          <div class="combat-stats-detailed">
+            <h3><i class="fas fa-sword"></i> Estatísticas de Combate</h3>
+
+            <!-- Total de status -->
+            <div class="total-stats-card">
+              <div class="stat-total">
+                <span class="total-label">Total Base</span>
+                <span class="total-value">{{ getTotalStats() }}</span>
+              </div>
+            </div>
+
+            <!-- Stats detalhadas com categorias -->
+            <div class="stats-categories">
+              <div class="category offensive">
+                <h4><i class="fas fa-bolt"></i> Ofensivas</h4>
+                <div class="stat-row" *ngFor="let stat of getOffensiveStats()">
+                  <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
+                  <div class="stat-progress">
+                    <div class="progress-bar">
+                      <div class="progress-fill offensive-fill"
+                           [style.width.%]="getStatPercentage(stat.base_stat)">
+                      </div>
+                    </div>
+                    <span class="stat-value">{{ stat.base_stat }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category defensive">
+                <h4><i class="fas fa-shield-alt"></i> Defensivas</h4>
+                <div class="stat-row" *ngFor="let stat of getDefensiveStats()">
+                  <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
+                  <div class="stat-progress">
+                    <div class="progress-bar">
+                      <div class="progress-fill defensive-fill"
+                           [style.width.%]="getStatPercentage(stat.base_stat)">
+                      </div>
+                    </div>
+                    <span class="stat-value">{{ stat.base_stat }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="category utility">
+                <h4><i class="fas fa-tachometer-alt"></i> Utilidade</h4>
+                <div class="stat-row" *ngFor="let stat of getUtilityStats()">
+                  <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
+                  <div class="stat-progress">
+                    <div class="progress-bar">
+                      <div class="progress-fill utility-fill"
+                           [style.width.%]="getStatPercentage(stat.base_stat)">
+                      </div>
+                    </div>
+                    <span class="stat-value">{{ stat.base_stat }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Habilidades -->
+            <div class="abilities-section" *ngIf="pokemon?.abilities?.length">
+              <h4><i class="fas fa-magic"></i> Habilidades</h4>
+              <div class="abilities-grid">
+                <div class="ability-card"
+                     *ngFor="let ability of pokemon?.abilities"
+                     [ngClass]="{ 'hidden': ability.is_hidden }">
+                  <div class="ability-header">
+                    <span class="ability-name">{{ getTranslatedAbilityName(ability.ability.name) }}</span>
+                    <span class="ability-type" *ngIf="ability.is_hidden">Oculta</span>
+                  </div>
+                  <p class="ability-description" *ngIf="getTranslatedAbilityDescription(ability.ability.name)">
+                    {{ getTranslatedAbilityDescription(ability.ability.name) }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <!-- Carrossel de descrições -->
-        <div class="flavor-text premium-glass" *ngIf="flavorTexts.length > 0">
-          <ion-icon name="book-outline" class="flavor-icon"></ion-icon>
-          <button class="flavor-arrow left" (click)="prevFlavorText()" [disabled]="flavorTexts.length <= 1">
-            <ion-icon name="chevron-back-outline"></ion-icon>
-          </button>
-          <span class="flavor-content">
-            <span *ngIf="isTranslating" class="translating-indicator">
-              <ion-spinner name="dots"></ion-spinner>
-              Traduzindo...
-            </span>
-            {{ flavorTexts[currentFlavorIndex] }}
-          </span>
-          <button class="flavor-arrow right" (click)="nextFlavorText()" [disabled]="flavorTexts.length <= 1">
-            <ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-          <div class="flavor-info">
-            <span class="flavor-count">{{ currentFlavorIndex + 1 }}/{{ flavorTexts.length }}</span>
-            <span class="language-badge" 
-                  [class.es]="currentFlavorLanguage === 'es'" 
-                  [class.en]="currentFlavorLanguage === 'en'"
-                  [class.pt]="currentFlavorLanguage === 'pt'">
-              {{ currentFlavorLanguage === 'es' ? 'ES' : currentFlavorLanguage === 'pt' ? 'PT' : 'EN' }}
-            </span>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'evolution'">
+        <div class="evolution-content" [@fadeInStagger]>
+          <h3><i class="fas fa-arrow-up"></i> Evolução</h3>
+
+          <div class="evolution-info" *ngIf="evolutionChain && evolutionChain.length > 1; else noEvolution">
+            <div class="evolution-chain">
+              <div class="evolution-stage"
+                   *ngFor="let stage of evolutionChain; let i = index"
+                   [ngClass]="{ 'current': stage.id === pokemon?.id }">
+
+                <div class="pokemon-evolution-card">
+                  <div class="evolution-image">
+                    <img [src]="stage.image" [alt]="stage.name"
+                         (error)="onImageError($event)">
+                  </div>
+                  <div class="evolution-info-text">
+                    <h4>{{ stage.name | titlecase }}</h4>
+                    <span class="evolution-level" *ngIf="stage.level">
+                      Nível {{ stage.level }}
+                    </span>
+                    <span class="evolution-method" *ngIf="stage.method && stage.method !== 'level'">
+                      {{ getEvolutionMethodText(stage.method) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Seta de evolução -->
+                <div class="evolution-arrow" *ngIf="i < evolutionChain.length - 1">
+                  <i class="fas fa-arrow-right"></i>
+                  <span class="evolution-trigger" *ngIf="evolutionChain[i + 1].trigger">
+                    {{ evolutionChain[i + 1].trigger }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="info-grid compact">
-          <div class="info-item"><span class="label">{{ 'details.height' | translate }}</span><span class="value">{{ (pokemon?.height ?? 0) | pokemonHeight }}</span></div>
-          <div class="info-item"><span class="label">{{ 'details.weight' | translate }}</span><span class="value">{{ (pokemon?.weight ?? 0) | pokemonWeight }}</span></div>
-          <div class="info-item"><span class="label">{{ 'details.base_experience' | translate }}</span><span class="value">{{ pokemon?.base_experience || 'N/A' }}</span></div>
-          <div class="info-item"><span class="label">{{ 'details.generation' | translate }}</span><span class="value">{{ getGenerationName() }}</span></div>
-        </div>
-        <div class="abilities-panel">
-          <div class="abilities-row">
-            <span class="abilities-title">{{ 'details.abilities' | translate }}</span>
-            <div class="abilities-list compact">
-              <ion-chip *ngFor="let ability of pokemon?.abilities"
-                        class="ability-chip-premium rainbow-chip-border"
-                        [outline]="ability.is_hidden"
-                        [color]="ability.is_hidden ? 'warning' : 'primary'">
-                <ion-label>
-                  {{ ability.ability.name | titlecase }}
-                  <span *ngIf="ability.is_hidden"> ({{ 'details.hidden' | translate }})</span>
-                </ion-label>
-              </ion-chip>
+
+          <ng-template #noEvolution>
+            <div class="no-evolution">
+              <i class="fas fa-star"></i>
+              <p>Este Pokémon não possui evolução conhecida.</p>
+            </div>
+          </ng-template>
+
+          <!-- Informações adicionais sobre evolução -->
+          <div class="evolution-details" *ngIf="pokemon">
+            <div class="detail-card">
+              <h4><i class="fas fa-info-circle"></i> Informações de Crescimento</h4>
+              <div class="growth-info">
+                <p><strong>Grupo de Ovos:</strong> {{ getEggGroups() }}</p>
+                <p><strong>Taxa de Crescimento:</strong> {{ getGrowthRate() }}</p>
+                <p><strong>Experiência Base:</strong> {{ getBaseExperience() }}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- Status horizontal -->
-    <div class="stats-horizontal-panel rainbow-bg" *ngIf="!loading && pokemon">
-      <div class="stats-horizontal-list">
-        <div class="stat-horizontal-item" *ngFor="let stat of pokemon.stats">
-          <span class="stat-name">{{ getStatName(stat.stat.name) }}</span>
-          <div class="stat-bar-horizontal">
-            <div class="stat-fill-horizontal"
-                 [style.width.%]="getStatPercentage(stat.base_stat)"
-                 [style.background]="stat.base_stat | statColor"></div>
+      </ng-container>
+
+      <ng-container *ngIf="activeTab === 'curiosities'">
+        <div class="curiosities-content" [@fadeInStagger]>
+          <h3><i class="fas fa-star"></i> Curiosidades</h3>
+
+          <!-- Flavor texts -->
+          <div class="flavor-section" *ngIf="flavorTexts && flavorTexts.length > 0">
+            <h4><i class="fas fa-book"></i> Descrições</h4>
+            <div class="flavor-container">
+              <div class="flavor-text-display">
+                <div class="flavor-text-wrapper"
+                     #flavorTextWrapper
+                     (scroll)="onFlavorTextScroll($event)">
+                  <p class="flavor-text">{{ getCurrentFlavorText() }}</p>
+                  <div class="scroll-indicator"
+                       *ngIf="showScrollIndicator"
+                       [@fadeInOut]="showScrollIndicator ? 'visible' : 'hidden'">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>Há mais texto</span>
+                  </div>
+                </div>
+                <div class="flavor-controls" *ngIf="flavorTexts.length > 1">
+                  <button class="flavor-nav-btn"
+                          (click)="previousFlavor()"
+                          [disabled]="currentFlavorIndex === 0">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <span class="flavor-counter">
+                    {{ currentFlavorIndex + 1 }} / {{ flavorTexts.length }}
+                  </span>
+                  <button class="flavor-nav-btn"
+                          (click)="nextFlavor()"
+                          [disabled]="currentFlavorIndex === flavorTexts.length - 1">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <span class="stat-value">{{ stat.base_stat }}</span>
+
+          <!-- Dados físicos e biológicos -->
+          <div class="biological-info">
+            <h4><i class="fas fa-dna"></i> Características Físicas</h4>
+            <div class="bio-grid">
+              <div class="bio-item">
+                <i class="fas fa-ruler-vertical"></i>
+                <span class="bio-label">Altura</span>
+                <span class="bio-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
+              </div>
+              <div class="bio-item">
+                <i class="fas fa-weight"></i>
+                <span class="bio-label">Peso</span>
+                <span class="bio-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
+              </div>
+              <div class="bio-item">
+                <i class="fas fa-calculator"></i>
+                <span class="bio-label">IMC</span>
+                <span class="bio-value">{{ getPokemonBMI() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Raridade e captura -->
+          <div class="capture-info" *ngIf="speciesData">
+            <h4><i class="fas fa-target"></i> Informações de Captura</h4>
+            <div class="capture-grid">
+              <div class="capture-item">
+                <i class="fas fa-crosshairs"></i>
+                <span class="capture-label">Taxa de Captura</span>
+                <span class="capture-value">{{ getCaptureRate() }}</span>
+              </div>
+              <div class="capture-item">
+                <i class="fas fa-heart"></i>
+                <span class="capture-label">Felicidade Base</span>
+                <span class="capture-value">{{ getBaseHappiness() }}</span>
+              </div>
+              <div class="capture-item">
+                <i class="fas fa-eye"></i>
+                <span class="capture-label">Cor</span>
+                <span class="capture-value">{{ getPokemonColor() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trivia e fatos interessantes -->
+          <div class="trivia-section">
+            <h4><i class="fas fa-lightbulb"></i> Você Sabia?</h4>
+            <div class="trivia-list">
+              <div class="trivia-item" *ngFor="let fact of getPokemonTrivia()">
+                <i class="fas fa-star"></i>
+                <p>{{ fact }}</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="stats-total-horizontal">
-        <strong>{{ 'details.total' | translate }}: {{ getTotalStats() }}</strong>
-      </div>
-    </div>
-    <!-- Movimentos -->
-    <div class="moves-panel" *ngIf="!loading && pokemon">
-      <ion-card class="moves-card premium-glass rainbow-bg">
-        <ion-card-header>
-          <ion-card-title>{{ 'details.moves' | translate }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="moves-list">
-            <ion-chip *ngFor="let move of getRecentMoves()"
-                      class="rainbow-chip-border"
-                      color="secondary">
-              <ion-label>{{ move.move.name | titlecase }}</ion-label>
-            </ion-chip>
-          </div>
-          <p class="moves-note">{{ 'details.recent_moves' | translate }}</p>
-        </ion-card-content>
-      </ion-card>
+      </ng-container>
     </div>
 
-    <!-- Loading -->
-    <div class="modal-content" *ngIf="loading">
-      <app-loading-spinner [overlay]="false" size="medium"></app-loading-spinner>
-    </div>
-
-    <!-- Error State -->
-    <div class="modal-content" *ngIf="!loading && !pokemon">
-      <div class="error-state">
-        <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-        <h2>{{ 'details.error_title' | translate }}</h2>
-        <p>{{ 'details.error_message' | translate }}</p>
-      </div>
-    </div>
+    <!-- Botão de fechar -->
+    <button class="close-button interactive-element" (click)="onClose()" aria-label="Fechar modal">
+      <i class="fas fa-times"></i>
+    </button>
   </div>
-</div> 
+</div>

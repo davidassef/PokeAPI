@@ -203,7 +203,8 @@
     "added_to_captured": "Pokémon added to captured!",
     "removed_from_captured": "Pokémon removed from captured!",
     "error_loading": "Error loading Pokémon",
-    "surpreenda_me": "Surprise me!"
+    "surpreenda_me": "Surprise me!",
+    "aguarde": "Wait"
   },
   "captured_page": {
     "search_captured": "Search captured",

@@ -233,7 +233,8 @@
     "added_to_captured": "¡Pokémon agregado a capturados!",
     "removed_from_captured": "¡Pokémon removido de capturados!",
     "error_loading": "Error al cargar Pokémon",
-    "surpreenda_me": "¡Sorpréndeme!"
+    "surpreenda_me": "¡Sorpréndeme!",
+    "aguarde": "Espera"
   },
   "capturados_page": {
     "search_capturados": "Buscar en capturados",

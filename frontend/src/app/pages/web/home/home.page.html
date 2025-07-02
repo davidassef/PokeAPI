@@ -75,11 +75,25 @@
 
   <!-- Botão Surpreenda-me -->
   <ion-fab vertical="bottom" horizontal="start" slot="fixed">
-    <ion-fab-button color="warning" (click)="surpreendaMe()" class="surpreenda-fab">
-      <ion-icon name="flash-outline"></ion-icon>
+    <ion-fab-button
+      [color]="isSurpreendaCooldown ? 'medium' : 'warning'"
+      (click)="surpreendaMe()"
+      class="surpreenda-fab"
+      [class.cooldown]="isSurpreendaCooldown">
+      <ion-icon
+        [name]="isSurpreendaCooldown ? 'time-outline' : 'flash-outline'"
+        class="surpreenda-icon">
+      </ion-icon>
+      <div *ngIf="isSurpreendaCooldown" class="cooldown-overlay">
+        <span class="cooldown-number">{{ surpreendaCountdown }}</span>
+      </div>
     </ion-fab-button>
-    <button class="surpreenda-label" (click)="surpreendaMe()">
-      {{ 'home.surpreenda_me' | translate }}
+    <button
+      class="surpreenda-label"
+      (click)="surpreendaMe()"
+      [disabled]="isSurpreendaCooldown">
+      <span *ngIf="!isSurpreendaCooldown">{{ 'home.surpreenda_me' | translate }}</span>
+      <span *ngIf="isSurpreendaCooldown">{{ 'home.aguarde' | translate }} {{ surpreendaCountdown }}s</span>
     </button>
   </ion-fab>
 
