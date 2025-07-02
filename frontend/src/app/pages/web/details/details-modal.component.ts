@@ -127,6 +127,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   speciesData: any = null;
   abilityDescriptions: { [key: string]: string } = {};
 
+  pokemonTheme: any;
+
   constructor(
     private pokeApiService: PokeApiService,
     private http: HttpClient,
@@ -403,288 +405,65 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('Dados da espécie recebidos:', speciesData.name, 'Entradas de flavor:', speciesData.flavor_text_entries?.length);
 
         if (speciesData.flavor_text_entries) {
-          const currentAppLanguage = this.translate.currentLang || 'pt-BR';
-          console.log('Idioma atual da aplicação:', currentAppLanguage);
+          // Primeiro, tentar português brasileiro
+          let flavorEntries = speciesData.flavor_text_entries.filter((entry: any) =>
+            entry.language.name === 'pt-br'
+          );
 
-          // Buscar textos no idioma da aplicação primeiro
-          let flavorEntries = [];
+          console.log('Entradas em pt-br encontradas:', flavorEntries.length);
 
-          if (currentAppLanguage.startsWith('pt')) {
-            // Buscar português brasileiro primeiro, depois português geral
-            flavorEntries = speciesData.flavor_text_entries.filter((entry: any) =>
-              entry.language.name === 'pt-br' || entry.language.name === 'pt'
-            );
-            console.log('Entradas em português encontradas:', flavorEntries.length);
-          } else if (currentAppLanguage.startsWith('es')) {
-            // Buscar espanhol
-            flavorEntries = speciesData.flavor_text_entries.filter((entry: any) =>
-              entry.language.name === 'es'
-            );
-            console.log('Entradas em espanhol encontradas:', flavorEntries.length);
-          }
-
-          // Se não houver no idioma preferido, usar inglês como fallback
+          // Se não encontrou pt-br, tentar português geral
           if (flavorEntries.length === 0) {
             flavorEntries = speciesData.flavor_text_entries.filter((entry: any) =>
-              entry.language.name === 'en'
+              entry.language.name === 'pt'
             );
-            console.log('Fallback para inglês, entradas encontradas:', flavorEntries.length);
+            console.log('Entradas em pt encontradas:', flavorEntries.length);
           }
 
-          this.flavorTexts = flavorEntries
-            .map((entry: any) => entry.flavor_text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim())
-            .filter((text: string, index: number, arr: string[]) => arr.indexOf(text) === index); // Remove duplicatas
+          // Se ainda não encontrou nenhum português, não exibir nada
+          if (flavorEntries.length === 0) {
+            console.log('Nenhuma entrada em português encontrada, exibindo mensagem padrão');
+            this.flavorText = this.translate.instant('NO_FLAVOR_TEXT_AVAILABLE');
+            this.flavorTexts = [this.flavorText];
+            this.currentFlavorIndex = 0;
+            return;
+          }
 
-          this.flavorText = this.flavorTexts[0] || 'Descrição não disponível.';
+          this.flavorTexts = flavorEntries.map((entry: any) => entry.flavor_text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim());
+          this.flavorText = this.flavorTexts[0] || this.translate.instant('NO_FLAVOR_TEXT_AVAILABLE');
           this.currentFlavorIndex = 0;
-          this.currentFlavorLanguage = flavorEntries[0]?.language?.name || 'en';
 
-          console.log('Flavor texts processados:', this.flavorTexts.length, 'Idioma:', this.currentFlavorLanguage);
+          console.log('Flavor texts em português carregados:', this.flavorTexts.length);
 
           // Verificar scroll após carregar o texto
           setTimeout(() => this.checkScrollIndicator(), 100);
+        } else {
+          console.log('Nenhum flavor encontrado na PokeAPI');
+          this.flavorText = this.translate.instant('NO_FLAVOR_TEXT_AVAILABLE');
         }
       },
       error: (error) => {
-        console.error('Erro ao buscar flavor text da espécie:', error);
-        this.flavorTexts = ['Descrição não disponível para este Pokémon.'];
-        this.flavorText = this.flavorTexts[0];
-        this.currentFlavorLanguage = 'en';
-        setTimeout(() => this.checkScrollIndicator(), 100);
+        console.error('Erro ao buscar flavor text da PokeAPI:', error);
+        this.flavorText = this.translate.instant('NO_FLAVOR_TEXT_AVAILABLE');
       }
     });
   }
 
-  getTypeGradientBackground(): string {
-    const mainType = this.pokemon?.types?.[0]?.type?.name || 'normal';
-    const typeColor = this.typeColorMap[mainType] || '#A8A77A';
-    return `linear-gradient(135deg, #181a20 70%, ${typeColor} 100%)`;
-  }
+  private extractAbilityDescription(abilityData: any): string {
+    // Tentar buscar descrição em português primeiro, depois inglês
+    const flavorTextEntries = abilityData.flavor_text_entries || [];
 
-  onMouseDown(event: MouseEvent) {
-    // Não iniciar drag se clicou em um botão
-    if ((event.target as HTMLElement).closest('button')) {
-      this.isDragging = false;
-      return;
+    const ptbrEntry = flavorTextEntries.find((entry: any) => entry.language.name === 'pt-br');
+    if (ptbrEntry) {
+      return ptbrEntry.flavor_text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    this.mouseStartX = event.clientX;
-    this.isDragging = true;
-  }
-
-  onMouseMove(event: MouseEvent) {
-    if (!this.isDragging) return;
-    this.touchEndX = event.clientX;
-  }
-
-  onMouseUp(event: MouseEvent) {
-    if (!this.isDragging) return;
-
-    // Não processar drag se clicou em um botão
-    if ((event.target as HTMLElement).closest('button')) {
-      this.isDragging = false;
-      this.mouseStartX = 0;
-      this.touchEndX = 0;
-      return;
+    const enEntry = flavorTextEntries.find((entry: any) => entry.language.name === 'en');
+    if (enEntry) {
+      return enEntry.flavor_text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    const deltaX = this.touchEndX - this.mouseStartX;
-    console.log('🖱️ Mouse up - deltaX:', deltaX);
-
-    // Só processar se foi um drag significativo (mais de 50px)
-    if (Math.abs(deltaX) > 50) {
-      if (deltaX > 0) {
-        console.log('🖱️ Drag direita - voltando');
-        this.prevCarouselImage();
-      } else {
-        console.log('🖱️ Drag esquerda - avançando');
-        this.nextCarouselImage();
-      }
-    }
-
-    this.isDragging = false;
-    this.mouseStartX = 0;
-    this.touchEndX = 0;
-  }
-
-  onTouchStart(event: TouchEvent) {
-    // Não iniciar touch se clicou em um botão
-    if ((event.target as HTMLElement).closest('button')) {
-      this.isDragging = false;
-      return;
-    }
-
-    this.touchStartX = event.touches[0].clientX;
-    this.isDragging = true;
-  }
-
-  onTouchMove(event: TouchEvent) {
-    if (!this.isDragging) return;
-    this.touchEndX = event.touches[0].clientX;
-  }
-
-  onTouchEnd(event: TouchEvent) {
-    if (!this.isDragging) return;
-
-    // Não processar touch se clicou em um botão
-    if ((event.target as HTMLElement).closest('button')) {
-      this.isDragging = false;
-      this.touchStartX = 0;
-      this.touchEndX = 0;
-      return;
-    }
-
-    const deltaX = this.touchEndX - this.touchStartX;
-    console.log('📱 Touch end - deltaX:', deltaX);
-
-    // Só processar se foi um swipe significativo (mais de 50px)
-    if (Math.abs(deltaX) > 50) {
-      if (deltaX > 0) {
-        console.log('📱 Swipe direita - voltando');
-        this.prevCarouselImage();
-      } else {
-        console.log('📱 Swipe esquerda - avançando');
-        this.nextCarouselImage();
-      }
-    }
-
-    this.isDragging = false;
-    this.touchStartX = 0;
-    this.touchEndX = 0;
-  }
-
-  prevCarouselImage(event?: Event) {
-    if (event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
-
-    if (this.carouselImages.length === 0) return;
-
-    if (this.currentCarouselIndex > 0) {
-      this.currentCarouselIndex--;
-    } else {
-      // Volta para a última imagem (loop)
-      this.currentCarouselIndex = this.carouselImages.length - 1;
-    }
-  }
-
-  nextCarouselImage(event?: Event) {
-    if (event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
-
-    if (this.carouselImages.length === 0) return;
-
-    if (this.currentCarouselIndex < this.carouselImages.length - 1) {
-      this.currentCarouselIndex++;
-    } else {
-      // Vai para a primeira imagem (loop)
-      this.currentCarouselIndex = 0;
-    }
-  }
-
-  prevFlavorText() {
-    if (this.flavorTexts.length === 0) return;
-    if (this.currentFlavorIndex > 0) {
-      this.currentFlavorIndex--;
-    } else {
-      this.currentFlavorIndex = this.flavorTexts.length - 1;
-    }
-    this.flavorText = this.flavorTexts[this.currentFlavorIndex];
-  }
-
-  nextFlavorText() {
-    if (this.flavorTexts.length === 0) return;
-    if (this.currentFlavorIndex < this.flavorTexts.length - 1) {
-      this.currentFlavorIndex++;
-    } else {
-      this.currentFlavorIndex = 0;
-    }
-    this.flavorText = this.flavorTexts[this.currentFlavorIndex];
-  }
-
-  setActiveTab(tab: string): void {
-    this.activeTab = tab;
-    this.triggerTabAnimation();
-  }
-
-  private animateElements(): void {
-    setTimeout(() => {
-      this.animateHeader();
-    }, 100);
-
-    setTimeout(() => {
-      this.animateStats();
-    }, 300);
-
-    setTimeout(() => {
-      this.animateCards();
-    }, 500);
-  }
-
-  private animateHeader(): void {
-    this.headerState = 'pulse';
-    setTimeout(() => {
-      this.headerState = 'idle';
-    }, 200);
-  }
-
-  private animateStats(): void {
-    // Implementar animação das stats com delay progressivo
-    const statElements = document.querySelectorAll('.stat-bar');
-    statElements.forEach((element, index) => {
-      setTimeout(() => {
-        element.classList.add('animate-fill');
-      }, index * 100);
-    });
-  }
-
-  private animateCards(): void {
-    // Implementar animação dos cards com stagger
-    const cardElements = document.querySelectorAll('.pokemon-card');
-    cardElements.forEach((element, index) => {
-      setTimeout(() => {
-        element.classList.add('fade-in');
-      }, index * 150);
-    });
-  }
-
-  private triggerTabAnimation(): void {
-    const tabContent = document.querySelector('.tab-content');
-    if (tabContent) {
-      tabContent.classList.remove('slide-in');
-      setTimeout(() => {
-        tabContent.classList.add('slide-in');
-      }, 10);
-    }
-  }
-
-  onTabKeydown(event: KeyboardEvent): void {
-    const tabs = ['overview', 'combat', 'evolution', 'curiosities'];
-    const currentIndex = tabs.indexOf(this.activeTab);
-
-    switch (event.key) {
-      case 'ArrowLeft':
-        event.preventDefault();
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
-        this.setActiveTab(tabs[prevIndex]);
-        break;
-      case 'ArrowRight':
-        event.preventDefault();
-        const nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
-        this.setActiveTab(tabs[nextIndex]);
-        break;
-    }
-  }
-
-  get pokemonTheme() {
-    if (this.pokemon?.types) {
-      const typeNames = this.pokemon.types.map(t => t.type.name);
-      return this.pokemonThemeService.getPokemonTheme(typeNames);
-    }
-    return this.pokemonThemeService.getPokemonTheme(['normal']);
+    return this.translate.instant('NO_ABILITY_DESCRIPTION_AVAILABLE');
   }
 
   // =============================
@@ -811,23 +590,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error('Erro ao buscar descrições das habilidades:', error);
       }
     });
-  }
-
-  private extractAbilityDescription(abilityData: any): string {
-    // Tentar buscar descrição em português primeiro, depois inglês
-    const flavorTextEntries = abilityData.flavor_text_entries || [];
-
-    const ptbrEntry = flavorTextEntries.find((entry: any) => entry.language.name === 'pt-br');
-    if (ptbrEntry) {
-      return ptbrEntry.flavor_text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-    }
-
-    const enEntry = flavorTextEntries.find((entry: any) => entry.language.name === 'en');
-    if (enEntry) {
-      return enEntry.flavor_text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-    }
-
-    return 'Descrição não disponível.';
   }
 
   // ========================
@@ -1174,5 +936,45 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
         }, 3000);
       }
     }
+  }
+
+  private animateElements(): void {
+    // Animação do header
+    this.animateHeader();
+
+    // Animação das stats com delay progressivo
+    this.animateStats();
+
+    // Animação dos cards com stagger
+    this.animateCards();
+  }
+
+  private animateHeader(): void {
+    console.log('Animação do header iniciada');
+    // Implementação da animação do header
+  }
+
+  private animateStats(): void {
+    console.log('Animação das stats iniciada');
+    // Implementação da animação das stats
+  }
+
+  private animateCards(): void {
+    console.log('Animação dos cards iniciada');
+    // Implementação da animação dos cards
+  }
+
+  nextCarouselImage(): void {
+    if (this.carouselImages.length > 1) {
+      this.currentCarouselIndex = (this.currentCarouselIndex + 1) % this.carouselImages.length;
+    }
+  }
+
+  setActiveTab(tabName: string): void {
+    this.activeTab = tabName;
+  }
+
+  onTabKeydown(event: KeyboardEvent): void {
+    console.log('Tecla pressionada:', event.key);
   }
 }

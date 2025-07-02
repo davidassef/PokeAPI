@@ -78,17 +78,17 @@
             <div class="info-item">
               <i class="fas fa-ruler-vertical"></i>
               <span class="info-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
-              <span class="info-label">Altura</span>
+              <span class="info-label">{{ 'modal.height' | translate }}</span>
             </div>
             <div class="info-item">
               <i class="fas fa-weight"></i>
               <span class="info-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
-              <span class="info-label">Peso</span>
+              <span class="info-label">{{ 'modal.weight' | translate }}</span>
             </div>
             <div class="info-item">
               <i class="fas fa-star"></i>
               <span class="info-value">{{ getBaseExperience() }}</span>
-              <span class="info-label">EXP Base</span>
+              <span class="info-label">{{ 'modal.base_exp' | translate }}</span>
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@
         (click)="setActiveTab('overview')"
         (keydown)="onTabKeydown($event)">
         <i class="fas fa-eye"></i>
-        Visão Geral
+        {{ 'modal.overview' | translate }}
       </button>
       <button
         role="tab"
@@ -113,7 +113,7 @@
         (click)="setActiveTab('combat')"
         (keydown)="onTabKeydown($event)">
         <i class="fas fa-sword"></i>
-        Combate
+        {{ 'modal.combat' | translate }}
       </button>
       <button
         role="tab"
@@ -122,7 +122,7 @@
         (click)="setActiveTab('evolution')"
         (keydown)="onTabKeydown($event)">
         <i class="fas fa-arrow-up"></i>
-        Evolução
+        {{ 'modal.evolution' | translate }}
       </button>
       <button
         role="tab"
@@ -131,7 +131,7 @@
         (click)="setActiveTab('curiosities')"
         (keydown)="onTabKeydown($event)">
         <i class="fas fa-star"></i>
-        Curiosidades
+        {{ 'modal.curiosities' | translate }}
       </button>
     </div>
 
@@ -170,7 +170,7 @@
             <!-- Stats detalhadas com categorias -->
             <div class="stats-categories">
               <div class="category offensive">
-                <h4><i class="fas fa-bolt"></i> Ofensivas</h4>
+                <h4><i class="fas fa-bolt"></i> {{ 'modal.offensive_stats' | translate }}</h4>
                 <div class="stat-row" *ngFor="let stat of getOffensiveStats()">
                   <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                   <div class="stat-progress">
@@ -185,7 +185,7 @@
               </div>
 
               <div class="category defensive">
-                <h4><i class="fas fa-shield-alt"></i> Defensivas</h4>
+                <h4><i class="fas fa-shield-alt"></i> {{ 'modal.defensive_stats' | translate }}</h4>
                 <div class="stat-row" *ngFor="let stat of getDefensiveStats()">
                   <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                   <div class="stat-progress">
@@ -200,7 +200,7 @@
               </div>
 
               <div class="category utility">
-                <h4><i class="fas fa-tachometer-alt"></i> Utilidade</h4>
+                <h4><i class="fas fa-tachometer-alt"></i> {{ 'modal.utility_stats' | translate }}</h4>
                 <div class="stat-row" *ngFor="let stat of getUtilityStats()">
                   <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                   <div class="stat-progress">
@@ -217,7 +217,7 @@
 
             <!-- Habilidades -->
             <div class="abilities-section" *ngIf="pokemon?.abilities?.length">
-              <h4><i class="fas fa-magic"></i> Habilidades</h4>
+              <h4><i class="fas fa-magic"></i> {{ 'modal.abilities' | translate }}</h4>
               <div class="abilities-grid">
                 <div class="ability-card"
                      *ngFor="let ability of pokemon?.abilities"
@@ -254,7 +254,7 @@
                   <div class="evolution-info-text">
                     <h4>{{ stage.name | titlecase }}</h4>
                     <span class="evolution-level" *ngIf="stage.level">
-                      Nível {{ stage.level }}
+                      {{ 'modal.level' | translate }} {{ stage.level }}
                     </span>
                     <span class="evolution-method" *ngIf="stage.method && stage.method !== 'level'">
                       {{ getEvolutionMethodText(stage.method) }}
@@ -276,7 +276,7 @@
           <ng-template #noEvolution>
             <div class="no-evolution">
               <i class="fas fa-star"></i>
-              <p>Este Pokémon não possui evolução conhecida.</p>
+              <p>{{ 'modal.no_evolution' | translate }}</p>
             </div>
           </ng-template>
 
@@ -311,7 +311,7 @@
                        *ngIf="showScrollIndicator"
                        [@fadeInOut]="showScrollIndicator ? 'visible' : 'hidden'">
                     <i class="fas fa-chevron-down"></i>
-                    <span>Há mais texto</span>
+                    <span>{{ 'modal.no_more_text' | translate }}</span>
                   </div>
                 </div>
                 <div class="flavor-controls" *ngIf="flavorTexts.length > 1">
@@ -335,21 +335,21 @@
 
           <!-- Dados físicos e biológicos -->
           <div class="biological-info">
-            <h4><i class="fas fa-dna"></i> Características Físicas</h4>
+            <h4><i class="fas fa-dna"></i> {{ 'modal.physical_characteristics' | translate }}</h4>
             <div class="bio-grid">
               <div class="bio-item">
                 <i class="fas fa-ruler-vertical"></i>
-                <span class="bio-label">Altura</span>
+                <span class="bio-label">{{ 'modal.height' | translate }}</span>
                 <span class="bio-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
               </div>
               <div class="bio-item">
                 <i class="fas fa-weight"></i>
-                <span class="bio-label">Peso</span>
+                <span class="bio-label">{{ 'modal.weight' | translate }}</span>
                 <span class="bio-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
               </div>
               <div class="bio-item">
                 <i class="fas fa-calculator"></i>
-                <span class="bio-label">IMC</span>
+                <span class="bio-label">{{ 'modal.bmi' | translate }}</span>
                 <span class="bio-value">{{ getPokemonBMI() }}</span>
               </div>
             </div>
@@ -357,21 +357,21 @@
 
           <!-- Raridade e captura -->
           <div class="capture-info" *ngIf="speciesData">
-            <h4><i class="fas fa-target"></i> Informações de Captura</h4>
+            <h4><i class="fas fa-target"></i> {{ 'modal.capture_info' | translate }}</h4>
             <div class="capture-grid">
               <div class="capture-item">
                 <i class="fas fa-crosshairs"></i>
-                <span class="capture-label">Taxa de Captura</span>
+                <span class="capture-label">{{ 'modal.capture_rate' | translate }}</span>
                 <span class="capture-value">{{ getCaptureRate() }}</span>
               </div>
               <div class="capture-item">
                 <i class="fas fa-heart"></i>
-                <span class="capture-label">Felicidade Base</span>
+                <span class="capture-label">{{ 'modal.base_happiness' | translate }}</span>
                 <span class="capture-value">{{ getBaseHappiness() }}</span>
               </div>
               <div class="capture-item">
                 <i class="fas fa-eye"></i>
-                <span class="capture-label">Cor</span>
+                <span class="capture-label">{{ 'modal.color' | translate }}</span>
                 <span class="capture-value">{{ getPokemonColor() }}</span>
               </div>
             </div>

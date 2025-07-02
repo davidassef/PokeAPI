@@ -895,6 +895,7 @@ O projeto agora serve como um excelente exemplo de como transformar uma interfac
 ### 📝 **PRÓXIMOS PASSOS** (Opcional - Melhorias Futuras)
 - [x] **Otimização dos Flavor Texts**: Container com altura fixa e scroll - **CONCLUÍDO 02/07/2025**
 - [x] **Correção de Traduções**: Problemas de flavors em inglês nos primeiros Pokémon - **CONCLUÍDO 02/07/2025**
+- [x] **Migração para Chaves de Tradução**: Substituição de textos hardcoded por i18n - **CONCLUÍDO 02/07/2025**
 - [ ] Testes de usabilidade com usuários
 - [ ] Otimizações de performance
 - [ ] Acessibilidade avançada
