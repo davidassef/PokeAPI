@@ -371,33 +371,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (data) => {
         console.log('Resposta do backend para flavors:', data);
         if (data && data.flavors && data.flavors.length > 0) {
-          // Verificar se os flavors retornados estão realmente em português
-          const isPortuguese = this.isTextInPortuguese(data.flavors[0]);
-
-          if (currentAppLanguage.startsWith('pt') && !isPortuguese) {
-            console.log('Flavors do backend estão em inglês, tentando traduções locais');
-
-            // Primeiro tenta buscar traduções locais
-            this.fetchLocalFlavorTexts(this.pokemonId).then(localTranslations => {
-              if (localTranslations.length > 0) {
-                console.log(`Traduções locais encontradas: ${localTranslations.length} textos`);
-                this.flavorTexts = localTranslations;
-                this.flavorText = this.flavorTexts[0] || '';
-                this.currentFlavorIndex = 0;
-                this.currentFlavorLanguage = 'pt';
-
-                // Verificar scroll após carregar o texto
-                setTimeout(() => this.checkScrollIndicator(), 100);
-                return;
-              }
-
-              // Se não encontrar traduções locais, usa PokeAPI como fallback
-              console.log('Nenhuma tradução local encontrada, buscando da PokeAPI');
-              this.fetchFlavorTextFromPokeAPI();
-            });
-            return;
-          }
-
           this.flavorTexts = data.flavors;
           this.flavorText = this.flavorTexts[0] || '';
           this.currentFlavorIndex = 0;
@@ -480,39 +453,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => this.checkScrollIndicator(), 100);
       }
     });
-  }
-
-  /**
-   * Busca traduções locais dos flavor texts quando o backend não tem traduções
-   */
-  private async fetchLocalFlavorTexts(pokemonId: number): Promise<string[]> {
-    try {
-      console.log('Buscando traduções locais para Pokémon ID:', pokemonId);
-
-      // URL para o arquivo de traduções no backend
-      const localTranslationsUrl = `http://localhost:8000/static/flavors_ptbr.json`;
-
-      const response = await fetch(localTranslationsUrl);
-      if (!response.ok) {
-        console.log('Arquivo de traduções locais não encontrado, usando PokeAPI');
-        return [];
-      }
-
-      const translations = await response.json();
-      const pokemonIdStr = pokemonId.toString();
-
-      if (translations[pokemonIdStr] && Array.isArray(translations[pokemonIdStr])) {
-        console.log(`Traduções locais encontradas para Pokémon ${pokemonId}: ${translations[pokemonIdStr].length} flavors`);
-        return translations[pokemonIdStr];
-      }
-
-      console.log(`Nenhuma tradução local encontrada para Pokémon ${pokemonId}`);
-      return [];
-
-    } catch (error) {
-      console.error('Erro ao buscar traduções locais:', error);
-      return [];
-    }
   }
 
   getTypeGradientBackground(): string {
@@ -1060,53 +1000,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   // ===================
   // MÉTODOS AUXILIARES
   // ===================
-
-  /**
-   * Detecta se o texto está em português baseado em palavras comuns
-   */
-  private isTextInPortuguese(text: string): boolean {
-    if (!text) return false;
-
-    const textLower = text.toLowerCase();
-
-    // Palavras em português que são muito comuns nas descrições de Pokémon
-    const portugueseWords = [
-      'quando', 'que', 'uma', 'como', 'para', 'com', 'seu', 'sua', 'seus', 'suas',
-      'este', 'esta', 'estes', 'estas', 'pelo', 'pela', 'pelos', 'pelas',
-      'também', 'muito', 'mais', 'pode', 'tem', 'são', 'foi', 'será',
-      'pokémon', 'cauda', 'corpo', 'força', 'energia', 'poder', 'ataque',
-      'defesa', 'velocidade', 'água', 'fogo', 'terra', 'ar', 'luz', 'sombra'
-    ];
-
-    // Palavras em inglês que são muito comuns e indicam que o texto não está em português
-    const englishWords = [
-      'when', 'that', 'with', 'from', 'they', 'have', 'this', 'will', 'can',
-      'its', 'the', 'and', 'but', 'for', 'are', 'was', 'were', 'been',
-      'pokemon', 'tail', 'body', 'strength', 'energy', 'power', 'attack',
-      'defense', 'speed', 'water', 'fire', 'ground', 'air', 'light', 'shadow'
-    ];
-
-    let portugueseCount = 0;
-    let englishCount = 0;
-
-    // Contar palavras portuguesas
-    for (const word of portugueseWords) {
-      if (textLower.includes(word)) {
-        portugueseCount++;
-      }
-    }
-
-    // Contar palavras inglesas
-    for (const word of englishWords) {
-      if (textLower.includes(word)) {
-        englishCount++;
-      }
-    }
-
-    // Se encontrou mais palavras em português que em inglês, considera português
-    // Também considera português se encontrou pelo menos 2 palavras portuguesas e nenhuma inglesa
-    return portugueseCount > englishCount || (portugueseCount >= 2 && englishCount === 0);
-  }
 
   getBaseExperience(): string {
     return this.pokemon?.base_experience?.toString() || 'N/A';

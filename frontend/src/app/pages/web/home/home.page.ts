@@ -46,12 +46,6 @@ export class HomePage implements OnInit, OnDestroy {
   showDetailsModal = false;
   selectedPokemonId: number | null = null;
 
-  // Cooldown do botão Surpreenda-me
-  isSurpreendaCooldown = false;
-  surpreendaCooldownTime = 3; // 3 segundos
-  surpreendaCountdown = 0;
-  private surpreendaInterval: any;
-
   get currentFilterOptions(): FilterOptions {
     return {
       searchTerm: this.currentFilters.name || '',
@@ -83,11 +77,6 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-
-    // Limpa o interval do cooldown se existir
-    if (this.surpreendaInterval) {
-      clearInterval(this.surpreendaInterval);
-    }
   }
 
   /**
@@ -333,40 +322,8 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   surpreendaMe() {
-    // Se estiver em cooldown, ignora o clique
-    if (this.isSurpreendaCooldown) {
-      return;
-    }
-
-    // Se já há um modal aberto, fecha primeiro
-    if (this.showDetailsModal) {
-      this.closeDetailsModal();
-      // Pequeno delay para a animação de fechamento
-      setTimeout(() => {
-        this.openRandomPokemon();
-      }, 300);
-    } else {
-      this.openRandomPokemon();
-    }
-  }
-
-  private openRandomPokemon() {
     const maxId = 898;
     const randomId = Math.floor(Math.random() * maxId) + 1;
     this.openDetailsModal(randomId);
-    this.startSurpreendaCooldown();
-  }
-
-  private startSurpreendaCooldown() {
-    this.isSurpreendaCooldown = true;
-    this.surpreendaCountdown = this.surpreendaCooldownTime;
-
-    this.surpreendaInterval = setInterval(() => {
-      this.surpreendaCountdown--;
-      if (this.surpreendaCountdown <= 0) {
-        this.isSurpreendaCooldown = false;
-        clearInterval(this.surpreendaInterval);
-      }
-    }, 1000);
   }
 }
