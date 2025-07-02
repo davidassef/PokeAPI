@@ -12,7 +12,7 @@ const routes: Routes = [
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)  },
   {
     path: 'pokemon/:id',
-    loadChildren: () => import('./pages/details/details.module').then(m => m.DetailsPageModule)
+    loadChildren: () => import('./pages/web/details/details.module').then(m => m.DetailsPageModule)
   }
 ];
 @NgModule({

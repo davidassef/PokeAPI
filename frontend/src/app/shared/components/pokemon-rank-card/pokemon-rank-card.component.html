@@ -1,0 +1,66 @@
+<div class="pokemon-rank-card"
+     [class.champion]="isChampion"
+     [class.with-glow]="withGlow"
+     [class.silver]="position === 2"
+     [class.bronze]="position === 3">
+
+  <!-- Crown for Champion -->
+  <div class="crown" *ngIf="position === 1">
+    <ion-icon name="crown"></ion-icon>
+  </div>
+
+  <!-- Position Medal Badge -->
+  <div class="rank-badge"
+       [class.gold]="position === 1"
+       [class.silver]="position === 2"
+       [class.bronze]="position === 3"
+       *ngIf="position <= 3">
+    <span class="medal-icon">{{ getMedalIcon() }}</span>
+  </div>
+
+  <!-- Favorites Counter -->
+  <div class="favorites-counter">
+    <ion-icon name="heart" class="heart-icon"></ion-icon>
+    <span class="count">{{ pokemon.favorites }}</span>
+  </div>
+
+  <!-- Pokemon Image -->
+  <div class="pokemon-image">
+    <img [lazyImage]="pokemon.imageUrl"
+         [size]="'medium'"
+         [pokemonId]="pokemon.id"
+         [alt]="pokemon.name">
+  </div>
+
+  <!-- Pokemon Info -->
+  <div class="pokemon-info">
+    <div class="pokemon-number">#{{ formatNumber(pokemon.id) }}</div>
+    <h3 class="pokemon-name">{{ pokemon.name }}</h3>
+
+    <!-- Pokemon Types -->
+    <div class="types-container">
+      <div *ngFor="let type of pokemon.types"
+           class="type-badge"
+           [style.background-color]="getTypeColor(type)">
+        {{ type }}
+      </div>
+    </div>
+
+    <!-- Basic Stats -->
+    <div class="stats-container">
+      <div class="stat">
+        <span class="stat-label">{{ 'COMMON.HEIGHT' | translate }}</span>
+        <span class="stat-value">{{ pokemon.height }}m</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">{{ 'COMMON.WEIGHT' | translate }}</span>
+        <span class="stat-value">{{ pokemon.weight }}kg</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Champion Banner -->
+  <div class="champion-banner" *ngIf="isChampion">
+    {{ 'RANKING.CHAMPION' | translate }}
+  </div>
+</div>

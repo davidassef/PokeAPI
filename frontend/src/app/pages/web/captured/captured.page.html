@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'tabs.captured' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleSearch()">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <!-- Search and Filter Component -->
+  <div *ngIf="showSearch" class="search-container">
+    <app-search-filter
+      [currentFilters]="currentFilterOptions"
+      (filtersChanged)="onFiltersChanged($event)"
+      (searchChanged)="onSearchChanged($event)">
+    </app-search-filter>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar color="danger">
+      <ion-title size="large">{{ 'tabs.captured' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Loading -->
+  <app-loading-spinner
+    *ngIf="loading && capturedPokemon.length === 0"
+    [overlay]="true"
+    size="large"
+    [message]="'captured.loading' | translate">
+  </app-loading-spinner>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-controls" *ngIf="paginatedCaptured.length > 0">
+    <ion-button fill="outline" size="small" (click)="firstPage()" [disabled]="currentPage === 1">
+      <ion-icon name="play-back-outline"></ion-icon>
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="prevPage()" [disabled]="currentPage === 1">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </ion-button>
+    <span class="page-info">{{ 'pagination.page' | translate }} {{ currentPage }} {{ 'pagination.of' | translate }} {{ totalPages }}</span>
+    <ion-button fill="outline" size="small" (click)="nextPage()" [disabled]="currentPage === totalPages">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="lastPage()" [disabled]="currentPage === totalPages">
+      <ion-icon name="play-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Pokemon Grid -->
+  <div class="page-container">
+    <div class="pokemon-grid" *ngIf="!loading && paginatedCaptured.length > 0">
+      <app-pokemon-card
+        *ngFor="let poke of paginatedCaptured; trackBy: trackByPokemonId; let i = index"
+        [pokemon]="poke"
+        [isCaptured]="true"
+        [animationDelay]="getAnimationDelay(i)"
+        (cardClick)="navigateToDetails(poke.id)"
+        (captureToggle)="removeFromCaptured(poke)">
+      </app-pokemon-card>
+    </div>
+  </div>
+
+  <!-- Empty State Message -->
+  <div class="empty-state" *ngIf="!loading && paginatedCaptured.length === 0">
+    <ion-icon name="sad-outline" size="large" color="medium"></ion-icon>
+    <p>{{ 'captured.empty' | translate }}</p>
+    <ion-button color="primary" routerLink="/tabs/home">
+      {{ 'captured.goToHome' | translate }}
+    </ion-button>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="scrollToTop()">
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <app-details-modal
+    *ngIf="showDetailsModal"
+    [pokemonId]="selectedPokemonId || 0"
+    (close)="closeDetailsModal()">
+  </app-details-modal>
+</ion-content>

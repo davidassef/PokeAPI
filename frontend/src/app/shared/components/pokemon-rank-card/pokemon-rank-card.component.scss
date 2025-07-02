@@ -1,0 +1,350 @@
+.pokemon-rank-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #2a2a2a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 100%;
+  margin: 0.5rem;
+
+  // Define a proporção base para todos os cards
+  --card-ratio: 1;
+
+  &:hover, &:active {
+    transform: translateY(-5px) scale(var(--card-hover-scale, 1.02));
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  // Aplicar brilho em cards de destaque
+  &.with-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 16px;
+    background: linear-gradient(45deg, #ffcc33, #ff9966, #ff6699, #cc66ff, #66ccff);
+    background-size: 200% 200%;
+    filter: blur(8px);
+    opacity: 0.7;
+    animation: glowing 3s ease infinite;
+  }
+
+  .pokemon-image {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: #333;
+    aspect-ratio: 1/1;
+
+    img {
+      width: 85%;
+      height: 85%;
+      object-fit: contain;
+      transform: scale(var(--image-scale, 1));
+      transition: transform 0.3s ease;
+      filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+    }
+  }
+
+  .pokemon-info {
+    padding: 12px;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+
+    .pokemon-number {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .pokemon-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 4px 0;
+      text-transform: capitalize;
+    }
+
+    .types-container {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px 0;
+
+      .type-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 8px;
+      font-size: 0.8rem;
+
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .stat-label {
+          font-weight: 500;
+          opacity: 0.7;
+          font-size: 0.7rem;
+        }
+
+        .stat-value {
+          font-weight: 700;
+        }
+      }
+    }
+  }
+
+  // Estilos específicos para card de campeão (1º lugar)
+  &.champion {
+    --card-ratio: 1.3;
+    --card-hover-scale: 1.03;
+    --image-scale: 1.1;
+    transform: translateY(-15px);
+    z-index: 10;
+
+    .pokemon-image {
+      background: radial-gradient(circle, #333 0%, #222 100%);
+    }
+
+    .pokemon-info {
+      .pokemon-name {
+        font-size: 1.3rem;
+      }
+    }
+
+    .champion-banner {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 6px;
+      background: linear-gradient(90deg, #FFD700, #FFC107, #FFD700);
+      text-align: center;
+      font-weight: 700;
+      color: #000;
+      text-transform: uppercase;
+      font-size: 1rem;
+      z-index: 5;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.3);
+      transform: translateY(0);
+      transition: transform 0.3s ease;
+    }
+
+    &:hover .champion-banner {
+      transform: translateY(100%);
+    }
+  }
+
+  // Estilos para 2º lugar (medalha de prata)
+  &.silver {
+    --card-ratio: 1;
+    --card-hover-scale: 1.02;
+    transform: translateY(-5px);
+    z-index: 5;
+  }
+
+  // Estilos para 3º lugar (medalha de bronze)
+  &.bronze {
+    --card-ratio: 1;
+    --card-hover-scale: 1.02;
+    transform: translateY(-5px);
+    z-index: 5;
+  }
+
+  // Badges de classificação (medalhas)
+  .rank-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 32px;
+    height: 32px;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+
+    &.gold {
+      background: linear-gradient(45deg, #FFD700, #FFC107);
+      border: 2px solid #FFD700;
+    }
+
+    &.silver {
+      background: linear-gradient(45deg, #C0C0C0, #A9A9A9);
+      border: 2px solid #C0C0C0;
+    }
+
+    &.bronze {
+      background: linear-gradient(45deg, #CD7F32, #A0522D);
+      border: 2px solid #CD7F32;
+    }
+
+    .medal-icon {
+      font-size: 1.2rem;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+  }
+
+  // Ícone de coroa para o campeão
+  .crown {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: #FFD700;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    z-index: 10;
+  }
+
+  // Contador de favoritos
+  .favorites-counter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 15px;
+    z-index: 5;
+
+    .heart-icon {
+      color: #ff5a5f;
+      margin-right: 4px;
+      font-size: 1rem;
+    }
+
+    .count {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+    }
+  }
+
+  // Animação de brilho para destaque
+  @keyframes glowing {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}
+
+// Media queries para responsividade
+@media (max-width: 768px) {
+  .pokemon-rank-card {
+    .pokemon-info {
+      .pokemon-name {
+        font-size: 1rem;
+      }
+    }
+
+    &.champion {
+      .pokemon-info .pokemon-name {
+        font-size: 1.2rem;
+      }
+
+      .champion-banner {
+        font-size: 0.9rem;
+        padding: 5px;
+      }
+    }
+
+    .rank-badge {
+      width: 28px;
+      height: 28px;
+
+      .medal-icon {
+        font-size: 1rem;
+      }
+    }
+
+    .crown {
+      font-size: 1.8rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .pokemon-rank-card {
+    .pokemon-info {
+      padding: 8px;
+
+      .types-container .type-badge {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+      }
+
+      .stats-container {
+        gap: 10px;
+        font-size: 0.7rem;
+      }
+    }
+  }
+}
+
+// Suporte para dispositivos muito pequenos
+@media (max-width: 360px) {
+  .pokemon-rank-card {
+    margin: 0.3rem;
+
+    .pokemon-info {
+      .pokemon-name {
+        font-size: 0.9rem;
+      }
+
+      .pokemon-number {
+        font-size: 0.8rem;
+      }
+    }
+
+    &.champion {
+      .pokemon-info .pokemon-name {
+        font-size: 1.1rem;
+      }
+    }
+
+    .rank-badge {
+      width: 24px;
+      height: 24px;
+      top: 5px;
+      left: 5px;
+    }
+
+    .favorites-counter {
+      padding: 3px 7px;
+      top: 5px;
+      right: 5px;
+
+      .heart-icon {
+        font-size: 0.9rem;
+      }
+
+      .count {
+        font-size: 0.8rem;
+      }
+    }
+
+    .crown {
+      font-size: 1.5rem;
+      top: -12px;
+    }
+  }
+}

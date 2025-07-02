@@ -9,23 +9,23 @@ const routes: Routes = [
     children: [
       {
         path: 'home',
-        loadChildren: () => import('../pages/home/home.module').then(m => m.HomePageModule)
+        loadChildren: () => import('../pages/web/home/home.module').then(m => m.HomePageModule)
       },
       {
         path: 'captured',
-        loadChildren: () => import('../pages/captured/captured.module').then(m => m.CapturedPageModule)
+        loadChildren: () => import('../pages/web/captured/captured.module').then(m => m.CapturedPageModule)
       },
       {
         path: 'ranking',
-        loadChildren: () => import('../pages/ranking/ranking.module').then(m => m.RankingPageModule)
+        loadChildren: () => import('../pages/web/ranking/ranking.module').then(m => m.RankingPageModule)
       },
       {
         path: 'settings',
-        loadChildren: () => import('../pages/settings/settings.module').then(m => m.SettingsPageModule)
+        loadChildren: () => import('../pages/web/settings/settings.module').then(m => m.SettingsPageModule)
       },
       {
         path: 'details/:id',
-        loadChildren: () => import('../pages/details/details.module').then(m => m.DetailsPageModule)
+        loadChildren: () => import('../pages/web/details/details.module').then(m => m.DetailsPageModule)
       },
       {
         path: '',
