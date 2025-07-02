@@ -40,4 +40,4 @@ def get_or_translate_flavor(db: Session, pokemon_id: int, flavor_en: str, lang: 
         except Exception:
             pass
     # Se não houver tradução manual, retorna o texto original
-    return flavor_en 
+    return flavor_en

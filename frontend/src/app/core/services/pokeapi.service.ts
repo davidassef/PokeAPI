@@ -18,6 +18,7 @@ import {
 })
 export class PokeApiService {
   private readonly baseUrl = 'https://pokeapi.co/api/v2';
+  private readonly backendUrl = 'http://localhost:8000/api/v1'; // URL do nosso backend FastAPI
   private pokemonCacheSubject = new BehaviorSubject<Map<string, Pokemon>>(new Map());
   private speciesCacheSubject = new BehaviorSubject<Map<string, PokemonSpecies>>(new Map());
 
@@ -199,7 +200,9 @@ export class PokeApiService {
    * @returns Observable com lista de rankings globais
    */
   getGlobalRanking(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/ranking/global`).pipe(
+    // Usa o backend FastAPI em vez da PokeAPI
+    return this.http.get<any[]>(`${this.backendUrl}/ranking/`).pipe(
+      map(response => this.normalizeRankingResponse(response)),
       catchError(error => {
         console.error('Erro ao buscar ranking global:', error);
         return from([[]]);
@@ -208,15 +211,34 @@ export class PokeApiService {
   }
 
   /**
+   * Normaliza a resposta da API de ranking para um formato consistente
+   * Isso facilita lidar com diferentes formatos de API (snake_case vs camelCase)
+   */
+  private normalizeRankingResponse(response: any[]): any[] {
+    if (!response || response.length === 0) return [];
+
+    return response.map((item, index) => {
+      return {
+        pokemonId: item.pokemon_id || item.pokemonId,
+        favoriteCount: item.favorite_count || item.favoriteCount,
+        rank: item.rank || index + 1,
+        trend: item.trend || 'stable',
+        pokemon_name: item.pokemon_name || item.pokemonName
+      };
+    });
+  }
+
+  /**
    * Obtém o ranking local de jogadores
    * @param region Região para o ranking local
    * @returns Observable com lista de rankings locais
    */
   getLocalRanking(region: string): Observable<any[]> {
-    // Ajuste: usar backend FastAPI
-    return this.http.get<any[]>(`http://localhost:8000/api/v1/ranking/local`, {
+    // Usa a URL base do backend
+    return this.http.get<any[]>(`${this.backendUrl}/ranking/local`, {
       params: new HttpParams().set('region', region)
     }).pipe(
+      map(response => this.normalizeRankingResponse(response)),
       catchError(error => {
         console.error('Erro ao buscar ranking local:', error);
         return from([[]]);

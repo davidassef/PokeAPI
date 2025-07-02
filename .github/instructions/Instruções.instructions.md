@@ -69,6 +69,7 @@ Este guia serve como referência para garantir que todo código gerado — manua
 - Prefira instruções claras no prompt:
   - “Crie função pura para calcular total com desconto...”
   - “Crie hook que abstrai chamadas à API com axios...”
+  - "Comunicação e documentos sempre em PT-BR"
 
 ---
 
