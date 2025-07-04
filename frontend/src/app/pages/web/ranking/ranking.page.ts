@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, firstValueFrom, timeout } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
@@ -57,17 +57,17 @@ export class RankingPage implements OnInit, OnDestroy {
     base_experience: 0,
     order: 0,
     sprites: {
-      front_default: 'assets/images/placeholder.png',
-      front_shiny: 'assets/images/placeholder.png',
-      back_default: 'assets/images/placeholder.png',
-      back_shiny: 'assets/images/placeholder.png',
+      front_default: 'assets/img/placeholder.png',
+      front_shiny: 'assets/img/placeholder.png',
+      back_default: 'assets/img/placeholder.png',
+      back_shiny: 'assets/img/placeholder.png',
       other: {
         'official-artwork': {
-          front_default: 'assets/images/placeholder.png'
+          front_default: 'assets/img/placeholder.png'
         },
         home: {
-          front_default: 'assets/images/placeholder.png',
-          front_shiny: 'assets/images/placeholder.png'
+          front_default: 'assets/img/placeholder.png',
+          front_shiny: 'assets/img/placeholder.png'
         }
       }
     },
@@ -347,7 +347,7 @@ export class RankingPage implements OnInit, OnDestroy {
 
   getSafePokemonImage(pokemon: Pokemon | null): string {
     if (!pokemon || pokemon.id === 0) {
-      return 'assets/images/placeholder.png';
+      return 'assets/img/placeholder.png';
     }
 
     // Verifica cache primeiro
@@ -358,7 +358,7 @@ export class RankingPage implements OnInit, OnDestroy {
     // Busca imagem oficial
     const imageUrl = pokemon.sprites?.other?.['official-artwork']?.front_default ||
                     pokemon.sprites?.front_default ||
-                    'assets/images/placeholder.png';
+                    'assets/img/placeholder.png';
 
     // Cache a URL
     this.pokemonImageCache.set(pokemon.id, imageUrl);

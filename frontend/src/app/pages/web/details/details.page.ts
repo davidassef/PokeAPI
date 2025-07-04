@@ -169,7 +169,7 @@ export class DetailsPage implements OnInit, OnDestroy {
    * Obtém imagem atual
    */
   getCurrentImage(): string {
-    return this.currentImageUrl || 'assets/images/pokeball.png';
+    return this.currentImageUrl || 'assets/img/pokeball.png';
   }
 
   /**
@@ -261,7 +261,7 @@ export class DetailsPage implements OnInit, OnDestroy {
    * Trata erro de imagem
    */
   onImageError(event: any) {
-    event.target.src = 'assets/images/pokeball.png';
+    event.target.src = 'assets/img/pokeball.png';
   }
 
   /**
