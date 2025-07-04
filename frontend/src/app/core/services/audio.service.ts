@@ -37,11 +37,10 @@ export class AudioService {
 
   // Lista de faixas disponíveis
   private tracks: AudioTrack[] = [
-    { id: 'pallet-town', name: 'Pallet Town', path: '/assets/audio/pallet-town.mp3', artist: 'Game Freak' },
-    { id: 'pokemon-center', name: 'Pokémon Center', path: '/assets/audio/pokemon-center.mp3', artist: 'Game Freak' },
-    { id: 'route-1', name: 'Route 1', path: '/assets/audio/route-1.mp3', artist: 'Game Freak' },
-    { id: 'battle-wild', name: 'Wild Pokémon Battle', path: '/assets/audio/battle-wild.mp3', artist: 'Game Freak' },
-    { id: 'battle-trainer', name: 'Trainer Battle', path: '/assets/audio/battle-trainer.mp3', artist: 'Game Freak' }
+    { id: 'opening-jp', name: 'Pokémon Theme (JP)', path: '/assets/audio/Opening JP.mp3', artist: 'Pokémon Japan' },
+    { id: 'opening-en', name: 'Pokémon Theme (EN)', path: '/assets/audio/Opening EN.mp3', artist: 'Pokémon English' },
+    { id: 'opening-es', name: 'Apertura Pokémon (ES)', path: '/assets/audio/Opening ES.mp3', artist: 'Pokémon España' },
+    { id: 'opening-br', name: 'Abertura Pokémon (BR)', path: '/assets/audio/Opening BR.mp3', artist: 'Pokémon Brasil' }
   ];
 
   constructor(private settingsService: SettingsService) {
@@ -167,7 +166,7 @@ export class AudioService {
     try {
       // Garantir que o caminho seja um arquivo de áudio válido
       let fullPath: string;
-      
+
       // Se o caminho já começa com /assets/, usar como está
       if (soundPath.startsWith('/assets/')) {
         fullPath = soundPath;
@@ -175,11 +174,11 @@ export class AudioService {
         // Caso contrário, assumir que é um nome de arquivo e adicionar o caminho base
         fullPath = `/assets/audio/${soundPath}.wav`;
       }
-      
+
       // Tentar carregar o arquivo específico
       const soundAudio = new Audio(fullPath);
       soundAudio.volume = settings.musicVolume || 0.7;
-      
+
       // Adicionar listener de erro para fallback
       soundAudio.addEventListener('error', async () => {
         console.warn(`Arquivo de áudio não encontrado: ${fullPath}, usando fallback`);
@@ -190,7 +189,7 @@ export class AudioService {
           console.error('Erro ao reproduzir beep de fallback:', beepError);
         }
       });
-      
+
       await soundAudio.play();
     } catch (error) {
       console.error('Erro ao reproduzir som:', error);
@@ -216,7 +215,7 @@ export class AudioService {
     try {
       // Usar sons padrão do sistema ou sons existentes
       let soundPath: string;
-      
+
       if (action === 'capture') {
         // Som de captura - usar um som curto e agradável
         soundPath = '/assets/audio/capture.mp3'; // Se existir
@@ -286,6 +285,22 @@ export class AudioService {
 
   getAvailableTracks(): AudioTrack[] {
     return [...this.tracks];
+  }
+
+  getOpeningTracks(): AudioTrack[] {
+    return this.tracks.filter(track => track.id.startsWith('opening-'));
+  }
+
+  getDefaultTrackForLanguage(language: string): AudioTrack | null {
+    const langMap: { [key: string]: string } = {
+      'pt-BR': 'opening-br',
+      'en-US': 'opening-en',
+      'es-ES': 'opening-es',
+      'ja-JP': 'opening-jp'
+    };
+
+    const trackId = langMap[language] || 'opening-br'; // Default to BR
+    return this.tracks.find(track => track.id === trackId) || null;
   }
 
   getCurrentState(): AudioState {
