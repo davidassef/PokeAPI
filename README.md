@@ -2,14 +2,19 @@
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
+[![Status](https://img.shields.io/badge/Status-Em%20Produ%C3%A7%C3%A3o-brightgreen?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
+[![Demo](https://img.shields.io/badge/Demo-Online-success?style=for-the-badge&logo=render)](https://pokeapi-frontend.onrender.com)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
 
 **🎯 Um aplicativo moderno e completo para explorar o mundo Pokémon!**
 
-*Integração com PokéAPI • Interface Responsiva • Sistema de Favoritos • Multiplataforma*
+*Integração com PokéAPI • Interface Web 100% Completa • Sistema de Favoritos • Multiplataforma*
+
+> **🚀 Status Atual:** Aplicação full-stack completamente deployada e funcional no Render!
+
+> **🌐 Demo Online:** [**Acesse o app no Render!**](https://pokeapi-frontend.onrender.com) | Backend: [API](https://pokeapi-la6k.onrender.com)
 
 </div>
 
@@ -199,17 +204,17 @@ ng e2e
 
 ## 📊 Status de Desenvolvimento
 
-### Progresso Geral: 85% ✅
+### Progresso Geral: 95% ✅
 
 | Módulo | Status | Progresso |
 |--------|--------|-----------|
 | 🎨 UI/UX Design | ✅ Completo | 100% |
 | 🏗️ Arquitetura | ✅ Completo | 100% |
-| 📱 Frontend Core | ✅ Completo | 98% |
-| 🔧 Backend API | ✅ Completo | 92% |
-| 🧪 Testes | 🚧 Em andamento | 65% |
-| 📱 Mobile Build | 🚧 Em andamento | 45% |
-| 🌐 Deploy | ⏳ Pendente | 0% |
+| 📱 Frontend Core | ✅ Completo | 100% |
+| 🔧 Backend API | ✅ Completo | 100% |
+| 🧪 Testes | 🚧 Em andamento | 70% |
+| 📱 Mobile Build | 🚧 Em andamento | 50% |
+| 🌐 Deploy | ✅ Completo | 100% |
 
 ### Últimas Atualizações
 
@@ -425,7 +430,24 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 - [PokéAPI](https://pokeapi.co/) - API de dados Pokémon
 - [Ionic Team](https://ionicframework.com/) - Framework incrível
 - [FastAPI](https://fastapi.tiangolo.com/) - Framework Python moderno
+- [Render](https://render.com/) - Plataforma de deploy
 - Comunidade open source ❤️
+
+---
+
+## 🚀 Deploy e Produção
+
+### 🌐 **Aplicação em Produção**
+- **Frontend**: [https://pokeapi-frontend.onrender.com](https://pokeapi-frontend.onrender.com)
+- **Backend API**: [https://pokeapi-la6k.onrender.com](https://pokeapi-la6k.onrender.com)
+- **Health Check**: [https://pokeapi-la6k.onrender.com/health](https://pokeapi-la6k.onrender.com/health)
+- **API Docs**: [https://pokeapi-la6k.onrender.com/docs](https://pokeapi-la6k.onrender.com/docs)
+
+### ⚙️ **Configuração**
+- **Deploy automático** via GitHub integration
+- **CORS** configurado para comunicação segura
+- **Database SQLite** persistente
+- **Build otimizado** para produção
 
 ---
 
