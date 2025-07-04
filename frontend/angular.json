@@ -34,13 +34,20 @@
                 "glob": "404.html",
                 "input": "src",
                 "output": "/"
+              },
+              {
+                "glob": ".nojekyll",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
             "scripts": []
           },
           "configurations": {
-            "production": {              "budgets": [
+            "production": {
+              "baseHref": "/PokeAPI/",
+              "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "5mb",
