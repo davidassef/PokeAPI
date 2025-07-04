@@ -14,12 +14,25 @@
 2. O workflow já está configurado no arquivo `.github/workflows/deploy-github-pages.yml`
 3. A cada push na branch `main`, o deploy será automático
 
-### 3️⃣ **Configurar Permissões (se necessário)**
+⚠️ **IMPORTANTE**: Se você ainda não vê a opção "GitHub Actions" em Source:
+- Primeiro faça um push para trigger o workflow
+- Aguarde alguns minutos para o GitHub reconhecer o workflow
+- Recarregue a página de configurações do GitHub Pages
+
+### 3️⃣ **Configurar Permissões (OBRIGATÓRIO)**
 
 1. Vá para **Settings** > **Actions** > **General**
 2. Em **Workflow permissions**, selecione:
    - ☑️ **Read and write permissions**
    - ☑️ **Allow GitHub Actions to create and approve pull requests**
+
+3. **IMPORTANTE**: Vá para **Settings** > **Pages**
+4. Se não aparecer a opção "GitHub Actions", faça o seguinte:
+   - Selecione temporariamente **Deploy from a branch**
+   - Selecione branch `main` e pasta `/ (root)`
+   - Clique em **Save**
+   - Aguarde 5 minutos e volte para essa página
+   - Agora selecione **GitHub Actions**
 
 ### 4️⃣ **Verificar o Deploy**
 
