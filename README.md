@@ -245,6 +245,39 @@ ng e2e
 
 ---
 
+## 🌐 Deploy e Hospedagem
+
+### 🚀 **GitHub Pages (Demo Online)**
+
+A aplicação está automaticamente configurada para deploy no GitHub Pages:
+
+- **🌐 Demo Online:** [https://davidassef.github.io/PokeAPI/](https://davidassef.github.io/PokeAPI/)
+- **📋 Guia da Demo:** [DEMO.md](DEMO.md)
+- **⚙️ Setup GitHub Pages:** [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)
+
+#### Deploy Automático
+- ✅ Workflow GitHub Actions configurado
+- ✅ Deploy automático a cada push na `main`
+- ✅ Build de produção otimizado
+- ✅ Suporte a SPA routing
+
+### 🔧 **Deploy Manual (Produção)**
+
+#### Build de Produção
+```bash
+cd frontend
+npm run build:prod
+# Arquivos gerados em: frontend/www/
+```
+
+#### Servidor Estático
+```bash
+# Servir arquivos do build
+npx http-server frontend/www -p 8080 -c-1
+```
+
+---
+
 ## 📊 Status de Desenvolvimento
 
 ### Progresso Geral: 90% ✅
