@@ -36,14 +36,27 @@
 
 ### 4️⃣ **Verificar o Deploy**
 
-1. Acesse a aba **Actions** do repositório
+1. Acesse a aba **Actions** do repositório: https://github.com/davidassef/PokeAPI/actions
 2. Verifique se o workflow "Deploy to GitHub Pages" está rodando
 3. Aguarde a conclusão (geralmente 2-5 minutos)
+4. Se houver erro, leia os logs e consulte o arquivo `TROUBLESHOOTING_GITHUB_PAGES.md`
 
-### 5️⃣ **Acessar a Aplicação**
+### 5️⃣ **Verificar Ambiente**
+
+1. Vá para https://github.com/davidassef/PokeAPI/deployments
+2. Deve aparecer um ambiente "github-pages" com status "Active"
+3. A URL da aplicação será mostrada na página
+
+### 6️⃣ **Acessar a Aplicação**
 
 Após o deploy, a aplicação estará disponível em:
 **🌐 https://davidassef.github.io/PokeAPI/**
+
+⚠️ **Se você receber erro 404**:
+- Consulte o arquivo `TROUBLESHOOTING_GITHUB_PAGES.md`
+- Verifique se o workflow executou sem erros
+- Aguarde até 10 minutos para propagação
+- Confirme que as configurações estão corretas
 
 ---
 
@@ -95,6 +108,12 @@ Após o deploy, a aplicação estará disponível em:
 
 ## 🚨 **Observações Importantes**
 
+### **🔧 Troubleshooting**
+- **Error 404**: Consulte `TROUBLESHOOTING_GITHUB_PAGES.md` para soluções detalhadas
+- **Workflow falhando**: Verifique permissões e configurações do repositório
+- **Deploy lento**: Pode levar até 10 minutos para a primeira publicação
+
+### **💡 Dicas**
 1. **Backend**: A demo online funciona apenas com a PokéAPI (sem backend próprio)
 2. **Dados**: Sistema de captura usa localStorage (não sincroniza entre dispositivos)
 3. **Ranking**: Usa dados mockados para demonstração
