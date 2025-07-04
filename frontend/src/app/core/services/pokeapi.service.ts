@@ -23,7 +23,10 @@ export class PokeApiService {
   private pokemonCacheSubject = new BehaviorSubject<Map<string, Pokemon>>(new Map());
   private speciesCacheSubject = new BehaviorSubject<Map<string, PokemonSpecies>>(new Map());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    console.log('[PokeApiService] Backend URL configurada:', this.backendUrl);
+    console.log('[PokeApiService] Environment:', environment);
+  }
 
   /**
    * Busca lista paginada de Pokémons
