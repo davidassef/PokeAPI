@@ -1,4 +1,27 @@
-# 🚀 PokeAPIApp - Aplic### ✨ Diferenciais
+# 🚀 PokeAPIApp - Aplicativo Pokémon Full-Stack
+
+<div align="center">
+
+[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
+[![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
+[![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
+
+**🎯 Um aplicativo moderno e completo para explorar o mundo Pokémon!**
+
+*Integração com PokéAPI • Interface Web 100% Completa • Sistema de Favoritos • Multiplataforma*
+
+> **📱 Status Atual:** A interface web está completamente finalizada e funcional. O desenvolvimento mobile está em andamento (50% concluído).
+
+</div>
+
+---
+
+## 📱 Sobre o Projeto
+
+O **PokeAPIApp** é uma aplicação full-stack moderna que permite aos usuários explorar, favoritar e conhecer detalhes sobre Pokémon através de uma interface intuitiva e responsiva. O projeto combina as melhores tecnologias web e mobile para oferecer uma experiência excepcional.
+
+### ✨ Diferenciais
 
 - 🎨 **Design Moderno**: Interface limpa e responsiva com Material Design
 - 🌐 **Multiplataforma**: Funciona em Web, iOS e Android (Capacitor)
