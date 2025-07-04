@@ -25,7 +25,7 @@ Configurar deploy completo do PokeAPIApp com backend (FastAPI) e frontend (Angul
    - **Name**: `pokeapi-backend`
    - **Region**: Oregon (US West)
    - **Branch**: `main`
-   - **Root Directory**: `backend`
+   - **Root Directory**: `backend` ⚠️ **IMPORTANTE**
    - **Runtime**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
@@ -35,7 +35,7 @@ Configurar deploy completo do PokeAPIApp com backend (FastAPI) e frontend (Angul
    DATABASE_URL=sqlite:///./pokemon_app.db
    ENVIRONMENT=production
    CORS_ORIGINS=*
-   PYTHONPATH=/opt/render/project/src/backend
+   PYTHONPATH=/opt/render/project/src
    ```
 
 4. **Health Check**:
@@ -52,7 +52,7 @@ Configurar deploy completo do PokeAPIApp com backend (FastAPI) e frontend (Angul
 2. **Configurar Frontend**:
    - **Name**: `pokeapi-frontend`
    - **Branch**: `main`
-   - **Root Directory**: `frontend`
+   - **Root Directory**: `frontend` ⚠️ **IMPORTANTE**
    - **Build Command**: `npm install && npm run build:prod`
    - **Publish Directory**: `www`
 
