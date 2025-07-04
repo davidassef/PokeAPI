@@ -2,7 +2,7 @@
  * Interface para configurações do aplicativo
  */
 export interface AppSettings {
-  language: 'pt-BR' | 'en-US' | 'es-ES';
+  language: 'pt-BR' | 'en-US' | 'es-ES' | 'ja-JP';
   theme: 'light' | 'dark' | 'auto';
   darkMode: boolean;
   musicVolume?: number;

@@ -32,22 +32,22 @@ export class AppComponent implements OnInit {
 
       // Aguardar o carregamento das configurações
       await this.settingsService.loadSettings();
-      
+
       // Obter idioma das configurações
       const settings = this.settingsService.getCurrentSettings();
       const savedLanguage = settings.language;
-      
+
       if (savedLanguage) {
         this.translate.use(savedLanguage);
       } else {
         // Usar idioma do dispositivo ou pt-BR como padrão
         const browserLang = this.translate.getBrowserLang();
-        const supportedLangs = ['pt-BR', 'en-US', 'es-ES'];
+        const supportedLangs = ['pt-BR', 'en-US', 'es-ES', 'ja-JP'];
         const langToUse = supportedLangs.includes(browserLang || '') ? browserLang : 'pt-BR';
         this.translate.use(langToUse || 'pt-BR');
-        
+
         // Salvar o idioma detectado nas configurações
-        const detectedLanguage = (langToUse || 'pt-BR') as 'pt-BR' | 'en-US' | 'es-ES';
+        const detectedLanguage = (langToUse || 'pt-BR') as 'pt-BR' | 'en-US' | 'es-ES' | 'ja-JP';
         await this.settingsService.saveSettings({ language: detectedLanguage });
       }
     });

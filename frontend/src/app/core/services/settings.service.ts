@@ -65,7 +65,7 @@ export class SettingsService {
     }
   }
 
-  async updateLanguage(language: 'pt-BR' | 'en-US' | 'es-ES'): Promise<void> {
+  async updateLanguage(language: 'pt-BR' | 'en-US' | 'es-ES' | 'ja-JP'): Promise<void> {
     await this.storageReady;
     await this.saveSettings({ language });
     this.translate.use(language);

@@ -28,7 +28,8 @@ export class SettingsPage implements OnInit, OnDestroy {
   languages = [
     { code: 'pt-BR', name: 'Português (Brasil)', flag: '🇧🇷' },
     { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-    { code: 'es-ES', name: 'Español (España)', flag: '🇪🇸' }
+    { code: 'es-ES', name: 'Español (España)', flag: '🇪🇸' },
+    { code: 'ja-JP', name: '日本語 (Japanese)', flag: '🇯🇵' }
   ];
 
   pokemonPerPageOptions = [10, 20, 30, 50, 100];
@@ -84,15 +85,18 @@ export class SettingsPage implements OnInit, OnDestroy {
    */
   async openLanguageModal() {
     const actionSheet = await this.actionSheetController.create({
-      header: await this.translate.get('settings.select_language').toPromise(),
+      header: await this.translate.get('settings_page.select_language').toPromise(),
+      cssClass: 'language-action-sheet',
       buttons: [
         ...this.languages.map(lang => ({
           text: `${lang.flag} ${lang.name}`,
+          cssClass: 'language-option',
           handler: () => this.changeLanguage(lang.code as any)
         })),
         {
           text: await this.translate.get('app.cancel').toPromise(),
-          role: 'cancel'
+          role: 'cancel',
+          cssClass: 'cancel-option'
         }
       ]
     });
@@ -102,11 +106,11 @@ export class SettingsPage implements OnInit, OnDestroy {
   /**
    * Altera idioma
    */
-  async changeLanguage(language: 'pt-BR' | 'en-US' | 'es-ES') {
+  async changeLanguage(language: 'pt-BR' | 'en-US' | 'es-ES' | 'ja-JP') {
     try {
       await this.settingsService.updateLanguage(language);
       this.settings.language = language;
-      this.showToast('settings.language_updated');
+      this.showToast('settings_page.language_updated');
     } catch (error) {
       console.error('Erro ao alterar idioma:', error);
     }

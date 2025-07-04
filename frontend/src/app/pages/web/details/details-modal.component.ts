@@ -252,6 +252,13 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Para japonês, ir direto para PokeAPI nativa (backend não suporta japonês)
+    if (lang === 'ja-JP' || lang === 'ja') {
+      console.log('🇯🇵 Idioma japonês detectado, buscando diretamente da PokeAPI nativa');
+      this.fetchFlavorTextFromPokeAPINative(lang);
+      return;
+    }
+
     // Para outros idiomas, tentar backend primeiro e depois PokeAPI nativa
     console.log(`🌐 Idioma ${lang} detectado, buscando do backend/API nativa`);
     return this.http.get(`/api/v1/pokemon/${pokemonId}/flavor?lang=${lang}`)
@@ -384,7 +391,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
             'fr': ['fr'],
             'de': ['de'],
             'it': ['it'],
-            'ja': ['ja'],
+            'ja': ['ja', 'ja-Hrkt'],
+            'ja-JP': ['ja', 'ja-Hrkt'],
             'ko': ['ko']
           };
 
@@ -1252,8 +1260,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
       case 'curiosities':
         // CORREÇÃO: Sempre verificar se os flavor texts precisam ser recarregados
-        // Se os dados já foram carregados E os flavors não foram limpos, não carregar novamente
-        if (this.tabDataLoaded['curiosities'] && this.flavorTexts.length > 0) {
+        // Se os dados já foram carregados E os flavors não foram limpos E não houve mudança de idioma, não carregar novamente
+        if (this.tabDataLoaded['curiosities'] && this.flavorTexts.length > 0 && !this.isLoadingFlavor) {
           console.log(`✅ Dados da aba ${tab} já carregados e flavors válidos`);
           return;
         }
@@ -1453,15 +1461,26 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private onLanguageChange(): void {
     console.log('🌐 Idioma alterado, recarregando traduções...');
+    
+    const newLang = this.translate.currentLang || 'pt-BR';
+    console.log(`🌐 Novo idioma detectado: ${newLang}`);
 
     // Resetar dados que dependem de idioma
     this.abilityDescriptions = {};
     this.flavorTexts = [];
+    this.flavorText = '';
+    this.currentFlavorIndex = 0;
     this.isLoadingFlavor = true;
 
     // Resetar flags de carregamento para dados dependentes de idioma
     this.tabDataLoaded['combat'] = false;
     this.tabDataLoaded['curiosities'] = false;
+
+    // Se estivermos na aba curiosities, recarregar imediatamente os flavors
+    if (this.activeTab === 'curiosities') {
+      console.log(`🔄 Aba curiosities ativa, recarregando flavors em ${newLang}`);
+      this.fetchFlavorText(newLang, this.pokemon.id);
+    }
 
     // Recarregar dados da aba ativa
     this.loadTabData(this.activeTab);

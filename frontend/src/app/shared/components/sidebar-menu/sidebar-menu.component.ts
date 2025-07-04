@@ -63,7 +63,8 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   availableLanguages = [
     { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
     { code: 'en-US', name: 'English', flag: '🇺🇸' },
-    { code: 'es-ES', name: 'Español', flag: '🇪🇸' }
+    { code: 'es-ES', name: 'Español', flag: '🇪🇸' },
+    { code: 'ja-JP', name: '日本語', flag: '🇯🇵' }
   ];
 
   private destroy$ = new Subject<void>();
@@ -147,7 +148,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     await this.router.navigate(['/tabs/details', randomId]);
   }
   async changeLanguage(languageCode: string) {
-    const validLanguage = languageCode as 'pt-BR' | 'en-US' | 'es-ES';
+    const validLanguage = languageCode as 'pt-BR' | 'en-US' | 'es-ES' | 'ja-JP';
     await this.settingsService.updateLanguage(validLanguage);
     this.currentLanguage = languageCode;
   }

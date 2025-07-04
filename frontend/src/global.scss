@@ -45,3 +45,130 @@ body, ion-app, ion-content {
 .theme-transition, .dark-theme, :root {
   transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
+
+// Estilos para ActionSheet seguir o tema
+ion-action-sheet {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+
+  .action-sheet-wrapper {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  .action-sheet-title {
+    color: var(--text-color) !important;
+    font-weight: 600;
+  }
+
+  .action-sheet-button {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+
+    &:hover {
+      background: var(--input-bg) !important;
+    }
+
+    &.action-sheet-button-activated {
+      background: var(--input-bg) !important;
+    }
+  }
+
+  .action-sheet-button-inner {
+    color: var(--text-color) !important;
+  }
+}
+
+// Estilos específicos para ActionSheet de idiomas
+.language-action-sheet {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+
+  .action-sheet-wrapper {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  .action-sheet-title {
+    color: var(--text-color) !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .action-sheet-button {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-bottom: 1px solid var(--input-border);
+
+    &:hover {
+      background: var(--input-bg) !important;
+    }
+
+    &.action-sheet-button-activated {
+      background: var(--input-bg) !important;
+    }
+  }
+
+  .action-sheet-button-inner {
+    color: var(--text-color) !important;
+    font-weight: 500;
+  }
+
+  .language-option {
+    .action-sheet-button-inner {
+      color: var(--text-color) !important;
+    }
+  }
+
+  .cancel-option {
+    .action-sheet-button-inner {
+      color: var(--primary) !important;
+      font-weight: 600;
+    }
+  }
+}
+
+// Estilos para Modal seguir o tema
+ion-modal {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+
+  .modal-wrapper {
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+}
+
+// Estilos para Alert seguir o tema
+ion-alert {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+
+  .alert-wrapper {
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+
+  .alert-title {
+    color: var(--text-color);
+  }
+
+  .alert-message {
+    color: var(--text-color);
+  }
+
+  .alert-button {
+    color: var(--primary);
+  }
+}
+
+// Estilos para Toast seguir o tema
+ion-toast {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+
+  .toast-wrapper {
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+}

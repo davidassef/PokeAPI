@@ -193,7 +193,8 @@
   "languages": {
     "pt-BR": "Português",
     "en-US": "Inglês",
-    "es-ES": "Espanhol"
+    "es-ES": "Espanhol",
+    "ja-JP": "Japonês"
   },
   "home": {
     "loading": "Carregando",
@@ -229,6 +230,7 @@
     "loading": "Carregando configurações...",
     "language_theme": "Idioma e Tema",
     "language": "Idioma",
+    "select_language": "Selecionar idioma",
     "dark_theme": "Tema escuro",
     "audio_settings": "Configurações de Áudio",
     "enable_music": "Ativar música",
@@ -255,7 +257,8 @@
     "theme_update": "Tema atualizado com sucesso!",
     "export_captured": "Exportar capturados",
     "import_captured": "Importar capturados",
-    "clear_all_captured": "Limpar todos os capturados"
+    "clear_all_captured": "Limpar todos os capturados",
+    "language_updated": "Idioma atualizado com sucesso!"
   },
   "ranking_page": {
     "most_loved_pokemon": "Pokémons mais amados",
