@@ -29,11 +29,66 @@ export const modalAnimations = [
   ]),
 
   trigger('tabSlide', [
+    // Estados finais para todas as abas (garantir que todas terminem no mesmo estado)
+    state('overview', style({
+      opacity: 1,
+      transform: 'translateX(0)',
+      position: 'relative',
+      zIndex: 1
+    })),
+    state('combat', style({
+      opacity: 1,
+      transform: 'translateX(0)',
+      position: 'relative',
+      zIndex: 1
+    })),
+    state('evolution', style({
+      opacity: 1,
+      transform: 'translateX(0)',
+      position: 'relative',
+      zIndex: 1
+    })),
+    state('curiosities', style({
+      opacity: 1,
+      transform: 'translateX(0)',
+      position: 'relative',
+      zIndex: 1
+    })),
+
+    // Transições específicas Overview ↔ Combat (SEM ANIMAÇÃO para evitar vazamento)
+    transition('overview => combat', [
+      style({
+        opacity: 1,
+        transform: 'translateX(0)',
+        position: 'relative',
+        zIndex: 1
+      })
+    ]),
+
+    transition('combat => overview', [
+      style({
+        opacity: 1,
+        transform: 'translateX(0)',
+        position: 'relative',
+        zIndex: 1
+      })
+    ]),
+
+    // Transições entre Evolution e Curiosities (fade rápido)
+    transition('evolution => curiosities', [
+      style({ opacity: 0 }),
+      animate('100ms ease-out', style({ opacity: 1 }))
+    ]),
+
+    transition('curiosities => evolution', [
+      style({ opacity: 0 }),
+      animate('100ms ease-out', style({ opacity: 1 }))
+    ]),
+
+    // Transições para outras combinações (fade simples e rápido)
     transition('* => *', [
-      style({ transform: 'translateX(10px)', opacity: 0 }),
-      animate('250ms ease-out',
-        style({ transform: 'translateX(0)', opacity: 1 })
-      )
+      style({ opacity: 0 }),
+      animate('100ms ease-out', style({ opacity: 1 }))
     ])
   ]),
 
@@ -50,5 +105,11 @@ export const modalAnimations = [
     state('idle', style({ transform: 'scale(1)' })),
     state('pulse', style({ transform: 'scale(1.05)' })),
     transition('idle <=> pulse', animate('200ms ease-in-out'))
+  ]),
+
+  trigger('fadeInOut', [
+    state('visible', style({ opacity: 1 })),
+    state('hidden', style({ opacity: 0 })),
+    transition('visible <=> hidden', animate('300ms ease-in-out'))
   ])
 ];

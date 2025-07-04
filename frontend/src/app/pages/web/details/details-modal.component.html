@@ -19,13 +19,16 @@
           <!-- Imagem principal -->
           <div class="main-image-container">
             <img
-              *ngIf="currentCarouselImage"
+              *ngIf="currentCarouselImage && isValidImageUrl(currentCarouselImage)"
               [src]="currentCarouselImage"
-              [alt]="pokemon?.name"
+              [alt]="pokemon?.name || 'Pokémon'"
               class="pokemon-main-image-large"
               (error)="onImageError($event)"
+              (load)="onImageLoad($event)"
             />
-            <div *ngIf="!currentCarouselImage" class="pokemon-placeholder-large">
+            <div
+              *ngIf="!currentCarouselImage || !isValidImageUrl(currentCarouselImage)"
+              class="pokemon-placeholder-large">
               <i class="fas fa-question"></i>
             </div>
           </div>
@@ -38,18 +41,50 @@
           </button>
         </div>
 
-        <!-- Miniaturas em linha (máximo 3 visíveis) -->
+        <!-- Miniaturas em linha com setas de navegação -->
         <div class="carousel-thumbnails-inline" *ngIf="carouselImages.length > 1">
-          <div class="thumbnails-slider"
-               [style.transform]="'translateX(' + getThumbnailSlideOffset() + 'px)'">
-            <button
-              *ngFor="let image of carouselImages; let i = index"
-              class="thumbnail-btn-inline"
-              [class.active]="i === currentCarouselIndex"
-              (click)="selectCarouselImage(i)">
-              <img [src]="image.url" [alt]="image.label" (error)="onImageError($event)">
-            </button>
+          <!-- Seta esquerda das miniaturas -->
+          <button class="thumbnail-nav-btn left"
+                  (click)="scrollThumbnailsLeft()"
+                  [class.disabled]="!canScrollThumbnailsLeft()"
+                  [disabled]="!canScrollThumbnailsLeft()"
+                  *ngIf="carouselImages.length > 5">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <!-- Container das miniaturas -->
+          <div class="thumbnails-container">
+            <div class="thumbnails-slider">
+              <button
+                *ngFor="let image of carouselImages; let i = index"
+                class="thumbnail-btn-inline"
+                [class.active]="i === currentCarouselIndex"
+                [class.visible]="isThumbnailVisible(i)"
+                (click)="selectCarouselImage(i)"
+                [attr.aria-label]="'Ver ' + image.label"
+                [style.display]="isThumbnailVisible(i) ? 'block' : 'none'">
+                <img
+                  *ngIf="isValidImageUrl(image.url)"
+                  [src]="image.url"
+                  [alt]="image.label"
+                  (error)="onImageError($event)">
+                <div
+                  *ngIf="!isValidImageUrl(image.url)"
+                  class="thumbnail-placeholder">
+                  <i class="fas fa-question"></i>
+                </div>
+              </button>
+            </div>
           </div>
+
+          <!-- Seta direita das miniaturas -->
+          <button class="thumbnail-nav-btn right"
+                  (click)="scrollThumbnailsRight()"
+                  [class.disabled]="!canScrollThumbnailsRight()"
+                  [disabled]="!canScrollThumbnailsRight()"
+                  *ngIf="carouselImages.length > 5">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
       </div>
 
@@ -112,7 +147,9 @@
         [class.active]="activeTab === 'combat'"
         (click)="setActiveTab('combat')"
         (keydown)="onTabKeydown($event)">
-        <i class="fas fa-sword"></i>
+        <span class="combat-icon">
+          <i class="fas fa-fist-raised"></i>
+        </span>
         {{ 'modal.combat' | translate }}
       </button>
       <button
@@ -136,33 +173,41 @@
     </div>
 
     <!-- Conteúdo das abas -->
-    <div class="tab-content" [@tabSlide]="activeTab">
+    <div class="tab-content" [@tabSlide]="tabAnimationState">
       <ng-container *ngIf="activeTab === 'overview'">
-        <div class="overview-content" [@fadeInStagger]>
+        <div class="overview-content" [@fadeInStagger] *ngIf="isOverviewDataReady()">
           <div class="stats-grid">
             <div class="stat-card interactive-element" *ngFor="let stat of pokemon?.stats">
               <span class="stat-label">{{ getTranslatedStatName(stat.stat.name) }}</span>
               <div class="stat-bar">
                 <div class="stat-fill"
                      [style.width.%]="(stat.base_stat / 255) * 100"
-                     [@statBarFill]="{ value: '', params: { percentage: (stat.base_stat / 255) * 100 } }">
+                     [@statBarFill]="{ value: 'filled', params: { percentage: (stat.base_stat / 255) * 100 } }">
                 </div>
               </div>
               <span class="stat-value">{{ stat.base_stat }}</span>
             </div>
           </div>
         </div>
+
+        <!-- Loading state para aba overview -->
+        <div class="tab-loading" *ngIf="!isOverviewDataReady()">
+          <div class="loading-spinner">
+            <ion-spinner name="crescent"></ion-spinner>
+          </div>
+          <p>{{ 'app.loading' | translate }}</p>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="activeTab === 'combat'">
-        <div class="combat-content" [@fadeInStagger]>
+        <div class="combat-content" [@fadeInStagger] *ngIf="isCombatDataReady()">
           <div class="combat-stats-detailed">
-            <h3><i class="fas fa-sword"></i> Estatísticas de Combate</h3>
+            <h3><i class="fas fa-fist-raised"></i> {{ 'modal.combat_stats' | translate }}</h3>
 
             <!-- Total de status -->
             <div class="total-stats-card">
               <div class="stat-total">
-                <span class="total-label">Total Base</span>
+                <span class="total-label">{{ 'modal.total_base' | translate }}</span>
                 <span class="total-value">{{ getTotalStats() }}</span>
               </div>
             </div>
@@ -216,7 +261,7 @@
             </div>
 
             <!-- Habilidades -->
-            <div class="abilities-section" *ngIf="pokemon?.abilities?.length">
+            <div class="abilities-section" *ngIf="shouldShowCombatData() && pokemon?.abilities?.length">
               <h4><i class="fas fa-magic"></i> {{ 'modal.abilities' | translate }}</h4>
               <div class="abilities-grid">
                 <div class="ability-card"
@@ -224,23 +269,51 @@
                      [ngClass]="{ 'hidden': ability.is_hidden }">
                   <div class="ability-header">
                     <span class="ability-name">{{ getTranslatedAbilityName(ability.ability.name) }}</span>
-                    <span class="ability-type" *ngIf="ability.is_hidden">Oculta</span>
+                    <span class="ability-type" *ngIf="ability.is_hidden">{{ 'modal.hidden_ability' | translate }}</span>
                   </div>
-                  <p class="ability-description" *ngIf="getTranslatedAbilityDescription(ability.ability.name)">
-                    {{ getTranslatedAbilityDescription(ability.ability.name) }}
-                  </p>
+
+                  <!-- Descrição da habilidade com loading state -->
+                  <div class="ability-description-container">
+                    <p class="ability-description"
+                       *ngIf="getTranslatedAbilityDescription(ability.ability.name) && getTranslatedAbilityDescription(ability.ability.name) !== 'Carregando' && getTranslatedAbilityDescription(ability.ability.name) !== 'Loading' && getTranslatedAbilityDescription(ability.ability.name) !== ''; else abilityLoading">
+                      {{ getTranslatedAbilityDescription(ability.ability.name) }}
+                    </p>
+                    <ng-template #abilityLoading>
+                      <div class="ability-loading">
+                        <ion-spinner name="dots"></ion-spinner>
+                        <span>{{ 'app.loading' | translate }}</span>
+                      </div>
+                    </ng-template>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Loading state para aba combat -->
+        <div class="tab-loading" *ngIf="!isCombatDataReady()">
+          <div class="loading-spinner">
+            <ion-spinner name="crescent"></ion-spinner>
+          </div>
+          <p>{{ 'app.loading' | translate }}</p>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="activeTab === 'evolution'">
-        <div class="evolution-content" [@fadeInStagger]>
-          <h3><i class="fas fa-arrow-up"></i> Evolução</h3>
+        <div class="evolution-content" [@fadeInStagger] *ngIf="isEvolutionDataReady()">
+          <h3><i class="fas fa-arrow-up"></i> {{ 'modal.evolution' | translate }}</h3>
 
-          <div class="evolution-info" *ngIf="evolutionChain && evolutionChain.length > 1; else noEvolution">
+          <!-- Loading state para cadeia de evolução -->
+          <div class="evolution-loading" *ngIf="!isEvolutionChainReady()">
+            <div class="loading-spinner">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <p>{{ 'app.loading' | translate }} {{ 'modal.evolution' | translate | lowercase }}</p>
+          </div>
+
+          <!-- Cadeia de evolução carregada -->
+          <div class="evolution-info" *ngIf="isEvolutionChainReady() && evolutionChain.length > 1; else noEvolution">
             <div class="evolution-chain">
               <div class="evolution-stage"
                    *ngFor="let stage of evolutionChain; let i = index"
@@ -248,7 +321,7 @@
 
                 <div class="pokemon-evolution-card">
                   <div class="evolution-image">
-                    <img [src]="stage.image" [alt]="stage.name"
+                    <img [src]="stage.imageUrl || ensureValidImage()" [alt]="stage.name"
                          (error)="onImageError($event)">
                   </div>
                   <div class="evolution-info-text">
@@ -274,35 +347,61 @@
           </div>
 
           <ng-template #noEvolution>
-            <div class="no-evolution">
+            <div class="no-evolution" *ngIf="isEvolutionChainReady()">
               <i class="fas fa-star"></i>
               <p>{{ 'modal.no_evolution' | translate }}</p>
             </div>
           </ng-template>
 
           <!-- Informações adicionais sobre evolução -->
-          <div class="evolution-details" *ngIf="pokemon">
+          <div class="evolution-details" *ngIf="shouldShowSpeciesDataInEvolution()">
             <div class="detail-card">
-              <h4><i class="fas fa-info-circle"></i> Informações de Crescimento</h4>
+              <h4><i class="fas fa-info-circle"></i> {{ 'modal.growth_info' | translate }}</h4>
               <div class="growth-info">
-                <p><strong>Grupo de Ovos:</strong> {{ getEggGroups() }}</p>
-                <p><strong>Taxa de Crescimento:</strong> {{ getGrowthRate() }}</p>
-                <p><strong>Experiência Base:</strong> {{ getBaseExperience() }}</p>
+                <p *ngIf="getEggGroups()"><strong>{{ 'modal.egg_groups' | translate }}:</strong> {{ getEggGroups() }}</p>
+                <p *ngIf="getGrowthRate()"><strong>{{ 'modal.growth_rate' | translate }}:</strong> {{ getGrowthRate() }}</p>
+                <p><strong>{{ 'modal.base_experience' | translate }}:</strong> {{ getBaseExperience() }}</p>
               </div>
             </div>
           </div>
+
+          <!-- Loading state para dados da espécie na aba evolution -->
+          <div class="species-loading" *ngIf="pokemon && !shouldShowSpeciesDataInEvolution() && activeTab === 'evolution'">
+            <div class="loading-spinner">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <p>{{ 'app.loading' | translate }} {{ 'modal.growth_info' | translate | lowercase }}</p>
+          </div>
+        </div>
+
+        <!-- Loading state para aba evolution -->
+        <div class="tab-loading" *ngIf="!isEvolutionDataReady()">
+          <div class="loading-spinner">
+            <ion-spinner name="crescent"></ion-spinner>
+          </div>
+          <p>{{ 'app.loading' | translate }}</p>
         </div>
       </ng-container>
 
       <ng-container *ngIf="activeTab === 'curiosities'">
-        <div class="curiosities-content" [@fadeInStagger]>
-          <h3><i class="fas fa-star"></i> Curiosidades</h3>
+        <div class="curiosities-content" [@fadeInStagger] *ngIf="isCuriositiesDataReady()">
+          <h3><i class="fas fa-star"></i> {{ 'modal.curiosities' | translate }}</h3>
 
           <!-- Flavor texts -->
-          <div class="flavor-section" *ngIf="flavorTexts && flavorTexts.length > 0">
-            <h4><i class="fas fa-book"></i> Descrições</h4>
+          <div class="flavor-section">
+            <h4><i class="fas fa-book"></i> {{ 'modal.descriptions' | translate }}</h4>
             <div class="flavor-container">
-              <div class="flavor-text-display">
+
+              <!-- Loading state para flavor texts -->
+              <div class="flavor-loading" *ngIf="isLoadingFlavor">
+                <div class="loading-spinner">
+                  <ion-spinner name="crescent"></ion-spinner>
+                </div>
+                <p>{{ 'app.loading' | translate }} {{ 'modal.descriptions' | translate | lowercase }}</p>
+              </div>
+
+              <!-- Flavor texts carregados -->
+              <div class="flavor-text-display" *ngIf="!isLoadingFlavor && flavorTexts && flavorTexts.length > 0">
                 <div class="flavor-text-wrapper"
                      #flavorTextWrapper
                      (scroll)="onFlavorTextScroll($event)">
@@ -330,6 +429,12 @@
                   </button>
                 </div>
               </div>
+
+              <!-- Estado quando não há flavor texts -->
+              <div class="no-flavor" *ngIf="!isLoadingFlavor && (!flavorTexts || flavorTexts.length === 0)">
+                <i class="fas fa-info-circle"></i>
+                <p>{{ 'modal.NO_FLAVOR_TEXT_AVAILABLE' | translate }}</p>
+              </div>
             </div>
           </div>
 
@@ -356,20 +461,20 @@
           </div>
 
           <!-- Raridade e captura -->
-          <div class="capture-info" *ngIf="speciesData">
+          <div class="capture-info" *ngIf="shouldShowSpeciesDataInCuriosities()">
             <h4><i class="fas fa-target"></i> {{ 'modal.capture_info' | translate }}</h4>
             <div class="capture-grid">
-              <div class="capture-item">
+              <div class="capture-item" *ngIf="getCaptureRate()">
                 <i class="fas fa-crosshairs"></i>
                 <span class="capture-label">{{ 'modal.capture_rate' | translate }}</span>
                 <span class="capture-value">{{ getCaptureRate() }}</span>
               </div>
-              <div class="capture-item">
+              <div class="capture-item" *ngIf="getBaseHappiness()">
                 <i class="fas fa-heart"></i>
                 <span class="capture-label">{{ 'modal.base_happiness' | translate }}</span>
                 <span class="capture-value">{{ getBaseHappiness() }}</span>
               </div>
-              <div class="capture-item">
+              <div class="capture-item" *ngIf="getPokemonColor()">
                 <i class="fas fa-eye"></i>
                 <span class="capture-label">{{ 'modal.color' | translate }}</span>
                 <span class="capture-value">{{ getPokemonColor() }}</span>
@@ -377,9 +482,17 @@
             </div>
           </div>
 
+          <!-- Loading state para dados da espécie na aba curiosities -->
+          <div class="species-loading" *ngIf="!shouldShowSpeciesDataInCuriosities() && activeTab === 'curiosities'">
+            <div class="loading-spinner">
+              <ion-spinner name="crescent"></ion-spinner>
+            </div>
+            <p>{{ 'app.loading' | translate }} {{ 'modal.capture_info' | translate | lowercase }}</p>
+          </div>
+
           <!-- Trivia e fatos interessantes -->
           <div class="trivia-section">
-            <h4><i class="fas fa-lightbulb"></i> Você Sabia?</h4>
+            <h4><i class="fas fa-lightbulb"></i> {{ 'modal.trivia_title' | translate }}</h4>
             <div class="trivia-list">
               <div class="trivia-item" *ngFor="let fact of getPokemonTrivia()">
                 <i class="fas fa-star"></i>
@@ -387,6 +500,14 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Loading state para aba curiosities -->
+        <div class="tab-loading" *ngIf="!isCuriositiesDataReady()">
+          <div class="loading-spinner">
+            <ion-spinner name="crescent"></ion-spinner>
+          </div>
+          <p>{{ 'app.loading' | translate }}</p>
         </div>
       </ng-container>
     </div>
