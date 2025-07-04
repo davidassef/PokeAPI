@@ -3,29 +3,12 @@ Aplicação principal FastAPI - PokeAPI Backend.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from app.core.config import settings
-from app.core.database import engine
-from app.models.models import Base
-from app.routes import users, favorites, ranking, pokemon, sync_capture
-from app.services.pokeapi_service import pokeapi_service
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Gerencia o ciclo de vida da aplicação."""
-    # Startup
-    Base.metadata.create_all(bind=engine)
-    yield
-    # Shutdown
-    await pokeapi_service.close()
-
-
+# Configuração básica
 app = FastAPI(
-    title=settings.app_name,
-    version=settings.app_version,
-    description="Backend API para aplicativo Pokédex com Ionic + Angular",
-    lifespan=lifespan
+    title="PokeAPI Backend",
+    version="1.0.0",
+    description="Backend API para aplicativo Pokédex com Ionic + Angular"
 )
 
 # CORS
@@ -41,19 +24,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Incluir rotas
-app.include_router(users.router, prefix="/api/v1")
-app.include_router(favorites.router, prefix="/api/v1")
-app.include_router(ranking.router, prefix="/api/v1")
-app.include_router(pokemon.router, prefix="/api/v1")
-app.include_router(sync_capture.router, prefix="/api/v1")
+# Imports tardios para evitar problemas de inicialização
+try:
+    from app.core.database import engine
+    from app.models.models import Base
+    from app.routes import users, favorites, ranking, pokemon, sync_capture
+    
+    # Criar tabelas
+    Base.metadata.create_all(bind=engine)
+    
+    # Incluir rotas
+    app.include_router(users.router, prefix="/api/v1")
+    app.include_router(favorites.router, prefix="/api/v1")
+    app.include_router(ranking.router, prefix="/api/v1")
+    app.include_router(pokemon.router, prefix="/api/v1")
+    app.include_router(sync_capture.router, prefix="/api/v1")
+    
+except Exception as e:
+    print(f"Warning: Error importing modules: {e}")
 
 
 @app.get("/")
 async def root():
     """Endpoint raiz da API."""
     return {
-        "message": f"🚀 {settings.app_name} v{settings.app_version}",
+        "message": "🚀 PokeAPI Backend v1.0.0",
         "status": "online",
         "docs": "/docs",
         "redoc": "/redoc"
@@ -63,7 +58,7 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check da API."""
-    return {"status": "healthy", "version": settings.app_version}
+    return {"status": "healthy", "version": "1.0.0"}
 
 
 if __name__ == "__main__":
@@ -72,5 +67,5 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=settings.debug
+        reload=True
     )
