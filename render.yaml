@@ -1,0 +1,47 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: pokeapi-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: |
+      cd backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd backend
+      uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./pokemon_app.db
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: PYTHONPATH
+        value: /opt/render/project/src/backend
+    healthCheckPath: /health
+
+  # Frontend Angular/Ionic
+  - type: static
+    name: pokeapi-frontend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build:prod
+    staticPublishPath: ./frontend/www
+    envVars:
+      - key: API_URL
+        value: https://pokeapi-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: pokeapi-db
+    databaseName: pokemon_app
+    plan: free

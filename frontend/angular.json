@@ -39,6 +39,11 @@
                 "glob": ".nojekyll",
                 "input": "src",
                 "output": "/"
+              },
+              {
+                "glob": "_redirects",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
@@ -46,7 +51,6 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/PokeAPI/",
               "budgets": [
                 {
                   "type": "initial",
@@ -89,9 +93,6 @@
             },
             "development": {
               "buildTarget": "app:build:development"
-            },
-            "ci": {
-              "progress": false
             }
           },
           "defaultConfiguration": "development"
@@ -140,6 +141,9 @@
               "src/**/*.html"
             ]
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }
@@ -157,8 +161,5 @@
     "@ionic/angular-toolkit:page": {
       "styleext": "scss"
     }
-  },
-  "allowedCommonJsDependencies": [
-    "localforage"
-  ]
+  }
 }
