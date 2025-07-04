@@ -1,6 +1,26 @@
 {
+  "name": "pokeapi-app",
+  "version": "1.0.0",
+  "description": "PokeAPI App - Full Stack Pokemon Application",
+  "scripts": {
+    "install:backend": "cd backend && pip install -r requirements.txt",
+    "install:frontend": "cd frontend && npm install",
+    "build:backend": "cd backend && pip install -r requirements.txt",
+    "build:frontend": "cd frontend && npm install && npm run build:prod",
+    "start:backend": "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT",
+    "start:frontend": "cd frontend && npm run serve:prod",
+    "build": "npm run build:frontend",
+    "start": "npm run start:frontend"
+  },
+  "keywords": ["pokemon", "fastapi", "angular", "ionic"],
+  "author": "PokeAPI App Team",
+  "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "^5.1.8",
     "jasmine-core": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

@@ -17,6 +17,8 @@ services:
         value: "*"
       - key: PYTHONPATH
         value: /opt/render/project/src
+      - key: PYTHON_VERSION
+        value: "3.11"
     healthCheckPath: /health
 
   # Frontend Angular/Ionic
