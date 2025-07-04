@@ -1,7 +1,9 @@
-<div class="music-player" [class.minimized]="isMinimized">
+<div class="music-player"
+     [class.minimized]="isMinimized"
+     [class.auto-minimized]="isAutoMinimized">
   <!-- Minimized View -->
   <div class="player-minimized" *ngIf="isMinimized" (click)="toggleMinimize()">
-    <div class="track-info">
+    <div class="track-info" (click)="$event.stopPropagation()">
       <div class="track-image">
         <img src="assets/img/pokeball-icon.png" alt="Now Playing">
         <div class="play-indicator" [class.playing]="isPlaying">
@@ -41,7 +43,8 @@
         max="100"
         [value]="volume * 100"
         [disabled]="isMuted"
-        (ionInput)="setVolume($event); $event.stopPropagation()"
+        (ionInput)="setVolume($event)"
+        (click)="$event.stopPropagation()"
         class="mini-volume-slider">
       </ion-range>
     </div>
@@ -60,7 +63,7 @@
     <!-- Track Display -->
     <div class="track-display" *ngIf="currentTrack">
       <div class="track-artwork">
-        <img src="assets/img/pokemon-music-cover.jpg"
+        <img src="assets/img/pokedex.png"
              [alt]="currentTrack.title"
              class="cover-image">
         <div class="vinyl-effect" [class.spinning]="isPlaying"></div>
@@ -127,16 +130,24 @@
 
     <!-- Playlist -->
     <div class="playlist-section">
-      <h5>Playlist</h5>
+      <h5>Opening Tracks</h5>
       <div class="playlist">
         <div
           *ngFor="let track of playlist"
           class="playlist-item"
           [class.active]="currentTrack?.id === track.id"
+          [class.default]="isDefaultTrack(track)"
           (click)="selectTrack(track)">
 
           <div class="playlist-track-info">
-            <span class="playlist-track-title">{{ track.title }}</span>
+            <span class="playlist-track-title">
+              {{ track.title }}
+              <ion-icon
+                *ngIf="isDefaultTrack(track)"
+                name="star"
+                class="default-track-icon">
+              </ion-icon>
+            </span>
             <span class="playlist-track-artist">{{ track.artist }}</span>
           </div>
 

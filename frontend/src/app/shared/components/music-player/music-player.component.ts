@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AudioService } from '../../../core/services/audio.service';
@@ -26,21 +26,25 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   duration = 0;
   isMinimized = true;
   isLoading = false;
+  isAutoMinimized = false;
 
   playlist: Track[] = [];
+  defaultTrackForLanguage: Track | null = null;
 
   private destroy$ = new Subject<void>();
   private audio?: HTMLAudioElement;
 
   constructor(
     private audioService: AudioService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private elementRef: ElementRef
   ) {}
 
   ngOnInit() {
     this.loadSettings();
     this.setupAudioService();
-    this.setupPlaylistByLanguage();
+    this.setupPlaylist();
+    this.setupLanguageListener();
   }
 
   ngOnDestroy() {
@@ -75,37 +79,61 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
       });
   }
 
-  private setupPlaylistByLanguage() {
+  private setupPlaylist() {
+    // Configurar playlist com todas as faixas de opening
+    this.playlist = [
+      {
+        id: 'opening-jp',
+        title: 'Pokémon Theme (JP)',
+        artist: 'Pokémon Japan',
+        url: 'assets/audio/Opening JP.mp3'
+      },
+      {
+        id: 'opening-en',
+        title: 'Pokémon Theme (EN)',
+        artist: 'Pokémon English',
+        url: 'assets/audio/Opening EN.mp3'
+      },
+      {
+        id: 'opening-es',
+        title: 'Apertura Pokémon (ES)',
+        artist: 'Pokémon España',
+        url: 'assets/audio/Opening ES.mp3'
+      },
+      {
+        id: 'opening-br',
+        title: 'Abertura Pokémon (BR)',
+        artist: 'Pokémon Brasil',
+        url: 'assets/audio/Opening BR.mp3'
+      }
+    ];
+  }
+
+  private setupLanguageListener() {
+    // Escutar mudanças de idioma para definir a faixa padrão
     this.settingsService.settings$
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
-        let lang = settings.language || 'pt-BR';
-        let track: Track;
-        if (lang === 'pt-BR') {
-          track = {
-            id: 'opening-br',
-            title: 'Abertura Pokémon (BR)',
-            artist: 'Pokémon Brasil',
-            url: 'assets/audio/Opening BR.mp3'
-          };
-        } else if (lang === 'en-US') {
-          track = {
-            id: 'opening-en',
-            title: 'Pokémon Theme (EN)',
-            artist: 'Pokémon English',
-            url: 'assets/audio/Opening EN.mp3'
-          };
-        } else {
-          track = {
-            id: 'opening-es',
-            title: 'Apertura Pokémon (ES)',
-            artist: 'Pokémon España',
-            url: 'assets/audio/Opening ES.mp3'
-          };
-        }
-        this.playlist = [track];
-        this.loadTrack(track, true); // true = autoplay
+        const lang = settings.language || 'pt-BR';
+        this.setDefaultTrackForLanguage(lang);
       });
+  }
+
+  private setDefaultTrackForLanguage(language: string) {
+    const langMap: { [key: string]: string } = {
+      'pt-BR': 'opening-br',
+      'en-US': 'opening-en',
+      'es-ES': 'opening-es',
+      'ja-JP': 'opening-jp'
+    };
+
+    const trackId = langMap[language] || 'opening-br';
+    this.defaultTrackForLanguage = this.playlist.find(track => track.id === trackId) || null;
+
+    // Se não há faixa atual tocando, carrega a faixa padrão do idioma
+    if (!this.currentTrack && this.defaultTrackForLanguage) {
+      this.loadTrack(this.defaultTrackForLanguage, true); // true = autoplay
+    }
   }
 
   private initializePlayer() {
@@ -228,8 +256,14 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
+  isDefaultTrack(track: Track): boolean {
+    return this.defaultTrackForLanguage?.id === track.id;
+  }
+
   toggleMinimize() {
+    console.log('toggleMinimize called, current state:', this.isMinimized);
     this.isMinimized = !this.isMinimized;
+    console.log('new state:', this.isMinimized);
   }
 
   formatTime(seconds: number): string {
@@ -249,5 +283,54 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     if (this.isMuted || this.volume === 0) return 'volume-mute';
     if (this.volume < 0.5) return 'volume-low';
     return 'volume-high';
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    // Só aplica auto-minimização se o player JÁ ESTAVA expandido antes do clique
+    // Captura o estado ANTES de qualquer mudança
+    const wasExpandedBeforeClick = !this.isMinimized;
+
+    // Pequeno delay para garantir que todos os eventos foram processados
+    setTimeout(() => {
+      const target = event.target as Element;
+      if (target && this.elementRef.nativeElement && wasExpandedBeforeClick) {
+        // Verifica se o clique foi fora do componente
+        const clickedInside = this.elementRef.nativeElement.contains(target);
+
+        // Verifica se o clique foi em um elemento do Ionic que pode estar fora do DOM
+        const isIonicElement = target.closest('ion-button') ||
+                               target.closest('ion-range') ||
+                               target.closest('ion-icon') ||
+                               target.tagName?.toLowerCase().startsWith('ion-');
+
+        console.log('Document click - wasExpandedBeforeClick:', wasExpandedBeforeClick, 'clickedInside:', clickedInside, 'isIonicElement:', isIonicElement, 'target:', target.tagName, 'class:', target.className);
+
+        // Só minimiza se realmente clicou fora do player e não em elementos do Ionic
+        if (!clickedInside && !isIonicElement) {
+          console.log('Auto-minimizing player');
+          this.minimizePlayerAuto();
+        } else {
+          console.log('Clicked inside player or on Ionic element, not minimizing');
+        }
+      }
+    }, 10);
+  }
+
+  private minimizePlayer() {
+    this.isMinimized = true;
+    this.isAutoMinimized = false;
+  }
+
+  private minimizePlayerAuto() {
+    console.log('minimizePlayerAuto called');
+    this.isAutoMinimized = true;
+    this.isMinimized = true;
+
+    // Remove a classe de animação após a animação terminar
+    setTimeout(() => {
+      this.isAutoMinimized = false;
+      console.log('auto-minimized flag reset');
+    }, 400);
   }
 }
