@@ -14,6 +14,7 @@ email-validator==2.1.1
 # HTTP Requests
 httpx==0.25.2
 aiohttp==3.9.1
+requests==2.31.0
 
 # CORS
 fastapi-cors==0.0.6
