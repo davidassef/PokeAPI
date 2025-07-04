@@ -1,9 +1,15 @@
 <div class="music-player"
      [class.minimized]="isMinimized"
      [class.auto-minimized]="isAutoMinimized">
+
   <!-- Minimized View -->
-  <div class="player-minimized" *ngIf="isMinimized" (click)="toggleMinimize()">
-    <div class="track-info" (click)="$event.stopPropagation()">
+  <div class="player-minimized"
+       *ngIf="isMinimized"
+       (click)="expandPlayer($event)"
+       [attr.aria-label]="'Clique para expandir o player de música'"
+       style="cursor: pointer;">
+
+    <div class="track-info">
       <div class="track-image">
         <img src="assets/img/pokeball-icon.png" alt="Now Playing">
         <div class="play-indicator" [class.playing]="isPlaying">
@@ -51,11 +57,16 @@
   </div>
 
   <!-- Expanded View -->
-  <div class="player-expanded" *ngIf="!isMinimized">
+  <div class="player-expanded"
+       *ngIf="!isMinimized"
+       [attr.aria-label]="'Player de música expandido'">
+
     <!-- Header -->
     <div class="player-header">
       <h3>Now Playing</h3>
-      <ion-button fill="clear" (click)="toggleMinimize()">
+      <ion-button fill="clear"
+                  (click)="toggleMinimize()"
+                  [attr.aria-label]="'Minimizar player'">
         <ion-icon name="chevron-down-outline"></ion-icon>
       </ion-button>
     </div>
@@ -130,10 +141,10 @@
 
     <!-- Playlist -->
     <div class="playlist-section">
-      <h5>Opening Tracks</h5>
+      <h5>{{ 'music.opening_tracks' | translate }}</h5>
       <div class="playlist">
         <div
-          *ngFor="let track of playlist"
+          *ngFor="let track of orderedPlaylist"
           class="playlist-item"
           [class.active]="currentTrack?.id === track.id"
           [class.default]="isDefaultTrack(track)"

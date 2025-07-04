@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 import { AudioService } from '../../../core/services/audio.service';
 import { SettingsService } from '../../../core/services/settings.service';
 
@@ -18,69 +19,64 @@ export interface Track {
   styleUrls: ['./music-player.component.scss']
 })
 export class MusicPlayerComponent implements OnInit, OnDestroy {
+  // Estado principal do player
   currentTrack: Track | null = null;
   isPlaying = false;
   isMuted = false;
   volume = 0.5;
   currentTime = 0;
   duration = 0;
-  isMinimized = true;
   isLoading = false;
+
+  // Estados de UI
+  isMinimized = true;
   isAutoMinimized = false;
 
+  // Playlist e configurações
   playlist: Track[] = [];
   defaultTrackForLanguage: Track | null = null;
 
+  // Controles internos
   private destroy$ = new Subject<void>();
   private audio?: HTMLAudioElement;
 
   constructor(
     private audioService: AudioService,
     private settingsService: SettingsService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
-    this.loadSettings();
-    this.setupAudioService();
-    this.setupPlaylist();
-    this.setupLanguageListener();
+    // Garantir que o estado inicial é minimizado
+    this.isMinimized = true;
+    this.isAutoMinimized = false;
+
+    this.initializeComponent();
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.src = '';
-    }
-  }
-  private loadSettings() {
-    this.settingsService.settings$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(settings => {
-        this.volume = settings.musicEnabled ? 0.7 : 0;
-        this.isMuted = !settings.musicEnabled;
-        if (this.audio) {
-          this.audio.volume = this.isMuted ? 0 : this.volume;
-        }
-      });
+    this.cleanupAudio();
   }
 
-  private setupAudioService() {
-    this.audioService.audioState$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(state => {
-        this.isPlaying = state.isPlaying;
-        this.volume = state.volume;
-        this.currentTime = state.currentTime;
-        this.duration = state.duration;
-        this.isLoading = state.isLoading;
-      });
+  // ===== INICIALIZAÇÃO =====
+
+  private async initializeComponent() {
+    try {
+      // Setup dos serviços
+      this.setupPlaylist();
+      this.loadSettings();
+      this.setupAudioService();
+      this.setupLanguageListener();
+    } catch (error) {
+      console.error('MusicPlayer: Erro na inicialização:', error);
+    }
   }
 
   private setupPlaylist() {
-    // Configurar playlist com todas as faixas de opening
     this.playlist = [
       {
         id: 'opening-jp',
@@ -109,8 +105,32 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     ];
   }
 
+  private loadSettings() {
+    this.settingsService.settings$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(settings => {
+        this.volume = settings.musicEnabled ? 0.7 : 0;
+        this.isMuted = !settings.musicEnabled;
+        if (this.audio) {
+          this.audio.volume = this.isMuted ? 0 : this.volume;
+        }
+      });
+  }
+
+  private setupAudioService() {
+    this.audioService.audioState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(state => {
+        this.isPlaying = state.isPlaying;
+        this.volume = state.volume;
+        this.currentTime = state.currentTime;
+        this.duration = state.duration;
+        this.isLoading = state.isLoading;
+        this.cdr.detectChanges();
+      });
+  }
+
   private setupLanguageListener() {
-    // Escutar mudanças de idioma para definir a faixa padrão
     this.settingsService.settings$
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
@@ -130,16 +150,39 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     const trackId = langMap[language] || 'opening-br';
     this.defaultTrackForLanguage = this.playlist.find(track => track.id === trackId) || null;
 
-    // Se não há faixa atual tocando, carrega a faixa padrão do idioma
     if (!this.currentTrack && this.defaultTrackForLanguage) {
-      this.loadTrack(this.defaultTrackForLanguage, true); // true = autoplay
+      this.loadTrack(this.defaultTrackForLanguage, false);
     }
   }
 
-  private initializePlayer() {
-    // Load first track by default
-    if (this.playlist.length > 0) {
-      this.loadTrack(this.playlist[0]);
+  // ===== CONTROLE DO PLAYER =====
+
+  toggleMinimize() {
+    // Previne cliques duplos durante auto-minimização
+    if (this.isAutoMinimized) {
+      return;
+    }
+
+    // Alterna o estado
+    this.isMinimized = !this.isMinimized;
+
+    // Força detecção de mudanças
+    this.cdr.detectChanges();
+  }
+
+  // Método específico para expansão via clique no player minimizado
+  expandPlayer(event: Event) {
+    event.stopPropagation();
+
+    // Previne cliques duplos durante auto-minimização
+    if (this.isAutoMinimized) {
+      return;
+    }
+
+    // Só expande se estiver minimizado
+    if (this.isMinimized) {
+      this.isMinimized = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -147,9 +190,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.currentTrack = track;
     this.isLoading = true;
 
-    if (this.audio) {
-      this.audio.pause();
-    }
+    this.cleanupAudio();
 
     this.audio = new Audio();
     this.audio.src = track.url;
@@ -159,14 +200,17 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.audio.addEventListener('loadedmetadata', () => {
       this.duration = this.audio?.duration || 0;
       this.isLoading = false;
+      this.cdr.detectChanges();
+
       if (autoplay) {
-        this.audio?.play();
+        this.audio?.play().catch(e => console.error('Erro no autoplay:', e));
         this.isPlaying = true;
       }
     });
 
     this.audio.addEventListener('timeupdate', () => {
       this.currentTime = this.audio?.currentTime || 0;
+      this.cdr.detectChanges();
     });
 
     this.audio.addEventListener('ended', () => {
@@ -174,12 +218,12 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     });
 
     this.audio.addEventListener('error', (error) => {
-      console.error('Audio error:', error);
+      console.error('MusicPlayer: Erro no áudio:', error);
       this.isLoading = false;
       this.isPlaying = false;
+      this.cdr.detectChanges();
     });
 
-    // Preload the audio
     this.audio.load();
   }
 
@@ -195,17 +239,19 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         this.audioService.play();
       }
       this.isPlaying = !this.isPlaying;
+      this.cdr.detectChanges();
     } catch (error) {
-      console.error('Error toggling play:', error);
+      console.error('MusicPlayer: Erro no toggle play:', error);
       this.isPlaying = false;
+      this.cdr.detectChanges();
     }
   }
+
   toggleMute() {
     this.isMuted = !this.isMuted;
     if (this.audio) {
       this.audio.volume = this.isMuted ? 0 : this.volume;
     }
-    // Save mute state to settings
     this.settingsService.saveSettings({ musicEnabled: !this.isMuted });
   }
 
@@ -214,7 +260,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     if (this.audio) {
       this.audio.volume = this.isMuted ? 0 : this.volume;
     }
-    // Não chama audioService.setVolume para evitar conflito
   }
 
   seek(event: any) {
@@ -256,19 +301,27 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
+  // ===== UTILITÁRIOS =====
+
+  get orderedPlaylist(): Track[] {
+    if (!this.playlist || this.playlist.length === 0) {
+      return [];
+    }
+
+    // Separa a faixa padrão das outras
+    const defaultTrack = this.playlist.find(track => this.isDefaultTrack(track));
+    const otherTracks = this.playlist.filter(track => !this.isDefaultTrack(track));
+
+    // Retorna com a faixa padrão no topo
+    return defaultTrack ? [defaultTrack, ...otherTracks] : this.playlist;
+  }
+
   isDefaultTrack(track: Track): boolean {
     return this.defaultTrackForLanguage?.id === track.id;
   }
 
-  toggleMinimize() {
-    console.log('toggleMinimize called, current state:', this.isMinimized);
-    this.isMinimized = !this.isMinimized;
-    console.log('new state:', this.isMinimized);
-  }
-
   formatTime(seconds: number): string {
     if (!seconds || isNaN(seconds)) return '0:00';
-
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -285,52 +338,48 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     return 'volume-high';
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    // Só aplica auto-minimização se o player JÁ ESTAVA expandido antes do clique
-    // Captura o estado ANTES de qualquer mudança
-    const wasExpandedBeforeClick = !this.isMinimized;
-
-    // Pequeno delay para garantir que todos os eventos foram processados
-    setTimeout(() => {
-      const target = event.target as Element;
-      if (target && this.elementRef.nativeElement && wasExpandedBeforeClick) {
-        // Verifica se o clique foi fora do componente
-        const clickedInside = this.elementRef.nativeElement.contains(target);
-
-        // Verifica se o clique foi em um elemento do Ionic que pode estar fora do DOM
-        const isIonicElement = target.closest('ion-button') ||
-                               target.closest('ion-range') ||
-                               target.closest('ion-icon') ||
-                               target.tagName?.toLowerCase().startsWith('ion-');
-
-        console.log('Document click - wasExpandedBeforeClick:', wasExpandedBeforeClick, 'clickedInside:', clickedInside, 'isIonicElement:', isIonicElement, 'target:', target.tagName, 'class:', target.className);
-
-        // Só minimiza se realmente clicou fora do player e não em elementos do Ionic
-        if (!clickedInside && !isIonicElement) {
-          console.log('Auto-minimizing player');
-          this.minimizePlayerAuto();
-        } else {
-          console.log('Clicked inside player or on Ionic element, not minimizing');
-        }
-      }
-    }, 10);
+  private cleanupAudio() {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.src = '';
+      this.audio = undefined;
+    }
   }
 
-  private minimizePlayer() {
-    this.isMinimized = true;
-    this.isAutoMinimized = false;
+  // ===== EVENTOS DO DOCUMENTO =====
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    // Só funciona se o player estiver expandido
+    if (this.isMinimized) return;
+
+    const target = event.target as Element;
+    if (!target || !this.elementRef.nativeElement) return;
+
+    // Verifica se clicou dentro do player
+    const clickedInside = this.elementRef.nativeElement.contains(target);
+
+    // Verifica se clicou em elemento do Ionic
+    const isIonicElement = target.closest('ion-button') ||
+                           target.closest('ion-range') ||
+                           target.closest('ion-icon') ||
+                           target.tagName?.toLowerCase().startsWith('ion-');
+
+    // Só minimiza se clicou fora E não é elemento do Ionic
+    if (!clickedInside && !isIonicElement) {
+      this.minimizePlayerAuto();
+    }
   }
 
   private minimizePlayerAuto() {
-    console.log('minimizePlayerAuto called');
     this.isAutoMinimized = true;
     this.isMinimized = true;
+    this.cdr.detectChanges();
 
-    // Remove a classe de animação após a animação terminar
+    // Remove flag de auto-minimização após animação
     setTimeout(() => {
       this.isAutoMinimized = false;
-      console.log('auto-minimized flag reset');
-    }, 400);
+      this.cdr.detectChanges();
+    }, 500);
   }
 }

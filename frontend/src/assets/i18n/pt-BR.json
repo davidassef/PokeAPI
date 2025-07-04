@@ -130,7 +130,8 @@
     "play": "Tocar",
     "pause": "Pausar",
     "restart": "Reiniciar",
-    "volume": "Volume"
+    "volume": "Volume",
+    "opening_tracks": "Faixas de Abertura"
   },
   "filters": {
     "all": "Todos",

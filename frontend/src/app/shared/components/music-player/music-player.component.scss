@@ -5,9 +5,7 @@
   - Inclui modos minimizado e expandido, controles de volume, playlist e responsividade.
   - Suporte a temas claro/escuro e efeitos visuais modernos.
   - Inspirado em UI/UX de apps musicais modernos.
-*/
-
-.music-player {
+*/.music-player {
   /* Container principal do player musical */
   position: fixed;
   bottom: 80px; // Acima da tab bar
@@ -26,9 +24,14 @@
   margin-left: auto;
   margin-right: auto;
 
+  /* Estado padrão: expandido */
+  min-height: 400px;
+  height: auto;
+
   &.minimized {
     /* Player minimizado (mini-player) */
-    height: 64px;
+    height: 64px !important;
+    min-height: 64px !important;
     border-radius: 32px;
     transform: scale(0.98);
   }
@@ -46,6 +49,19 @@
     padding: 8px 16px;
     height: 100%;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: inherit;
+
+    /* Efeito hover para indicar que é clicável */
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Efeito de clique */
+    &:active {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(0.98);
+    }
 
     .track-info {
       /* Info da faixa (mini) */
@@ -53,6 +69,7 @@
       align-items: center;
       flex: 1;
       min-width: 0;
+      pointer-events: none; /* Permite que o clique passe para o container pai */
 
       .track-image {
         /* Capa da faixa */

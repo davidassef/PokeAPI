@@ -425,6 +425,13 @@
     "error_loading": "Error al cargar detalles",
     "url_copied": "¡URL copiada al portapapeles!"
   },
+  "music": {
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "restart": "Reiniciar",
+    "volume": "Volumen",
+    "opening_tracks": "Pistas de Apertura"
+  },
   "modal": {
     "height": "Altura",
     "weight": "Peso",

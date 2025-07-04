@@ -130,7 +130,8 @@
     "play": "Play",
     "pause": "Pause",
     "restart": "Restart",
-    "volume": "Volume"
+    "volume": "Volume",
+    "opening_tracks": "Opening Tracks"
   },
   "filters": {
     "all": "All",
