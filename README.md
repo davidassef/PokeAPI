@@ -173,7 +173,7 @@ backend/
 ### 1️⃣ Clone o Repositório
 ```bash
 git clone https://github.com/davidassef/PokeAPI.git
-cd PokeAPI
+cd PokeAPIApp
 ```
 
 ### 2️⃣ Configure o Backend
