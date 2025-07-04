@@ -3,6 +3,7 @@
 <div align="center">
 
 [![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
+[![Demo](https://img.shields.io/badge/Demo-Online-success?style=for-the-badge&logo=github)](https://davidassef.github.io/PokeAPI/)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
@@ -12,6 +13,8 @@
 *Integração com PokéAPI • Interface Web 100% Completa • Sistema de Favoritos • Multiplataforma*
 
 > **📱 Status Atual:** A interface web está completamente finalizada e funcional. O desenvolvimento mobile está em andamento (50% concluído).
+
+> **🌐 Demo Online:** [Experimente a interface web completa aqui!](https://davidassef.github.io/PokeAPI/) | [📋 Guia da Demo](DEMO.md)
 
 </div>
 

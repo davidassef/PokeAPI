@@ -1461,7 +1461,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private onLanguageChange(): void {
     console.log('🌐 Idioma alterado, recarregando traduções...');
-    
+
     const newLang = this.translate.currentLang || 'pt-BR';
     console.log(`🌐 Novo idioma detectado: ${newLang}`);
 
