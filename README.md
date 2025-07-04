@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
-[![Demo](https://img.shields.io/badge/Demo-Online-success?style=for-the-badge&logo=github)](https://davidassef.github.io/PokeAPI/)
+[![Demo](https://img.shields.io/badge/Demo-Online-success?style=for-the-badge&logo=render)](https://pokeapi-frontend.onrender.com)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
@@ -14,7 +14,7 @@
 
 > **📱 Status Atual:** A interface web está completamente finalizada e funcional. O desenvolvimento mobile está em andamento (50% concluído).
 
-> **🌐 Demo Online:** [Experimente a interface web completa aqui!](https://davidassef.github.io/PokeAPI/) | [📋 Guia da Demo](DEMO.md)
+> **🌐 Demo Online:** [**Acesse o app no Render!**](https://pokeapi-frontend.onrender.com) | [📋 Guia da Demo](DEMO.md)
 
 </div>
 
@@ -247,17 +247,17 @@ ng e2e
 
 ## 🌐 Deploy e Hospedagem
 
-### 🚀 **GitHub Pages (Demo Online)**
+### 🚀 **Render (Demo Online)**
 
-A aplicação está automaticamente configurada para deploy no GitHub Pages:
+A aplicação está automaticamente configurada para deploy no Render:
 
-- **🌐 Demo Online:** [https://davidassef.github.io/PokeAPI/](https://davidassef.github.io/PokeAPI/)
+- **🌐 Demo Online:** [https://pokeapi-frontend.onrender.com](https://pokeapi-frontend.onrender.com)
 - **📋 Guia da Demo:** [DEMO.md](DEMO.md)
-- **⚙️ Setup GitHub Pages:** [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)
+- **⚙️ Backend API:** Configurado com FastAPI + SQLite
 
 #### Deploy Automático
-- ✅ Workflow GitHub Actions configurado
 - ✅ Deploy automático a cada push na `main`
+- ✅ Backend FastAPI integrado
 - ✅ Build de produção otimizado
 - ✅ Suporte a SPA routing
 
