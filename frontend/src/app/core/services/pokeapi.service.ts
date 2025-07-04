@@ -8,6 +8,7 @@ import {
   PokemonSpecies,
   PokemonListItem
 } from '../../models/pokemon.model';
+import { environment } from '../../../environments/environment';
 
 /**
  * Serviço para comunicação com a PokeAPI
@@ -18,7 +19,7 @@ import {
 })
 export class PokeApiService {
   private readonly baseUrl = 'https://pokeapi.co/api/v2';
-  private readonly backendUrl = 'http://localhost:8000/api/v1'; // URL do nosso backend FastAPI
+  private readonly backendUrl = `${environment.apiUrl}/api/v1`; // URL do nosso backend FastAPI
   private pokemonCacheSubject = new BehaviorSubject<Map<string, Pokemon>>(new Map());
   private speciesCacheSubject = new BehaviorSubject<Map<string, PokemonSpecies>>(new Map());
 
@@ -516,7 +517,7 @@ export class PokeApiService {
   getGlobalRankingFromBackend(limit: number = 10): Observable<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>> {
     // Corrigido para o prefixo correto do backend
     return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
-      'http://localhost:8000/api/v1/ranking/?limit=' + limit
+      `${this.backendUrl}/ranking/?limit=${limit}`
     );
   }
 
@@ -526,7 +527,7 @@ export class PokeApiService {
    * @returns Promise<void>
    */
   async syncCapture(action: { pokemonId: number; action: 'capture' | 'favorite'; timestamp: number; payload?: any }): Promise<void> {
-    const url = 'http://localhost:8000/api/v1/sync-capture/';
+    const url = `${this.backendUrl}/sync-capture/`;
     try {
       console.log('[SYNC] Enviando ação para backend:', action);
       await this.http.post(url, action).toPromise();

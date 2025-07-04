@@ -4,10 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://pokeapi.co/api/v2',
-  backendUrl: 'http://localhost:8000/api',
-  enableAnalytics: false,
-  enableLogging: true
+  apiUrl: 'https://pokeapi-la6k.onrender.com'
 };
 
 /*

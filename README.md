@@ -2,19 +2,14 @@
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/Status-Em%20Produ%C3%A7%C3%A3o-brightgreen?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
-[![Demo](https://img.shields.io/badge/Demo-Online-success?style=for-the-badge&logo=render)](https://pokeapi-frontend.onrender.com)
+[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
 
 **🎯 Um aplicativo moderno e completo para explorar o mundo Pokémon!**
 
-*Integração com PokéAPI • Interface Web 100% Completa • Sistema de Favoritos • Multiplataforma*
-
-> **� Status Atual:** Aplicação full-stack completamente deployada e funcional no Render!
-
-> **🌐 Demo Online:** [**Acesse o app no Render!**](https://pokeapi-frontend.onrender.com) | [📋 Guia da Demo](DEMO.md)
+*Integração com PokéAPI • Interface Responsiva • Sistema de Favoritos • Multiplataforma*
 
 </div>
 
@@ -28,52 +23,12 @@ O **PokeAPIApp** é uma aplicação full-stack moderna que permite aos usuários
 
 - 🎨 **Design Moderno**: Interface limpa e responsiva com Material Design
 - 🌐 **Multiplataforma**: Funciona em Web, iOS e Android (Capacitor)
-- 🌍 **Internacionalização Completa**: Suporte a 4 idiomas (PT-BR, EN, ES, JA)
-- 🇯🇵 **Japonês Nativo**: Flavors em japonês direto da PokeAPI (kanji/hiragana)
+- 🌍 **Internacionalização**: Suporte a múltiplos idiomas (PT, EN, ES)
 - 🎵 **Player Musical**: Música ambiente integrada
 - 🌙 **Temas**: Modo claro e escuro
 - ⚡ **Performance**: Otimizado com lazy loading e componentes reutilizáveis
 - 📊 **Ranking**: Sistema de ranking de Pokémon mais populares
 - 🔄 **Sincronização**: Backend próprio para persistência de dados
-
----
-
-## 🏗️ Arquitetura Escalável e Modular
-
-### 🎯 **Sistemas Extremamente Modulares**
-
-Todos os sistemas implementados no PokeAPIApp foram desenvolvidos com **arquitetura modular** e **alta escalabilidade**, permitindo fácil manutenção, extensão e reutilização:
-
-#### 🌍 **Sistema de Internacionalização (i18n)**
-- **Arquitetura**: Baseado em JSON dinâmico com lazy loading
-- **Escalabilidade**: Novos idiomas podem ser adicionados sem modificar código
-- **Modularidade**: Cada módulo/página possui suas próprias chaves isoladas
-- **Flexibilidade**: Suporte a fallbacks inteligentes e detecção automática de idioma
-
-#### 🎵 **Player Musical**
-- **Arquitetura**: Service singleton com controle de estado global
-- **Escalabilidade**: Suporte a múltiplas playlists e formatos de áudio
-- **Modularidade**: Componente independente reutilizável em qualquer página
-- **Flexibilidade**: Configurações por usuário e controle de volume persistente
-
-#### 🎨 **Sistema de Temas**
-- **Arquitetura**: CSS Variables + Angular Theme Service
-- **Escalabilidade**: Novos temas podem ser criados apenas com CSS
-- **Modularidade**: Componentes automaticamente adaptáveis a qualquer tema
-- **Flexibilidade**: Detecção automática de preferência do sistema
-
-#### 🔄 **Sistema de Sincronização**
-- **Arquitetura**: API REST com cache inteligente e offline-first
-- **Escalabilidade**: Suporte a múltiplos usuários e sincronização em tempo real
-- **Modularidade**: Endpoints independentes para cada funcionalidade
-- **Flexibilidade**: Fallbacks automáticos e recuperação de erros
-
-### 🔧 **Benefícios da Arquitetura Modular**
-- ✅ **Manutenibilidade**: Cada sistema é independente e testável
-- ✅ **Escalabilidade**: Fácil adição de novos idiomas, temas e funcionalidades
-- ✅ **Reutilização**: Componentes podem ser facilmente portados para outros projetos
-- ✅ **Performance**: Lazy loading e otimizações específicas por módulo
-- ✅ **Flexibilidade**: Configuração dinâmica sem necessidade de rebuilds
 
 ---
 
@@ -137,7 +92,7 @@ backend/
 - [x] ⚙️ **Configurações** - Troca de idioma e tema
 - [x] 🎵 **Player Musical** - Música ambiente persistente
 - [x] 📱 **Design Responsivo** - Adaptável a todos os dispositivos
-- [x] 🌐 **Internacionalização** - Português, Inglês, Espanhol e Japonês
+- [x] 🌐 **Internacionalização** - Português, Inglês e Espanhol
 - [x] 🎨 **Componentes Reutilizáveis** - Pokemon Card, Loading Spinner, etc.
 - [x] 🔧 **Backend API** - Endpoints para usuários, favoritos e ranking
 - [x] 🏆 **Página de Ranking** - Pokémon mais populares (carregamento otimizado)
@@ -147,10 +102,9 @@ backend/
 ### 🚧 Em Desenvolvimento
 - [ ] 🔐 **Sistema de Autenticação** - Login e perfis de usuário
 - [ ] 📊 **Dashboard Analytics** - Estatísticas de uso
-- [ ] 🔄 **Sincronização Avançada** - Backup automático de favoritos
-- [ ] 📱 **App Mobile** - Build nativo para iOS/Android
+- [ ] 🔄 **Sincronização** - Backup automático de favoritos
+- [ ] 📱 **App Mobile** - Build para iOS/Android
 - [ ] 🧪 **Testes E2E** - Cobertura completa de testes
-- [ ] 🌐 **Deploy Produção** - Hospedagem e CI/CD
 
 ### 🎯 Próximas Features
 - [ ] 🎮 **Mini-games** - Quizzes e batalhas simuladas
@@ -158,8 +112,6 @@ backend/
 - [ ] 🔔 **Notificações** - Pokémon do dia e novidades
 - [ ] 🌟 **Sistema de Conquistas** - Badges e recompensas
 - [ ] 🗺️ **Mapa Interativo** - Regiões e localizações
-- [ ] 🔍 **Busca Avançada** - Filtros por tipo, geração, stats
-- [ ] 📱 **PWA** - Progressive Web App para instalação
 
 ---
 
@@ -173,7 +125,7 @@ backend/
 ### 1️⃣ Clone o Repositório
 ```bash
 git clone https://github.com/davidassef/PokeAPI.git
-cd PokeAPIApp
+cd PokeAPI
 ```
 
 ### 2️⃣ Configure o Backend
@@ -245,111 +197,24 @@ ng e2e
 
 ---
 
-## 🌐 Deploy e Hospedagem
-
-### 🚀 **Render (Aplicação em Produção)**
-
-A aplicação full-stack está deployada e funcionando no Render:
-
-- **🌐 Frontend:** [https://pokeapi-frontend.onrender.com](https://pokeapi-frontend.onrender.com)
-- **� Backend API:** Configurado com FastAPI + SQLite
-- **�📋 Guia da Demo:** [DEMO.md](DEMO.md)
-
-#### Status do Deploy
-- ✅ **Frontend**: Deployado com sucesso (Static Site)
-- ✅ **Backend**: Deployado com sucesso (Web Service)
-- ✅ **Database**: SQLite integrado
-- ✅ **CORS**: Configurado para comunicação entre frontend e backend
-- ✅ **Build**: Otimizado para produção
-- ✅ **Routing**: SPA routing configurado
-
-#### Configuração Automática
-- ✅ Deploy automático a cada push na `main`
-- ✅ Variáveis de ambiente configuradas
-- ✅ Dependências Python e Node.js resolvidas
-- ✅ SSL/HTTPS habilitado automaticamente
-
-### 🔧 **Deploy Manual (Desenvolvimento)**
-
-#### Build de Produção
-```bash
-cd frontend
-npm run build:prod
-# Arquivos gerados em: frontend/www/
-```
-
-#### Servidor Estático
-```bash
-# Servir arquivos do build
-npx http-server frontend/www -p 8080 -c-1
-```
-
----
-
 ## 📊 Status de Desenvolvimento
 
-### Progresso Geral: 95% ✅
+### Progresso Geral: 85% ✅
 
 | Módulo | Status | Progresso |
 |--------|--------|-----------|
 | 🎨 UI/UX Design | ✅ Completo | 100% |
 | 🏗️ Arquitetura | ✅ Completo | 100% |
-| 📱 Frontend Core | ✅ Completo | 100% |
-| 🔧 Backend API | ✅ Completo | 100% |
-| 🌍 Internacionalização | ✅ Completo | 100% |
-| 🧪 Testes | 🚧 Em andamento | 70% |
-| 📱 Mobile Build | 🚧 Em andamento | 50% |
-| 🌐 Deploy | ✅ Completo | 100% |
-
----
-
-## 🖼️ Interface Web - Galeria Visual
-
-### 🎯 **Interface Web Completa e Funcional**
-
-A versão web do PokeAPIApp está **100% finalizada** e oferece uma experiência premium com design responsivo, animações suaves e funcionalidades completas. A interface mobile ainda está em desenvolvimento ativo.
-
-<div align="center">
-
-### 🏠 **Tela Home - Exploração de Pokémon**
-![Home Web](frontend/src/assets/img/Home-Web.png)
-*Interface principal com lista de Pokémon, busca avançada e navegação intuitiva*
-
-### 🏆 **Tela Ranking - Pokémon Mais Populares**
-![Ranking Web](frontend/src/assets/img/Ranking-Web.png)
-*Sistema de ranking com pódio animado, badges e estatísticas detalhadas*
-
-### 🔍 **Modal de Detalhes - Informações Completas**
-![Modal Details Web](frontend/src/assets/img/Modal-Details-Web.png)
-*Modal premium com abas, carrossel de imagens, stats e descrições multilíngues*
-
-</div>
-
-### ✨ **Características da Interface Web:**
-- 📱 **Totalmente Responsiva**: Adapta-se perfeitamente a todos os tamanhos de tela
-- 🎨 **Design Moderno**: Material Design com glass effects e gradientes
-- 🌍 **4 Idiomas**: Português, Inglês, Espanhol e Japonês
-- 🌙 **Temas**: Modo claro e escuro com transições suaves
-- ⚡ **Performance**: Carregamento otimizado e animações fluidas
-- 🎵 **Música Ambiente**: Player integrado com controles persistentes
-- 🔄 **Sincronização**: Sistema de favoritos e ranking em tempo real
-
----
+| 📱 Frontend Core | ✅ Completo | 98% |
+| 🔧 Backend API | ✅ Completo | 92% |
+| 🧪 Testes | 🚧 Em andamento | 65% |
+| 📱 Mobile Build | 🚧 Em andamento | 45% |
+| 🌐 Deploy | ⏳ Pendente | 0% |
 
 ### Últimas Atualizações
 
 <details>
 <summary><strong>📋 Clique para expandir o histórico completo de atualizações</strong></summary>
-
-- 🌍 **[03/01/2025] Suporte Completo ao Idioma Japonês:**
-  - Criação e implementação do arquivo de tradução `ja-JP.json` com todas as chaves
-  - Integração do japonês ('ja-JP') em todos os sistemas: modelos, serviços, configurações
-  - Mapeamento correto para buscar flavors em japonês da PokeAPI ('ja' e 'ja-Hrkt')
-  - Lógica especial para buscar flavors diretamente da PokeAPI quando idioma for japonês
-  - Atualização da interface de seleção de idioma no menu lateral e configurações
-  - Ajuste dos estilos do ActionSheet para respeitar temas claro/escuro
-  - Testes confirmando funcionalidade completa com flavors em kanji/hiragana
-  - Fallback robusto para inglês quando flavors em japonês não estiverem disponíveis
 
 - 🚀 **[02/07/2025] Sistema de Cooldown do Botão Surpreenda-me:**
   - Implementado cooldown de 3 segundos entre usos para evitar spam de requisições
@@ -477,7 +342,7 @@ A versão web do PokeAPIApp está **100% finalizada** e oferece uma experiência
 - ✅ **Export/Import**: Funcionalidades de backup
 
 ### 🎯 **27/06/2025 - Internacionalização (i18n)**
-- ✅ **Suporte a 4 Idiomas**: PT-BR, EN, ES, JA
+- ✅ **Suporte a 3 Idiomas**: PT-BR, EN, ES
 - ✅ **Traduções Completas**: Todas as interfaces traduzidas
 - ✅ **Música por Idioma**: Tracks diferentes por idioma
 - ✅ **Configurações**: Sistema de configurações por usuário
@@ -555,34 +420,11 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ---
 
-## � Deploy e Produção
-
-### Status Atual
-- **🌐 Frontend**: [https://pokeapi-frontend.onrender.com](https://pokeapi-frontend.onrender.com)
-- **🔧 Backend**: Deploy automático via Render
-- **📊 Database**: SQLite integrado com dados persistentes
-- **🔄 CI/CD**: Deploy automático a cada push na branch `main`
-
-### Tecnologias de Deploy
-- **Render**: Plataforma de deploy full-stack
-- **FastAPI + Uvicorn**: Server Python em produção
-- **Angular Build**: Build otimizado para produção
-- **SQLite**: Database leve e eficiente
-- **CORS**: Configurado para comunicação segura
-
-### Monitoramento
-- **Health Check**: Endpoint `/health` no backend
-- **Logs**: Disponíveis no painel do Render
-- **Uptime**: Monitorado automaticamente
-
----
-
-## �🙏 Agradecimentos
+## 🙏 Agradecimentos
 
 - [PokéAPI](https://pokeapi.co/) - API de dados Pokémon
 - [Ionic Team](https://ionicframework.com/) - Framework incrível
 - [FastAPI](https://fastapi.tiangolo.com/) - Framework Python moderno
-- [Render](https://render.com/) - Plataforma de deploy
 - Comunidade open source ❤️
 
 ---

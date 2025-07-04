@@ -29,7 +29,7 @@ describe('PokeApiService', () => {
       expect(data).toEqual(mockRanking);
       done();
     });
-    const req = httpMock.expectOne('http://localhost:8000/api/v1/ranking/?limit=2');
+    const req = httpMock.expectOne('https://pokeapi-la6k.onrender.com/api/v1/ranking/?limit=2');
     expect(req.request.method).toBe('GET');
     req.flush(mockRanking);
   });
@@ -42,7 +42,7 @@ describe('PokeApiService', () => {
         done();
       }
     });
-    const req = httpMock.expectOne('http://localhost:8000/api/v1/ranking/?limit=2');
+    const req = httpMock.expectOne('https://pokeapi-la6k.onrender.com/api/v1/ranking/?limit=2');
     req.flush('Erro interno', { status: 500, statusText: 'Server Error' });
   });
 

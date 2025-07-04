@@ -31,9 +31,13 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Libera para qualquer origem para desenvolvimento local
+    allow_origins=[
+        "https://pokeapi-frontend.onrender.com",
+        "http://localhost:8100",  # Para desenvolvimento local Ionic
+        "http://localhost:4200"   # Para desenvolvimento local Angular
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

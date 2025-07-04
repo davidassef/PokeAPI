@@ -14,7 +14,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://pokeapi-frontend.onrender.com,http://localhost:8100,http://localhost:4200"
       - key: PYTHONPATH
         value: /opt/render/project/src
       - key: PYTHON_VERSION
@@ -32,7 +32,7 @@ services:
     staticPublishPath: ./www
     envVars:
       - key: API_URL
-        value: https://pokeapi-backend.onrender.com
+        value: https://pokeapi-la6k.onrender.com
     routes:
       - type: rewrite
         source: /*
