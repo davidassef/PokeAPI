@@ -57,7 +57,7 @@ app.add_middleware(
 try:
     from app.core.database import engine
     from app.models.models import Base
-    from app.routes import users, favorites, ranking, pokemon, sync_capture
+    from app.routes import users, favorites, ranking, pokemon, sync_capture, admin
 
     # Criar tabelas vazias (sem dados iniciais)
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
@@ -69,6 +69,7 @@ try:
     app.include_router(ranking.router, prefix="/api/v1")
     app.include_router(pokemon.router, prefix="/api/v1")
     app.include_router(sync_capture.router, prefix="/api/v1")
+    app.include_router(admin.router, prefix="/api/v1")
 
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     print(f"Warning: Error importing modules: {e}")

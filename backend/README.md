@@ -75,6 +75,14 @@ A API estará disponível em: http://localhost:8000
 - `GET /api/v1/ranking/` - Top Pokémons mais favoritados
 - `GET /api/v1/ranking/stats` - Estatísticas gerais
 
+### Sincronização
+- `POST /api/v1/sync-capture/` - Sincronizar capturas do frontend
+
+### Administração
+- `GET /api/v1/admin/database-status` - Status do banco de dados
+- `POST /api/v1/admin/clear-fictitious-data` - Limpar dados fictícios/mock
+- `DELETE /api/v1/admin/reset-database` - ⚠️ Reset completo do banco
+
 ### Pokémons (Proxy para PokeAPI)
 - `GET /api/v1/pokemon/{id_or_name}` - Buscar Pokémon
 - `GET /api/v1/pokemon/` - Listar Pokémons
@@ -90,6 +98,43 @@ O projeto usa SQLite por padrão para desenvolvimento. As tabelas são:
 - **users**: Usuários do sistema
 - **favorite_pokemons**: Pokémons favoritos dos usuários
 - **pokemon_rankings**: Ranking dos Pokémons mais favoritados
+
+### 🔧 Gerenciamento do Banco
+
+O backend possui endpoints administrativos para gerenciar o estado do banco:
+
+#### Status do Banco
+```bash
+GET /api/v1/admin/database-status
+```
+Retorna informações sobre o estado atual do banco:
+- Quantidade de usuários, favoritos e rankings
+- Status geral (vazio/populado)
+
+#### Limpar Dados Fictícios
+```bash
+POST /api/v1/admin/clear-fictitious-data
+```
+Remove dados de teste/mock criados durante desenvolvimento:
+- Usuários fictícios (admin, test, demo)
+- Rankings pré-populados
+- Favoritos associados a usuários fictícios
+
+#### Reset Completo
+```bash
+DELETE /api/v1/admin/reset-database
+```
+⚠️ **ATENÇÃO**: Remove TODOS os dados do banco!
+- Apaga todas as tabelas completamente
+- Operação irreversível
+- Use apenas para testes ou desenvolvimento
+
+### 📊 Fluxo de Dados
+
+1. **Estado Inicial**: Banco vazio após reset
+2. **Alimentação**: Dados criados APENAS pelo frontend via sincronização
+3. **Integração**: Frontend sincroniza ações via `/api/v1/sync-capture/`
+4. **Ranking**: Atualizado automaticamente baseado nos favoritos
 
 ## 🔧 Desenvolvimento
 
