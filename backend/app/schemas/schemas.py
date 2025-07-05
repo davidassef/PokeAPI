@@ -90,6 +90,22 @@ class SyncCaptureRequest(BaseModel):
     user_id: Optional[int] = 1
 
 
+class SyncBatchRequest(BaseModel):
+    """Schema para sincronização em lote."""
+    requests: List[SyncCaptureRequest]
+    batch_id: Optional[str] = None
+    client_timestamp: Optional[int] = None
+
+
+class SyncBatchResponse(BaseModel):
+    """Schema de resposta da sincronização em lote."""
+    success: bool
+    processed_count: int
+    failed_count: int
+    errors: List[str] = []
+    batch_id: Optional[str] = None
+
+
 # Schema de resposta com lista de usuários
 class UserWithFavorites(User):
     """Schema do usuário com seus favoritos."""
