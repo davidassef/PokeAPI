@@ -1,0 +1,130 @@
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduler-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.client-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 8px;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.client-item small {
+  color: var(--ion-color-medium);
+  font-size: 0.8em;
+}
+
+.clients-list {
+  margin-top: 16px;
+}
+
+.clients-list h4 {
+  margin-bottom: 8px;
+  color: var(--ion-color-primary);
+}
+
+.warning-text {
+  margin-top: 8px;
+  color: var(--ion-color-danger);
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.curl-commands {
+  padding: 16px;
+}
+
+.curl-item {
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+.curl-item h5 {
+  margin: 0 0 8px 0;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+.curl-item code {
+  display: block;
+  background-color: var(--ion-color-dark);
+  color: var(--ion-color-light);
+  padding: 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8em;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+ion-card {
+  margin: 16px;
+}
+
+ion-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+ion-progress-bar {
+  --progress-background: var(--ion-color-primary);
+}
+
+.status-icon {
+  margin-left: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+    margin: 8px;
+  }
+
+  ion-card {
+    margin: 8px;
+  }
+
+  .curl-item code {
+    font-size: 0.7em;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .client-item {
+    background-color: var(--ion-color-dark);
+  }
+
+  .curl-item {
+    background-color: var(--ion-color-dark);
+  }
+
+  .curl-item code {
+    background-color: var(--ion-color-darker, #000);
+  }
+}

@@ -6,7 +6,6 @@ import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
-import { SyncAction, SyncService } from '../../../core/services/sync.service';
 import { PokemonFilters } from '../../../models/app.model';
 import { Pokemon } from '../../../models/pokemon.model';
 import { FilterOptions } from '../../../shared/components/search-filter/search-filter.component';
@@ -65,8 +64,7 @@ export class HomePage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private alertController: AlertController,
     private toastController: ToastController,
-    private translate: TranslateService,
-    private syncService: SyncService
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -224,23 +222,11 @@ export class HomePage implements OnInit, OnDestroy {
     const { pokemon, isCaptured } = event;
     if (isCaptured) {
       this.showToast(this.translate.instant('home.added_to_captured'));
-      const action: SyncAction = {
-        pokemonId: pokemon.id,
-        action: 'capture',
-        timestamp: Date.now(),
-        payload: { added: true }
-      };
-      this.syncService.addToQueue(action);
     } else {
       this.showToast(this.translate.instant('home.removed_from_captured'));
-      const action: SyncAction = {
-        pokemonId: pokemon.id,
-        action: 'capture',
-        timestamp: Date.now(),
-        payload: { removed: true }
-      };
-      this.syncService.addToQueue(action);
     }
+    // A sincronização é feita automaticamente pelo CapturedService
+    // quando o toggle é feito via UI - não fazemos sync direto aqui
     this.loadCaptured();
   }
 
@@ -306,9 +292,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   /**
    * Retorna a quantidade de capturas pendentes de sincronização
+   * Como usamos sistema pull-based, sempre retorna 0
    */
   getPendingSyncCount(): Promise<number> {
-    return this.syncService.getPendingCount();
+    return Promise.resolve(0);
   }
 
   openDetailsModal(pokemonId: number) {

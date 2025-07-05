@@ -13,6 +13,10 @@ const routes: Routes = [
   {
     path: 'pokemon/:id',
     loadChildren: () => import('./pages/web/details/details.module').then(m => m.DetailsPageModule)
+  },
+  {
+    path: 'sync-admin',
+    loadChildren: () => import('./pages/sync-admin/sync-admin.module').then(m => m.SyncAdminModule)
   }
 ];
 @NgModule({

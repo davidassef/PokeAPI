@@ -1,0 +1,236 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Administração de Sincronização</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleAutoRefresh()" [color]="autoRefresh ? 'success' : 'medium'">
+        <ion-icon [name]="autoRefresh ? 'sync' : 'sync-outline'"></ion-icon>
+      </ion-button>
+      <ion-button (click)="loadAllStatus()" [disabled]="loading">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Loading -->
+  <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>
+
+  <!-- Status Cards -->
+  <div class="status-grid">
+    <!-- Pull Sync Status -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="cloud-download-outline"></ion-icon>
+          Pull Sync Status
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf="pullSyncStatus">
+          <p><strong>Clientes Registrados:</strong> {{ pullSyncStatus.registered_clients }}</p>
+          <div *ngFor="let client of pullSyncStatus.clients" class="client-item">
+            <ion-chip color="primary">
+              <ion-icon name="person-outline"></ion-icon>
+              <ion-label>{{ client.user_id }}</ion-label>
+            </ion-chip>
+            <small>{{ client.client_url }}</small>
+          </div>
+        </div>
+        <ion-skeleton-text *ngIf="!pullSyncStatus" animated></ion-skeleton-text>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Scheduler Status -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="timer-outline"></ion-icon>
+          Scheduler Status
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf="schedulerStatus">
+          <p>
+            <strong>Status:</strong>
+            <ion-icon [name]="getStatusIcon(schedulerStatus.running)" [color]="getStatusColor(schedulerStatus.running)"></ion-icon>
+            {{ schedulerStatus.running ? 'Executando' : 'Parado' }}
+          </p>
+          <p><strong>Intervalo:</strong> {{ schedulerStatus.sync_interval }}s</p>
+          <p><strong>Último Cleanup:</strong> {{ schedulerStatus.last_cleanup | date:'short' }}</p>
+        </div>
+        <ion-skeleton-text *ngIf="!schedulerStatus" animated></ion-skeleton-text>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Database Status -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="server-outline"></ion-icon>
+          Database Status
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf="databaseStatus">
+          <p><strong>Usuários:</strong> {{ databaseStatus.users_count }}</p>
+          <p><strong>Favoritos:</strong> {{ databaseStatus.favorites_count }}</p>
+          <p><strong>Rankings:</strong> {{ databaseStatus.rankings_count }}</p>
+        </div>
+        <ion-skeleton-text *ngIf="!databaseStatus" animated></ion-skeleton-text>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Ações de Sincronização -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="sync-outline"></ion-icon>
+        Ações de Sincronização
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="action-buttons">
+        <ion-button expand="block" color="primary" (click)="forceSyncAll()" [disabled]="loading">
+          <ion-icon name="cloud-download" slot="start"></ion-icon>
+          Sincronizar Todos
+        </ion-button>
+
+        <ion-button expand="block" color="secondary" (click)="forceSyncRecent()" [disabled]="loading">
+          <ion-icon name="flash" slot="start"></ion-icon>
+          Sincronizar Recentes
+        </ion-button>
+
+        <ion-button expand="block" color="tertiary" (click)="startBackgroundSync()" [disabled]="loading">
+          <ion-icon name="play" slot="start"></ion-icon>
+          Sync em Background
+        </ion-button>
+
+        <ion-button expand="block" color="success" (click)="runFullSyncTest()" [disabled]="loading">
+          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+          Teste Completo
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Controle do Scheduler -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="settings-outline"></ion-icon>
+        Controle do Scheduler
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="scheduler-controls">
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="startScheduler()"
+          [disabled]="loading || (schedulerStatus?.running)">
+          <ion-icon name="play" slot="start"></ion-icon>
+          Iniciar Scheduler
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          color="warning"
+          (click)="stopScheduler()"
+          [disabled]="loading || !(schedulerStatus?.running)">
+          <ion-icon name="stop" slot="start"></ion-icon>
+          Parar Scheduler
+        </ion-button>
+
+        <ion-item>
+          <ion-label>Intervalo de Sincronização</ion-label>
+          <ion-select
+            placeholder="Selecione..."
+            (ionChange)="setSchedulerInterval($event.detail.value)"
+            [disabled]="loading">
+            <ion-select-option
+              *ngFor="let option of getSyncIntervalOptions() | keyvalue"
+              [value]="option.value">
+              {{ option.key }} ({{ option.value }}s)
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Gerenciamento de Clientes -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="people-outline"></ion-icon>
+        Gerenciamento de Clientes
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" color="primary" (click)="registerClient()" [disabled]="loading">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Registrar Cliente Local
+      </ion-button>
+
+      <ion-button expand="block" color="medium" (click)="cleanupInactiveClients()" [disabled]="loading">
+        <ion-icon name="trash" slot="start"></ion-icon>
+        Limpar Clientes Inativos
+      </ion-button>
+
+      <div *ngIf="registeredClients.length > 0" class="clients-list">
+        <h4>Clientes Registrados:</h4>
+        <ion-chip *ngFor="let client of registeredClients" color="primary">
+          <ion-icon name="person"></ion-icon>
+          <ion-label>{{ client.user_id }}</ion-label>
+        </ion-chip>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Ações Administrativas -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="warning-outline"></ion-icon>
+        Ações Administrativas
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" color="danger" (click)="resetDatabase()" [disabled]="loading">
+        <ion-icon name="nuclear" slot="start"></ion-icon>
+        RESET Database
+      </ion-button>
+      <p class="warning-text">
+        <ion-icon name="warning"></ion-icon>
+        Atenção: Esta ação é irreversível!
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Comandos cURL -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="terminal-outline"></ion-icon>
+        Comandos cURL
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-accordion-group>
+        <ion-accordion value="curl-commands">
+          <ion-item slot="header">
+            <ion-label>Mostrar Comandos cURL</ion-label>
+          </ion-item>
+          <div class="curl-commands" slot="content">
+            <div *ngFor="let command of getCurlCommands() | keyvalue" class="curl-item">
+              <h5>{{ command.key }}</h5>
+              <code>{{ command.value }}</code>
+            </div>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

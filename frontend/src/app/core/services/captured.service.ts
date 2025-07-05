@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { FavoritePokemon, Pokemon } from '../../models/pokemon.model';
 import { SyncAction, SyncService } from './sync.service';
+import { ClientSyncService } from './client-sync.service';
+import { SyncConfigService } from './sync-config.service';
 
 /**
  * Serviço para gerenciar Pokémons capturados
@@ -18,7 +21,13 @@ export class CapturedService {
 
   public captured$ = this.capturedSubject.asObservable();
 
-  constructor(private storage: Storage, private syncService: SyncService) {
+  constructor(
+    private storage: Storage,
+    private syncService: SyncService,
+    private clientSyncService: ClientSyncService,
+    private http: HttpClient,
+    private syncConfig: SyncConfigService
+  ) {
     this.initStorage();
   }
 
@@ -67,23 +76,8 @@ export class CapturedService {
       const updated = [...current, newCaptured];
       await this.saveCaptured(updated);
 
-      // Adicionar à fila de sincronização
-      const syncAction: SyncAction = {
-        pokemonId: pokemon.id,
-        action: 'capture',
-        timestamp: Date.now(),
-        payload: {
-          pokemonName: pokemon.name,
-          removed: false
-        }
-      };
-      await this.syncService.addToQueue(syncAction);
-      console.log('[CapturedService] Adicionado à fila de sincronização:', syncAction);
-      
-      // Forçar sincronização imediata
-      setTimeout(() => {
-        this.syncService.forceSyncNow();
-      }, 1000);
+      // Sincronização baseada na configuração
+      await this.syncCapture(pokemon.id, pokemon.name, 'capture', false);
 
       return true;
     } catch (error) {
@@ -101,23 +95,8 @@ export class CapturedService {
       const updated = current.filter(c => c.pokemon_id !== pokemonId);
       await this.saveCaptured(updated);
 
-      // Adicionar à fila de sincronização
-      const syncAction: SyncAction = {
-        pokemonId: pokemonId,
-        action: 'capture',
-        timestamp: Date.now(),
-        payload: {
-          pokemonName: toRemove.pokemon_name,
-          removed: true
-        }
-      };
-      await this.syncService.addToQueue(syncAction);
-      console.log('[CapturedService] Remoção adicionada à fila de sincronização:', syncAction);
-      
-      // Forçar sincronização imediata
-      setTimeout(() => {
-        this.syncService.forceSyncNow();
-      }, 1000);
+      // Sincronização baseada na configuração
+      await this.syncCapture(pokemonId, toRemove.pokemon_name, 'capture', true);
 
       return true;
     } catch (error) {
@@ -166,6 +145,81 @@ export class CapturedService {
       return true;
     } catch (error) {
       return false;
+    }
+  }
+  /**
+   * Sincroniza captura baseado na configuração (push ou pull)
+   */
+  private async syncCapture(pokemonId: number, pokemonName: string, action: string, removed: boolean): Promise<void> {
+    try {
+      const syncType = this.syncConfig.getSyncType();
+
+      if (this.syncConfig.isDebugMode()) {
+        console.log(`[CapturedService] Sincronizando com modo: ${syncType}`);
+      }
+
+      // Sistema Pull (prioritário para evitar duplicação)
+      if (this.syncConfig.shouldUsePullSync()) {
+        await this.sendToClientServer(pokemonId, pokemonName, action, removed);
+
+        if (this.syncConfig.isDebugMode()) {
+          console.log('[CapturedService] ✅ Dados enviados via sistema PULL-BASED');
+        }
+
+        // Se está em modo estrito, não executa o push
+        if (this.syncConfig.isStrictMode()) {
+          return;
+        }
+      }
+
+      // Sistema Push (apenas se não estiver em modo estrito)
+      if (this.syncConfig.shouldUsePushSync() && !this.syncConfig.isStrictMode()) {
+        const syncAction: SyncAction = {
+          pokemonId: pokemonId,
+          action: action as 'capture' | 'favorite',
+          timestamp: Date.now(),
+          payload: {
+            pokemonName: pokemonName,
+            removed: removed
+          }
+        };
+
+        await this.syncService.addToQueue(syncAction);
+
+        // Forçar sincronização imediata no sistema push
+        setTimeout(() => {
+          this.syncService.forceSyncNow();
+        }, 1000);
+
+        if (this.syncConfig.isDebugMode()) {
+          console.log('[CapturedService] ⚠️  Dados enviados via sistema PUSH:', syncAction);
+        }
+      }
+
+    } catch (error) {
+      console.error('[CapturedService] Erro na sincronização:', error);
+    }
+  }
+
+  /**
+   * Envia captura para o servidor do cliente (sistema pull)
+   */
+  private async sendToClientServer(pokemonId: number, pokemonName: string, action: string, removed: boolean): Promise<void> {
+    try {
+      const clientServerUrl = this.syncConfig.getClientServerUrl();
+
+      await this.http.post(`${clientServerUrl}/api/client/add-capture`, {
+        pokemon_id: pokemonId,
+        pokemon_name: pokemonName,
+        action: action,
+        removed: removed
+      }).toPromise();
+
+      if (this.syncConfig.isDebugMode()) {
+        console.log(`[CapturedService] 📡 Captura enviada para ${clientServerUrl} (pull-based)`);
+      }
+    } catch (error) {
+      console.error('[CapturedService] ❌ Erro ao enviar para servidor do cliente:', error);
     }
   }
 }

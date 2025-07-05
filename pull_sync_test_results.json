@@ -1,0 +1,53 @@
+{
+  "test_run": "2025-07-05T12:25:22.836781",
+  "results": [
+    {
+      "test": "Backend Health Check",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-07-05T12:25:11.629454"
+    },
+    {
+      "test": "Client Health Check",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-07-05T12:25:11.632457"
+    },
+    {
+      "test": "Scheduler Status",
+      "success": true,
+      "details": "Running: True",
+      "timestamp": "2025-07-05T12:25:13.673622"
+    },
+    {
+      "test": "Client Registration",
+      "success": true,
+      "details": "Clientes registrados: 1",
+      "timestamp": "2025-07-05T12:25:15.714938"
+    },
+    {
+      "test": "Add Capture",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-07-05T12:25:15.718941"
+    },
+    {
+      "test": "Sync Data",
+      "success": true,
+      "details": "Capturas pendentes: 4",
+      "timestamp": "2025-07-05T12:25:16.722060"
+    },
+    {
+      "test": "Manual Sync",
+      "success": true,
+      "details": "Processados: 0, Capturas: 0",
+      "timestamp": "2025-07-05T12:25:18.775907"
+    },
+    {
+      "test": "Ranking Update",
+      "success": true,
+      "details": "Rankings encontrados: 6",
+      "timestamp": "2025-07-05T12:25:22.835781"
+    }
+  ]
+}

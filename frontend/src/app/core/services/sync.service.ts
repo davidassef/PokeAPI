@@ -46,17 +46,17 @@ export class SyncService {
   async syncPending() {
     if (this.syncing) return;
     this.syncing = true;
-    
+
     try {
       const queue = (await this.storage.get(this.QUEUE_KEY)) || [];
       if (queue.length === 0) {
         this.syncing = false;
         return;
       }
-      
+
       console.log('[SyncService] Iniciando sincronização de', queue.length, 'ações');
       const stillPending = [];
-      
+
       for (const action of queue) {
         try {
           console.log('[SyncService] Sincronizando:', action);
@@ -67,7 +67,7 @@ export class SyncService {
           stillPending.push(action);
         }
       }
-      
+
       await this.storage.set(this.QUEUE_KEY, stillPending);
       console.log('[SyncService] Sincronização concluída.', stillPending.length, 'ações ainda pendentes');
     } catch (error) {

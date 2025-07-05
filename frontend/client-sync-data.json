@@ -1,0 +1,434 @@
+{
+  "captures": [
+    {
+      "capture_id": "1_1751728662808_capture",
+      "pokemon_id": 1,
+      "pokemon_name": "bulbasaur",
+      "action": "capture",
+      "timestamp": "2025-07-05T15:17:42.808Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751728953566_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T15:22:33.566Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751728986219_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T15:23:06.219Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751729115717_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T15:25:15.717Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751731763489_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:09:23.489Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "9_1751731828576_capture",
+      "pokemon_id": 9,
+      "pokemon_name": "blastoise",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:10:28.576Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "9_1751731915051_capture",
+      "pokemon_id": 9,
+      "pokemon_name": "blastoise",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:11:55.051Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "3_1751732013819_capture",
+      "pokemon_id": 3,
+      "pokemon_name": "venusaur",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:13:33.819Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "150_1751732043441_capture",
+      "pokemon_id": 150,
+      "pokemon_name": "mewtwo",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:03.441Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "144_1751732044016_capture",
+      "pokemon_id": 144,
+      "pokemon_name": "articuno",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:04.016Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751732045496_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:05.496Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "6_1751732046544_capture",
+      "pokemon_id": 6,
+      "pokemon_name": "charizard",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:06.544Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "1_1751732047307_capture",
+      "pokemon_id": 1,
+      "pokemon_name": "bulbasaur",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:07.307Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "7_1751732047926_capture",
+      "pokemon_id": 7,
+      "pokemon_name": "squirtle",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:07.926Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "7_1751732051641_capture",
+      "pokemon_id": 7,
+      "pokemon_name": "squirtle",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:11.641Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "1_1751732052186_capture",
+      "pokemon_id": 1,
+      "pokemon_name": "bulbasaur",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:12.186Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "6_1751732052906_capture",
+      "pokemon_id": 6,
+      "pokemon_name": "charizard",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:12.906Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751732053652_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:13.652Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "144_1751732054246_capture",
+      "pokemon_id": 144,
+      "pokemon_name": "articuno",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:14.246Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "150_1751732054900_capture",
+      "pokemon_id": 150,
+      "pokemon_name": "mewtwo",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:14.900Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "3_1751732059198_capture",
+      "pokemon_id": 3,
+      "pokemon_name": "venusaur",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:19.198Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "6_1751732062077_capture",
+      "pokemon_id": 6,
+      "pokemon_name": "charizard",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:22.077Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "7_1751732062586_capture",
+      "pokemon_id": 7,
+      "pokemon_name": "squirtle",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:22.586Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "8_1751732063107_capture",
+      "pokemon_id": 8,
+      "pokemon_name": "wartortle",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:23.107Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "12_1751732064015_capture",
+      "pokemon_id": 12,
+      "pokemon_name": "butterfree",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:24.015Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "10_1751732064550_capture",
+      "pokemon_id": 10,
+      "pokemon_name": "caterpie",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:24.550Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "9_1751732065034_capture",
+      "pokemon_id": 9,
+      "pokemon_name": "blastoise",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:14:25.034Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "150_1751732106090_capture",
+      "pokemon_id": 150,
+      "pokemon_name": "mewtwo",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:15:06.090Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "144_1751732106901_capture",
+      "pokemon_id": 144,
+      "pokemon_name": "articuno",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:15:06.901Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751732107851_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:15:07.851Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": false,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "150_1751732111683_capture",
+      "pokemon_id": 150,
+      "pokemon_name": "mewtwo",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:15:11.683Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "144_1751732112136_capture",
+      "pokemon_id": 144,
+      "pokemon_name": "articuno",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:15:12.136Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    },
+    {
+      "capture_id": "25_1751732112605_capture",
+      "pokemon_id": 25,
+      "pokemon_name": "pikachu",
+      "action": "capture",
+      "timestamp": "2025-07-05T16:15:12.605Z",
+      "user_id": "user_1",
+      "synced": true,
+      "metadata": {
+        "removed": true,
+        "client_version": "1.0.0"
+      }
+    }
+  ],
+  "last_sync": "2025-07-05T16:15:38.766Z"
+}

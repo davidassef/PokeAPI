@@ -525,19 +525,16 @@ export class PokeApiService {
   }
 
   /**
-   * Sincroniza captura/favorito com o backend (usado pelo SyncService)
+   * Sincroniza captura/favorito com o backend (DEPRECATED - usar sistema pull-based)
    * @param action Objeto SyncAction
    * @returns Promise<void>
+   * @deprecated Use o sistema pull-based via CapturedService
    */
   async syncCapture(action: { pokemonId: number; action: 'capture' | 'favorite'; timestamp: number; payload?: any }): Promise<void> {
-    const url = `${this.backendUrl}/sync-capture/`;
-    try {
-      console.log('[SYNC] Enviando ação para backend:', action);
-      await this.http.post(url, action).toPromise();
-      console.log('[SYNC] Sucesso ao sincronizar com backend');
-    } catch (error) {
-      console.error('[SYNC] Erro ao sincronizar com backend:', error);
-      throw error;
-    }
+    console.warn('[PokeApiService] DEPRECATED: syncCapture method is deprecated. Use pull-based system instead.');
+    console.warn('[PokeApiService] This method will be removed in future versions.');
+
+    // Não executa mais para evitar conflitos com o sistema pull
+    return Promise.resolve();
   }
 }
