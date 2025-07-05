@@ -74,6 +74,22 @@ class PokemonRanking(PokemonRankingBase):
         from_attributes = True
 
 
+# Schemas de sincronização
+class SyncPayload(BaseModel):
+    """Schema para payload de sincronização."""
+    pokemonName: Optional[str] = None
+    removed: Optional[bool] = False
+
+
+class SyncCaptureRequest(BaseModel):
+    """Schema para requisição de sincronização de captura."""
+    pokemonId: int
+    action: str  # 'capture' ou 'favorite'
+    timestamp: int
+    payload: Optional[SyncPayload] = None
+    user_id: Optional[int] = 1
+
+
 # Schema de resposta com lista de usuários
 class UserWithFavorites(User):
     """Schema do usuário com seus favoritos."""
