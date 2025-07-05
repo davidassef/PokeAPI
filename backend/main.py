@@ -83,7 +83,7 @@ async def seed_initial_data():
     """ADMIN: Popula dados iniciais no banco de dados."""
     try:
         from app.core.database import get_db
-        from app.models.models import User, Ranking
+        from app.models.models import User, PokemonRanking
         
         db = next(get_db())
         
@@ -116,12 +116,12 @@ async def seed_initial_data():
         
         for i, poke_data in enumerate(popular_pokemon_list):
             # Criar entrada de ranking se não existir
-            existing_ranking = db.query(Ranking).filter(
-                Ranking.pokemon_id == poke_data["pokemon_id"]
+            existing_ranking = db.query(PokemonRanking).filter(
+                PokemonRanking.pokemon_id == poke_data["pokemon_id"]
             ).first()
             
             if not existing_ranking:
-                ranking_entry = Ranking(
+                ranking_entry = PokemonRanking(
                     pokemon_id=poke_data["pokemon_id"],
                     pokemon_name=poke_data["pokemon_name"],
                     favorite_count=10 - i  # Começar com contagens decrescentes
