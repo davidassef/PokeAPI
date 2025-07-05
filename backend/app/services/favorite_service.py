@@ -162,3 +162,8 @@ class FavoriteService:
             "total_favorites": total_captures,  # Mantém nome para compatibilidade
             "most_popular_pokemon": most_popular
         }
+
+    @staticmethod
+    def get_all_favorites(db: Session) -> List[FavoritePokemon]:
+        """Busca todos os favoritos do sistema."""
+        return db.query(FavoritePokemon).all()

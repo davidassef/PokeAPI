@@ -3,7 +3,7 @@ Schemas Pydantic para validação de dados.
 """
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 
 # Schemas de User
@@ -118,6 +118,55 @@ class Message(BaseModel):
     message: str
 
 
+# Schemas para sistema Pull-Based
+class CaptureData(BaseModel):
+    """Schema para dados de captura individual."""
+    capture_id: str
+    pokemon_id: int
+    pokemon_name: str
+    action: str  # 'capture' ou 'favorite'
+    timestamp: Union[int, str]  # Aceita tanto int quanto ISO string
+    synced: bool = False
+    created_at: Optional[datetime] = None
+    metadata: Optional[dict] = None
+    user_id: Optional[str] = None
+
+
+class ClientSyncData(BaseModel):
+    """Schema para dados de sincronização do cliente."""
+    user_id: str
+    client_url: Optional[str] = None
+    captures: List[CaptureData] = []
+    last_sync: Optional[datetime] = None
+    total_pending: int = 0
+
+
+class PullRequest(BaseModel):
+    """Schema para requisição de pull de dados."""
+    client_urls: List[str] = []
+    since: Optional[datetime] = None
+    max_captures: Optional[int] = 100
+
+
+class PullResponse(BaseModel):
+    """Schema de resposta do pull de dados."""
+    success: bool
+    clients_processed: int
+    total_captures: int
+    failed_clients: List[str] = []
+    errors: List[str] = []
+    processing_time: Optional[float] = None
+
+
+class ClientRegistration(BaseModel):
+    """Schema para registro de cliente."""
+    client_url: str
+    user_id: str
+    client_type: Optional[str] = "web"
+    capabilities: List[str] = []
+
+
+# Schemas de resposta genérica (mantendo compatibilidade)
 class PokemonStats(BaseModel):
     """Schema para estatísticas gerais."""
     total_users: int

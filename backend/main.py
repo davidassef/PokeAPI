@@ -5,16 +5,41 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import time
+from contextlib import asynccontextmanager
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Gerencia o ciclo de vida da aplicação."""
+    # Startup
+    try:
+        from app.services.pull_sync_scheduler import pull_scheduler
+        await pull_scheduler.start()
+        print("🔄 Scheduler de pull sync iniciado")
+    except Exception as e:
+        print(f"❌ Erro ao iniciar scheduler: {e}")
+
+    yield
+
+    # Shutdown
+    try:
+        from app.services.pull_sync_scheduler import pull_scheduler
+        await pull_scheduler.stop()
+        print("🛑 Scheduler de pull sync parado")
+    except Exception as e:
+        print(f"❌ Erro ao parar scheduler: {e}")
+
+
 # Configuração básica
 app = FastAPI(
     title="PokeAPI Backend",
     version="1.0.0",
-    description="Backend API para aplicativo Pokédex com Ionic + Angular"
+    description="Backend API para aplicativo Pokédex com Ionic + Angular",
+    lifespan=lifespan
 )
 
 # Middleware para logging de requisições
@@ -57,7 +82,7 @@ app.add_middleware(
 try:
     from app.core.database import engine
     from app.models.models import Base
-    from app.routes import users, favorites, ranking, pokemon, sync_capture, admin
+    from app.routes import users, favorites, ranking, pokemon, sync_capture, admin, pull_sync
 
     # Criar tabelas vazias (sem dados iniciais)
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
@@ -70,6 +95,7 @@ try:
     app.include_router(pokemon.router, prefix="/api/v1")
     app.include_router(sync_capture.router, prefix="/api/v1")
     app.include_router(admin.router, prefix="/api/v1")
+    app.include_router(pull_sync.router, prefix="/api/v1")
 
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     print(f"Warning: Error importing modules: {e}")
