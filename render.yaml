@@ -32,8 +32,24 @@ services:
     staticPublishPath: ./www
     envVars:
       - key: API_URL
-        value: https://pokeapi-backend.onrender.com
+        value: https://pokeapi-la6k.onrender.com
+    headers:
+      - key: X-Frame-Options
+        value: DENY
+      - key: X-Content-Type-Options
+        value: nosniff
+      - key: Cache-Control
+        value: no-cache
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
+    # Configurações específicas para SPA
+    publishPath: ./www
+    buildFilter:
+      paths:
+        - frontend/**
+    redirects:
+      - source: /*
+        destination: /index.html
+        type: 200

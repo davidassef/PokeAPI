@@ -16,7 +16,7 @@
 </head>
 <body>
     <h1>🧪 Teste Detalhado Frontend → Backend</h1>
-    
+
     <div class="test-section">
         <h2>📋 Informações de Configuração</h2>
         <div id="config-info">
@@ -44,7 +44,7 @@
     <div id="results"></div>
 
     <script>
-        const BACKEND_URL = 'https://pokeapi-backend.onrender.com';
+        const BACKEND_URL = 'https://pokeapi-la6k.onrender.com';
         const resultsDiv = document.getElementById('results');
 
         function addResult(title, message, type = 'info') {
@@ -71,7 +71,7 @@
 
         async function testHealthCheck() {
             const loadingDiv = addLoadingResult('🏥 Health Check');
-            
+
             try {
                 const response = await fetch(`${BACKEND_URL}/health`, {
                     method: 'GET',
@@ -79,27 +79,27 @@
                         'Content-Type': 'application/json',
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    updateLoadingResult(loadingDiv, '✅ Health Check', 
-                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`, 
+                    updateLoadingResult(loadingDiv, '✅ Health Check',
+                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
                         'success');
                 } else {
-                    updateLoadingResult(loadingDiv, '❌ Health Check', 
-                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`, 
+                    updateLoadingResult(loadingDiv, '❌ Health Check',
+                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
                         'error');
                 }
             } catch (error) {
-                updateLoadingResult(loadingDiv, '❌ Health Check', 
+                updateLoadingResult(loadingDiv, '❌ Health Check',
                     `Erro: ${error.message}`, 'error');
             }
         }
 
         async function testCORS() {
             const loadingDiv = addLoadingResult('🌐 CORS Test');
-            
+
             try {
                 const response = await fetch(`${BACKEND_URL}/health`, {
                     method: 'OPTIONS',
@@ -109,26 +109,26 @@
                         'Access-Control-Request-Headers': 'Content-Type'
                     }
                 });
-                
+
                 const corsHeaders = {
                     'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
                     'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
                     'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
                     'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials')
                 };
-                
-                updateLoadingResult(loadingDiv, '✅ CORS Test', 
-                    `Status: ${response.status}<br>Headers CORS: <pre>${JSON.stringify(corsHeaders, null, 2)}</pre>`, 
+
+                updateLoadingResult(loadingDiv, '✅ CORS Test',
+                    `Status: ${response.status}<br>Headers CORS: <pre>${JSON.stringify(corsHeaders, null, 2)}</pre>`,
                     'success');
             } catch (error) {
-                updateLoadingResult(loadingDiv, '❌ CORS Test', 
+                updateLoadingResult(loadingDiv, '❌ CORS Test',
                     `Erro: ${error.message}`, 'error');
             }
         }
 
         async function testRankingEndpoint() {
             const loadingDiv = addLoadingResult('📊 Ranking Endpoint');
-            
+
             try {
                 const response = await fetch(`${BACKEND_URL}/api/v1/ranking/`, {
                     method: 'GET',
@@ -136,27 +136,27 @@
                         'Content-Type': 'application/json',
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    updateLoadingResult(loadingDiv, '✅ Ranking Endpoint', 
-                        `Status: ${response.status}<br>Itens encontrados: ${data.length}<br>Primeiros 2 itens: <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>`, 
+                    updateLoadingResult(loadingDiv, '✅ Ranking Endpoint',
+                        `Status: ${response.status}<br>Itens encontrados: ${data.length}<br>Primeiros 2 itens: <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>`,
                         'success');
                 } else {
-                    updateLoadingResult(loadingDiv, '❌ Ranking Endpoint', 
-                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`, 
+                    updateLoadingResult(loadingDiv, '❌ Ranking Endpoint',
+                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
                         'error');
                 }
             } catch (error) {
-                updateLoadingResult(loadingDiv, '❌ Ranking Endpoint', 
+                updateLoadingResult(loadingDiv, '❌ Ranking Endpoint',
                     `Erro: ${error.message}`, 'error');
             }
         }
 
         async function testFrontendLikeRequest() {
             const loadingDiv = addLoadingResult('🎯 Simulação Frontend');
-            
+
             try {
                 // Simula exatamente como o frontend faz a requisição
                 const response = await fetch(`${BACKEND_URL}/api/v1/ranking/?limit=10`, {
@@ -166,40 +166,40 @@
                         'Accept': 'application/json',
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && Array.isArray(data)) {
                     // Verifica se os dados estão no formato esperado
-                    const hasRequiredFields = data.every(item => 
-                        item.hasOwnProperty('pokemon_id') && 
-                        item.hasOwnProperty('pokemon_name') && 
+                    const hasRequiredFields = data.every(item =>
+                        item.hasOwnProperty('pokemon_id') &&
+                        item.hasOwnProperty('pokemon_name') &&
                         item.hasOwnProperty('favorite_count')
                     );
-                    
+
                     if (hasRequiredFields) {
-                        updateLoadingResult(loadingDiv, '✅ Simulação Frontend', 
-                            `Status: ${response.status}<br>Dados válidos: ${data.length} itens<br>Estrutura correta: ✅<br>Amostra: <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>`, 
+                        updateLoadingResult(loadingDiv, '✅ Simulação Frontend',
+                            `Status: ${response.status}<br>Dados válidos: ${data.length} itens<br>Estrutura correta: ✅<br>Amostra: <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>`,
                             'success');
                     } else {
-                        updateLoadingResult(loadingDiv, '⚠️ Simulação Frontend', 
-                            `Status: ${response.status}<br>Dados recebidos mas estrutura incorreta<br>Exemplo: <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>`, 
+                        updateLoadingResult(loadingDiv, '⚠️ Simulação Frontend',
+                            `Status: ${response.status}<br>Dados recebidos mas estrutura incorreta<br>Exemplo: <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>`,
                             'error');
                     }
                 } else {
-                    updateLoadingResult(loadingDiv, '❌ Simulação Frontend', 
-                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`, 
+                    updateLoadingResult(loadingDiv, '❌ Simulação Frontend',
+                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
                         'error');
                 }
             } catch (error) {
-                updateLoadingResult(loadingDiv, '❌ Simulação Frontend', 
+                updateLoadingResult(loadingDiv, '❌ Simulação Frontend',
                     `Erro: ${error.message}`, 'error');
             }
         }
 
         async function resetAndSeedData() {
             const loadingDiv = addLoadingResult('🔄 Reset + Seed');
-            
+
             try {
                 // Reset database
                 const resetResponse = await fetch(`${BACKEND_URL}/admin/reset-database`, {
@@ -208,13 +208,13 @@
                         'Content-Type': 'application/json',
                     }
                 });
-                
+
                 const resetData = await resetResponse.json();
-                
+
                 if (!resetResponse.ok) {
                     throw new Error(`Reset falhou: ${resetData.message}`);
                 }
-                
+
                 // Seed data
                 const seedResponse = await fetch(`${BACKEND_URL}/admin/seed-data`, {
                     method: 'POST',
@@ -222,19 +222,19 @@
                         'Content-Type': 'application/json',
                     }
                 });
-                
+
                 const seedData = await seedResponse.json();
-                
+
                 if (!seedResponse.ok) {
                     throw new Error(`Seed falhou: ${seedData.message}`);
                 }
-                
-                updateLoadingResult(loadingDiv, '✅ Reset + Seed', 
-                    `Reset: ${resetData.message}<br>Seed: ${seedData.message}<br>Pokémons seeded: ${seedData.data?.pokemon_seeded || 'N/A'}`, 
+
+                updateLoadingResult(loadingDiv, '✅ Reset + Seed',
+                    `Reset: ${resetData.message}<br>Seed: ${seedData.message}<br>Pokémons seeded: ${seedData.data?.pokemon_seeded || 'N/A'}`,
                     'success');
-                
+
             } catch (error) {
-                updateLoadingResult(loadingDiv, '❌ Reset + Seed', 
+                updateLoadingResult(loadingDiv, '❌ Reset + Seed',
                     `Erro: ${error.message}`, 'error');
             }
         }
@@ -250,18 +250,18 @@
 
         async function runAllTests() {
             resultsDiv.innerHTML = '<h2>🚀 Executando Todos os Testes</h2>';
-            
+
             await testHealthCheck();
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             await testCORS();
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             await testRankingEndpoint();
             await new Promise(resolve => setTimeout(resolve, 500));
-            
+
             await testFrontendLikeRequest();
-            
+
             addResult('🎉 Conclusão', 'Todos os testes foram executados. Verifique os resultados acima.', 'info');
         }
 

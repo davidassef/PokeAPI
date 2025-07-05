@@ -7,6 +7,7 @@ import { CapturedService } from '../../../core/services/captured.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
 import { SyncService } from '../../../core/services/sync.service';
 import { Pokemon } from '../../../models/pokemon.model';
+import { environment } from '../../../../environments/environment';
 
 interface PokemonRanking {
   pokemon: Pokemon;
@@ -146,6 +147,31 @@ export class RankingPage implements OnInit, OnDestroy {
     }
   }
 
+  // Método para retry com backoff
+  private async retryWithBackoff<T>(
+    operation: () => Promise<T>, 
+    maxRetries: number = 3, 
+    baseDelay: number = 1000
+  ): Promise<T> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        console.warn(`🔄 Tentativa ${attempt}/${maxRetries} falhou:`, error);
+        
+        if (attempt === maxRetries) {
+          throw error; // Re-throw on last attempt
+        }
+        
+        // Exponential backoff
+        const delay = baseDelay * Math.pow(2, attempt - 1);
+        console.log(`⏳ Aguardando ${delay}ms antes da próxima tentativa...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    throw new Error('Retry failed'); // This should never be reached
+  }
+
   // Substitui o mock por busca real do backend + detalhes da PokeAPI
   async loadRanking() {
     this.loading = true;
@@ -153,15 +179,26 @@ export class RankingPage implements OnInit, OnDestroy {
       message: await firstValueFrom(this.translate.get('ranking_page.loading_ranking'))
     });
     await loading.present();
+    
     try {
-      const backendRanking: BackendRankingItem[] = await firstValueFrom(
-        this.pokeApiService.getGlobalRankingFromBackend(10).pipe(timeout(10000))
-      );
+      console.log('🚀 Iniciando carregamento do ranking...');
+      console.log('🔗 Backend URL:', environment.apiUrl);
+      
+      const backendRanking: BackendRankingItem[] = await this.retryWithBackoff(async () => {
+        return await firstValueFrom(
+          this.pokeApiService.getGlobalRankingFromBackend(10).pipe(timeout(30000))
+        );
+      }, 3, 2000); // 3 tentativas, começando com 2s de delay
+      
       if (!backendRanking || backendRanking.length === 0) {
+        console.warn('⚠️ Backend retornou dados vazios');
         this.globalRanking = [];
         this.currentRanking = [];
         return;
       }
+      
+      console.log(`✅ Backend retornou ${backendRanking.length} itens de ranking`);
+      
       // Mapeamento snake_case -> camelCase
       const mappedRanking = backendRanking.map((item: BackendRankingItem, idx: number) => ({
         pokemonId: item.pokemon_id,
@@ -171,6 +208,7 @@ export class RankingPage implements OnInit, OnDestroy {
       }));
 
       // BUSCA OS DETALHES DE CADA POKÉMON
+      console.log('📋 Buscando detalhes dos Pokémons...');
       const pokemonPromises = mappedRanking.map(async (item: any) => {
         const pokemon = await this.pokeApiService.getPokemon(item.pokemonId).toPromise();
         return {
@@ -182,12 +220,31 @@ export class RankingPage implements OnInit, OnDestroy {
       });
       this.globalRanking = await Promise.all(pokemonPromises);
       this.currentRanking = this.globalRanking.filter(item => item.pokemon && item.pokemon.id > 0);
+      
+      console.log(`🎯 Ranking carregado com sucesso: ${this.currentRanking.length} Pokémons`);
     } catch (error) {
-      if (error instanceof Error && error.name === 'TimeoutError') {
-        await this.showErrorToast('ranking_page.timeout_error');
+      console.error('🚨 Erro detalhado ao carregar ranking:', error);
+      console.error('🔗 URL do backend:', `${environment.apiUrl}/api/v1/ranking/`);
+      
+      if (error instanceof Error) {
+        if (error.name === 'TimeoutError') {
+          console.error('⏰ Timeout após 30 segundos - Backend pode estar lento ou fora do ar');
+          await this.showErrorToast('Timeout: Backend não respondeu em 30s. Tente novamente.');
+        } else if (error.message.includes('ERR_NETWORK')) {
+          console.error('🌐 Erro de rede - Possível problema de conectividade');
+          await this.showErrorToast('Erro de rede: Verifique sua conexão com a internet.');
+        } else if (error.message.includes('CORS')) {
+          console.error('🔒 Erro de CORS - Backend não está aceitando requisições do frontend');
+          await this.showErrorToast('Erro de CORS: Backend não autorizado.');
+        } else {
+          console.error('❌ Erro genérico:', error.message);
+          await this.showErrorToast(`Erro: ${error.message}`);
+        }
       } else {
-        await this.showErrorToast('ranking_page.error_loading_ranking');
+        console.error('❓ Erro desconhecido:', error);
+        await this.showErrorToast('Erro desconhecido ao carregar ranking.');
       }
+      
       this.globalRanking = [];
       this.currentRanking = [];
     } finally {
@@ -199,12 +256,12 @@ export class RankingPage implements OnInit, OnDestroy {
   private async loadLocalRanking(region: string) {
     try {
       const response: LocalRankingItem[] = await firstValueFrom(
-        this.pokeApiService.getLocalRanking(region).pipe(timeout(10000))
+        this.pokeApiService.getLocalRanking(region).pipe(timeout(30000))
       );
       if (!response) throw new Error('Resposta indefinida ao buscar ranking local');
       const pokemonPromises = response.map(async (item: LocalRankingItem) => {
         const pokemon = await firstValueFrom(
-          this.pokeApiService.getPokemon(item.pokemonId).pipe(timeout(10000))
+          this.pokeApiService.getPokemon(item.pokemonId).pipe(timeout(30000))
         );
         return {
           pokemon: pokemon!,

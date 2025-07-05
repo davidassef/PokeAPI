@@ -90,6 +90,18 @@ async def health_check():
     return {"status": "healthy", "version": "1.0.0"}
 
 
+@app.get("/api/test-frontend")
+async def test_frontend_connection():
+    """Endpoint específico para testar conexão do frontend."""
+    return {
+        "message": "Frontend conectado com sucesso!",
+        "backend_url": "https://pokeapi-la6k.onrender.com",
+        "frontend_url": "https://pokeapi-frontend.onrender.com",
+        "status": "connected",
+        "timestamp": "2025-07-05T01:15:00Z"
+    }
+
+
 @app.post("/admin/reset-database")
 async def reset_database():
     """ADMIN: Limpa e recria todas as tabelas do banco de dados."""
