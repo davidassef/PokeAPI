@@ -390,6 +390,81 @@ ng e2e
 
 ---
 
+## 🚀 Deploy e Banco de Dados
+
+### 🏗️ Deploy no Render
+O projeto está configurado para deploy automático no Render com as seguintes características:
+
+- **Backend**: https://pokeapi-la6k.onrender.com
+- **Frontend**: https://pokeapi-frontend.onrender.com
+- **Banco de Dados**: SQLite criado vazio no deploy
+
+### 🗄️ Estratégia de Banco de Dados
+
+**⚠️ IMPORTANTE**: O banco de dados é criado **vazio** em cada deploy e alimentado apenas pelo frontend:
+
+1. **Deploy**: Banco criado com estruturas de tabelas vazias
+2. **Uso**: Dados são adicionados conforme usuários interagem
+3. **Redeploy**: Banco é limpo e recriado vazio
+
+### 🔄 Comunicação Frontend-Backend
+
+O frontend utiliza um sistema de sincronização automática:
+
+- **Capturas locais**: Armazenadas no Ionic Storage
+- **Sincronização**: Fila automática que envia dados para o backend
+- **Endpoint de sync**: `/api/v1/sync-capture/` processa as ações
+- **Ranking dinâmico**: Atualizado automaticamente com base nas capturas
+
+**Fluxo de sincronização:**
+1. Usuário captura/remove Pokémon
+2. Ação é salva localmente
+3. Ação é adicionada à fila de sincronização
+4. SyncService envia para o backend automaticamente
+5. Ranking é atualizado em tempo real
+
+### 🔧 Scripts de Validação
+
+```bash
+# Validar se deploy está correto (banco vazio)
+python validate_deploy.py
+
+# Limpar banco antes do deploy
+python clean_database.py
+
+# Testar comunicação frontend-backend (abrir em navegador)
+# Arquivo: test_sync_communication.html
+```
+
+### 📋 Verificação de Status
+
+```bash
+# Verificar status do banco em produção
+curl https://pokeapi-la6k.onrender.com/api/database-status
+
+# Testar endpoint de sincronização
+curl -X POST https://pokeapi-la6k.onrender.com/api/v1/sync-capture/ \
+  -H "Content-Type: application/json" \
+  -d '{"pokemonId":25,"action":"capture","timestamp":1625097600000,"payload":{"pokemonName":"pikachu","removed":false}}'
+```
+
+**Resposta esperada no deploy limpo:**
+```json
+{
+  "message": "Status do banco de dados",
+  "status": "success",
+  "data": {
+    "users": 0,
+    "rankings": 0,
+    "is_empty": true
+  }
+}
+```
+
+📖 **Documentação completa**: Ver [DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)
+
+---
+
 ## 🤝 Contribuição
 
 Este é um projeto em desenvolvimento ativo! Contribuições são bem-vindas:

@@ -59,7 +59,8 @@ try:
     from app.models.models import Base
     from app.routes import users, favorites, ranking, pokemon, sync_capture
 
-    # Criar tabelas
+    # Criar tabelas vazias (sem dados iniciais)
+    # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
     Base.metadata.create_all(bind=engine)
 
     # Incluir rotas
@@ -69,8 +70,9 @@ try:
     app.include_router(pokemon.router, prefix="/api/v1")
     app.include_router(sync_capture.router, prefix="/api/v1")
 
-except Exception as e:
+except (ImportError, ModuleNotFoundError, AttributeError) as e:
     print(f"Warning: Error importing modules: {e}")
+    # Continua a execução sem os módulos de rotas se houver erro
 
 
 @app.get("/")
@@ -102,85 +104,30 @@ async def test_frontend_connection():
     }
 
 
-@app.post("/admin/reset-database")
-async def reset_database():
-    """ADMIN: Limpa e recria todas as tabelas do banco de dados."""
-    try:
-        from app.core.database import engine
-        from app.models.models import Base
-
-        # Drop todas as tabelas
-        Base.metadata.drop_all(bind=engine)
-        # Recria todas as tabelas
-        Base.metadata.create_all(bind=engine)
-
-        return {"message": "Database resetado com sucesso", "status": "success"}
-    except Exception as e:
-        return {"message": f"Erro ao resetar database: {str(e)}", "status": "error"}
-
-
-@app.post("/admin/seed-data")
-async def seed_initial_data():
-    """ADMIN: Popula dados iniciais no banco de dados."""
+@app.get("/api/database-status")
+async def database_status():
+    """Verifica o status do banco de dados sem popular dados."""
     try:
         from app.core.database import get_db
         from app.models.models import User, PokemonRanking
 
         db = next(get_db())
 
-        # Criar usuário padrão se não existir
-        existing_user = db.query(User).filter(User.email == "admin@pokeapi.com").first()
-        if not existing_user:
-            default_user = User(
-                username="admin",
-                email="admin@pokeapi.com"
-            )
-            db.add(default_user)
-            db.commit()
-            db.refresh(default_user)
-        else:
-            default_user = existing_user
-
-        # Adicionar alguns favoritos/ranking iniciais populares
-        popular_pokemon_list = [
-            {"pokemon_id": 25, "pokemon_name": "pikachu"},
-            {"pokemon_id": 6, "pokemon_name": "charizard"},
-            {"pokemon_id": 150, "pokemon_name": "mewtwo"},
-            {"pokemon_id": 144, "pokemon_name": "articuno"},
-            {"pokemon_id": 1, "pokemon_name": "bulbasaur"},
-            {"pokemon_id": 4, "pokemon_name": "charmander"},
-            {"pokemon_id": 7, "pokemon_name": "squirtle"},
-            {"pokemon_id": 39, "pokemon_name": "jigglypuff"},
-            {"pokemon_id": 94, "pokemon_name": "gengar"},
-            {"pokemon_id": 130, "pokemon_name": "gyarados"}
-        ]
-
-        for i, poke_data in enumerate(popular_pokemon_list):
-            # Criar entrada de ranking se não existir
-            existing_ranking = db.query(PokemonRanking).filter(
-                PokemonRanking.pokemon_id == poke_data["pokemon_id"]
-            ).first()
-
-            if not existing_ranking:
-                ranking_entry = PokemonRanking(
-                    pokemon_id=poke_data["pokemon_id"],
-                    pokemon_name=poke_data["pokemon_name"],
-                    favorite_count=10 - i  # Começar com contagens decrescentes
-                )
-                db.add(ranking_entry)
-
-        db.commit()
+        # Contar registros existentes
+        user_count = db.query(User).count()
+        ranking_count = db.query(PokemonRanking).count()
 
         return {
-            "message": "Dados iniciais populados com sucesso",
+            "message": "Status do banco de dados",
             "status": "success",
             "data": {
-                "user_created": default_user.username,
-                "pokemon_seeded": len(popular_pokemon_list)
+                "users": user_count,
+                "rankings": ranking_count,
+                "is_empty": user_count == 0 and ranking_count == 0
             }
         }
-    except Exception as e:
-        return {"message": f"Erro ao popular dados: {str(e)}", "status": "error"}
+    except (ImportError, AttributeError, TypeError) as e:
+        return {"message": f"Erro ao verificar status: {str(e)}", "status": "error"}
 
 
 if __name__ == "__main__":

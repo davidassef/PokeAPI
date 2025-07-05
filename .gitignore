@@ -215,3 +215,14 @@ __marimo__/
 
 # Diretório de cache do Angular
 frontend/.angular/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de banco específicos do projeto
+pokemon_app.db
+test_pokemon.db
+backend/pokemon_app.db
+backend/test_pokemon.db

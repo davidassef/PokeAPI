@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Comunicação Frontend-Backend</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de Comunicação Frontend → Backend</h1>
+    <p><strong>Objetivo:</strong> Verificar se o frontend consegue enviar dados de captura para o backend</p>
+
+    <div>
+        <button onclick="testBackendHealth()">1. Testar Saúde do Backend</button>
+        <button onclick="testSyncCapture()">2. Testar Sincronização de Captura</button>
+        <button onclick="testSyncRemoval()">3. Testar Remoção de Captura</button>
+        <button onclick="testRanking()">4. Verificar Ranking</button>
+        <button onclick="clearResults()">Limpar Resultados</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const BACKEND_URL = 'https://pokeapi-la6k.onrender.com';
+
+        function addResult(title, content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${title}</strong><br>${content}`;
+            document.getElementById('results').appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${title}: ${content}`);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testBackendHealth() {
+            try {
+                addResult('🏥 Testando Backend', 'Verificando se o backend está online...', 'info');
+
+                const response = await fetch(`${BACKEND_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addResult('✅ Backend Online',
+                        `Status: ${response.status}<br>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'success');
+                } else {
+                    addResult('❌ Erro no Backend',
+                        `Status: ${response.status}<br>Erro: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'error');
+                }
+            } catch (error) {
+                addResult('❌ Erro de Conexão',
+                    `Não foi possível conectar ao backend: ${error.message}`,
+                    'error');
+            }
+        }
+
+        async function testSyncCapture() {
+            try {
+                addResult('📥 Testando Captura', 'Simulando captura de Pikachu...', 'info');
+
+                const captureData = {
+                    pokemonId: 25,
+                    action: 'capture',
+                    timestamp: Date.now(),
+                    payload: {
+                        pokemonName: 'pikachu',
+                        removed: false
+                    }
+                };
+
+                const response = await fetch(`${BACKEND_URL}/api/v1/sync-capture/`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(captureData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addResult('✅ Captura Sincronizada',
+                        `Status: ${response.status}<br>Dados enviados: <pre>${JSON.stringify(captureData, null, 2)}</pre>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'success');
+                } else {
+                    addResult('❌ Erro na Captura',
+                        `Status: ${response.status}<br>Dados enviados: <pre>${JSON.stringify(captureData, null, 2)}</pre>Erro: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'error');
+                }
+            } catch (error) {
+                addResult('❌ Erro na Captura',
+                    `Erro de rede: ${error.message}`,
+                    'error');
+            }
+        }
+
+        async function testSyncRemoval() {
+            try {
+                addResult('📤 Testando Remoção', 'Simulando remoção de Pikachu...', 'info');
+
+                const removalData = {
+                    pokemonId: 25,
+                    action: 'capture',
+                    timestamp: Date.now(),
+                    payload: {
+                        pokemonName: 'pikachu',
+                        removed: true
+                    }
+                };
+
+                const response = await fetch(`${BACKEND_URL}/api/v1/sync-capture/`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(removalData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addResult('✅ Remoção Sincronizada',
+                        `Status: ${response.status}<br>Dados enviados: <pre>${JSON.stringify(removalData, null, 2)}</pre>Resposta: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'success');
+                } else {
+                    addResult('❌ Erro na Remoção',
+                        `Status: ${response.status}<br>Dados enviados: <pre>${JSON.stringify(removalData, null, 2)}</pre>Erro: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'error');
+                }
+            } catch (error) {
+                addResult('❌ Erro na Remoção',
+                    `Erro de rede: ${error.message}`,
+                    'error');
+            }
+        }
+
+        async function testRanking() {
+            try {
+                addResult('🏆 Verificando Ranking', 'Buscando ranking atualizado...', 'info');
+
+                const response = await fetch(`${BACKEND_URL}/api/v1/ranking/?limit=5`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addResult('✅ Ranking Atualizado',
+                        `Status: ${response.status}<br>Pokémons no ranking: ${data.length}<br>Top 5: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'success');
+                } else {
+                    addResult('❌ Erro no Ranking',
+                        `Status: ${response.status}<br>Erro: <pre>${JSON.stringify(data, null, 2)}</pre>`,
+                        'error');
+                }
+            } catch (error) {
+                addResult('❌ Erro no Ranking',
+                    `Erro de rede: ${error.message}`,
+                    'error');
+            }
+        }
+
+        // Executar teste inicial
+        window.onload = function() {
+            addResult('🎯 Página Carregada',
+                `Teste iniciado em: ${new Date().toLocaleString()}<br>Backend URL: ${BACKEND_URL}<br>Clique nos botões acima para executar os testes.`,
+                'info');
+        };
+    </script>
+</body>
+</html>

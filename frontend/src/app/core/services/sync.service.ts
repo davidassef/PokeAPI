@@ -26,9 +26,15 @@ export class SyncService {
   }
 
   async addToQueue(action: SyncAction) {
-    const queue = (await this.storage.get(this.QUEUE_KEY)) || [];
-    queue.push(action);
-    await this.storage.set(this.QUEUE_KEY, queue);
+    try {
+      const queue = (await this.storage.get(this.QUEUE_KEY)) || [];
+      queue.push(action);
+      await this.storage.set(this.QUEUE_KEY, queue);
+      console.log('[SyncService] Ação adicionada à fila:', action);
+      console.log('[SyncService] Fila atual tem', queue.length, 'itens');
+    } catch (error) {
+      console.error('[SyncService] Erro ao adicionar à fila:', error);
+    }
   }
 
   startSyncLoop() {
@@ -40,25 +46,44 @@ export class SyncService {
   async syncPending() {
     if (this.syncing) return;
     this.syncing = true;
-    const queue = (await this.storage.get(this.QUEUE_KEY)) || [];
-    if (queue.length === 0) {
-      this.syncing = false;
-      return;
-    }
-    const stillPending = [];
-    for (const action of queue) {
-      try {
-        await this.pokeapi.syncCapture(action); // Implemente esse método no serviço
-      } catch {
-        stillPending.push(action);
+    
+    try {
+      const queue = (await this.storage.get(this.QUEUE_KEY)) || [];
+      if (queue.length === 0) {
+        this.syncing = false;
+        return;
       }
+      
+      console.log('[SyncService] Iniciando sincronização de', queue.length, 'ações');
+      const stillPending = [];
+      
+      for (const action of queue) {
+        try {
+          console.log('[SyncService] Sincronizando:', action);
+          await this.pokeapi.syncCapture(action);
+          console.log('[SyncService] Sucesso na sincronização da ação:', action.pokemonId);
+        } catch (error) {
+          console.error('[SyncService] Erro na sincronização:', error);
+          stillPending.push(action);
+        }
+      }
+      
+      await this.storage.set(this.QUEUE_KEY, stillPending);
+      console.log('[SyncService] Sincronização concluída.', stillPending.length, 'ações ainda pendentes');
+    } catch (error) {
+      console.error('[SyncService] Erro geral na sincronização:', error);
+    } finally {
+      this.syncing = false;
     }
-    await this.storage.set(this.QUEUE_KEY, stillPending);
-    this.syncing = false;
   }
 
   async getPendingCount(): Promise<number> {
     const queue = (await this.storage.get(this.QUEUE_KEY)) || [];
     return queue.length;
+  }
+
+  async forceSyncNow(): Promise<void> {
+    console.log('[SyncService] Forçando sincronização imediata...');
+    await this.syncPending();
   }
 }

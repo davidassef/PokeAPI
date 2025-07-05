@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { FavoritePokemon, Pokemon } from '../../models/pokemon.model';
+import { SyncAction, SyncService } from './sync.service';
 
 /**
  * Serviço para gerenciar Pokémons capturados
@@ -17,7 +18,7 @@ export class CapturedService {
 
   public captured$ = this.capturedSubject.asObservable();
 
-  constructor(private storage: Storage) {
+  constructor(private storage: Storage, private syncService: SyncService) {
     this.initStorage();
   }
 
@@ -55,16 +56,38 @@ export class CapturedService {
       const current = this.capturedSubject.value;
       const exists = current.some(c => c.pokemon_id === pokemon.id);
       if (exists) return false;
+
       const newCaptured: FavoritePokemon = {
         user_id: 1,
         pokemon_id: pokemon.id,
         pokemon_name: pokemon.name,
         created_at: new Date().toISOString()
       };
+
       const updated = [...current, newCaptured];
       await this.saveCaptured(updated);
+
+      // Adicionar à fila de sincronização
+      const syncAction: SyncAction = {
+        pokemonId: pokemon.id,
+        action: 'capture',
+        timestamp: Date.now(),
+        payload: {
+          pokemonName: pokemon.name,
+          removed: false
+        }
+      };
+      await this.syncService.addToQueue(syncAction);
+      console.log('[CapturedService] Adicionado à fila de sincronização:', syncAction);
+      
+      // Forçar sincronização imediata
+      setTimeout(() => {
+        this.syncService.forceSyncNow();
+      }, 1000);
+
       return true;
     } catch (error) {
+      console.error('[CapturedService] Erro ao adicionar captura:', error);
       return false;
     }
   }
@@ -72,11 +95,33 @@ export class CapturedService {
   async removeFromCaptured(pokemonId: number): Promise<boolean> {
     try {
       const current = this.capturedSubject.value;
+      const toRemove = current.find(c => c.pokemon_id === pokemonId);
+      if (!toRemove) return false;
+
       const updated = current.filter(c => c.pokemon_id !== pokemonId);
-      if (updated.length === current.length) return false;
       await this.saveCaptured(updated);
+
+      // Adicionar à fila de sincronização
+      const syncAction: SyncAction = {
+        pokemonId: pokemonId,
+        action: 'capture',
+        timestamp: Date.now(),
+        payload: {
+          pokemonName: toRemove.pokemon_name,
+          removed: true
+        }
+      };
+      await this.syncService.addToQueue(syncAction);
+      console.log('[CapturedService] Remoção adicionada à fila de sincronização:', syncAction);
+      
+      // Forçar sincronização imediata
+      setTimeout(() => {
+        this.syncService.forceSyncNow();
+      }, 1000);
+
       return true;
     } catch (error) {
+      console.error('[CapturedService] Erro ao remover captura:', error);
       return false;
     }
   }
