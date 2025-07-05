@@ -7,7 +7,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
-    "build:prod": "ng build --configuration production && echo '/*    /index.html   200' > www/_redirects",
+    "build:prod": "ng build --configuration production && echo /*    /index.html   200 > www/_redirects",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"

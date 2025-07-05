@@ -1,8 +1,14 @@
 """
 Aplicação principal FastAPI - PokeAPI Backend.
 """
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import time
+
+# Configurar logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Configuração básica
 app = FastAPI(
@@ -11,13 +17,36 @@ app = FastAPI(
     description="Backend API para aplicativo Pokédex com Ionic + Angular"
 )
 
+# Middleware para logging de requisições
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+
+    # Log da requisição
+    logger.info(f"🔍 {request.method} {request.url}")
+    logger.info(f"📋 Headers: {dict(request.headers)}")
+
+    response = await call_next(request)
+
+    # Log da resposta
+    process_time = time.time() - start_time
+    logger.info(f"✅ {request.method} {request.url} - Status: {response.status_code} - Time: {process_time:.2f}s")
+
+    return response
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://pokeapi-frontend.onrender.com",
+        "https://pokeapi-frontend-onrender-com.onrender.com",  # Possível variação
         "http://localhost:8100",  # Para desenvolvimento local Ionic
-        "http://localhost:4200"   # Para desenvolvimento local Angular
+        "http://localhost:4200",  # Para desenvolvimento local Angular
+        "http://127.0.0.1:8100",  # Variação localhost
+        "http://127.0.0.1:4200",  # Variação localhost
+        "*"  # Temporariamente permitir todos os origins para debug
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -67,12 +96,12 @@ async def reset_database():
     try:
         from app.core.database import engine
         from app.models.models import Base
-        
+
         # Drop todas as tabelas
         Base.metadata.drop_all(bind=engine)
         # Recria todas as tabelas
         Base.metadata.create_all(bind=engine)
-        
+
         return {"message": "Database resetado com sucesso", "status": "success"}
     except Exception as e:
         return {"message": f"Erro ao resetar database: {str(e)}", "status": "error"}
@@ -84,9 +113,9 @@ async def seed_initial_data():
     try:
         from app.core.database import get_db
         from app.models.models import User, PokemonRanking
-        
+
         db = next(get_db())
-        
+
         # Criar usuário padrão se não existir
         existing_user = db.query(User).filter(User.email == "admin@pokeapi.com").first()
         if not existing_user:
@@ -99,7 +128,7 @@ async def seed_initial_data():
             db.refresh(default_user)
         else:
             default_user = existing_user
-        
+
         # Adicionar alguns favoritos/ranking iniciais populares
         popular_pokemon_list = [
             {"pokemon_id": 25, "pokemon_name": "pikachu"},
@@ -113,13 +142,13 @@ async def seed_initial_data():
             {"pokemon_id": 94, "pokemon_name": "gengar"},
             {"pokemon_id": 130, "pokemon_name": "gyarados"}
         ]
-        
+
         for i, poke_data in enumerate(popular_pokemon_list):
             # Criar entrada de ranking se não existir
             existing_ranking = db.query(PokemonRanking).filter(
                 PokemonRanking.pokemon_id == poke_data["pokemon_id"]
             ).first()
-            
+
             if not existing_ranking:
                 ranking_entry = PokemonRanking(
                     pokemon_id=poke_data["pokemon_id"],
@@ -127,9 +156,9 @@ async def seed_initial_data():
                     favorite_count=10 - i  # Começar com contagens decrescentes
                 )
                 db.add(ranking_entry)
-        
+
         db.commit()
-        
+
         return {
             "message": "Dados iniciais populados com sucesso",
             "status": "success",

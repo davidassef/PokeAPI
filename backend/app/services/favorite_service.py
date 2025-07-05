@@ -81,6 +81,26 @@ class FavoriteService:
     @staticmethod
     def get_ranking(db: Session, limit: int = 10) -> list[dict]:
         """Busca ranking dos Pokémons mais capturados (não favoritados)."""
+        # Primeiro, vamos buscar do PokemonRanking se existir
+        ranking_records = db.query(PokemonRanking).order_by(
+            PokemonRanking.favorite_count.desc()
+        ).limit(limit).all()
+
+        if ranking_records:
+            # Se há dados na tabela PokemonRanking, use-os
+            rankings = []
+            for record in ranking_records:
+                ranking = {
+                    'id': record.id,
+                    'pokemon_id': record.pokemon_id,
+                    'pokemon_name': record.pokemon_name,
+                    'favorite_count': record.favorite_count,
+                    'last_updated': record.last_updated
+                }
+                rankings.append(ranking)
+            return rankings
+
+        # Se não há dados no PokemonRanking, gera dinamicamente a partir dos favoritos
         capture_counts = db.query(
             FavoritePokemon.pokemon_id,
             FavoritePokemon.pokemon_name,
@@ -94,9 +114,9 @@ class FavoriteService:
 
         rankings = []
         now = datetime.now()
-        for pokemon_id, pokemon_name, capture_count in capture_counts:
+        for i, (pokemon_id, pokemon_name, capture_count) in enumerate(capture_counts):
             ranking = {
-                'id': 0,  # Valor dummy
+                'id': i + 1,  # ID sequencial
                 'pokemon_id': pokemon_id,
                 'pokemon_name': pokemon_name,
                 'favorite_count': capture_count,
@@ -107,8 +127,7 @@ class FavoriteService:
         return rankings
 
     @staticmethod
-    def _update_ranking_from_captures(db: Session, pokemon_id: int, pokemon_name: str,
-                        increment: bool = True):
+    def _update_ranking_from_captures(db: Session, pokemon_id: int, pokemon_name: str, increment: bool = True):
         """Atualiza ranking do Pokémon baseado em capturas."""
         # Este método agora é usado apenas para manter compatibilidade
         # O ranking real é calculado dinamicamente em get_ranking()
@@ -118,7 +137,7 @@ class FavoriteService:
     def get_stats(db: Session) -> dict:
         """Busca estatísticas gerais baseadas em capturas."""
         total_captures = db.query(FavoritePokemon).count()
-        
+
         # Busca o Pokémon mais capturado
         most_captured = db.query(
             FavoritePokemon.pokemon_id,

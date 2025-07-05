@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Conexão Backend</title>
+</head>
+<body>
+    <h1>Teste de Conexão com Backend</h1>
+    <button onclick="testBackend()">Testar Backend</button>
+    <div id="results"></div>
+
+    <script>
+        async function testBackend() {
+            const resultsDiv = document.getElementById('results');
+            const backendUrl = 'https://pokeapi-la6k.onrender.com';
+
+            try {
+                // Teste 1: Health check
+                console.log('Testando health check...');
+                const healthResponse = await fetch(`${backendUrl}/health`);
+                console.log('Health status:', healthResponse.status);
+                const healthData = await healthResponse.json();
+                console.log('Health data:', healthData);
+
+                // Teste 2: Ranking
+                console.log('Testando ranking...');
+                const rankingResponse = await fetch(`${backendUrl}/api/v1/ranking/`);
+                console.log('Ranking status:', rankingResponse.status);
+                const rankingData = await rankingResponse.json();
+                console.log('Ranking data:', rankingData);
+
+                // Mostrar resultados
+                resultsDiv.innerHTML = `
+                    <h2>Resultados:</h2>
+                    <p><strong>Health Check:</strong> ${healthResponse.status} - ${JSON.stringify(healthData)}</p>
+                    <p><strong>Ranking:</strong> ${rankingResponse.status} - ${JSON.stringify(rankingData)}</p>
+                `;
+
+            } catch (error) {
+                console.error('Erro:', error);
+                resultsDiv.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
