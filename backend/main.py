@@ -82,13 +82,14 @@ app.add_middleware(
 try:
     from app.core.database import engine
     from app.models.models import Base
-    from app.routes import users, favorites, ranking, pokemon, sync_capture, admin, pull_sync
+    from app.routes import users, favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth
 
     # Criar tabelas vazias (sem dados iniciais)
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
     Base.metadata.create_all(bind=engine)
 
     # Incluir rotas
+    app.include_router(auth.router, prefix="/api/v1")
     app.include_router(users.router, prefix="/api/v1")
     app.include_router(favorites.router, prefix="/api/v1")
     app.include_router(ranking.router, prefix="/api/v1")

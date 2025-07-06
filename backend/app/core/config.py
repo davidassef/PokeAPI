@@ -1,6 +1,8 @@
 """
 Configurações principais do backend PokeAPI App.
 """
+import os
+import secrets
 from pydantic_settings import BaseSettings
 
 
@@ -26,8 +28,10 @@ class Settings(BaseSettings):
     # External APIs
     pokeapi_base_url: str = "https://pokeapi.co/api/v2"
 
-    # Secrets
-    secret_key: str = "your-secret-key-here"
+    # JWT Configuration
+    secret_key: str = os.getenv("SECRET_KEY", secrets.token_urlsafe(32))
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
 
     class Config:
         env_file = ".env"

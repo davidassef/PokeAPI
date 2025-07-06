@@ -39,27 +39,44 @@ O **PokeAPIApp** é uma aplicação full-stack moderna que permite aos usuários
 
 ## 🏗️ Arquitetura
 
+### 📁 Estrutura do Projeto
+```
+PokeAPIApp/
+├── 📁 backend/                    # Aplicação FastAPI
+├── 📁 frontend/                   # Aplicação Ionic + Angular
+├── 📁 config/                     # Configurações de deploy
+├── 📁 data/                       # Bancos de dados
+├── 📁 docs/                       # Documentação completa
+├── 📁 scripts/                    # Scripts de automação
+│   ├── 📁 build/                  # Scripts de build
+│   ├── 📁 database/               # Scripts de banco de dados
+│   ├── 📁 deployment/             # Scripts de deploy
+│   └── 📁 sync/                   # Scripts de sincronização
+└── 📁 tests/                      # Testes end-to-end
+```
+
 ### Frontend (Ionic + Angular)
 ```
-frontend/
-├── src/app/
-│   ├── core/           # Serviços principais
-│   ├── shared/         # Componentes e pipes reutilizáveis
-│   ├── pages/          # Páginas da aplicação
-│   ├── models/         # Modelos TypeScript
-│   └── assets/         # Recursos estáticos
+frontend/src/app/
+├── core/              # Serviços principais
+├── shared/            # Componentes e pipes reutilizáveis
+├── pages/             # Páginas da aplicação
+├── models/            # Modelos TypeScript
+└── services/          # Serviços Angular
 ```
 
 ### Backend (FastAPI + SQLAlchemy)
 ```
-backend/
-├── app/
-│   ├── core/           # Configurações e database
-│   ├── models/         # Modelos SQLAlchemy
-│   ├── routes/         # Endpoints da API
-│   ├── schemas/        # Esquemas Pydantic
-│   └── services/       # Lógica de negócio
+backend/app/
+├── core/              # Configurações e database
+├── models/            # Modelos SQLAlchemy
+├── routes/            # Endpoints da API
+├── schemas/           # Esquemas Pydantic
+├── services/          # Lógica de negócio
+└── utils/             # Funções utilitárias
 ```
+
+> 📖 **Documentação Completa**: Consulte [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) para detalhes da estrutura
 
 ---
 
@@ -162,6 +179,21 @@ ionic serve
 - **Frontend**: http://localhost:8100
 - **Backend API**: http://localhost:8000
 - **Documentação API**: http://localhost:8000/docs
+
+### 🚀 Quick Start
+```bash
+# Método rápido - usar o script interativo
+./quick-start.sh
+
+# Ou configurar manualmente
+./scripts/setup-workspace.sh
+```
+
+### 🎯 VS Code Workspace
+```bash
+# Abrir o workspace configurado no VS Code
+code PokeAPIApp.code-workspace
+```
 
 ---
 

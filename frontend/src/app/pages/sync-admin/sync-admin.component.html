@@ -107,6 +107,11 @@
           Sync em Background
         </ion-button>
 
+        <ion-button expand="block" color="warning" (click)="forceSyncCompleteWithVerification()" [disabled]="loading">
+          <ion-icon name="shield-checkmark" slot="start"></ion-icon>
+          Sincronização Completa com Verificação
+        </ion-button>
+
         <ion-button expand="block" color="success" (click)="runFullSyncTest()" [disabled]="loading">
           <ion-icon name="checkmark-circle" slot="start"></ion-icon>
           Teste Completo

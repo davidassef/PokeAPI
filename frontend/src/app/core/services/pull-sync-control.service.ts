@@ -247,4 +247,18 @@ export class PullSyncControlService {
   getCurlCommands(): any {
     return this.syncConfig.getCurlCommands();
   }
+
+  /**
+   * Força sincronização completa com verificação de consistência
+   * Garante que o banco reflita exatamente o que está nos clientes
+   */
+  forceSyncCompleteWithVerification(): Observable<any> {
+    const endpoint = this.syncConfig.getPullSyncEndpoints().syncCompleteState;
+
+    if (this.syncConfig.isDebugMode()) {
+      console.log('[PullSyncControl] 🔍 Forçando sincronização completa com verificação de consistência...');
+    }
+
+    return this.http.post(endpoint, {});
+  }
 }

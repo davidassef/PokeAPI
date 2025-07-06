@@ -81,6 +81,7 @@ export class SyncConfigService {
       syncAll: `${backendUrl}/api/v1/pull-sync/sync-all`,
       syncRecent: `${backendUrl}/api/v1/pull-sync/sync-recent`,
       syncBackground: `${backendUrl}/api/v1/pull-sync/sync-all-background`,
+      syncCompleteState: `${backendUrl}/api/v1/pull-sync/sync-complete-state`,
 
       // Gerenciamento de clientes
       registerClient: `${backendUrl}/api/v1/pull-sync/register-client`,
@@ -116,6 +117,7 @@ export class SyncConfigService {
       forceSyncAll: `curl -X POST ${endpoints.syncAll} -H "Content-Type: application/json" -d '{}'`,
       forceSyncRecent: `curl -X POST ${endpoints.syncRecent} -H "Content-Type: application/json"`,
       forceSyncBackground: `curl -X POST ${endpoints.syncBackground} -H "Content-Type: application/json"`,
+      forceSyncCompleteState: `curl -X POST ${endpoints.syncCompleteState} -H "Content-Type: application/json" -d '{}'`,
 
       // Verificar status
       checkPullStatus: `curl -X GET ${endpoints.pullStatus}`,

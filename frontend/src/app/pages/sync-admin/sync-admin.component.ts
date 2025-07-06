@@ -121,6 +121,39 @@ export class SyncAdminComponent implements OnInit {
     }
   }
 
+  async forceSyncCompleteWithVerification() {
+    this.loading = true;
+    try {
+      const result = await this.pullSyncControl.forceSyncCompleteWithVerification().toPromise();
+      await this.showToast('Sincronização completa com verificação executada com sucesso!', 'success');
+      await this.loadAllStatus();
+      console.log('Resultado da sincronização com verificação:', result);
+
+      // Mostrar detalhes do resultado em um alert
+      if (result.success) {
+        const alert = await this.alertController.create({
+          header: 'Sincronização Completa',
+          message: `
+            <p><strong>Clientes consultados:</strong> ${result.clients_consulted}</p>
+            <p><strong>Pokémons nos clientes:</strong> ${result.total_captured_in_clients}</p>
+            <p><strong>Pokémons no banco:</strong> ${result.total_in_database}</p>
+            <p><strong>Adicionados:</strong> ${result.added_to_database}</p>
+            <p><strong>Removidos:</strong> ${result.removed_from_database}</p>
+            <p><strong>Tempo de processamento:</strong> ${result.processing_time?.toFixed(2)}s</p>
+            ${result.client_errors?.length > 0 ? `<p><strong>Erros:</strong> ${result.client_errors.join(', ')}</p>` : ''}
+          `,
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
+    } catch (error) {
+      await this.showToast('Erro ao executar sincronização completa com verificação', 'danger');
+      console.error('Erro na sincronização com verificação:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
   async startBackgroundSync() {
     this.loading = true;
     try {

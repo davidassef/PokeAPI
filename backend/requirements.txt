@@ -11,6 +11,12 @@ pydantic==2.10.2
 pydantic-settings==2.6.1
 email-validator==2.1.1
 
+# Authentication
+PyJWT==2.8.0
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+
 # HTTP Requests
 httpx==0.25.2
 aiohttp==3.9.1

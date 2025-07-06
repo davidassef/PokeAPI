@@ -38,7 +38,7 @@ app/routes/
 
 ### Storage
 - **Arquivo**: `client_storage.json`
-- **Estrutura**: 
+- **Estrutura**:
   ```json
   {
     "clients": {"user_1": [1, 25, 150]},
@@ -80,7 +80,7 @@ app/routes/
 ### Exemplo
 ```
 Pikachu (ID: 25)    - 3 capturas  → 1º lugar
-Bulbasaur (ID: 1)   - 2 capturas  → 2º lugar  
+Bulbasaur (ID: 1)   - 2 capturas  → 2º lugar
 Charizard (ID: 6)   - 2 capturas  → 3º lugar (ID menor que Squirtle)
 Squirtle (ID: 7)    - 2 capturas  → 4º lugar
 ```
@@ -229,7 +229,7 @@ BACKEND_URL=http://localhost:8000  # URL do backend
 
 ### Métricas Importantes
 - **Clientes conectados**: Número de clientes registrados
-- **Capturas totais**: Soma de todas as capturas de todos os clientes  
+- **Capturas totais**: Soma de todas as capturas de todos os clientes
 - **Pokémons únicos**: Quantidade de pokémons diferentes capturados
 - **Última sincronização**: Timestamp da última atualização
 
@@ -276,4 +276,4 @@ BACKEND_URL=http://localhost:8000  # URL do backend
 
 ---
 
-**Dúvidas ou sugestões? Consulte este documento ou abra uma issue!** 
+**Dúvidas ou sugestões? Consulte este documento ou abra uma issue!**

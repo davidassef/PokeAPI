@@ -51,7 +51,7 @@ def debug_database():
         users = db.query(User).all()
         print(f"📊 Total de usuários: {len(users)}")
         for user in users:
-            print(f"  - {user.id}: {user.username} ({user.email})")
+            print(f"  - {user.id}: {user.name} ({user.email})")
 
         # Verificar dados de favoritos
         print("\n⭐ Verificando favoritos...")
