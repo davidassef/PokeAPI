@@ -59,8 +59,9 @@ EOF
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  apiUrl: 'https://pokeapi-la6k.onrender.com'  // Backend em produção
+  production: true,
+  apiUrl: 'https://pokeapi-la6k.onrender.com',  // Backend em produção
+  clientServerUrl: 'https://pokemonapp-client-server.onrender.com'  // Client-server em produção
 };
 
 /*
@@ -76,12 +77,11 @@ EOF
     echo "✅ Configurado para produção!"
     echo ""
     echo "📋 Configuração ativa:"
-    echo "   • Frontend: http://localhost:8100"
+    echo "   • Frontend: Deploy estático"
     echo "   • Backend: https://pokeapi-la6k.onrender.com"
-    echo "   • Client-Server: ❌ Desabilitado"
+    echo "   • Client-Server: https://pokemonapp-client-server.onrender.com"
     echo ""
-    echo "🚀 Para iniciar:"
-    echo "   cd frontend && npm run start:frontend-only"
+    echo "🚀 Deploy automático após commit!"
     ;;
 
   3)

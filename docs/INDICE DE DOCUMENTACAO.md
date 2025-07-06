@@ -14,19 +14,24 @@
    - Deploy estático vs web service
    - Monitoramento e troubleshooting
 
-3. **[Estrutura do Projeto](03_ESTRUTURA_PROJETO.md)**
+3. **[Deploy do Client-Server](DEPLOY_CLIENT_SERVER.md)**
+   - Deploy no Render
+   - Configuração de variáveis de ambiente
+   - Testes de integração
+
+4. **[Estrutura do Projeto](03_ESTRUTURA_PROJETO.md)**
    - Organização de pastas
    - Arquitetura do sistema
    - Convenções de código
 
 ### 🛠️ Para Administradores
 
-4. **[Endpoints Admin](../backend/docs/04_ENDPOINTS_ADMIN.md)**
+5. **[Endpoints Admin](../backend/docs/04_ENDPOINTS_ADMIN.md)**
    - Gerenciar banco de dados
    - Limpar dados de teste
    - Monitorar sistema
 
-5. **[Sistema de Ranking](04_SISTEMA_RANKING.md)**
+6. **[Sistema de Ranking](04_SISTEMA_RANKING.md)**
    - Como funciona o ranking
    - Sincronização de dados
    - Métricas e estatísticas

@@ -1,18 +1,18 @@
+import { environment } from '../../../environments/environment';
+
 /**
  * Configuração para suprimir avisos conhecidos e não críticos
  */
 export const APP_CONFIG = {
   // Modo de desenvolvimento
-  isDevelopment: window.location.hostname === 'localhost' ||
-                window.location.hostname === '127.0.0.1' ||
-                window.location.hostname === '0.0.0.0',
+  isDevelopment: !environment.production,
 
   // Configurações de sincronização baseadas no ambiente
   sync: {
-    // Em produção (deploy estático), usa apenas push para o backend
-    enableClientServer: window.location.hostname === 'localhost',
-    clientServerUrl: 'http://localhost:3001',
-    fallbackToBackendOnly: true,
+    // Em produção, agora também temos client-server deployado
+    enableClientServer: true, // Sempre habilitado agora
+    clientServerUrl: environment.clientServerUrl || 'http://localhost:3001',
+    fallbackToBackendOnly: false, // Não precisamos mais de fallback
     maxRetries: 2
   },
 
