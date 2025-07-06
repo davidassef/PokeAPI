@@ -44,7 +44,7 @@ fi
 
 echo ""
 echo "3️⃣ Testando Backend (verificar se está rodando)..."
-response=$(curl -s -w "HTTP_CODE:%{http_code}" "$BACKEND_URL/api/admin/clients")
+response=$(curl -s -w "HTTP_CODE:%{http_code}" "$BACKEND_URL/api/v1/pull-sync/registered-clients")
 http_code=$(echo "$response" | grep -o "HTTP_CODE:[0-9]*" | cut -d: -f2)
 body=$(echo "$response" | sed 's/HTTP_CODE:[0-9]*$//')
 
@@ -80,7 +80,7 @@ curl -s -X POST "$CLIENT_SERVER_URL/api/client/sync-data" \
 
 # Depois, verificar se o backend consegue fazer pull
 echo "   Verificando se o backend consegue fazer pull..."
-response=$(curl -s -w "HTTP_CODE:%{http_code}" "$BACKEND_URL/api/admin/sync/pull")
+response=$(curl -s -w "HTTP_CODE:%{http_code}" -X POST "$BACKEND_URL/api/v1/pull-sync/sync-all")
 http_code=$(echo "$response" | grep -o "HTTP_CODE:[0-9]*" | cut -d: -f2)
 body=$(echo "$response" | sed 's/HTTP_CODE:[0-9]*$//')
 
@@ -100,9 +100,9 @@ echo ""
 echo "Endpoints testados:"
 echo "   Health Check: $CLIENT_SERVER_URL/api/client/health"
 echo "   Sync Data: $CLIENT_SERVER_URL/api/client/sync-data"
-echo "   Backend Clients: $BACKEND_URL/api/admin/clients"
+echo "   Backend Clients: $BACKEND_URL/api/v1/pull-sync/registered-clients"
 echo "   Frontend: $FRONTEND_URL"
-echo "   Integração: $BACKEND_URL/api/admin/sync/pull"
+echo "   Integração: $BACKEND_URL/api/v1/pull-sync/sync-all"
 
 echo ""
 echo "🔄 Para re-executar este teste:"
