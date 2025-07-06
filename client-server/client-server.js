@@ -15,7 +15,7 @@ class ClientServer {
     this.isProduction = process.env.NODE_ENV === 'production';
 
     // URL do backend para registro
-    this.backendUrl = this.isProduction 
+    this.backendUrl = this.isProduction
       ? 'https://pokeapi-la6k.onrender.com'
       : 'http://localhost:8000';
 
@@ -248,10 +248,10 @@ class ClientServer {
 
   start() {
     this.app.listen(this.port, '0.0.0.0', () => {
-      const clientUrl = this.isProduction 
+      const clientUrl = this.isProduction
         ? `https://pokemonapp-client-server.onrender.com`
         : `http://localhost:${this.port}`;
-        
+
       console.log(`[ClientServer] Servidor do cliente executando na porta ${this.port}`);
       console.log(`[ClientServer] Environment: ${this.isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
       console.log(`[ClientServer] Health check: ${clientUrl}/api/client/health`);
@@ -267,7 +267,7 @@ class ClientServer {
       // Importar fetch dinamicamente
       const fetch = await import('node-fetch').then(m => m.default);
 
-      const clientUrl = this.isProduction 
+      const clientUrl = this.isProduction
         ? `https://pokemonapp-client-server.onrender.com`
         : `http://localhost:${this.port}`;
 
