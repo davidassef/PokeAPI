@@ -61,7 +61,7 @@ EOF
 export const environment = {
   production: true,
   apiUrl: 'https://pokeapi-la6k.onrender.com',  // Backend em produção
-  clientServerUrl: 'https://pokemonapp-client-server.onrender.com'  // Client-server em produção
+  clientServerUrl: 'https://pokeapiapp-client-server.onrender.com'  // Client-server em produção
 };
 
 /*
@@ -79,7 +79,7 @@ EOF
     echo "📋 Configuração ativa:"
     echo "   • Frontend: Deploy estático"
     echo "   • Backend: https://pokeapi-la6k.onrender.com"
-    echo "   • Client-Server: https://pokemonapp-client-server.onrender.com"
+    echo "   • Client-Server: https://pokeapiapp-client-server.onrender.com"
     echo ""
     echo "🚀 Deploy automático após commit!"
     ;;

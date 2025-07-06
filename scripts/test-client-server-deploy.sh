@@ -4,7 +4,7 @@
 echo "🧪 Testando Client-Server em produção..."
 
 # URLs dos serviços
-CLIENT_SERVER_URL="https://pokemonapp-client-server.onrender.com"
+CLIENT_SERVER_URL="https://pokeapiapp-client-server.onrender.com"
 BACKEND_URL="https://pokeapi-la6k.onrender.com"
 FRONTEND_URL="https://pokemonapp-frontend.onrender.com"
 
