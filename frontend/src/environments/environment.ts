@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8000'  // Backend local para desenvolvimento
+  apiUrl: 'https://pokeapi-la6k.onrender.com'  // Backend em produção
 };
 
 /*
