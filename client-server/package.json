@@ -1,0 +1,29 @@
+{
+  "name": "pokemonapp-client-server",
+  "version": "1.0.0",
+  "description": "Client Server for Pokemon App - Exposes local storage via API for backend sync",
+  "main": "client-server.js",
+  "scripts": {
+    "start": "node client-server.js",
+    "dev": "nodemon client-server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "pokemon",
+    "client-server",
+    "sync",
+    "api"
+  ],
+  "author": "Pokemon App",
+  "license": "MIT"
+}
