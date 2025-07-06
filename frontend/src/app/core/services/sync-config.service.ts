@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { APP_CONFIG } from '../config/app.config';
 
 /**
  * Serviço de configuração para controlar o tipo de sincronização
@@ -9,10 +10,10 @@ import { Injectable } from '@angular/core';
 })
 export class SyncConfigService {
 
-  // Configuração: usar apenas sistema pull-based para evitar duplicação
-  private readonly USE_PULL_SYNC_ONLY = true;
-  private readonly USE_PUSH_SYNC = false;
-  private readonly STRICT_MODE = true; // Garante que apenas um sistema esteja ativo
+  // Configuração baseada no ambiente
+  private readonly USE_PULL_SYNC_ONLY = APP_CONFIG.sync.enableClientServer;
+  private readonly USE_PUSH_SYNC = true; // Sempre disponível como fallback
+  private readonly STRICT_MODE = !APP_CONFIG.isDevelopment; // Em produção, só um sistema
 
   /**
    * Verifica se deve usar o sistema push (original)
@@ -61,13 +62,17 @@ export class SyncConfigService {
    * Configuração de URLs para o sistema pull
    */
   getClientServerUrl(): string {
-    return 'http://localhost:3001';
+    return APP_CONFIG.sync.clientServerUrl;
   }
 
   /**
    * Configuração de URLs para o sistema push
    */
   getBackendUrl(): string {
+    // Em produção, usa a URL do environment
+    if (!APP_CONFIG.isDevelopment) {
+      return 'https://pokeapi-la6k.onrender.com';
+    }
     return 'http://localhost:8000';
   }
 

@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
 import { MusicPlayerComponent } from './music-player/music-player.component';
 import { SearchFilterComponent } from './search-filter/search-filter.component';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
+import { ErrorNotificationComponent } from './error-notification/error-notification.component';
 
 // Shared Modules
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -23,7 +24,8 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     LoadingSpinnerComponent,
     MusicPlayerComponent,
     SearchFilterComponent,
-    SidebarMenuComponent
+    SidebarMenuComponent,
+    ErrorNotificationComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -40,6 +42,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     MusicPlayerComponent,
     SearchFilterComponent,
     SidebarMenuComponent,
+    ErrorNotificationComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,

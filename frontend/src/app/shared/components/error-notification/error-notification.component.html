@@ -1,0 +1,38 @@
+<!-- Contêiner de notificações de erro -->
+<div class="error-notifications-container">
+  <ion-card
+    *ngFor="let error of errors"
+    class="error-notification"
+    [class.error-type-error]="error.type === 'error'"
+    [class.error-type-warning]="error.type === 'warning'"
+    [class.error-type-info]="error.type === 'info'">
+
+    <ion-card-content>
+      <div class="error-content">
+        <div class="error-icon">
+          <ion-icon
+            [name]="getIcon(error.type)"
+            [color]="getIconColor(error.type)">
+          </ion-icon>
+        </div>
+
+        <div class="error-message">
+          <p>{{ error.message }}</p>
+          <small class="error-timestamp">
+            {{ error.timestamp | date:'HH:mm:ss' }}
+          </small>
+        </div>
+
+        <div class="error-actions" *ngIf="error.dismissible">
+          <ion-button
+            fill="clear"
+            size="small"
+            (click)="dismissError(error.id)"
+            color="medium">
+            <ion-icon name="close" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>

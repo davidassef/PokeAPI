@@ -76,7 +76,7 @@ backend/app/
 └── utils/             # Funções utilitárias
 ```
 
-> 📖 **Documentação Completa**: Consulte [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) para detalhes da estrutura
+> 📖 **Documentação Completa**: Consulte [`docs/README.md`](docs/README.md) para todos os guias essenciais
 
 ---
 

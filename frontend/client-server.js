@@ -190,6 +190,26 @@ class ClientServer {
         res.status(500).json({ error: 'Erro interno do servidor' });
       }
     });
+
+    // Endpoint para forçar reload dos dados
+    this.app.post('/api/client/reload-data', (req, res) => {
+      try {
+        console.log('[ClientServer] 🔄 Forçando reload dos dados...');
+        this.loadSyncData();
+
+        const response = {
+          message: 'Dados recarregados com sucesso',
+          total_captures: this.syncData.captures.length,
+          last_sync: this.syncData.last_sync
+        };
+
+        console.log('[ClientServer] ✅ Reload concluído:', response);
+        res.json(response);
+      } catch (error) {
+        console.error('[ClientServer] Erro ao recarregar dados:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+      }
+    });
   }
 
   loadSyncData() {

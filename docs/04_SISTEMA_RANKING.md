@@ -139,11 +139,16 @@ Frontend consulta ranking → Exibe top 10 → Auto-refresh a cada minuto
 
 ### Inicialização
 ```bash
-# Frontend (Angular/Ionic)
+# Frontend + Client-server (integrado)
+cd frontend
 npm start
 
+# Ou separadamente:
+# Frontend (Angular/Ionic)
+npm run start:frontend
+
 # Client-server (Node.js)
-node client-server.js
+npm run start:client-server
 ```
 
 ---

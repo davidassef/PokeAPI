@@ -287,20 +287,38 @@ class PullSyncService:
                     client_data = response.json()
                     captures = client_data.get('captures', [])
 
-                    # Processar apenas capturas ativas (não removidas)
-                    for capture in captures:
+                    # Processar capturas cronologicamente para determinar estado final
+                    # Agrupar por pokemon_id e processar em ordem cronológica
+                    pokemon_states = {}
+
+                    # Ordenar capturas por timestamp
+                    sorted_captures = sorted(captures, key=lambda c: c.get('timestamp', ''))
+
+                    for capture in sorted_captures:
+                        pokemon_id = capture['pokemon_id']
+                        action = capture.get('action', '')
                         metadata = capture.get('metadata', {})
                         is_removed = metadata.get('removed', False)
 
-                        if not is_removed and capture.get('action') in ('capture', 'favorite'):
+                        # Processar apenas ações relevantes
+                        if action in ('capture', 'favorite', 'remove'):
+                            if action == 'remove' or is_removed:
+                                # Marcar como removido
+                                pokemon_states[pokemon_id] = False
+                            else:
+                                # Marcar como capturado
+                                pokemon_states[pokemon_id] = True
+
+                    # Adicionar apenas Pokémons que estão no estado final "capturado"
+                    for pokemon_id, is_captured in pokemon_states.items():
+                        if is_captured:
                             # Mapear user_id string para int
                             mapped_user_id = 1  # Por enquanto fixo
-                            all_client_captures.add((mapped_user_id, capture['pokemon_id']))
+                            all_client_captures.add((mapped_user_id, pokemon_id))
 
-                    # Contar capturas ativas
-                    active_captures = [c for c in captures
-                                       if not c.get('metadata', {}).get('removed', False)]
-                    logger.info("📱 Cliente %s: %d capturas ativas", user_id, len(active_captures))
+                    # Contar capturas ativas baseado no estado final
+                    active_captures = sum(1 for is_captured in pokemon_states.values() if is_captured)
+                    logger.info("📱 Cliente %s: %d capturas ativas", user_id, active_captures)
 
                 else:
                     logger.warning(f"❌ Cliente {registration.client_url} retornou erro {response.status_code}")

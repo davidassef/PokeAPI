@@ -6,6 +6,8 @@ import { FavoritePokemon, Pokemon } from '../../models/pokemon.model';
 import { SyncAction, SyncService } from './sync.service';
 import { ClientSyncService } from './client-sync.service';
 import { SyncConfigService } from './sync-config.service';
+import { ErrorHandlerService } from './error-handler.service';
+import { ConnectionService } from './connection.service';
 
 /**
  * Serviço para gerenciar Pokémons capturados
@@ -26,7 +28,9 @@ export class CapturedService {
     private syncService: SyncService,
     private clientSyncService: ClientSyncService,
     private http: HttpClient,
-    private syncConfig: SyncConfigService
+    private syncConfig: SyncConfigService,
+    private errorHandler: ErrorHandlerService,
+    private connectionService: ConnectionService
   ) {
     this.initStorage();
   }
@@ -205,21 +209,44 @@ export class CapturedService {
    * Envia captura para o servidor do cliente (sistema pull)
    */
   private async sendToClientServer(pokemonId: number, pokemonName: string, action: string, removed: boolean): Promise<void> {
+    // Verificar se o servidor está acessível antes de tentar
+    if (!this.connectionService.isServerReachable()) {
+      if (this.syncConfig.isDebugMode()) {
+        console.warn('[CapturedService] ⚠️ Servidor não está acessível, pulando sincronização');
+      }
+      return;
+    }
+
     try {
       const clientServerUrl = this.syncConfig.getClientServerUrl();
 
-      await this.http.post(`${clientServerUrl}/api/client/add-capture`, {
+      // Timeout mais curto para evitar demora excessiva
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout')), 3000);
+      });
+
+      const requestPromise = this.http.post(`${clientServerUrl}/api/client/add-capture`, {
         pokemon_id: pokemonId,
         pokemon_name: pokemonName,
         action: action,
         removed: removed
       }).toPromise();
 
+      await Promise.race([requestPromise, timeoutPromise]);
+
       if (this.syncConfig.isDebugMode()) {
         console.log(`[CapturedService] 📡 Captura enviada para ${clientServerUrl} (pull-based)`);
       }
     } catch (error) {
-      console.error('[CapturedService] ❌ Erro ao enviar para servidor do cliente:', error);
+      if (this.syncConfig.isDebugMode()) {
+        console.warn('[CapturedService] ⚠️ Erro na sincronização, será tentado novamente');
+      }
+
+      // Força uma verificação da conectividade
+      this.connectionService.forceCheck();
+
+      // Não gerar erro crítico - apenas log de aviso
+      // O Pokemon já foi salvo localmente, então a funcionalidade continua
     }
   }
 }
