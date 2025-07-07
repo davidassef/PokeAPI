@@ -268,7 +268,7 @@ class ClientServer {
       const fetch = await import('node-fetch').then(m => m.default);
 
       const clientUrl = this.isProduction
-        ? `https://pokemonapp-client-server.onrender.com`
+        ? `https://pokeapiapp-client-server.onrender.com`
         : `http://localhost:${this.port}`;
 
       const registrationData = {
