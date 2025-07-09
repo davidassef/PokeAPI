@@ -2,6 +2,9 @@
 Dependências para autenticação JWT.
 """
 import logging
+from datetime import datetime
+from typing import Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -40,32 +43,75 @@ def get_current_user(
     Raises:
         HTTPException: Se as credenciais forem inválidas ou o usuário não existir
     """
+    logger.info("Validando autenticação")
 
     try:
-        # Verifica se as credenciais foram fornecidas
+        # Verifica se o token está presente
         if not credentials or not credentials.credentials:
-            logger.warning("Token de autenticação não fornecido")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token de autenticação não fornecido",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-            
+            logger.warning("Token não fornecido")
+            raise CREDENTIALS_EXCEPTION
+
         token = credentials.credentials
-        logger.debug("Token recebido: %s...", token[:15])
-        
+
+        # Verifica se o token está no formato correto
+        if not token or not isinstance(token, str) or not token.strip():
+            logger.warning("Token inválido: formato incorreto")
+            raise CREDENTIALS_EXCEPTION
+
+        logger.info("Token recebido: %s...", token[:15])
+        logger.debug("Headers da requisição: %s", dict(credentials.__dict__))
+
         # Verifica o token
+        logger.info("Verificando token JWT")
         token_data = auth_service.verify_token(token)
+
         if token_data is None:
             logger.warning("Token inválido ou expirado")
+
+            # Tenta decodificar o token para obter mais informações
+            try:
+                from jose import jwt
+
+                # Decodifica sem verificar a assinatura
+                payload = jwt.get_unverified_claims(token)
+                logger.warning(
+                    "Token inválido - Payload: %s",
+                    payload
+                )
+
+                if 'exp' in payload:
+                    exp_time = datetime.fromtimestamp(payload['exp'])
+                    logger.warning(
+                        "Token expirou em: %s",
+                        exp_time.isoformat()
+                    )
+
+            except Exception as decode_error:
+                logger.error(
+                    "Erro ao decodificar token: %s",
+                    str(decode_error)
+                )
+
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token inválido ou expirado",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
+        logger.info(
+            "Token válido para o usuário ID: %s",
+            token_data.user_id
+        )
+
         # Busca o usuário no banco de dados
-        user = db.query(User).filter(User.id == token_data.user_id).first()
+        logger.info(
+            "Buscando usuário ID: %s",
+            token_data.user_id
+        )
+        user = db.query(User).filter(
+            User.id == token_data.user_id
+        ).first()
+
         if user is None:
             logger.warning(
                 "Usuário não encontrado para o ID: %s",
@@ -76,34 +122,24 @@ def get_current_user(
                 detail="Usuário não encontrado",
             )
 
+        logger.info(
+            "Usuário encontrado: %s (ID: %s, Ativo: %s)",
+            user.email, user.id, user.is_active
+        )
+
         # Verifica se o usuário está ativo
         if not user.is_active:
-            logger.warning(
-                "Tentativa de login de usuário inativo: %s",
-                user.email
-            )
+            logger.warning("Usuário inativo: %s", user.email)
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Conta de usuário desativada"
+                detail="Usuário inativo",
             )
-            
-        logger.debug("Usuário autenticado com sucesso: %s", user.email)
+
         return user
 
-    except HTTPException:
-        # Re-lança exceções HTTP já tratadas
-        raise
-        
     except Exception as e:
-        logger.error(
-            "Erro ao validar autenticação: %s",
-            str(e),
-            exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao processar autenticação: {str(e)}"
-        )
+        logger.error("Erro na autenticação: %s", str(e), exc_info=True)
+        raise CREDENTIALS_EXCEPTION
 
 
 def get_current_active_user(
@@ -129,7 +165,7 @@ def get_current_active_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Conta de usuário desativada"
         )
-        
+
     logger.debug(
         "Acesso concedido para usuário ativo: %s",
         current_user.email
@@ -180,7 +216,7 @@ def get_current_admin_user(
 def optional_authentication(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
-) -> User:
+) -> Optional[User]:
     """Dependência opcional para autenticação.
 
     Args:
@@ -195,13 +231,27 @@ def optional_authentication(
         return None
 
     try:
-        token = credentials.credentials
-        token_data = auth_service.verify_token(token)
-
+        logger.debug("Token recebido: %s...", 
+                   credentials.credentials[:20])
+        
+        # Verifica o token JWT
+        token_data = auth_service.verify_token(
+            credentials.credentials
+        )
         if token_data is None:
             logger.debug("Token inválido ou expirado na autenticação opcional")
             return None
 
+        logger.info(
+            "Token válido para o usuário ID: %s",
+            token_data.user_id
+        )
+
+        # Busca o usuário no banco de dados
+        logger.info(
+            "Buscando usuário ID: %s",
+            token_data.user_id
+        )
         user = db.query(User).filter(User.id == token_data.user_id).first()
 
         if user is None:

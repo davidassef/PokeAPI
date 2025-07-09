@@ -5,8 +5,8 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently \"npm run start:frontend\" \"npm run start:client-server\"",
-    "start:dev": "concurrently \"npm run start:frontend\" \"npm run start:client-server\"",
+    "start": "ng serve --proxy-config proxy.conf.json",
+    "start:dev": "ng serve --proxy-config proxy.conf.json",
     "start:frontend": "ng serve --proxy-config proxy.conf.json",
     "start:client-server": "node client-server.js",
     "start:frontend-only": "ng serve --proxy-config proxy.conf.json",
