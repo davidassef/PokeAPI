@@ -126,7 +126,11 @@
     "goToHome": "Ir a Pokédex",
     "imported": "¡Capturados importados con éxito!",
     "exported": "¡Capturados exportados!",
-    "clear_all_confirmation": "¿Está seguro?"
+    "clear_all_confirmation": "¿Está seguro?",
+    "auth_required": "Debes iniciar sesión para ver tus capturas.",
+    "login": "Iniciar sesión",
+    "create_account_hint": "¿No tienes cuenta?",
+    "create_account_link": "Crea una ahora"
   },
   "ranking": {
     "title": "Ranking de Capturados",
@@ -248,7 +252,10 @@
     "premium": "Premium",
     "free": "Gratis",
     "trial": "Prueba",
-    "japanese": "日本語"
+    "japanese": "日本語",
+    "sync_with_server": "Sincronización con el servidor",
+    "synced": "Sincronizado",
+    "pending": "Pendiente"
   },
   "settings_page": {
     "loading": "Cargando configuraciones...",
@@ -282,7 +289,10 @@
     "export_captured": "Exportar capturados",
     "import_captured": "Importar capturados",
     "clear_all_captured": "Limpiar todos los capturados",
-    "language_updated": "¡Idioma actualizado con éxito!"
+    "language_updated": "¡Idioma actualizado con éxito!",
+    "sync_with_server": "Sincronización con el servidor",
+    "synced": "Sincronizado",
+    "pending": "Pendiente"
   },
   "music": {
     "play": "Reproducir",
@@ -475,5 +485,20 @@
     "plant": "Planta"
   },
   "MADE_WITH_LOVE": "Hecho con ❤️ por David Assef",
-  "POWERED_BY_POKEAPI": "Powered by PokéAPI"
+  "POWERED_BY_POKEAPI": "Powered by PokéAPI",
+  "capture": {
+    "auth_required": "Debes iniciar sesión para capturar un Pokémon."
+  },
+  "user": {
+    "greeting": "Hola",
+    "level": "Nivel",
+    "profile_settings": "Configuración de Perfil",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "profile": "Perfil",
+    "hello": "Hola"
+  }
 }

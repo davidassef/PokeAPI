@@ -17,6 +17,14 @@ const routes: Routes = [
   {
     path: 'sync-admin',
     loadChildren: () => import('./pages/sync-admin/sync-admin.module').then(m => m.SyncAdminModule)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/web/login/login.module').then(m => m.LoginPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./pages/web/register/register.module').then(m => m.RegisterPageModule)
   }
 ];
 @NgModule({

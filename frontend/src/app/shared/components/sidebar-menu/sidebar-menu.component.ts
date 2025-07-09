@@ -7,6 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../core/services/settings.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { User } from 'src/app/models/user.model';
 
 export interface MenuItem {
   title: string;
@@ -68,6 +70,9 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   ];
 
   private destroy$ = new Subject<void>();
+  isAuthenticated = false;
+  user: User | null = null;
+  showUserMenu = false;
 
   constructor(
     private router: Router,
@@ -75,12 +80,17 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private settingsService: SettingsService,
     private capturedService: CapturedService,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.loadUserStats();
     this.loadSettings();
+    this.isAuthenticated = this.authService.isAuthenticated();
+    if (this.isAuthenticated) {
+      this.user = this.authService.getCurrentUser();
+    }
   }
 
   ngOnDestroy() {
@@ -165,5 +175,24 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
 
   async closeMenu() {
     await this.menuController.close();
+  }
+
+  abrirLogin() {
+    // TODO: Abrir modal de login
+    console.log('Abrir modal de login');
+  }
+
+  abrirPerfil() {
+    // TODO: Abrir modal de perfil do usuário
+    console.log('Abrir modal de perfil do usuário');
+  }
+
+  logout() {
+    this.authService.logout();
+    window.location.reload();
+  }
+
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
   }
 }

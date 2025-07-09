@@ -1,0 +1,17 @@
+<ng-container *ngIf="!isAuthenticated; else userMenu">
+  <ion-button fill="solid" class="auth-btn" (click)="abrirLogin()">
+    {{ 'auth.login' | translate }}
+  </ion-button>
+</ng-container>
+<ng-template #userMenu>
+  <ion-button fill="solid" class="auth-btn" (click)="toggleUserMenu()">
+    <ion-icon name="person-circle-outline"></ion-icon>
+    <span class="user-greeting">{{ 'auth.hello' | translate }}, {{ user?.firstName || user?.name }}</span>
+  </ion-button>
+  <ion-popover *ngIf="showUserMenu" (ionPopoverDidDismiss)="toggleUserMenu()">
+    <ion-list>
+      <ion-item button (click)="abrirPerfil()">{{ 'auth.profile' | translate }}</ion-item>
+      <ion-item button (click)="logout()">{{ 'auth.logout' | translate }}</ion-item>
+    </ion-list>
+  </ion-popover>
+</ng-template> 

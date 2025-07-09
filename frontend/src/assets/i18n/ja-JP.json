@@ -98,7 +98,11 @@
     "loading": "捕獲ポケモンを読み込み中...",
     "goToHome": "ポケモン図鑑へ",
     "imported": "捕獲ポケモンをインポートしました！",
-    "cleared": "全ての捕獲ポケモンが削除されました！"
+    "cleared": "全ての捕獲ポケモンが削除されました！",
+    "auth_required": "ポケモンを捕まえるにはログインが必要です。",
+    "login": "ログイン",
+    "create_account_hint": "アカウントをお持ちでないですか？",
+    "create_account_link": "今すぐ作成"
   },
   "ranking": {
     "title": "グローバルランキング",
@@ -258,7 +262,10 @@
     "export_captured": "捕獲ポケモンをエクスポート",
     "import_captured": "捕獲ポケモンをインポート",
     "clear_all_captured": "全ての捕獲ポケモンをクリア",
-    "language_updated": "言語が正常に更新されました！"
+    "language_updated": "言語が正常に更新されました！",
+    "sync_with_server": "サーバーとの同期",
+    "synced": "同期済み",
+    "pending": "保留中"
   },
   "ranking_page": {
     "most_loved_pokemon": "最も愛されているポケモン",
@@ -512,5 +519,23 @@
       "types_elements": "エレメントタイプ",
       "types_movement": "ムーブメントタイプ"
     }
+  },
+  "sync_with_server": "サーバーとの同期",
+  "synced": "同期済み",
+  "pending": "保留中",
+  "capture": {
+    "auth_required": "ポケモンを捕まえるにはログインが必要です。"
+  },
+  "user": {
+    "greeting": "こんにちは",
+    "level": "レベル",
+    "profile_settings": "プロフィール設定",
+    "logout": "ログアウト"
+  },
+  "auth": {
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "profile": "プロフィール",
+    "hello": "こんにちは"
   }
 }

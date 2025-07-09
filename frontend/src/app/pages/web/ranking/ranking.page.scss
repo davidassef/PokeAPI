@@ -1133,3 +1133,38 @@ body.dark-theme {
   0% { box-shadow: 0 2px 16px #ffd70088, 0 0 8px #fff8; }
   100% { box-shadow: 0 4px 32px #ffd700cc, 0 0 16px #fff8; }
 }
+
+.header-title-login {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.header-title-text {
+  font-weight: bold;
+  font-size: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+.header-auth-btn {
+  margin-left: 18px;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .header-title-login {
+    flex-direction: row;
+    margin-left: 4px;
+  }
+  .header-title-text {
+    font-size: 17px;
+  }
+  .header-auth-btn {
+    margin-left: 8px;
+  }
+}

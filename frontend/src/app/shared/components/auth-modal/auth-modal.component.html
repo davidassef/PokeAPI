@@ -1,0 +1,39 @@
+<div class="auth-modal-backdrop" (click)="fechar()"></div>
+<div class="auth-modal">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title *ngIf="modo === 'login'">Entrar</ion-card-title>
+      <ion-card-title *ngIf="modo === 'register'">Criar Conta</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form (ngSubmit)="modo === 'login' ? login() : registrar()" autocomplete="off">
+        <ion-item *ngIf="modo === 'register'">
+          <ion-label position="floating">Nome</ion-label>
+          <ion-input [(ngModel)]="nome" name="nome" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Senha</ion-label>
+          <ion-input [(ngModel)]="senha" name="senha" type="password" required></ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="loading">
+          {{ modo === 'login' ? 'Entrar' : 'Criar Conta' }}
+        </ion-button>
+        <ion-button expand="block" fill="outline" type="button" (click)="loginGoogle()" [disabled]="loading">
+          <ion-icon name="logo-google" slot="start"></ion-icon>
+          Entrar com Google
+        </ion-button>
+        <ion-text color="danger" *ngIf="erro">{{ erro }}</ion-text>
+      </form>
+      <div class="auth-modal-footer">
+        <a (click)="alternarModo()">
+          {{ modo === 'login' ? 'Criar uma conta' : 'Já tem conta? Entrar' }}
+        </a>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <button class="close-btn" (click)="fechar()">&times;</button>
+</div> 

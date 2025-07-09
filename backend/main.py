@@ -61,21 +61,31 @@ async def log_requests(request: Request, call_next):
 
     return response
 
-# CORS
+# CORS Configuration
+# Lista de origens permitidas (ajuste conforme necessário para seu ambiente)
+origins = [
+    "http://localhost:4200",  # Angular
+    "http://localhost:8100",  # Ionic
+    "http://localhost:8080",  # Outros servidores locais
+    "http://localhost",
+    "https://your-production-domain.com",
+]
+
+# Adiciona o middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://pokeapi-frontend.onrender.com",
-        "https://pokeapi-frontend-onrender-com.onrender.com",  # Possível variação
-        "http://localhost:8100",  # Para desenvolvimento local Ionic
-        "http://localhost:4200",  # Para desenvolvimento local Angular
-        "http://127.0.0.1:8100",  # Variação localhost
-        "http://127.0.0.1:4200",  # Variação localhost
-        "*"  # Temporariamente permitir todos os origins para debug
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_origins=origins,  # Lista de origens permitidas
+    allow_credentials=True,  # Permite credenciais (cookies, headers de autenticação)
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Métodos permitidos
+    allow_headers=[
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "Origin",
+        "X-Requested-With"
+    ],  # Headers permitidos
+    expose_headers=["Content-Disposition"],  # Headers expostos
+    max_age=600,  # Tempo de cache para pré-voo (em segundos)
 )
 
 # Imports tardios para evitar problemas de inicialização

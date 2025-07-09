@@ -27,3 +27,23 @@ def get_stats(db: Session = Depends(get_db)):
 def get_local_ranking(region: str = Query(...)):
     """Endpoint local de ranking (mock inicial)."""
     return []
+
+
+@router.get("/debug/favorites")
+async def debug_favorites(db: Session = Depends(get_db)):
+    """Endpoint temporário para depuração da tabela de favoritos"""
+    from app.models.models import FavoritePokemon
+    favorites = db.query(FavoritePokemon).all()
+    return {
+        "count": len(favorites),
+        "favorites": [
+            {
+                "id": fav.id,
+                "user_id": fav.user_id,
+                "pokemon_id": fav.pokemon_id,
+                "pokemon_name": fav.pokemon_name,
+                "added_at": fav.added_at.isoformat() if fav.added_at else None
+            }
+            for fav in favorites
+        ]
+    }

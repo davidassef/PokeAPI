@@ -10,6 +10,8 @@ import { PokemonFilters } from '../../../models/app.model';
 import { Pokemon } from '../../../models/pokemon.model';
 import { FilterOptions } from '../../../shared/components/search-filter/search-filter.component';
 import { DetailsModalComponent } from '../details/details-modal.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-home',
@@ -45,6 +47,10 @@ export class HomePage implements OnInit, OnDestroy {
   showDetailsModal = false;
   selectedPokemonId: number | null = null;
 
+  isAuthenticated = false;
+  user: User | null = null;
+  showUserMenu = false;
+
   get currentFilterOptions(): FilterOptions {
     return {
       searchTerm: this.currentFilters.name || '',
@@ -64,12 +70,17 @@ export class HomePage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private alertController: AlertController,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.loadPaginatedPokemons();
     this.loadCaptured();
+    this.isAuthenticated = this.authService.isAuthenticated();
+    if (this.isAuthenticated) {
+      this.user = this.authService.getCurrentUser();
+    }
   }
 
   ngOnDestroy() {
@@ -221,9 +232,9 @@ export class HomePage implements OnInit, OnDestroy {
   onCaptureToggled(event: { pokemon: Pokemon, isCaptured: boolean }) {
     const { pokemon, isCaptured } = event;
     if (isCaptured) {
-      this.showToast(this.translate.instant('home.added_to_captured'));
+      this.showToast('home.added_to_captured');
     } else {
-      this.showToast(this.translate.instant('home.removed_from_captured'));
+      this.showToast('home.removed_from_captured');
     }
     // A sincronização é feita automaticamente pelo CapturedService
     // quando o toggle é feito via UI - não fazemos sync direto aqui
@@ -256,7 +267,7 @@ export class HomePage implements OnInit, OnDestroy {
    */
   private async showErrorToast() {
     const toast = await this.toastController.create({
-      message: this.translate.instant('home.error_loading'),
+      message: await this.translate.get('home.error_loading').toPromise(),
       duration: 3000,
       color: 'danger',
       position: 'top'
@@ -267,11 +278,12 @@ export class HomePage implements OnInit, OnDestroy {
   /**
    * Exibe toast personalizado
    */
-  private async showToast(message: string) {
+  private async showToast(messageKey: string) {
+    const message = await this.translate.get(messageKey).toPromise();
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'top'
+      position: 'bottom'
     });
     await toast.present();
   }
@@ -312,5 +324,24 @@ export class HomePage implements OnInit, OnDestroy {
     const maxId = 898;
     const randomId = Math.floor(Math.random() * maxId) + 1;
     this.openDetailsModal(randomId);
+  }
+
+  abrirLogin() {
+    // TODO: Abrir modal de login
+    console.log('Abrir modal de login');
+  }
+
+  abrirPerfil() {
+    // TODO: Abrir modal de perfil do usuário
+    console.log('Abrir modal de perfil do usuário');
+  }
+
+  logout() {
+    this.authService.logout();
+    window.location.reload();
+  }
+
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
   }
 }

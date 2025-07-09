@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, from } from 'rxjs';
+import { Observable, BehaviorSubject, from, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import {
   Pokemon,
@@ -204,8 +204,16 @@ export class PokeApiService {
    * @returns Observable com lista de rankings globais
    */
   getGlobalRanking(): Observable<any[]> {
+    // Configura os headers com o token JWT se disponível
+    const headers: { [key: string]: string } = {};
+    const token = localStorage.getItem('jwt_token');
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     // Usa o backend FastAPI em vez da PokeAPI
-    return this.http.get<any[]>(`${this.backendUrl}/ranking/`).pipe(
+    return this.http.get<any[]>(`${this.backendUrl}/ranking/`, { headers }).pipe(
       map(response => this.normalizeRankingResponse(response)),
       catchError(error => {
         console.error('Erro ao buscar ranking global:', error);
@@ -238,9 +246,18 @@ export class PokeApiService {
    * @returns Observable com lista de rankings locais
    */
   getLocalRanking(region: string): Observable<any[]> {
+    // Configura os headers com o token JWT se disponível
+    const headers: { [key: string]: string } = {};
+    const token = localStorage.getItem('jwt_token');
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     // Usa a URL base do backend
     return this.http.get<any[]>(`${this.backendUrl}/ranking/local`, {
-      params: new HttpParams().set('region', region)
+      params: new HttpParams().set('region', region),
+      headers
     }).pipe(
       map(response => this.normalizeRankingResponse(response)),
       catchError(error => {
@@ -516,11 +533,26 @@ export class PokeApiService {
 
   /**
    * Busca ranking global de pokémons mais capturados do backend
+   * @param limit Número máximo de itens a serem retornados
+   * @returns Observable com array de objetos contendo pokemon_id, pokemon_name e favorite_count
    */
   getGlobalRankingFromBackend(limit: number = 10): Observable<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>> {
-    // Corrigido para o prefixo correto do backend
+    // Configura os headers com o token JWT se disponível
+    const headers: { [key: string]: string } = {};
+    const token = localStorage.getItem('jwt_token');
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
-      `${this.backendUrl}/ranking/?limit=${limit}`
+      `${this.backendUrl}/ranking/?limit=${limit}`,
+      { headers }
+    ).pipe(
+      catchError(error => {
+        console.error('Erro ao buscar ranking global:', error);
+        return of([]); // Retorna array vazio em caso de erro
+      })
     );
   }
 

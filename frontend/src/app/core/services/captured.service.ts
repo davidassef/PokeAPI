@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of, firstValueFrom, throwError } from 'rxjs';
+import { tap, map, catchError, switchMap } from 'rxjs/operators';
 import { FavoritePokemon, Pokemon } from '../../models/pokemon.model';
 import { SyncAction, SyncService } from './sync.service';
 import { ClientSyncService } from './client-sync.service';
 import { SyncConfigService } from './sync-config.service';
 import { ErrorHandlerService } from './error-handler.service';
 import { ConnectionService } from './connection.service';
+import { AuthService } from './auth.service';
 
 /**
  * Serviço para gerenciar Pokémons capturados
@@ -17,122 +18,195 @@ import { ConnectionService } from './connection.service';
   providedIn: 'root'
 })
 export class CapturedService {
-  private readonly CAPTURED_KEY = 'captured_pokemons';
   private capturedSubject = new BehaviorSubject<FavoritePokemon[]>([]);
-  private storageReady = false;
-
   public captured$ = this.capturedSubject.asObservable();
+  private apiUrl = '/api/v1/favorites';
 
   constructor(
-    private storage: Storage,
+    private http: HttpClient,
     private syncService: SyncService,
     private clientSyncService: ClientSyncService,
-    private http: HttpClient,
     private syncConfig: SyncConfigService,
     private errorHandler: ErrorHandlerService,
-    private connectionService: ConnectionService
-  ) {
-    this.initStorage();
-  }
+    private connectionService: ConnectionService,
+    private authService: AuthService
+  ) {}
 
-  private async initStorage(): Promise<void> {
-    await this.storage.create();
-    this.storageReady = true;
-    await this.loadCaptured();
-  }
-
-  private async loadCaptured(): Promise<void> {
-    if (!this.storageReady) {
-      await this.initStorage();
+  /** 
+   * Lista capturas do usuário autenticado 
+   * @returns Observable com a lista de favoritos ou array vazio em caso de erro
+   */
+  fetchCaptured(): Observable<FavoritePokemon[]> {
+    console.log('[CapturedService] Buscando capturas do usuário');
+    
+    if (!this.authService.isAuthenticated()) {
+      console.warn('[CapturedService] Usuário não autenticado, retornando lista vazia');
+      return of([]);
     }
+    
+    const url = `${this.apiUrl}/my-favorites`;
+    console.log(`[CapturedService] Fazendo requisição para: ${url}`);
+    
+    return this.http.get<FavoritePokemon[]>(url).pipe(
+      tap({
+        next: (captured) => {
+          console.log(`[CapturedService] ${captured.length} capturas carregadas com sucesso`);
+          this.capturedSubject.next(captured);
+        },
+        error: (error) => {
+          console.error('[CapturedService] Erro ao buscar capturas:', {
+            status: error.status,
+            message: error.message,
+            url: error.url,
+            error: error.error
+          });
+          
+          // Se for erro de autenticação, limpa o estado
+          if (error.status === 401 || error.status === 403) {
+            console.warn('[CapturedService] Erro de autenticação, limpando estado');
+            this.capturedSubject.next([]);
+          }
+        }
+      }),
+      catchError(error => {
+        console.error('[CapturedService] Erro capturado ao buscar capturas:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
+   * Obtém o estado de captura de múltiplos Pokémons de uma só vez
+   * @param pokemonIds Array de IDs dos Pokémons a serem verificados
+   * @returns Um objeto onde as chaves são os IDs dos Pokémons e os valores são booleanos indicando se estão capturados
+   */
+  async getCapturedStates(pokemonIds: number[]): Promise<{ [key: string]: boolean }> {
+    if (!pokemonIds || pokemonIds.length === 0) {
+      return {};
+    }
+
     try {
-      const captured = await this.storage.get(this.CAPTURED_KEY) || [];
-      this.capturedSubject.next(captured);
+      // Verifica se o usuário está autenticado
+      if (!this.authService.isAuthenticated()) {
+        return {};
+      }
+
+      const response = await firstValueFrom(
+        this.http.post<{ [key: string]: boolean }>(
+          `${this.apiUrl}/check-captured`,
+          { pokemon_ids: pokemonIds }
+        )
+      );
+
+      return response || {};
     } catch (error) {
-      this.capturedSubject.next([]);
+      console.error('Erro ao verificar estados de captura:', error);
+      return {};
     }
   }
 
-  private async saveCaptured(captured: FavoritePokemon[]): Promise<void> {
-    if (!this.storageReady) {
-      await this.initStorage();
+  /** Adiciona uma captura */
+  addToCaptured(pokemon: Pokemon): Observable<FavoritePokemon> {
+    if (!this.authService.isAuthenticated()) {
+      throw new Error('Usuário não autenticado');
     }
-    try {
-      await this.storage.set(this.CAPTURED_KEY, captured);
-      this.capturedSubject.next(captured);
-    } catch (error) {
-    }
+    
+    const body = { pokemon_id: pokemon.id, pokemon_name: pokemon.name };
+    return this.http.post<FavoritePokemon>(`${this.apiUrl}/`, body).pipe(
+      tap(() => this.fetchCaptured().subscribe()),
+      catchError(error => {
+        console.error('Erro ao adicionar captura:', error);
+        throw error;
+      })
+    );
   }
 
-  async addToCaptured(pokemon: Pokemon): Promise<boolean> {
-    try {
-      const current = this.capturedSubject.value;
-      const exists = current.some(c => c.pokemon_id === pokemon.id);
-      if (exists) return false;
-
-      const newCaptured: FavoritePokemon = {
-        user_id: 1,
-        pokemon_id: pokemon.id,
-        pokemon_name: pokemon.name,
-        created_at: new Date().toISOString()
-      };
-
-      const updated = [...current, newCaptured];
-      await this.saveCaptured(updated);
-
-      // Sincronização baseada na configuração
-      await this.syncCapture(pokemon.id, pokemon.name, 'capture', false);
-
-      return true;
-    } catch (error) {
-      console.error('[CapturedService] Erro ao adicionar captura:', error);
-      return false;
+  /** Remove uma captura */
+  removeFromCaptured(pokemonId: number): Observable<void> {
+    if (!this.authService.isAuthenticated()) {
+      throw new Error('Usuário não autenticado');
     }
+    
+    return this.http.delete<void>(`${this.apiUrl}/${pokemonId}`).pipe(
+      tap(() => this.fetchCaptured().subscribe()),
+      catchError(error => {
+        console.error('Erro ao remover captura:', error);
+        throw error;
+      })
+    );
   }
 
-  async removeFromCaptured(pokemonId: number): Promise<boolean> {
-    try {
-      const current = this.capturedSubject.value;
-      const toRemove = current.find(c => c.pokemon_id === pokemonId);
-      if (!toRemove) return false;
+  /** Limpa todas as capturas do usuário autenticado */
+  clearAllCaptured(): Observable<any> {
+    // Não há endpoint direto, então remove uma a uma
+    return this.fetchCaptured().pipe(
+      tap(captured => {
+        captured.forEach(cap => {
+          this.removeFromCaptured(cap.pokemon_id).subscribe();
+        });
+      })
+    );
+  }
 
-      const updated = current.filter(c => c.pokemon_id !== pokemonId);
-      await this.saveCaptured(updated);
-
-      // Sincronização baseada na configuração
-      await this.syncCapture(pokemonId, toRemove.pokemon_name, 'capture', true);
-
-      return true;
-    } catch (error) {
-      console.error('[CapturedService] Erro ao remover captura:', error);
-      return false;
+  /** Verifica se um Pokémon está capturado */
+  isCaptured(pokemonId: number): Observable<boolean> {
+    if (!this.authService.isAuthenticated()) {
+      return of(false);
     }
+    
+    return this.http.get<boolean>(`${this.apiUrl}/check/${pokemonId}`).pipe(
+      catchError(error => {
+        console.error('Erro ao verificar captura:', error);
+        return of(false);
+      })
+    );
   }
 
-  isCaptured(pokemonId: number): boolean {
-    return this.capturedSubject.value.some(c => c.pokemon_id === pokemonId);
-  }
-
+  /** Retorna a lista reativa de capturados */
   getCaptured(): Observable<FavoritePokemon[]> {
     return this.captured$;
   }
 
-  getCapturedCount(): number {
-    return this.capturedSubject.value.length;
-  }
-
-  async toggleCaptured(pokemon: Pokemon): Promise<boolean> {
-    if (this.isCaptured(pokemon.id)) {
-      await this.removeFromCaptured(pokemon.id);
-      return false;
-    } else {
-      await this.addToCaptured(pokemon);
-      return true;
+  /**
+   * Alterna o estado de captura de um Pokémon
+   * @param pokemon Pokémon a ser capturado/liberado
+   * @returns Observable<boolean> - true se foi capturado, false se foi liberado
+   */
+  toggleCaptured(pokemon: Pokemon): Observable<boolean> {
+    console.log(`[CapturedService] Alternando estado de captura para o Pokémon ${pokemon.id} (${pokemon.name})`);
+    
+    if (!this.authService.isAuthenticated()) {
+      const errorMsg = 'Usuário não autenticado';
+      console.error(`[CapturedService] ${errorMsg}`);
+      return throwError(() => new Error(errorMsg));
     }
-  }
-
-  async clearAllCaptured(): Promise<void> {
-    await this.saveCaptured([]);
+    
+    return this.isCaptured(pokemon.id).pipe(
+      tap(isCaptured => console.log(`[CapturedService] Estado atual de captura: ${isCaptured ? 'capturado' : 'não capturado'}`)),
+      switchMap((isCaptured: boolean) => {
+        if (isCaptured) {
+          console.log(`[CapturedService] Removendo Pokémon ${pokemon.id} dos favoritos`);
+          return this.removeFromCaptured(pokemon.id).pipe(
+            tap(() => console.log(`[CapturedService] Pokémon ${pokemon.id} removido com sucesso`)),
+            map(() => false)
+          );
+        } else {
+          console.log(`[CapturedService] Adicionando Pokémon ${pokemon.id} aos favoritos`);
+          return this.addToCaptured(pokemon).pipe(
+            tap(() => console.log(`[CapturedService] Pokémon ${pokemon.id} adicionado com sucesso`)),
+            map(() => true)
+          );
+        }
+      }),
+      catchError((error: any) => {
+        console.error('[CapturedService] Erro ao alternar estado de captura:', {
+          pokemonId: pokemon.id,
+          error: error.error || error.message,
+          status: error.status
+        });
+        return throwError(() => error);
+      })
+    );
   }
 
   exportCaptured(): string {
@@ -145,12 +219,13 @@ export class CapturedService {
       const isValid = Array.isArray(captured) &&
         captured.every(c => c.pokemon_id && c.pokemon_name && typeof c.pokemon_id === 'number');
       if (!isValid) throw new Error('Formato de dados inválido');
-      await this.saveCaptured(captured);
+      await this.capturedSubject.next(captured);
       return true;
     } catch (error) {
       return false;
     }
   }
+
   /**
    * Sincroniza captura baseado na configuração (push ou pull)
    */

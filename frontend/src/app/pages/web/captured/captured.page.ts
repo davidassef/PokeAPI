@@ -10,6 +10,8 @@ import { SyncAction, SyncService } from '../../../core/services/sync.service';
 import { PokemonFilters } from '../../../models/app.model';
 import { Pokemon } from '../../../models/pokemon.model';
 import { FilterOptions } from '../../../shared/components/search-filter/search-filter.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-captured',
@@ -43,6 +45,10 @@ export class CapturedPage implements OnInit, OnDestroy {
   showDetailsModal = false;
   selectedPokemonId: number | null = null;
 
+  isAuthenticated = false;
+  user: User | null = null;
+  showUserMenu = false;
+
   get currentFilterOptions(): FilterOptions {
     return {
       searchTerm: this.currentFilters.name || '',
@@ -62,11 +68,24 @@ export class CapturedPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private translate: TranslateService,
     public router: Router,
-    private syncService: SyncService // Adicionado para sincronização automática
+    private syncService: SyncService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.loadCaptured();
+    this.isAuthenticated = this.authService.isAuthenticated();
+    if (this.isAuthenticated) {
+      this.user = this.authService.getCurrentUser();
+      this.loadCaptured();
+    }
+  }
+
+  ionViewWillEnter() {
+    document.body.classList.add('captured-page-active');
+  }
+
+  ionViewWillLeave() {
+    document.body.classList.remove('captured-page-active');
   }
 
   ngOnDestroy() {
@@ -184,7 +203,7 @@ export class CapturedPage implements OnInit, OnDestroy {
   async removeFromCaptured(pokemon: Pokemon) {
     try {
       await this.capturedService.removeFromCaptured(pokemon.id);
-      this.showToast(this.translate.instant('captured.removed_from_captured'));
+      await this.showToast('captured.removed_from_captured');
       this.loadCaptured();
     } catch (error) {
       console.error('Erro ao remover dos capturados:', error);
@@ -200,7 +219,7 @@ export class CapturedPage implements OnInit, OnDestroy {
 
   private async showErrorToast() {
     const toast = await this.toastController.create({
-      message: this.translate.instant('captured.error_release_captured'),
+      message: await this.translate.get('captured.error_release_captured').toPromise(),
       duration: 3000,
       position: 'top',
       color: 'danger'
@@ -208,13 +227,34 @@ export class CapturedPage implements OnInit, OnDestroy {
     await toast.present();
   }
 
-  private async showToast(message: string) {
+  private async showToast(messageKey: string) {
+    const message = await this.translate.get(messageKey).toPromise();
     const toast = await this.toastController.create({
       message,
-      duration: 3000,
-      position: 'top',
-      color: 'success'
+      duration: 2000,
+      position: 'bottom'
     });
     await toast.present();
+  }
+
+  abrirLogin = () => {
+    this.router.navigate(['/login']);
+  };
+
+  abrirPerfil = () => {
+    this.router.navigate(['/profile']);
+  };
+
+  logout = () => {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  };
+
+  toggleUserMenu = () => {
+    this.showUserMenu = !this.showUserMenu;
+  };
+
+  abrirCadastro() {
+    this.router.navigate(['/register']);
   }
 }

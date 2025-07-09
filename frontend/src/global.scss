@@ -172,3 +172,90 @@ ion-toast {
     color: var(--text-color);
   }
 }
+
+/* Efeito padrão (azul) para todas as páginas */
+ion-button.auth-btn {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  --color: #fff;
+  --border-radius: 22px;
+  --box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10), 0 1.5px 4px rgba(66, 165, 245, 0.10);
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 130px;
+  height: 40px;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.18s cubic-bezier(.4,0,.2,1), transform 0.18s cubic-bezier(.4,0,.2,1), background 0.18s, color 0.18s;
+  letter-spacing: 0.5px;
+  border: none;
+  padding: 0 26px;
+  box-shadow: var(--box-shadow);
+  outline: none;
+  transform: translateY(-2px) scale(1.04);
+}
+ion-button.auth-btn:hover,
+ion-button.auth-btn:focus {
+  --background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
+  --color: #fff;
+  box-shadow: 0 4px 20px rgba(25, 118, 210, 0.18), 0 2px 8px rgba(66, 165, 245, 0.12);
+  filter: brightness(1.03);
+  transform: translateY(-4px) scale(1.07);
+}
+ion-button.auth-btn:active {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+  filter: brightness(0.98);
+  transform: scale(0.97);
+}
+
+/* Tema vermelho só na página de Capturados */
+body.captured-page-active ion-button.auth-btn {
+  --background: linear-gradient(90deg, #d32f2f 60%, #ff5252 100%) !important;
+  --box-shadow: 0 4px 18px 0 rgba(211, 47, 47, 0.18), 0 2px 8px 0 rgba(255, 82, 82, 0.12) !important;
+  box-shadow: var(--box-shadow) !important;
+}
+body.captured-page-active ion-button.auth-btn:hover,
+body.captured-page-active ion-button.auth-btn:focus {
+  --background: linear-gradient(90deg, #b71c1c 60%, #d32f2f 100%) !important;
+  box-shadow: 0 8px 28px 0 rgba(211, 47, 47, 0.22), 0 4px 16px 0 rgba(255, 82, 82, 0.16) !important;
+  filter: brightness(1.05);
+  transform: translateY(-4px) scale(1.07);
+}
+body.captured-page-active ion-button.auth-btn:active {
+  --background: linear-gradient(90deg, #d32f2f 60%, #ff5252 100%) !important;
+  box-shadow: 0 2px 6px 0 rgba(211, 47, 47, 0.12) !important;
+  filter: brightness(0.98);
+  transform: scale(0.97);
+}
+
+ion-toolbar {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+.header-auth-btn-fixed {
+  width: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: absolute;
+  right: 56px; // espaço para o botão de search
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+}
+@media (max-width: 600px) {
+  .header-auth-btn-fixed {
+    width: 110px;
+    right: 44px;
+  }
+}

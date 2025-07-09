@@ -98,7 +98,11 @@
     "loading": "Carregando capturados...",
     "goToHome": "Ir para Pokédex",
     "imported": "Capturados importados com sucesso!",
-    "cleared": "Todos os capturados foram removidos!"
+    "cleared": "Todos os capturados foram removidos!",
+    "auth_required": "Você precisa estar logado para acessar suas capturas.",
+    "login": "Fazer Login",
+    "create_account_hint": "Não tem conta?",
+    "create_account_link": "Crie uma agora"
   },
   "ranking": {
     "title": "Ranking Global",
@@ -258,7 +262,10 @@
     "export_captured": "Exportar capturados",
     "import_captured": "Importar capturados",
     "clear_all_captured": "Limpar todos os capturados",
-    "language_updated": "Idioma atualizado com sucesso!"
+    "language_updated": "Idioma atualizado com sucesso!",
+    "sync_with_server": "Sincronização com o servidor",
+    "synced": "Sincronizado",
+    "pending": "Pendente"
   },
   "ranking_page": {
     "most_loved_pokemon": "Pokémons mais amados",
@@ -494,5 +501,23 @@
     "plant": "Planta"
   },
   "MADE_WITH_LOVE": "Feito com ❤️ por David Assef",
-  "POWERED_BY_POKEAPI": "Powered by PokéAPI"
+  "POWERED_BY_POKEAPI": "Powered by PokéAPI",
+  "capture": {
+    "auth_required": "Você precisa estar logado para capturar um Pokémon."
+  },
+  "sync_with_server": "Sincronização com o servidor",
+  "synced": "Sincronizado",
+  "pending": "Pendente",
+  "user": {
+    "greeting": "Olá",
+    "level": "Nível",
+    "profile_settings": "Configurações de Perfil",
+    "logout": "Sair"
+  },
+  "auth": {
+    "login": "Fazer Login",
+    "logout": "Sair",
+    "profile": "Perfil",
+    "hello": "Olá"
+  }
 }

@@ -99,13 +99,6 @@ export class ConnectionService {
     // Notificar sobre mudanças na conectividade
     if (wasReachable && !isReachable) {
       this.errorHandler.addConnectionWarning(this.syncConfig.getClientServerUrl());
-    } else if (!wasReachable && isReachable) {
-      this.errorHandler.addError(
-        'Conexão com servidor restaurada. Sincronização reativada.',
-        'info',
-        true,
-        3000
-      );
     }
   }
 

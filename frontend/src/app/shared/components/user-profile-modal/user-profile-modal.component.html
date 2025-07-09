@@ -1,0 +1,32 @@
+<div class="profile-modal-backdrop" (click)="fechar()"></div>
+<div class="profile-modal">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Perfil do Usuário</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form *ngIf="editando; else visualizar" (ngSubmit)="salvar()">
+        <ion-item>
+          <ion-label position="floating">Nome</ion-label>
+          <ion-input [(ngModel)]="nome" name="nome" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="loading">Salvar</ion-button>
+        <ion-button expand="block" fill="outline" type="button" (click)="editando = false">Cancelar</ion-button>
+        <ion-text color="danger" *ngIf="erro">{{ erro }}</ion-text>
+      </form>
+      <ng-template #visualizar>
+        <div class="profile-info">
+          <div><strong>Nome:</strong> {{ nome }}</div>
+          <div><strong>Email:</strong> {{ email }}</div>
+        </div>
+        <ion-button expand="block" (click)="editar()">Editar Perfil</ion-button>
+        <ion-button expand="block" fill="outline" color="danger" (click)="sair()">Sair</ion-button>
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
+  <button class="close-btn" (click)="fechar()">&times;</button>
+</div> 

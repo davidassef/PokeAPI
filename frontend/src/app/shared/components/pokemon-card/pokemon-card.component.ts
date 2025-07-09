@@ -5,6 +5,10 @@ import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
+import { ToastController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -30,12 +34,17 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     private router: Router,
     private audioService: AudioService,
     private pokeApiService: PokeApiService,
-    private capturedService: CapturedService
+    private capturedService: CapturedService,
+    private authService: AuthService,
+    private toastController: ToastController,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
     this.capturedSub = this.capturedService.captured$.subscribe(() => {
-      this.isCaptured = this.capturedService.isCaptured(this.pokemon.id);
+      this.capturedService.isCaptured(this.pokemon.id).subscribe(isCaptured => {
+        this.isCaptured = isCaptured;
+      });
     });
     this.loadPokemonImage();
   }
@@ -57,21 +66,94 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     this.cardClick.emit(this.pokemon);
   }
 
+  /**
+   * Manipula o clique no botão de captura/liberação
+   * @param event Evento de clique
+   */
   async onCaptureClick(event: Event) {
-    if (this.isProcessing) return;
-    this.isProcessing = true;
     event.stopPropagation();
+    
+    // Evita múltiplos cliques rápidos
+    if (this.isProcessing) {
+      console.log('[PokemonCard] Operação de captura já em andamento, ignorando clique');
+      return;
+    }
+    
+    // Verifica autenticação
+    if (!this.authService.isAuthenticated()) {
+      console.log('[PokemonCard] Usuário não autenticado, exibindo mensagem');
+      await this.showToast('capture.auth_required', 'danger');
+      return;
+    }
+    
+    // Inicia o processo de captura/liberação
+    this.isProcessing = true;
     this.isLoading = true;
+    console.log(`[PokemonCard] Iniciando ${this.isCaptured ? 'libertação' : 'captura'} do Pokémon ${this.pokemon.id}`);
+    
+    this.capturedService.toggleCaptured(this.pokemon).subscribe({
+      next: (isCaptured) => {
+        console.log(`[PokemonCard] Pokémon ${this.pokemon.id} ${isCaptured ? 'capturado' : 'liberado'} com sucesso`);
+        this.isCaptured = isCaptured;
+        this.captureToggle.emit({ pokemon: this.pokemon, isCaptured });
+        
+        // Toca o som de captura/libertação
+        this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release')
+          .catch(error => console.error('[PokemonCard] Erro ao reproduzir som:', error));
+        
+        // Exibe mensagem de sucesso
+        const messageKey = isCaptured ? 'capture.success' : 'capture.released';
+        this.showToast(messageKey, 'success');
+      },
+      error: async (error: any) => {
+        console.error('[PokemonCard] Erro ao alternar estado de captura:', {
+          pokemonId: this.pokemon.id,
+          error: error.error || error.message,
+          status: error.status
+        });
+        
+        // Mensagem de erro adequada com base no status HTTP
+        let messageKey = 'capture.error';
+        if (error.status === 401 || error.status === 403) {
+          messageKey = 'capture.auth_error';
+        } else if (error.status === 0) {
+          messageKey = 'capture.network_error';
+        }
+        
+        await this.showToast(messageKey, 'danger');
+      },
+      complete: () => {
+        console.log(`[PokemonCard] Operação de ${this.isCaptured ? 'captura' : 'libertação'} concluída`);
+        this.isLoading = false;
+        this.isProcessing = false;
+      }
+    });
+  }
+  
+  /**
+   * Exibe uma mensagem toast para o usuário
+   * @param messageKey Chave da mensagem de tradução
+   * @param color Cor do toast (danger, success, etc.)
+   * @param duration Duração em milissegundos
+   */
+  private async showToast(messageKey: string, color: string = 'primary', duration: number = 2500) {
     try {
-      const isCaptured = await this.capturedService.toggleCaptured(this.pokemon);
-      this.isCaptured = isCaptured;
-      this.captureToggle.emit({ pokemon: this.pokemon, isCaptured });
-      await this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release');
+      const message = await this.translate.get(messageKey).toPromise();
+      const toast = await this.toastController.create({
+        message,
+        duration,
+        color,
+        position: 'top',
+        buttons: [
+          {
+            icon: 'close',
+            role: 'cancel'
+          }
+        ]
+      });
+      await toast.present();
     } catch (error) {
-      console.error('Error toggling captured:', error);
-    } finally {
-      this.isLoading = false;
-      this.isProcessing = false;
+      console.error('[PokemonCard] Erro ao exibir toast:', error);
     }
   }
 

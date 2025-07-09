@@ -5,6 +5,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse
 
 from app.core.database import get_db
 from app.core.auth_middleware import get_current_user, get_current_active_user
@@ -14,6 +15,8 @@ from app.schemas.auth_schemas import (
     UserUpdate, PasswordChange, RefreshTokenRequest
 )
 from app.models.models import User
+from app.core.config import settings
+from jose import jwt
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
@@ -181,3 +184,42 @@ async def validate_token(current_user: User = Depends(get_current_active_user)):
         "valid": True,
         "user": UserResponse.from_orm(current_user)
     }
+
+
+@router.put("/profile")
+async def update_profile(
+    updated_data: UserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Atualiza o perfil do usuário autenticado (nome/email).
+    Retorna novo token JWT se houver alteração.
+    """
+    if updated_data.name is not None:
+        current_user.name = updated_data.name
+    if updated_data.contact is not None:
+        current_user.contact = updated_data.contact
+    db.commit()
+    db.refresh(current_user)
+    # Gerar novo token JWT
+    access_token = auth_service.create_access_token(
+        data={"sub": current_user.id, "email": current_user.email, "name": current_user.name},
+        expires_delta=timedelta(minutes=auth_service.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    return {"token": access_token, "user": UserResponse.from_orm(current_user)}
+
+@router.get("/google")
+async def login_with_google():
+    """
+    Mock de login social Google. Em produção, implemente OAuth2.
+    """
+    # Simula usuário Google
+    user_id = 9999
+    email = "googleuser@pokeapi.com"
+    name = "Google User"
+    access_token = auth_service.create_access_token(
+        data={"sub": user_id, "email": email, "name": name},
+        expires_delta=timedelta(minutes=auth_service.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    return {"token": access_token, "user": {"id": user_id, "email": email, "name": name}}

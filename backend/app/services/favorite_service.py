@@ -68,6 +68,47 @@ class FavoriteService:
         return db.query(FavoritePokemon).filter(
             FavoritePokemon.user_id == user_id
         ).all()
+        
+    @staticmethod
+    def check_multiple_favorites(
+        db: Session, 
+        user_id: int, 
+        pokemon_ids: List[int]
+    ) -> dict:
+        """
+        Verifica quais Pokémons de uma lista estão nos favoritos do usuário.
+        
+        Args:
+            db: Sessão do banco de dados
+            user_id: ID do usuário
+            pokemon_ids: Lista de IDs de Pokémon para verificar
+            
+        Returns:
+            Dicionário onde as chaves são os IDs dos Pokémons e os valores são 
+            booleanos indicando se estão nos favoritos
+        """
+        if not pokemon_ids:
+            return {}
+            
+        # Converte para set para remover duplicatas
+        pokemon_ids = list(set(pokemon_ids))
+        
+        # Busca todos os favoritos do usuário que estão na lista de IDs fornecida
+        query = db.query(FavoritePokemon.pokemon_id)
+        query = query.filter(
+            FavoritePokemon.user_id == user_id,
+            FavoritePokemon.pokemon_id.in_(pokemon_ids)
+        )
+        favorites = query.all()
+        
+        # Cria um conjunto com os IDs dos favoritos para busca mais rápida
+        favorite_ids = {fav.pokemon_id for fav in favorites}
+        
+        # Retorna um dicionário com o status de cada Pokémon
+        return {
+            str(pokemon_id): pokemon_id in favorite_ids 
+            for pokemon_id in pokemon_ids
+        }
 
     @staticmethod
     def is_favorite(db: Session, user_id: int, pokemon_id: int) -> bool:

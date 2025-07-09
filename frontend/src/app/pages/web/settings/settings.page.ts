@@ -6,6 +6,8 @@ import { AppSettings } from '../../../models/app.model';
 import { SettingsService } from '../../../core/services/settings.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { SyncService } from '../../../core/services/sync.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-settings',
@@ -36,6 +38,25 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   syncPending = false;
+  isAuthenticated = false;
+  user: User | null = null;
+  showUserMenu = false;
+
+  abrirLogin = () => {
+    window.location.href = '/login';
+  };
+
+  abrirPerfil = () => {
+    window.location.href = '/profile';
+  };
+
+  logout = () => {
+    window.location.href = '/logout';
+  };
+
+  toggleUserMenu = () => {
+    this.showUserMenu = !this.showUserMenu;
+  };
 
   constructor(
     private settingsService: SettingsService,
@@ -43,10 +64,15 @@ export class SettingsPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
     private capturedService: CapturedService,
-    private syncService: SyncService // Adicionado para status de sincronização
+    private syncService: SyncService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    this.isAuthenticated = this.authService.isAuthenticated();
+    if (this.isAuthenticated) {
+      this.user = this.authService.getCurrentUser();
+    }
     this.loadSettings();
     this.checkSyncStatus();
   }
@@ -171,8 +197,10 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   clearAllCaptured() {
-    this.capturedService.clearAllCaptured();
-    this.showToast('captured.cleared');
+    this.capturedService.clearAllCaptured().subscribe({
+      next: () => this.showToast('captured.cleared'),
+      error: () => this.showToast('Erro ao limpar capturas')
+    });
   }
 
   async exportSettings() {

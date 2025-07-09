@@ -69,6 +69,7 @@ export class SettingsService {
     await this.storageReady;
     await this.saveSettings({ language });
     this.translate.use(language);
+    this.translate.reloadLang(language);
   }
 
   async updateTheme(theme: 'light' | 'dark' | 'auto'): Promise<void> {

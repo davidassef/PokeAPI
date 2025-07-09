@@ -1,5 +1,6 @@
 ion-content {
   --background: var(--background);
+  padding-bottom: 140px;
 }
 
 // Cards de configurações
@@ -395,5 +396,40 @@ ion-item[button].error {
 
   ion-icon[slot="start"] {
     color: var(--ion-color-danger);
+  }
+}
+
+.header-title-login {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.header-title-text {
+  font-weight: bold;
+  font-size: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+.header-auth-btn {
+  margin-left: 18px;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .header-title-login {
+    flex-direction: row;
+    margin-left: 4px;
+  }
+  .header-title-text {
+    font-size: 17px;
+  }
+  .header-auth-btn {
+    margin-left: 8px;
   }
 }

@@ -65,13 +65,13 @@ class PullSyncScheduler:
         """Sincroniza todos os clientes registrados."""
         try:
             db = next(get_db())
-            result = await pull_service.sync_recent_changes(db)
+            result = await pull_service.sync_with_storage_system(db)
 
-            if result.total_captures > 0:
-                logger.info(f"📥 Sincronizados {result.total_captures} capturas de {result.clients_processed} clientes")
+            if result.get('total_captures', 0) > 0:
+                logger.info(f"📥 Sincronizados {result['total_captures']} capturas de {result['clients_processed']} clientes")
 
-            if result.failed_clients:
-                logger.warning(f"❌ {len(result.failed_clients)} clientes falharam na sincronização")
+            if result.get('failed_clients'):
+                logger.warning(f"❌ {len(result['failed_clients'])} clientes falharam na sincronização")
 
         except Exception as e:
             logger.error(f"❌ Erro na sincronização de clientes: {e}")

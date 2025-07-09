@@ -257,8 +257,14 @@ class ClientServer {
       console.log(`[ClientServer] Health check: ${clientUrl}/api/client/health`);
       console.log(`[ClientServer] Sync data: ${clientUrl}/api/client/sync-data`);
 
-      // Registrar com o backend
+      // Registrar inicialmente com o backend
       this.registerWithBackend();
+
+      // Re-registrar periodicamente a cada 5 minutos para garantir persistência
+      const RE_REGISTRATION_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
+      setInterval(() => {
+        this.registerWithBackend();
+      }, RE_REGISTRATION_INTERVAL_MS);
     });
   }
 

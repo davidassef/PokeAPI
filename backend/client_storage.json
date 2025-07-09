@@ -1,8 +1,6 @@
 {
-  "clients": {
-    "user_1": []
-  },
+  "clients": {},
   "pokemon_counts": {},
-  "last_updated": "2025-07-06T17:50:09.783966",
+  "last_updated": "2025-07-08T23:28:52.884534",
   "version": "1.0"
 }

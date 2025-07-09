@@ -12,6 +12,9 @@ import { MusicPlayerComponent } from './music-player/music-player.component';
 import { SearchFilterComponent } from './search-filter/search-filter.component';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { ErrorNotificationComponent } from './error-notification/error-notification.component';
+import { AuthButtonComponent } from './auth-button/auth-button.component';
+import { AuthModalComponent } from './auth-modal/auth-modal.component';
+import { UserProfileModalComponent } from './user-profile-modal/user-profile-modal.component';
 
 // Shared Modules
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -25,7 +28,10 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     MusicPlayerComponent,
     SearchFilterComponent,
     SidebarMenuComponent,
-    ErrorNotificationComponent
+    ErrorNotificationComponent,
+    AuthButtonComponent,
+    AuthModalComponent,
+    UserProfileModalComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -43,6 +49,9 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     SearchFilterComponent,
     SidebarMenuComponent,
     ErrorNotificationComponent,
+    AuthButtonComponent,
+    AuthModalComponent,
+    UserProfileModalComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,

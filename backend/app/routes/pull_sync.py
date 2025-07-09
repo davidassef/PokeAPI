@@ -230,6 +230,26 @@ async def sync_with_storage(db: Session = Depends(get_db)):
             detail=f"Erro na sincronização com storage: {str(e)}"
         )
 
+@router.post("/force-clear-storage")
+async def force_clear_storage(db: Session = Depends(get_db)):
+    """Força limpeza completa do storage e reconstrói."""
+    try:
+        # Limpar storage
+        pull_service.storage_service.force_clear_and_rebuild()
+        
+        # Forçar sincronização
+        result = await pull_service.sync_with_storage_system(db)
+        
+        return {
+            "message": "Storage limpo e reconstruído com sucesso",
+            "sync_result": result
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao limpar storage: {str(e)}"
+        )
+
 
 @router.get("/storage-ranking")
 async def get_storage_ranking(limit: int = 10):

@@ -1,0 +1,86 @@
+.auth-btn {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  --color: #fff;
+  --border-radius: 22px;
+  --box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10), 0 1.5px 4px rgba(66, 165, 245, 0.10);
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 130px;
+  height: 40px;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s cubic-bezier(.4,0,.2,1), color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.5px;
+  border: none;
+  padding: 0 26px;
+  box-shadow: var(--box-shadow);
+  outline: none;
+}
+.auth-btn:hover, .auth-btn:focus {
+  --background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
+  --color: #fff;
+  box-shadow: 0 4px 20px rgba(25, 118, 210, 0.18), 0 2px 8px rgba(66, 165, 245, 0.12);
+  filter: brightness(1.03);
+  transform: translateY(-1px) scale(1.04);
+}
+.auth-btn:active {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+  filter: brightness(0.98);
+  transform: scale(0.98);
+}
+.user-greeting {
+  margin-left: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  color: inherit;
+}
+@media (max-width: 600px) {
+  .auth-btn {
+    font-size: 13px;
+    min-width: 80px;
+    height: 32px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    padding: 0 10px;
+  }
+  .user-greeting {
+    font-size: 13px;
+  }
+}
+:host ::ng-deep ion-button.auth-btn {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  --color: #fff;
+  --border-radius: 22px;
+  --box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10), 0 1.5px 4px rgba(66, 165, 245, 0.10);
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 130px;
+  height: 40px;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s cubic-bezier(.4,0,.2,1), color 0.18s, box-shadow 0.18s;
+  letter-spacing: 0.5px;
+  border: none;
+  padding: 0 26px;
+  box-shadow: var(--box-shadow);
+  outline: none;
+}
+:host ::ng-deep ion-button.auth-btn:hover,
+:host ::ng-deep ion-button.auth-btn:focus {
+  --background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
+  --color: #fff;
+  box-shadow: 0 4px 20px rgba(25, 118, 210, 0.18), 0 2px 8px rgba(66, 165, 245, 0.12);
+  filter: brightness(1.03);
+  transform: translateY(-1px) scale(1.04);
+}
+:host ::ng-deep ion-button.auth-btn:active {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+  filter: brightness(0.98);
+  transform: scale(0.98);
+} 

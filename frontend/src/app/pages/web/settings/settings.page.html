@@ -3,7 +3,20 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
+    <div class="header-center">
+      <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
+    </div>
+    <div class="header-auth-btn-fixed">
+      <app-auth-button
+        [isAuthenticated]="isAuthenticated"
+        [user]="user"
+        [showUserMenu]="showUserMenu"
+        [abrirLogin]="abrirLogin"
+        [abrirPerfil]="abrirPerfil"
+        [logout]="logout"
+        [toggleUserMenu]="toggleUserMenu"
+      ></app-auth-button>
+    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -159,17 +172,35 @@
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="cloud-done" color="success"></ion-icon>
-        Sincronização com o servidor
+        {{ 'settings_page.sync_with_server' | translate }}
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item lines="none">
-        <ion-label>Sincronização com o servidor</ion-label>
+        <ion-label>{{ 'settings_page.sync_with_server' | translate }}</ion-label>
         <ion-note slot="end" [ngStyle]="{ color: syncPending ? '#b71c1c' : '#2ecc40', 'font-weight': 'bold' }">
-          <span *ngIf="!syncPending">Sincronizado</span>
-          <span *ngIf="syncPending">Pendente</span>
+          <span *ngIf="!syncPending">{{ 'settings_page.synced' | translate }}</span>
+          <span *ngIf="syncPending">{{ 'settings_page.pending' | translate }}</span>
         </ion-note>
       </ion-item>
     </ion-card-content>
   </ion-card>
+
+  <!-- Botão temporário para limpar capturas do usuário -->
+  <ion-card class="settings-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="trash-outline" color="danger"></ion-icon>
+        Limpar todas as capturas (TEMPORÁRIO)
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button color="danger" expand="block" (click)="clearAllCaptured()">
+        Limpar capturas do usuário
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Espaçador para evitar sobreposição do player de música -->
+  <div style="height: 120px;"></div>
 </ion-content>

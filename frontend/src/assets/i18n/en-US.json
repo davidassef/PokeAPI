@@ -98,7 +98,11 @@
     "loading": "Loading captured...",
     "goToHome": "Go to Pokédex",
     "imported": "Captured imported successfully!",
-    "cleared": "All captured have been removed!"
+    "cleared": "All captured have been removed!",
+    "auth_required": "You must be logged in to access your captures.",
+    "login": "Login",
+    "create_account_hint": "Don't have an account?",
+    "create_account_link": "Create one now"
   },
   "ranking": {
     "title": "Global Ranking",
@@ -258,7 +262,10 @@
     "export_captured": "Export captured",
     "import_captured": "Import captured",
     "clear_all_captured": "Clear all captured",
-    "language_updated": "Language updated successfully!"
+    "language_updated": "Language updated successfully!",
+    "sync_with_server": "Sync with server",
+    "synced": "Synced",
+    "pending": "Pending"
   },
   "ranking_page": {
     "most_loved_pokemon": "Most Loved Pokémon",
@@ -512,5 +519,23 @@
       "types_elements": "Element Types",
       "types_movement": "Movement Types"
     }
+  },
+  "capture": {
+    "auth_required": "You must be logged in to capture a Pokémon."
+  },
+  "sync_with_server": "Sync with server",
+  "synced": "Synced",
+  "pending": "Pending",
+  "user": {
+    "greeting": "Hello",
+    "level": "Level",
+    "profile_settings": "Profile Settings",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile",
+    "hello": "Hello"
   }
 }

@@ -498,6 +498,7 @@ class PullSyncService:
                 "error": str(e),
                 "processing_time": time.time() - start_time
             }
+
     async def cleanup_orphaned_and_duplicate_favorites(self, db: Session) -> Dict[str, any]:
         """
         Remove favoritos órfãos (sem usuários correspondentes) e duplicados.
@@ -619,6 +620,9 @@ class PullSyncService:
         start_time = time.time()
         logger.info("🔄 Iniciando sincronização com sistema de storage")
 
+        # LIMPA O STORAGE consolidado antes de processar os clientes
+        self.storage_service.clear_storage()
+
         clients_processed = 0
         failed_clients = []
         total_captures = 0
@@ -627,9 +631,9 @@ class PullSyncService:
             # 1. Coletar dados de todos os clientes
             for user_id, registration in self.registered_clients.items():
                 try:
-                    # Buscar TODAS as capturas do cliente
+                    # Buscar capturas pendentes do cliente (não todas)
                     response = await self.http_client.get(
-                        f"{registration.client_url}/api/client/all-captures",
+                        f"{registration.client_url}/api/client/sync-data",
                         timeout=15.0
                     )
 
@@ -637,17 +641,36 @@ class PullSyncService:
                         client_data = response.json()
                         captures = client_data.get('captures', [])
 
-                        # Filtrar apenas capturas ativas (não removidas)
-                        active_captures = []
-                        for capture in captures:
+                        # Processar capturas cronologicamente para determinar estado final
+                        # Ordenar por timestamp para processar em ordem cronológica
+                        sorted_captures = sorted(captures, key=lambda c: c.get('timestamp', ''))
+                        
+                        # Determinar estado final de cada pokémon
+                        pokemon_states = {}
+                        for capture in sorted_captures:
+                            pokemon_id = capture['pokemon_id']
                             metadata = capture.get('metadata', {})
                             is_removed = metadata.get('removed', False)
-
-                            if not is_removed and capture.get('action') in ('capture', 'favorite'):
+                            
+                            if capture.get('action') in ('capture', 'favorite'):
+                                if is_removed:
+                                    pokemon_states[pokemon_id] = False  # Removido
+                                else:
+                                    pokemon_states[pokemon_id] = True   # Capturado
+                        
+                        # Criar lista apenas com pokémons ativos (capturados)
+                        active_captures = []
+                        for pokemon_id, is_captured in pokemon_states.items():
+                            if is_captured:
+                                # Buscar nome do pokémon
+                                pokemon_name = next(
+                                    (c['pokemon_name'] for c in captures if c['pokemon_id'] == pokemon_id),
+                                    f"pokemon_{pokemon_id}"
+                                )
                                 active_captures.append({
-                                    'pokemon_id': capture['pokemon_id'],
-                                    'pokemon_name': capture['pokemon_name'],
-                                    'timestamp': capture['timestamp']
+                                    'pokemon_id': pokemon_id,
+                                    'pokemon_name': pokemon_name,
+                                    'timestamp': datetime.now().isoformat()
                                 })
 
                         # Atualizar storage do cliente

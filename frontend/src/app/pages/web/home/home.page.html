@@ -3,7 +3,20 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ 'tabs.home' | translate }}</ion-title>
+    <div class="header-center">
+      <ion-title>{{ 'tabs.home' | translate }}</ion-title>
+    </div>
+    <div class="header-auth-btn-fixed">
+      <app-auth-button
+        [isAuthenticated]="isAuthenticated"
+        [user]="user"
+        [showUserMenu]="showUserMenu"
+        [abrirLogin]="abrirLogin"
+        [abrirPerfil]="abrirPerfil"
+        [logout]="logout"
+        [toggleUserMenu]="toggleUserMenu"
+      ></app-auth-button>
+    </div>
     <ion-buttons slot="end">
       <ion-button (click)="toggleSearch()">
         <ion-icon name="search-outline"></ion-icon>

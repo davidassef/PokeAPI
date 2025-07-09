@@ -163,3 +163,17 @@ class ClientStorageService:
         self.data = self._create_empty_storage()
         self._save_storage()
         logger.info("🧹 Storage limpo")
+    
+    def force_clear_and_rebuild(self):
+        """Força limpeza completa e reconstrói storage."""
+        logger.info("🔄 Forçando limpeza completa do storage")
+        
+        # Remover arquivo de storage se existir
+        if self.storage_file.exists():
+            self.storage_file.unlink()
+            logger.info(f"🗑️ Arquivo de storage removido: {self.storage_file}")
+        
+        # Recriar storage vazio
+        self.data = self._create_empty_storage()
+        self._save_storage()
+        logger.info("✅ Storage recriado do zero")

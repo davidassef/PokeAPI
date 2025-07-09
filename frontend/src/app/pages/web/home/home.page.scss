@@ -210,6 +210,17 @@ ion-content {
   ion-fab[vertical="bottom"][horizontal="start"] {
     margin-bottom: 60px;
   }
+
+  .header-title-login {
+    flex-direction: row;
+    margin-left: 4px;
+  }
+  .header-title-text {
+    font-size: 17px;
+  }
+  .header-auth-btn {
+    margin-left: 8px;
+  }
 }
 
 // Dark theme support
@@ -290,4 +301,54 @@ ion-content {
 
 ion-fab[vertical="bottom"][horizontal="start"] {
   margin-bottom: 70px;
+}
+
+ion-toolbar {
+  .user-greeting {
+    margin-left: 6px;
+    font-weight: 500;
+    font-size: 15px;
+    color: #fff;
+  }
+  ion-button[color="secondary"] {
+    --background: var(--ion-color-secondary);
+    --color: #fff;
+    --border-radius: 8px;
+    --box-shadow: none;
+    margin-left: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 0 16px;
+    min-width: 110px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  ion-button {
+    margin-left: 8px;
+  }
+}
+
+.header-title-login {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.header-title-text {
+  font-weight: bold;
+  font-size: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+.header-auth-btn {
+  margin-left: 18px;
+  display: flex;
+  align-items: center;
 }

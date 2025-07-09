@@ -3,9 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: true,
-  apiUrl: 'https://pokeapi-la6k.onrender.com',  // Backend em produção
-  clientServerUrl: 'https://pokeapiapp-client-server.onrender.com'  // Client-server em produção
+  production: false,
+  apiUrl: 'http://localhost:8000',  // Backend local para desenvolvimento
+  clientServerUrl: 'http://localhost:3001'  // Client-server local
 };
 
 /*
