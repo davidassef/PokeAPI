@@ -19,9 +19,11 @@ PokeAPIApp/
 │   │   └── 📁 utils/              # Funções utilitárias
 │   ├── 📁 docs/                   # Documentação específica do backend
 │   ├── 📁 tests/                  # Testes do backend
+│   ├── 📁 logs/                   # Logs do backend
 │   ├── 📄 main.py                 # Ponto de entrada da aplicação
 │   ├── 📄 requirements.txt        # Dependências Python
-│   └── 📄 pytest.ini             # Configuração de testes
+│   ├── 📄 pytest.ini             # Configuração de testes
+│   └── 📄 README.md               # Documentação principal
 │
 ├── 📁 frontend/                   # Aplicação Ionic + Angular
 │   ├── 📁 src/                    # Código fonte
@@ -43,19 +45,7 @@ PokeAPIApp/
 │   ├── 📄 railway.json            # Configuração Railway
 │   └── 📄 render.yaml             # Configuração Render
 │
-├── 📁 data/                       # Bancos de dados
-│   ├── 📄 pokemon_app.db          # Banco principal
-│   └── 📄 test_pokemon.db         # Banco de testes
-│
-├── 📁 docs/                       # Documentação geral
-│   ├── 📄 AUTH_SISTEMA_SIMPLIFICADO.md
-│   ├── 📄 DEVELOPMENT_PLAN.md
-│   ├── 📄 PROJECT_STRUCTURE.md
-│   ├── 📄 README_PULL_SYNC.md
-│   ├── 📄 README_RANKING_SYSTEM.md
-│   └── 📄 SYNC_COMPLETE_GUIDE.md
-│
-├── 📁 scripts/                    # Scripts de automação
+├── 📁 scripts/                    # Scripts de automação e deploy
 │   ├── 📁 build/                  # Scripts de build
 │   │   ├── 📄 build-backend.sh
 │   │   └── 📄 build-frontend.sh
@@ -68,12 +58,14 @@ PokeAPIApp/
 │   │   ├── 📄 start-pull-sync-only.sh
 │   │   ├── 📄 start-pull-sync.bat
 │   │   └── 📄 start-pull-sync.sh
-│   └── 📁 sync/                   # Scripts de sincronização
-│       ├── 📄 pull-sync.env
-│       ├── 📄 PULL_SYNC_FINAL.md
-│       └── 📄 pull_sync_test_results.json
+│   └── 📁 legacy/                 # Scripts de inicialização e utilitários antigos
+│       ├── 📄 start-backend.sh
+│       ├── 📄 start-frontend.sh
+│       ├── 📄 start-pull-sync-only.sh
+│       ├── 📄 start-pull-sync.bat
+│       └── 📄 start-pull-sync.sh
 │
-├── 📁 tests/                      # Testes end-to-end
+├── 📁 tests/                      # Testes end-to-end integrados
 │   └── 📁 e2e/                    # Testes E2E globais
 │
 ├── 📁 .github/                    # GitHub Actions e instruções
@@ -94,6 +86,9 @@ PokeAPIApp/
 - **schemas/**: Validação e serialização com Pydantic
 - **services/**: Lógica de negócio
 - **utils/**: Funções utilitárias e helpers
+- **data/**: Bancos de dados SQLite e arquivos de dados
+- **scripts/**: Scripts Python utilitários e de manutenção
+- **logs/**: Logs do backend
 
 ### Frontend (`/frontend/`)
 - **src/app/**: Aplicação Angular principal
@@ -102,12 +97,15 @@ PokeAPIApp/
 - **pages/**: Páginas/rotas da aplicação
 - **models/**: Interfaces e tipos TypeScript
 - **services/**: Serviços para comunicação com API
+- **assets/**: Recursos estáticos
+- **environments/**: Configurações de ambiente
 
 ### Scripts (`/scripts/`)
 - **build/**: Scripts de construção da aplicação
 - **database/**: Scripts de migração e limpeza de dados
 - **deployment/**: Scripts de deploy e inicialização
 - **sync/**: Scripts de sincronização de dados
+- **legacy/**: Scripts de inicialização e utilitários antigos
 
 ### Configurações (`/config/`)
 - Arquivos de configuração de deploy (Railway, Render)

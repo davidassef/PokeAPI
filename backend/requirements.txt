@@ -1,42 +1,19 @@
-# FastAPI e ASGI
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+# Requisitos para rodar o backend e scripts de tradução com Python 3.11
+# 
+# Recomendações:
+# 1. Instale o Python 3.11: https://www.python.org/downloads/release/python-3110/
+# 2. Crie um ambiente virtual:
+#    python3.11 -m venv venv
+#    venv\Scripts\activate  (Windows)
+#    source venv/bin/activate (Linux/Mac)
+# 3. Instale as dependências:
+#    pip install -r requirements.txt
 
-# Database
-sqlalchemy==2.0.36
-alembic==1.13.3
-
-# Validation
-pydantic==2.10.2
-pydantic-settings==2.6.1
-email-validator==2.1.1
-
-# Authentication
-PyJWT==2.8.0
-passlib[bcrypt]==1.7.4
-python-jose[cryptography]==3.3.0
-python-multipart==0.0.6
-
-# HTTP Requests
-httpx==0.25.2
-aiohttp==3.9.1
-requests==2.31.0
-
-# CORS
-fastapi-cors==0.0.6
-
-# Environment
-python-dotenv==1.0.0
-
-# Logging
-loguru==0.7.2
-
-# Development and Testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
-httpx==0.25.2
-black==23.11.0
-flake8==6.1.0
-mypy==1.7.1
-factory-boy==3.3.0
+# Dependências do backend
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-dotenv
+# Dependência para tradução automática
+googletrans==4.0.0-rc1 
