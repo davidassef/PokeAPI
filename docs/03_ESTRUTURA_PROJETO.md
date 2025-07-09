@@ -60,21 +60,35 @@ PokeAPIApp/
 │   │   ├── 📄 build-backend.sh
 │   │   └── 📄 build-frontend.sh
 │   ├── 📁 database/               # Scripts de banco de dados
+│   │   ├── 📄 add_sample_data.py
 │   │   ├── 📄 clean_database.py
 │   │   └── 📄 verify-config.sh
 │   ├── 📁 deployment/             # Scripts de deploy
+│   │   ├── 📄 quick-start.sh
 │   │   ├── 📄 start-backend.sh
 │   │   ├── 📄 start-frontend.sh
 │   │   ├── 📄 start-pull-sync-only.sh
 │   │   ├── 📄 start-pull-sync.bat
-│   │   └── 📄 start-pull-sync.sh
+│   │   ├── 📄 start-pull-sync.sh
+│   │   ├── 📄 start_client_server.bat
+│   │   ├── 📄 start_ranking_system.bat
+│   │   ├── 📄 start_ranking_system.ps1
+│   │   └── 📄 start_ranking_system.py
 │   └── 📁 sync/                   # Scripts de sincronização
 │       ├── 📄 pull-sync.env
 │       ├── 📄 PULL_SYNC_FINAL.md
 │       └── 📄 pull_sync_test_results.json
 │
 ├── 📁 tests/                      # Testes end-to-end
-│   └── 📁 e2e/                    # Testes E2E globais
+│   ├── 📁 e2e/                    # Testes E2E globais
+│   └── 📄 test_ranking_system.py  # Testes do sistema de ranking
+│
+├── 📁 tools/                      # Ferramentas de debug e utilidades
+│   └── 📄 debug_storage.html      # Debug do localStorage
+│
+├── 📁 config/                     # Configurações de deploy
+│
+├── 📁 data/                       # Dados persistentes
 │
 ├── 📁 .github/                    # GitHub Actions e instruções
 │   └── 📁 instructions/           # Instruções para desenvolvimento
@@ -108,6 +122,14 @@ PokeAPIApp/
 - **database/**: Scripts de migração e limpeza de dados
 - **deployment/**: Scripts de deploy e inicialização
 - **sync/**: Scripts de sincronização de dados
+
+### Testes (`/tests/`)
+- **e2e/**: Testes end-to-end globais
+- **test_ranking_system.py**: Testes específicos do sistema de ranking
+
+### Ferramentas (`/tools/`)
+- **debug_storage.html**: Ferramenta de debug para localStorage
+- Utilitários e ferramentas de desenvolvimento
 
 ### Configurações (`/config/`)
 - Arquivos de configuração de deploy (Railway, Render)

@@ -44,7 +44,7 @@ timeout /t 10 /nobreak >nul
 
 echo 📊 Adicionando dados de exemplo...
 cd backend
-python add_sample_data.py
+python ../scripts/database/add_sample_data.py
 cd ..
 
 echo ⏳ Aguardando processamento...
@@ -52,7 +52,7 @@ timeout /t 5 /nobreak >nul
 
 echo 🧪 Testando sistema...
 cd backend
-python test_ranking_system.py
+python ../tests/test_ranking_system.py
 cd ..
 
 echo.
