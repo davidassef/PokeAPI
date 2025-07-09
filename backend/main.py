@@ -2,14 +2,37 @@
 Aplicação principal FastAPI - PokeAPI Backend.
 """
 import logging
+import os
+from datetime import datetime
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import time
 from contextlib import asynccontextmanager
 
 # Configurar logging
-logging.basicConfig(level=logging.INFO)
+log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+
+# Configuração do logger principal
+log_filename = f'app_{datetime.now().strftime("%Y%m%d")}.log'
+log_file = os.path.join(log_dir, log_filename)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file, encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+
+# Desativar logs de bibliotecas externas
+logging.getLogger('passlib').setLevel(logging.WARNING)
+logging.getLogger('sqlalchemy').setLevel(logging.WARNING)
+logging.getLogger('uvicorn').setLevel(logging.WARNING)
+logging.getLogger('fastapi').setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
+logger.info("Iniciando aplicação FastAPI")
 
 
 @asynccontextmanager
@@ -47,18 +70,67 @@ app = FastAPI(
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
+    """Middleware para log detalhado de requisições e respostas."""
+    request_id = f"{time.time():.0f}-{os.urandom(4).hex()}"
     start_time = time.time()
-
+    
     # Log da requisição
-    logger.info(f"🔍 {request.method} {request.url}")
-    logger.info(f"📋 Headers: {dict(request.headers)}")
-
-    response = await call_next(request)
-
+    logger.info(
+        "[%s] %s %s\nHeaders: %s\nQuery Params: %s",
+        request_id,
+        request.method,
+        request.url,
+        {k: v for k, v in request.headers.items() 
+         if k.lower() not in ['authorization']},
+        dict(request.query_params)
+    )
+    
+    # Capturar o corpo da requisição se for POST/PUT
+    if request.method in ("POST", "PUT"):
+        body = await request.body()
+        if body:
+            try:
+                logger.debug(
+                    "[%s] Request Body: %s", 
+                    request_id, 
+                    body.decode()
+                )
+            except UnicodeDecodeError:
+                logger.debug("[%s] Request Body: <binary data>", request_id)
+    
+    try:
+        response = await call_next(request)
+    except Exception as e:
+        logger.exception(
+            "[%s] Erro ao processar requisição: %s",
+            request_id,
+            str(e)
+        )
+        raise
+    
     # Log da resposta
-    process_time = time.time() - start_time
-    logger.info(f"✅ {request.method} {request.url} - Status: {response.status_code} - Time: {process_time:.2f}s")
-
+    process_time = (time.time() - start_time) * 1000
+    
+    # Log detalhado para erros 4xx/5xx
+    if response.status_code >= 400:
+        logger.warning(
+            "[%s] %s %s - Status: %d - Time: %.2fms",
+            request_id,
+            request.method,
+            request.url,
+            response.status_code,
+            process_time
+        )
+    else:
+        logger.info(
+            "[%s] %s %s - Status: %d - Time: %.2fms",
+            request_id,
+            request.method,
+            request.url,
+            response.status_code,
+            process_time
+        )
+    
     return response
 
 # CORS Configuration
@@ -68,25 +140,56 @@ origins = [
     "http://localhost:8100",  # Ionic
     "http://localhost:8080",  # Outros servidores locais
     "http://localhost",
+    "http://127.0.0.1:8100",  # Ionic (alternativo)
+    "http://localhost:5173",   # Vite/React
     "https://your-production-domain.com",
 ]
 
 # Adiciona o middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Lista de origens permitidas
-    allow_credentials=True,  # Permite credenciais (cookies, headers de autenticação)
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Métodos permitidos
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos os métodos
     allow_headers=[
+        "*",  # Permite todos os headers
         "Authorization",
         "Content-Type",
         "Accept",
         "Origin",
-        "X-Requested-With"
-    ],  # Headers permitidos
-    expose_headers=["Content-Disposition"],  # Headers expostos
-    max_age=600,  # Tempo de cache para pré-voo (em segundos)
+        "X-Requested-With",
+        "X-CSRF-Token",
+        "Access-Control-Allow-Origin",
+    ],
+    expose_headers=[
+        "Content-Disposition",
+        "Content-Length",
+        "X-Request-ID",
+    ],
+    max_age=86400,  # 24 horas
 )
+
+# Adiciona headers CORS manualmente para garantir compatibilidade
+
+
+@app.middleware("http")
+async def add_cors_headers(request: Request, call_next):
+    """Adiciona headers CORS manualmente para garantir compatibilidade."""
+    origin = request.headers.get("origin")
+    
+    # Verifica se a origem está na lista de origens permitidas
+    if origin and any(origin.startswith(allowed) for allowed in origins):
+        response = await call_next(request)
+        
+        # Adiciona headers CORS
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        
+        return response
+    
+    return await call_next(request)
 
 # Imports tardios para evitar problemas de inicialização
 try:
