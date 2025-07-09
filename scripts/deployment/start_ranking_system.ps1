@@ -59,7 +59,7 @@ Start-Sleep -Seconds 10
 # Adicionar dados de exemplo
 Write-Host "📊 Adicionando dados de exemplo..." -ForegroundColor Yellow
 Set-Location "backend"
-python add_sample_data.py
+python ../scripts/database/add_sample_data.py
 Set-Location ".."
 
 Write-Host "⏳ Aguardando processamento..." -ForegroundColor Yellow
@@ -68,7 +68,7 @@ Start-Sleep -Seconds 5
 # Testar sistema
 Write-Host "🧪 Testando sistema..." -ForegroundColor Yellow
 Set-Location "backend"
-python test_ranking_system.py
+python ../tests/test_ranking_system.py
 Set-Location ".."
 
 Write-Host ""

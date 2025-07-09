@@ -289,9 +289,9 @@ npm start
 
 ```bash
 # Método rápido - usar o script interativo (se disponível)
-if [ -f "./quick-start.sh" ]; then
-    chmod +x ./quick-start.sh
-    ./quick-start.sh
+if [ -f "./scripts/deployment/quick-start.sh" ]; then
+    chmod +x ./scripts/deployment/quick-start.sh
+    ./scripts/deployment/quick-start.sh
 else
     echo "Script quick-start.sh não encontrado. Prosseguindo com a instalação manual..."
 fi
