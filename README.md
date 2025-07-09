@@ -1,28 +1,93 @@
 # 🚀 PokeAPIApp - Aplicativo Pokémon Full-Stack
 
-<div align="center">
-
-[![Status](https://img.shields.io/badge/Status-Em%20Produ%C3%A7%C3%A3o-brightgreen?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
-[![Demo](https://img.shields.io/badge/Demo-Online-success?style=for-the-badge&logo=render)](https://pokeapi-frontend.onrender.com)
+[![Status](https://img.shields.io/badge/Status-Em%20Manuten%C3%A7%C3%A3o-yellow?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
-[![Backend](https://img.shields.io/badge/Backend-FastAPI-green?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Database](https://img.shields.io/badge/Database-SQLite-orange?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
+[![Backend](https://img.shields.io/badge/Backend-Em%20Atualiza%C3%A7%C3%A3o-red?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Status](https://img.shields.io/badge/Funcionalidades-Pokédex%20Dispon%C3%ADvel-blueviolet?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
 
-**🎯 Um aplicativo moderno e completo para explorar o mundo Pokémon!**
+## 🎯 Sobre o Projeto
 
-*Integração com PokéAPI • Interface Web 100% Completa • Sistema de Favoritos • Multiplataforma*
+Um aplicativo moderno e completo para explorar o mundo Pokémon!
 
-> **🚀 Status Atual:** Aplicação full-stack completamente deployada e funcional no Render!
+### Principais Características
 
-> **🌐 Demo Online:** [**Acesse o app no Render!**](https://pokeapi-frontend.onrender.com) | Backend: [API](https://pokeapi-la6k.onrender.com)
+- Integração com PokéAPI
+- Interface Web 100% Completa
+- Sistema de Favoritos
+- Multiplataforma
 
-</div>
+## ⚠️ Status Atual
+
+O backend está em manutenção para atualizações do sistema de autenticação. Apenas a funcionalidade de Pokédex está disponível no momento.
+
+## 📱 Funcionalidades Disponíveis
+
+- Visualização da Pokédex
+- Busca de Pokémon
+- Detalhes dos Pokémon
+
+## 🔧 Em Manutenção
+
+- Sistema de autenticação
+- Favoritos
+- Ranking
+- Perfil do usuário
 
 ---
 
 ## 📱 Sobre o Projeto
 
+## 📋 Visão Geral
+
 O **PokeAPIApp** é uma aplicação full-stack moderna que permite aos usuários explorar, favoritar e conhecer detalhes sobre Pokémon através de uma interface intuitiva e responsiva. O projeto combina as melhores tecnologias web e mobile para oferecer uma experiência excepcional.
+
+## 📊 Status de Desenvolvimento (09/07/2024)
+
+## 🚀 Últimas Atualizações
+
+- **Backend em Manutenção**: Sistema de autenticação em atualização
+- **Frontend Otimizado**: Removida a dependência do client-server local
+- **Performance**: Melhorias na inicialização da aplicação
+
+## ✅ Funcionalidades Ativas
+
+### Pokédex Completa
+
+- Visualização de todos os Pokémon
+- Busca avançada
+- Filtros por tipo e região
+- Detalhes completos de cada Pokémon
+
+## 🎨 Experiência do Usuário
+
+- Tema claro/escuro
+- Interface responsiva
+- Navegação intuitiva
+- Carregamento otimizado de imagens
+
+## 🛠️ Em Desenvolvimento
+
+### Sistema de Autenticação
+
+- Novo servidor de autenticação em implantação
+- Melhorias na segurança
+
+  - Suporte a redes sociais  
+
+- **Recursos Futuros**  
+  - Sistema de favoritos aprimorado  
+  - Ranking competitivo  
+  - Perfil do usuário personalizável  
+  - Batalhas online  
+
+#### 📅 Próximos Passos
+
+1. Conclusão da migração do sistema de autenticação  
+2. Reativação gradativa das funcionalidades  
+3. Testes de carga e segurança  
+4. Lançamento da próxima versão estável  
+
+Agradecemos sua paciência enquanto trabalhamos para trazer uma experiência ainda melhor! 🚀
 
 ### ✨ Diferenciais
 
@@ -76,7 +141,11 @@ backend/app/
 └── utils/             # Funções utilitárias
 ```
 
-> 📖 **Documentação Completa**: Consulte [`docs/README.md`](docs/README.md) para todos os guias essenciais
+## 📖 Documentação Completa
+
+## 📚 Documentação
+
+Consulte [docs/README.md](docs/README.md) para todos os guias essenciais
 
 ---
 
@@ -139,6 +208,12 @@ backend/app/
 
 ## 🚀 Como Executar
 
+> **⚠️ Nota Importante (08/07/2024):** 
+> - O backend está em manutenção para atualizações no sistema de autenticação
+> - Apenas a funcionalidade de Pokédex está disponível no momento
+> - As seções de autenticação, favoritos e ranking estão temporariamente desativadas
+> - Consulte a seção [Status Atual](#-sobre-o-projeto) para mais detalhes
+
 ### Pré-requisitos
 - Node.js 18+ e npm
 - Python 3.11+
@@ -150,82 +225,292 @@ git clone https://github.com/davidassef/PokeAPI.git
 cd PokeAPI
 ```
 
-### 2️⃣ Configure o Backend
+### 1️⃣ Configure o Backend
+
+> **⚠️ Importante (09/07/2024):**
+> - O backend está em manutenção para atualizações no sistema de autenticação  
+> - Apenas a funcionalidade de Pokédex está disponível no momento  
+> - O frontend utiliza dados mockados para a Pokédex  
+> - O client-server local foi removido para melhorar a performance
+
 ```bash
 cd backend
 
 # Instale as dependências
 pip install -r requirements.txt
 
-# Execute as migrações
+# Execute as migrações (opcional durante a manutenção)
 alembic upgrade head
 
-# Inicie o servidor
+# Inicie o servidor (opcional durante a manutenção)
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# Nota: O frontend continuará funcionando sem o backend,
+# mas com funcionalidades limitadas (apenas Pokédex)
 ```
 
 ### 3️⃣ Configure o Frontend
+
 ```bash
+# Navegue até a pasta do frontend
 cd frontend
 
 # Instale as dependências
 npm install
 
 # Inicie o servidor de desenvolvimento
-ionic serve
+npm start
+
+# Alternativamente, você pode usar
+# ionic serve
 ```
 
 ### 4️⃣ Acesse a Aplicação
-- **Frontend**: http://localhost:8100
-- **Backend API**: http://localhost:8000
-- **Documentação API**: http://localhost:8000/docs
 
-### 🚀 Quick Start
+#### 🌐 Frontend (Funcional)
+- **URL**: [http://localhost:8100](http://localhost:8100)
+- **Funcionalidades disponíveis**:
+  - Pokédex completa
+  - Busca e filtros de Pokémon
+  - Visualização detalhada
+- **Observação**: Dados mockados para visualização
+
+#### ⚙️ Backend (Em Manutenção)
+- **URL**: [http://localhost:8000](http://localhost:8000)
+- **Status**: Sistema de autenticação em atualização
+- **Endpoints protegidos**: Temporariamente indisponíveis
+
+#### 📚 Documentação da API
+- **URL**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Status**: Parcialmente disponível
+- **Observação**: Algumas rotas podem não estar funcionando durante a manutenção
+
+### 🚀 Início Rápido
+
 ```bash
-# Método rápido - usar o script interativo
-./quick-start.sh
+# Método rápido - usar o script interativo (se disponível)
+if [ -f "./quick-start.sh" ]; then
+    chmod +x ./quick-start.sh
+    ./quick-start.sh
+else
+    echo "Script quick-start.sh não encontrado. Prosseguindo com a instalação manual..."
+fi
 
 # Ou configurar manualmente
-./scripts/setup-workspace.sh
+if [ -d "./scripts" ] && [ -f "./scripts/setup-workspace.sh" ]; then
+    chmod +x ./scripts/setup-workspace.sh
+    ./scripts/setup-workspace.sh
+fi
 ```
 
-### 🎯 VS Code Workspace
+### 🎯 Configuração do VS Code
+
 ```bash
 # Abrir o workspace configurado no VS Code
-code PokeAPIApp.code-workspace
+if [ -f "PokeAPIApp.code-workspace" ]; then
+    code PokeAPIApp.code-workspace
+else
+    echo "Arquivo de workspace não encontrado. Abrindo o diretório atual..."
+    code .
+fi
 ```
 
 ---
 
 ## 📱 Build para Mobile
 
+### Pré-requisitos
+
+- [Node.js](https://nodejs.org/) 18+ e npm
+- [Ionic CLI](https://ionicframework.com/docs/cli) instalado globalmente
+- Para Android:
+  - [Android Studio](https://developer.android.com/studio) instalado
+  - Variáveis de ambiente do Android SDK configuradas
+- Para iOS (apenas em macOS):
+  - [Xcode](https://developer.apple.com/xcode/) instalado
+  - CocoaPods instalado (`sudo gem install cocoapods`)
+
 ### Android
+
 ```bash
+# Navegue até o diretório do frontend
 cd frontend
+
+# Instale as dependências do projeto
+npm install
+
+# Adicione a plataforma Android ao projeto
 ionic capacitor add android
+
+# Construa o aplicativo
 ionic capacitor build android
+
+# Abra o projeto no Android Studio
 ionic capacitor open android
+
+# Para executar em um dispositivo ou emulador conectado
+# ionic capacitor run android
 ```
 
 ### iOS
+
 ```bash
+# Navegue até o diretório do frontend
 cd frontend
+
+# Instale as dependências do projeto
+npm install
+
+# Adicione a plataforma iOS ao projeto
 ionic capacitor add ios
+
+# Instale as dependências do iOS
+cd ios/App
+pod install
+cd ../..
+
+# Construa o aplicativo
 ionic capacitor build ios
+
+# Abra o projeto no Xcode
 ionic capacitor open ios
+
+# Para executar em um simulador ou dispositivo iOS conectado
+# ionic capacitor run ios
 ```
+
+### Observações Importantes
+
+- Certifique-se de que seu ambiente de desenvolvimento esteja corretamente configurado antes de tentar construir o aplicativo
+- Para iOS, é necessário um Mac com Xcode instalado
+- O aplicativo pode ser executado em emuladores/dispositivos físicos para testes
+- Consulte a [documentação do Ionic](https://ionicframework.com/docs) para solução de problemas específicos de plataforma
 
 ---
-
 ## 🧪 Testes
 
+### Pré-requisitos
+
+- Node.js 18+ e npm instalados
+- Python 3.9+ e pip instalados
+- Dependências do projeto instaladas (frontend e backend)
+- Ambiente virtual Python ativado (recomendado)
+
 ### Backend
+
+O backend utiliza o framework de testes `pytest` para testes unitários e de integração, juntamente com `pytest-cov` para cobertura de código.
+
+#### Executando todos os testes
+
 ```bash
+# Navegue até o diretório do backend
 cd backend
-pytest tests/ -v --cov=app --cov-report=html
+
+# Instale as dependências de desenvolvimento (se ainda não instaladas)
+pip install -r requirements-dev.txt
+
+# Execute todos os testes com cobertura
+pytest tests/ -v --cov=app --cov-report=term --cov-report=html
+
+# Abra o relatório de cobertura no navegador
+start htmlcov/index.html  # Windows
+# ou
+xdg-open htmlcov/index.html  # Linux
+# ou
+open htmlcov/index.html  # macOS
 ```
 
+#### Opções úteis
+
+```bash
+# Executar testes específicos
+pytest tests/test_models.py -v
+pytest tests/test_routes/ -v
+
+# Executar testes com cobertura mínima (80%)
+pytest --cov=app --cov-fail-under=80 tests/
+
+# Executar testes com relatório detalhado
+pytest -v --tb=long --cov=app --cov-report=term-missing
+```
+
+#### Testes de API
+
+Para testar os endpoints da API, você pode usar o `TestClient` do FastAPI ou ferramentas como Postman/Insomnia.
+
 ### Frontend
+
+O frontend utiliza o framework de testes do Angular (Jasmine + Karma) para testes unitários e o Cypress para testes de integração.
+
+#### Testes Unitários
+
+```bash
+# Navegue até o diretório do frontend
+cd frontend
+
+# Instale as dependências (se ainda não instaladas)
+npm install
+
+# Execute os testes unitários
+ng test
+
+# Executar testes em modo watch
+ng test --watch=true
+```
+
+#### Testes de Integração (Cypress)
+
+```bash
+# Instale o Cypress (se ainda não instalado)
+npm install -g cypress
+
+# Execute os testes de integração
+ng e2e
+
+# Ou execute o Cypress no modo interativo
+npx cypress open
+```
+
+#### Testes de Acessibilidade
+
+```bash
+# Instale o pa11y (ferramenta de acessibilidade)
+npm install -g pa11y
+
+# Execute testes de acessibilidade
+pa11y http://localhost:8100
+```
+
+#### Geração de Relatórios
+
+```bash
+# Gerar relatório de cobertura de testes
+ng test --code-coverage
+
+# Visualizar relatório de cobertura
+start coverage/html/index.html  # Windows
+# ou
+xdg-open coverage/html/index.html  # Linux
+# ou
+open coverage/html/index.html  # macOS
+```
+
+### Testes de Performance
+
+Para testar a performance da aplicação, você pode usar ferramentas como Lighthouse:
+
+```bash
+# Instale o Lighthouse globalmente
+npm install -g lighthouse
+
+# Execute o Lighthouse contra a aplicação
+lighthouse http://localhost:8100 --view
+```
+
+### Testes em Pipeline CI/CD
+
+O projeto inclui configurações para execução automatizada de testes em pipelines de CI/CD. Consulte os arquivos `.github/workflows` para mais detalhes.
+
 ```bash
 cd frontend
 ng test
@@ -240,20 +525,10 @@ ng e2e
 
 | Módulo | Status | Progresso |
 |--------|--------|-----------|
+|--------|--------|-----------|
 | 🎨 UI/UX Design | ✅ Completo | 100% |
 | 🏗️ Arquitetura | ✅ Completo | 100% |
 | 📱 Frontend Core | ✅ Completo | 100% |
-| 🔧 Backend API | ✅ Completo | 100% |
-| 🧪 Testes | 🚧 Em andamento | 70% |
-| 📱 Mobile Build | 🚧 Em andamento | 50% |
-| 🌐 Deploy | ✅ Completo | 100% |
-
-### Últimas Atualizações
-
-<details>
-<summary><strong>📋 Clique para expandir o histórico completo de atualizações</strong></summary>
-
-- 🚀 **[02/07/2025] Sistema de Cooldown do Botão Surpreenda-me:**
   - Implementado cooldown de 3 segundos entre usos para evitar spam de requisições
   - Reabertura automática: fecha modal atual e abre novo Pokémon aleatório
   - Animações visuais: pulso, rotação do ícone e contador visual durante cooldown
@@ -317,23 +592,29 @@ ng e2e
 
 - 🚀 **[27/06/2025]** Refatoração completa da página de ranking para evitar loop infinito no Angular
 
-- 🏆 **[27/06/2025] Novidades visuais no Ranking:**
-  - Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
-  - Badges de posição e contagem de capturas integrados aos cards
-  - Grid responsivo e centralizado para os demais Pokémons
-  - Título criativo com ícone, gradiente e espaçamento aprimorado
+### 🏆 27/06/2025 - Novidades visuais no Ranking
+
+- Pódio real animado para o Top 3 (coroa, medalhas, destaque visual)
+- Badges de posição e contagem de capturas integrados aos cards
+- Grid responsivo e centralizado para os demais Pokémons
+- Título criativo com ícone, gradiente e espaçamento aprimorado
   - Alinhamento refinado e visual moderno, sem afetar outras páginas
   - Para customizar o visual do ranking, edite apenas os arquivos:
     - `frontend/src/app/pages/ranking/ranking.page.html`
     - `frontend/src/app/pages/ranking/ranking.page.scss`
 
-- ⚠️ **[26/06/2025]** Pendente: ajuste do backend do ranking global para integração completa
+## ⚠️ Pendências (26/06/2025)
 
-- ✅ **[26/06/2025]** Build do frontend validado e funcionando sem erros após remoção da página de favoritos
+- Ajuste do backend do ranking global para integração completa
+- Build do frontend validado e funcionando sem erros após remoção da página de favoritos
+- Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
 
-- 🧹 **[26/06/2025]** Garantido que não há mais referências a FavoritesPage em rotas, menu ou outros pontos do projeto
+## 🛠️ 26/06/2025 - Refatoração do Frontend
 
-- 🛠️ **[26/06/2025]** Refatoração do frontend: padronização visual, responsividade, integração real com backend FastAPI para ranking global/local e sincronização de capturas/favoritos
+- Padronização visual
+- Melhorias na responsividade
+- Integração com backend FastAPI para ranking global/local
+- Sincronização de capturas e favoritos
 
 - 🛡️ **[26/06/2025]** Página de favoritos desativada e removida dos módulos do frontend para build limpo
 
@@ -416,7 +697,8 @@ ng e2e
 - Alinhamento refinado e visual moderno, sem afetar outras páginas
 
 ### Customização do Ranking
-- Para customizar o visual do ranking, edite apenas os arquivos:
+
+Para customizar o visual do ranking, edite apenas os arquivos:
   - `frontend/src/app/pages/ranking/ranking.page.html`
   - `frontend/src/app/pages/ranking/ranking.page.scss`
 
@@ -428,12 +710,16 @@ ng e2e
 O projeto está configurado para deploy automático no Render com as seguintes características:
 
 - **Backend**: https://pokeapi-la6k.onrender.com
-- **Frontend**: https://pokeapi-frontend.onrender.com
+## Links Importantes
+
+- **Frontend**: [https://pokeapi-frontend.onrender.com](https://pokeapi-frontend.onrender.com)
 - **Banco de Dados**: SQLite criado vazio no deploy
 
-### 🗄️ Estratégia de Banco de Dados
+
+## 🗄️ Estratégia de Banco de Dados
 
 **⚠️ IMPORTANTE**: O banco de dados é criado **vazio** em cada deploy e alimentado apenas pelo frontend:
+
 
 1. **Deploy**: Banco criado com estruturas de tabelas vazias
 2. **Uso**: Dados são adicionados conforme usuários interagem
