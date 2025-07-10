@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AppSettings } from '../../../models/app.model';
 import { SettingsService } from '../../../core/services/settings.service';
-import { CapturedService } from '../../../core/services/captured.service';
+
 import { SyncService } from '../../../core/services/sync.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
@@ -46,7 +46,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   abrirLogin = async () => {
     const modal = await this.modalController.create({
       component: AuthModalNewComponent,
-      cssClass: 'auth-modal'
+      cssClass: 'auth-modal-fixed'
     });
 
     modal.onDidDismiss().then((result) => {
@@ -82,7 +82,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     private translate: TranslateService,
     private toastController: ToastController,
     private actionSheetController: ActionSheetController,
-    private capturedService: CapturedService,
+
     private syncService: SyncService,
     private authService: AuthService,
     private modalController: ModalController
@@ -191,62 +191,11 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.settingsService.saveSettings({ [setting]: value });
   }
 
-  exportCaptured() {
-    const data = this.capturedService.exportCaptured();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'captured.json';
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  async importCaptured() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json,application/json';
-    input.onchange = async (e: any) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const text = await file.text();
-      await this.capturedService.importCaptured(text);
-      this.showToast('captured.imported');
-    };
-    input.click();
-  }
 
 
 
-  async exportSettings() {
-    const data = await this.settingsService.exportSettings();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'settings.json';
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
 
-  async importSettings() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json,application/json';
-    input.onchange = async (e: any) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const text = await file.text();
-      await this.settingsService.importSettings(text);
-      this.showToast('settings.imported');
-    };
-    input.click();
-  }
 
-  async resetSettings() {
-    await this.settingsService.resetSettings();
-    this.showToast('settings.reset');
-  }
 
   showAbout() {
     alert('David Assef\nDesenvolvido com Angular + Ionic.\nPowered by PokéAPI.');

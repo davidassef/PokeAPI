@@ -21,7 +21,7 @@
   position: relative;
   z-index: 20001;
   transform: translateZ(0);
-  border: 3px solid #2563eb;
+  border: 3px solid var(--primary);
   pointer-events: auto;
   transition: all 0.3s ease;
   margin: 20px;
@@ -43,7 +43,7 @@
 .auth-modal-header {
   position: relative;
   padding: 30px 20px 25px;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 50%, var(--secondary) 100%) !important;
   color: var(--ion-color-primary-contrast, #fff);
   overflow: hidden;
   transition: background 0.3s ease, color 0.3s ease;
@@ -297,7 +297,7 @@
       background: var(--input-bg);
       padding: 15px;
       border-radius: 12px;
-      border-left: 4px solid #2563eb;
+      border-left: 4px solid var(--primary);
       margin-bottom: 20px;
       font-weight: 500;
       color: var(--text-color) !important;
@@ -476,7 +476,7 @@
   }
 
   .auth-modal-header {
-    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, var(--background) 100%) !important;
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 50%, var(--background) 100%) !important;
   }
 
   .password-toggle:hover {
@@ -492,9 +492,9 @@
   }
 
   .security-question-text {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #ffffff !important;
-    border-left-color: #3b82f6 !important;
+    background: var(--surface-bg) !important;
+    color: var(--text-color) !important;
+    border-left-color: var(--primary) !important;
   }
 }
 
@@ -504,7 +504,7 @@
   .security-question-text {
     background: var(--input-bg) !important;
     color: var(--text-color) !important;
-    border-left-color: #2563eb !important;
+    border-left-color: var(--primary) !important;
   }
 }
 

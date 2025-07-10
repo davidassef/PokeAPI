@@ -13,6 +13,8 @@ export class AuthButtonComponent {
   @Input() showUserMenu: boolean = false;
   @Input() abrirLogin!: () => void;
   @Input() abrirPerfil!: () => void;
+  @Input() openAccountSettings!: () => void;
+  @Input() openTrainerLevel!: () => void;
   @Input() logout!: () => void;
   @Input() toggleUserMenu!: () => void;
-} 
+}

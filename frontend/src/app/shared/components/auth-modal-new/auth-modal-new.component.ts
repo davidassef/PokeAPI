@@ -82,16 +82,8 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
 
   // Métodos de UI - Tema Pokémon
   getHeaderGradient(): string {
-    switch (this.modo) {
-      case 'login':
-        return 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%)'; // Blue gradient
-      case 'register':
-        return 'linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1e40af 100%)'; // Blue gradient
-      case 'forgot':
-        return 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%)'; // Blue gradient
-      default:
-        return 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%)';
-    }
+    // Usa as mesmas variáveis CSS dos headers para consistência
+    return 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 50%, var(--secondary) 100%)';
   }
 
   getHeaderIcon(): string {

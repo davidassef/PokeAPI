@@ -1,0 +1,142 @@
+<div class="modal-wrapper">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>{{ 'auth.view_profile' | translate }}</h2>
+      <ion-button fill="clear" (click)="close()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <!-- Error/Success Messages -->
+      <div class="message-container">
+        <div class="error-message" *ngIf="error">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ error }}</span>
+        </div>
+        <div class="success-message" *ngIf="success">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ success }}</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form (ngSubmit)="saveChanges()" #profileForm="ngForm">
+        <!-- Name Fields -->
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="firstName">{{ 'auth.first_name' | translate }}</label>
+            <ion-input
+              id="firstName"
+              type="text"
+              [(ngModel)]="firstName"
+              name="firstName"
+              [placeholder]="'auth.first_name_placeholder' | translate"
+              required
+              class="custom-input">
+            </ion-input>
+          </div>
+          <div class="form-group half-width">
+            <label for="lastName">{{ 'auth.last_name' | translate }}</label>
+            <ion-input
+              id="lastName"
+              type="text"
+              [(ngModel)]="lastName"
+              name="lastName"
+              [placeholder]="'auth.last_name_placeholder' | translate"
+              class="custom-input">
+            </ion-input>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">{{ 'auth.email' | translate }}</label>
+          <ion-input
+            id="email"
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            [placeholder]="'auth.email_placeholder' | translate"
+            required
+            class="custom-input">
+          </ion-input>
+        </div>
+
+        <!-- Security Question -->
+        <div class="form-group">
+          <label for="securityQuestion">{{ 'auth.security_question' | translate }}</label>
+          <ion-select
+            id="securityQuestion"
+            [(ngModel)]="securityQuestion"
+            name="securityQuestion"
+            [placeholder]="'auth.select_security_question' | translate"
+            class="custom-select">
+            <ion-select-option *ngFor="let question of securityQuestions" [value]="question.key">
+              {{ question.value | translate }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <!-- Security Answer -->
+        <div class="form-group" *ngIf="securityQuestion">
+          <label for="securityAnswer">{{ 'auth.security_answer' | translate }}</label>
+          <ion-input
+            id="securityAnswer"
+            type="text"
+            [(ngModel)]="securityAnswer"
+            name="securityAnswer"
+            [placeholder]="'auth.security_answer_placeholder' | translate"
+            class="custom-input">
+          </ion-input>
+        </div>
+
+        <!-- Current Password Confirmation -->
+        <div class="form-group password-confirmation">
+          <label for="currentPassword">{{ 'auth.current_password' | translate }}</label>
+          <div class="password-input-container">
+            <ion-input
+              id="currentPassword"
+              [type]="showCurrentPassword ? 'text' : 'password'"
+              [(ngModel)]="currentPassword"
+              name="currentPassword"
+              [placeholder]="'auth.current_password_placeholder' | translate"
+              required
+              class="custom-input">
+            </ion-input>
+            <ion-button 
+              fill="clear" 
+              type="button"
+              (click)="toggleCurrentPassword()" 
+              class="password-toggle">
+              <ion-icon [name]="showCurrentPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </div>
+          <small class="password-help">{{ 'auth.verify_current_password' | translate }}</small>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <ion-button 
+            type="button"
+            fill="outline" 
+            (click)="close()"
+            [disabled]="loading"
+            class="cancel-btn">
+            {{ 'auth.cancel' | translate }}
+          </ion-button>
+          <ion-button 
+            type="submit"
+            fill="solid"
+            [disabled]="loading || !profileForm.form.valid"
+            class="save-btn">
+            <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+            <span *ngIf="!loading">{{ 'auth.save_changes' | translate }}</span>
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

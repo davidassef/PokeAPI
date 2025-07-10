@@ -242,7 +242,7 @@ export class CapturedPage implements OnInit, OnDestroy {
   abrirLogin = async () => {
     const modal = await this.modalController.create({
       component: AuthModalNewComponent,
-      cssClass: 'auth-modal'
+      cssClass: 'auth-modal-fixed'
     });
 
     modal.onDidDismiss().then((result) => {

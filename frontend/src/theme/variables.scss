@@ -11,14 +11,14 @@
   --text-color-muted: #999;
 
   // Surface colors
-  --card-bg: #fff;
-  --surface-bg: #fafafa;
+  --card-bg: #ffffff;
+  --surface-bg: #f8f9fa;
   --overlay-bg: rgba(0, 0, 0, 0.4);
 
-  // Shadows and borders
-  --card-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
-  --card-shadow-hover: 0 8px 32px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.12);
-  --border-color: #e9ecef;
+  // Shadows and borders - Enhanced for better visual depth
+  --card-shadow: 0 6px 28px rgba(0,0,0,0.15), 0 3px 12px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+  --card-shadow-hover: 0 12px 40px rgba(0,0,0,0.20), 0 6px 16px rgba(0,0,0,0.16), 0 2px 8px rgba(0,0,0,0.12);
+  --border-color: #dee2e6;
   --border-radius: 8px;
 
   // Input and form elements

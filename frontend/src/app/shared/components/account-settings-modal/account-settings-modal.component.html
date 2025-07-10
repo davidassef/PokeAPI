@@ -1,0 +1,230 @@
+<div class="modal-wrapper">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <ion-button 
+          *ngIf="currentView !== 'main'"
+          fill="clear" 
+          (click)="backToMain()" 
+          class="back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+        <h2>
+          <span *ngIf="currentView === 'main'">{{ 'auth.account_settings' | translate }}</span>
+          <span *ngIf="currentView === 'change-password'">{{ 'auth.change_password' | translate }}</span>
+          <span *ngIf="currentView === 'delete-account'">{{ 'auth.delete_account' | translate }}</span>
+        </h2>
+      </div>
+      <ion-button fill="clear" (click)="close()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <!-- Error/Success Messages -->
+      <div class="message-container">
+        <div class="error-message" *ngIf="error">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ error }}</span>
+        </div>
+        <div class="success-message" *ngIf="success">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ success }}</span>
+        </div>
+      </div>
+
+      <!-- Main Menu -->
+      <div *ngIf="currentView === 'main'" class="main-menu">
+        <ion-list lines="none">
+          <ion-item button (click)="showChangePassword()" class="menu-item">
+            <ion-icon name="key-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>{{ 'auth.change_password' | translate }}</h3>
+              <p>{{ 'auth.change_password_desc' | translate }}</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+
+          <ion-item button (click)="showDeleteAccount()" class="menu-item danger">
+            <ion-icon name="trash-outline" slot="start" color="danger"></ion-icon>
+            <ion-label>
+              <h3>{{ 'auth.delete_account' | translate }}</h3>
+              <p>{{ 'auth.delete_account_desc' | translate }}</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <!-- Change Password Form -->
+      <div *ngIf="currentView === 'change-password'" class="change-password-form">
+        <form (ngSubmit)="changePassword()" #passwordForm="ngForm">
+          <!-- Current Password -->
+          <div class="form-group">
+            <label for="currentPassword">{{ 'auth.current_password' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="currentPassword"
+                [type]="showCurrentPassword ? 'text' : 'password'"
+                [(ngModel)]="currentPassword"
+                name="currentPassword"
+                [placeholder]="'auth.current_password_placeholder' | translate"
+                required
+                class="custom-input">
+              </ion-input>
+              <ion-button 
+                fill="clear" 
+                type="button"
+                (click)="toggleCurrentPassword()" 
+                class="password-toggle">
+                <ion-icon [name]="showCurrentPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- New Password -->
+          <div class="form-group">
+            <label for="newPassword">{{ 'auth.new_password' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="newPassword"
+                [type]="showNewPassword ? 'text' : 'password'"
+                [(ngModel)]="newPassword"
+                name="newPassword"
+                [placeholder]="'auth.new_password_placeholder' | translate"
+                required
+                class="custom-input">
+              </ion-input>
+              <ion-button 
+                fill="clear" 
+                type="button"
+                (click)="toggleNewPassword()" 
+                class="password-toggle">
+                <ion-icon [name]="showNewPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Confirm New Password -->
+          <div class="form-group">
+            <label for="confirmNewPassword">{{ 'auth.new_password_confirm' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="confirmNewPassword"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                [(ngModel)]="confirmNewPassword"
+                name="confirmNewPassword"
+                [placeholder]="'auth.confirm_new_password_placeholder' | translate"
+                required
+                class="custom-input">
+              </ion-input>
+              <ion-button 
+                fill="clear" 
+                type="button"
+                (click)="toggleConfirmPassword()" 
+                class="password-toggle">
+                <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <ion-button 
+              type="button"
+              fill="outline" 
+              (click)="backToMain()"
+              [disabled]="loading"
+              class="cancel-btn">
+              {{ 'auth.cancel' | translate }}
+            </ion-button>
+            <ion-button 
+              type="submit"
+              fill="solid"
+              [disabled]="loading || !passwordForm.form.valid"
+              class="save-btn">
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              <span *ngIf="!loading">{{ 'auth.change_password' | translate }}</span>
+            </ion-button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Delete Account Form -->
+      <div *ngIf="currentView === 'delete-account'" class="delete-account-form">
+        <div class="warning-message">
+          <ion-icon name="warning-outline"></ion-icon>
+          <p>{{ 'auth.delete_account_warning' | translate }}</p>
+        </div>
+
+        <form (ngSubmit)="confirmDeleteAccount()" #deleteForm="ngForm">
+          <!-- Security Question -->
+          <div class="form-group">
+            <label>{{ 'auth.security_question' | translate }}</label>
+            <div class="security-question-text">{{ userSecurityQuestion }}</div>
+          </div>
+
+          <!-- Security Answer -->
+          <div class="form-group">
+            <label for="securityAnswer">{{ 'auth.security_answer' | translate }}</label>
+            <ion-input
+              id="securityAnswer"
+              type="text"
+              [(ngModel)]="securityAnswer"
+              name="securityAnswer"
+              [placeholder]="'auth.security_answer_placeholder' | translate"
+              required
+              class="custom-input">
+            </ion-input>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label for="deleteConfirmPassword">{{ 'auth.current_password' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="deleteConfirmPassword"
+                [type]="showDeletePassword ? 'text' : 'password'"
+                [(ngModel)]="deleteConfirmPassword"
+                name="deleteConfirmPassword"
+                [placeholder]="'auth.current_password_placeholder' | translate"
+                required
+                class="custom-input">
+              </ion-input>
+              <ion-button 
+                fill="clear" 
+                type="button"
+                (click)="toggleDeletePassword()" 
+                class="password-toggle">
+                <ion-icon [name]="showDeletePassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <ion-button 
+              type="button"
+              fill="outline" 
+              (click)="backToMain()"
+              [disabled]="loading"
+              class="cancel-btn">
+              {{ 'auth.cancel' | translate }}
+            </ion-button>
+            <ion-button 
+              type="submit"
+              fill="solid"
+              color="danger"
+              [disabled]="loading || !deleteForm.form.valid"
+              class="delete-btn">
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              <span *ngIf="!loading">{{ 'auth.delete_account' | translate }}</span>
+            </ion-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -415,3 +415,65 @@ ion-menu {
   background: rgba(0, 0, 0, 0.3);
 }
 
+// Login Section Styles
+.login-section {
+  padding: 24px;
+  text-align: center;
+  background: var(--surface-bg);
+  border-radius: 16px;
+  margin: 16px;
+  border: 1px solid var(--border-color);
+
+  .login-message {
+    margin-bottom: 20px;
+
+    ion-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-color-secondary);
+      line-height: 1.4;
+    }
+  }
+
+  .login-btn {
+    --background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    --color: var(--button-text);
+    height: 48px;
+    font-weight: 600;
+    border-radius: 12px;
+
+    &:hover {
+      --background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+    }
+  }
+}
+
+// Theme-specific adjustments for login section
+:host-context(.dark-theme) {
+  .login-section {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+  }
+}
+
+:host-context(.light-theme) {
+  .login-section {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+  }
+}
+

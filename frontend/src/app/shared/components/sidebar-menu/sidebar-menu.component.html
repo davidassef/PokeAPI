@@ -38,8 +38,8 @@
   </ion-header>
 
   <ion-content class="menu-content">
-    <!-- User Stats Section -->
-    <div class="user-stats-section">
+    <!-- User Stats Section - Authenticated Users -->
+    <div class="user-stats-section" *ngIf="isAuthenticated">
       <h3>{{ 'menu.your_progress' | translate }}</h3>
 
       <div class="stats-cards">
@@ -48,8 +48,8 @@
             <ion-icon name="eye-outline" color="primary"></ion-icon>
           </div>
           <div class="stat-info">
-            <span class="stat-number">{{ userStats.seenCount }}</span>
-            <span class="stat-label">{{ 'menu.seen' | translate }}</span>
+            <span class="stat-number">{{ userStats.viewedCount }}</span>
+            <span class="stat-label">{{ 'menu.viewed' | translate }}</span>
           </div>
         </div>
 
@@ -69,10 +69,10 @@
         <div class="progress-item">
           <div class="progress-header">
             <span>{{ 'menu.completion' | translate }}</span>
-            <span>{{ getCompletionPercentage() }}%</span>
+            <span>{{ userStats.completionPercentage }}%</span>
           </div>
           <ion-progress-bar
-            [value]="getCompletionPercentage() / 100"
+            [value]="userStats.completionPercentage / 100"
             color="primary">
           </ion-progress-bar>
         </div>
@@ -88,6 +88,25 @@
           </ion-progress-bar>
         </div>
       </div>
+    </div>
+
+    <!-- Login Section - Non-Authenticated Users -->
+    <div class="login-section" *ngIf="!isAuthenticated">
+      <div class="login-message">
+        <ion-icon name="person-outline" color="medium"></ion-icon>
+        <h3>{{ 'menu.not_logged_in' | translate }}</h3>
+        <p>{{ 'menu.login_to_view_progress' | translate }}</p>
+      </div>
+
+      <ion-button
+        expand="block"
+        fill="solid"
+        color="primary"
+        (click)="openAuthModal()"
+        class="login-btn">
+        <ion-icon name="log-in-outline" slot="start"></ion-icon>
+        {{ 'auth.login' | translate }}
+      </ion-button>
     </div>
 
     <!-- Main Navigation -->

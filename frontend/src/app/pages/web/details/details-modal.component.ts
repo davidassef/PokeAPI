@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
+import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
 
 @Component({
   selector: 'app-details-modal',
@@ -61,7 +62,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private modalController: ModalController,
     private translate: TranslateService,
-    private http: HttpClient
+    private http: HttpClient,
+    private viewedPokemonService: ViewedPokemonService
   ) {}
 
   ngOnInit() {
@@ -124,6 +126,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.pokemon) return;
 
     console.log(`Inicializando dados para: ${this.pokemon.name} (ID: ${this.pokemon.id})`);
+
+    // Mark Pokemon as viewed when details are initialized
+    this.viewedPokemonService.markPokemonAsViewed(this.pokemon.id);
 
     // Resetar todos os dados de abas
     this.tabDataLoaded = {

@@ -15,6 +15,8 @@ import { ErrorNotificationComponent } from './error-notification/error-notificat
 import { AuthButtonComponent } from './auth-button/auth-button.component';
 import { AuthModalNewComponent } from './auth-modal-new/auth-modal-new.component';
 import { UserProfileModalComponent } from './user-profile-modal/user-profile-modal.component';
+import { ProfileModalComponent } from './profile-modal/profile-modal.component';
+import { AccountSettingsModalComponent } from './account-settings-modal/account-settings-modal.component';
 
 // Shared Modules
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -31,7 +33,9 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     ErrorNotificationComponent,
     AuthButtonComponent,
     AuthModalNewComponent,
-    UserProfileModalComponent
+    UserProfileModalComponent,
+    ProfileModalComponent,
+    AccountSettingsModalComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -52,6 +56,8 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AuthButtonComponent,
     AuthModalNewComponent,
     UserProfileModalComponent,
+    ProfileModalComponent,
+    AccountSettingsModalComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,

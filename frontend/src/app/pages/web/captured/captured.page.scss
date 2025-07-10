@@ -2,6 +2,11 @@ ion-content {
   --background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
 }
 
+// Dark theme - darker red background for better visual comfort
+:host-context(.dark-theme) ion-content {
+  --background: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
+}
+
 // Search container
 .search-container {
   padding: 16px;

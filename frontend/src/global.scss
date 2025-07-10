@@ -448,6 +448,23 @@ ion-alert {
   .alert-button {
     color: var(--primary);
   }
+
+  // Fix for security question radio button text visibility
+  .alert-radio-label {
+    color: var(--text-color) !important;
+  }
+
+  .alert-radio-button {
+    .alert-radio-label {
+      color: var(--text-color) !important;
+    }
+  }
+
+  .alert-input-wrapper {
+    .alert-radio-label {
+      color: var(--text-color) !important;
+    }
+  }
 }
 
 // Estilos para Toast seguir o tema

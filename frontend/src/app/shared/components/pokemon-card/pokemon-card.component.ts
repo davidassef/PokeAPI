@@ -203,7 +203,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
 
     const modal = await this.modalController.create({
       component: AuthModalNewComponent,
-      cssClass: 'auth-modal'
+      cssClass: 'auth-modal-fixed'
     });
 
     modal.onDidDismiss().then((result) => {

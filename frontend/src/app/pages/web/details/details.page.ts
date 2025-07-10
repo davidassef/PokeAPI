@@ -338,7 +338,7 @@ export class DetailsPage implements OnInit, OnDestroy {
   private async openAuthModal() {
     const modal = await this.modalController.create({
       component: AuthModalNewComponent,
-      cssClass: 'auth-modal'
+      cssClass: 'auth-modal-fixed'
     });
 
     modal.onDidDismiss().then((result) => {

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -8,6 +8,8 @@ import { SettingsService } from '../../../core/services/settings.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
+import { AuthModalNewComponent } from '../auth-modal-new/auth-modal-new.component';
 import { User } from 'src/app/models/user.model';
 
 export interface MenuItem {
@@ -57,8 +59,8 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
 
   userStats = {
     capturedCount: 0,
-    seenCount: 0,
-    caughtCount: 0
+    viewedCount: 0,
+    completionPercentage: 0
   };
 
   currentLanguage = 'pt-BR';
@@ -77,20 +79,20 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private menuController: MenuController,
+    private modalController: ModalController,
     private translate: TranslateService,
     private settingsService: SettingsService,
     private capturedService: CapturedService,
     private audioService: AudioService,
-    private authService: AuthService
+    private authService: AuthService,
+    private viewedPokemonService: ViewedPokemonService
   ) {}
 
   ngOnInit() {
-    this.loadUserStats();
     this.loadSettings();
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.user = this.authService.getCurrentUser();
-    }
+    this.setupAuthStateSubscription();
+    this.setupViewedPokemonSubscription();
+    this.loadUserStats();
   }
 
   ngOnDestroy() {
@@ -98,17 +100,36 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private setupAuthStateSubscription() {
+    this.authService.getAuthState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isAuthenticated: boolean) => {
+        this.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+        } else {
+          this.user = null;
+        }
+      });
+  }
+
+  private setupViewedPokemonSubscription() {
+    this.viewedPokemonService.viewedPokemon$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(viewedData => {
+        this.userStats.viewedCount = viewedData.viewedPokemonIds.size;
+        this.userStats.completionPercentage = this.viewedPokemonService.getCompletionPercentage();
+      });
+  }
+
   private loadUserStats() {
+    // Load captured Pokemon count
     this.capturedService.getCaptured()
       .pipe(takeUntil(this.destroy$))
       .subscribe(captured => {
         this.userStats.capturedCount = captured.length;
         this.updateCapturedBadge();
       });
-
-    // Mock data for seen/caught - in real app this would come from a service
-    this.userStats.seenCount = 145;
-    this.userStats.caughtCount = 89;
   }
 
   private loadSettings() {
@@ -126,6 +147,11 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     }
   }
 
+  getCaptureRate(): number {
+    if (this.userStats.viewedCount === 0) return 0;
+    return Math.round((this.userStats.capturedCount / this.userStats.viewedCount) * 100);
+  }
+
   async onMenuItemClick(item: MenuItem) {
     if (item.url) {
       await this.router.navigate([item.url]);
@@ -134,6 +160,25 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
       // Handle special actions
       await this.handleSpecialAction(item);
     }
+  }
+
+  async openAuthModal() {
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal-fixed',
+      backdropDismiss: true,
+      showBackdrop: true
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data?.success) {
+        console.log('[SidebarMenu] Authentication successful');
+        // Stats will be updated automatically via subscriptions
+      }
+    });
+
+    await modal.present();
+    await this.menuController.close();
   }
 
   private async handleSpecialAction(item: MenuItem) {
@@ -163,15 +208,8 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     this.currentLanguage = languageCode;
   }
 
-  getCompletionPercentage(): number {
-    const totalPokemon = 1000; // Approximate total
-    return Math.round((this.userStats.seenCount / totalPokemon) * 100);
-  }
-
-  getCaptureRate(): number {
-    if (this.userStats.seenCount === 0) return 0;
-    return Math.round((this.userStats.caughtCount / this.userStats.seenCount) * 100);
-  }
+  // These methods are now handled by the ViewedPokemonService subscription
+  // getCompletionPercentage and getCaptureRate are already defined above
 
   async closeMenu() {
     await this.menuController.close();

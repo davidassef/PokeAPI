@@ -70,52 +70,9 @@
 
 
 
-  <!-- Seção de Favoritos -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="heart" color="danger"></ion-icon>
-        {{ 'settings_page.favorites_management' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item button (click)="exportCaptured()">
-        <ion-label>{{ 'settings_page.export_captured' | translate }}</ion-label>
-      </ion-item>
-      <ion-item button (click)="importCaptured()">
-        <ion-label>{{ 'settings_page.import_captured' | translate }}</ion-label>
-      </ion-item>
 
-    </ion-card-content>
-  </ion-card>
 
-  <!-- Seção de Configurações Avançadas -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="settings" color="medium"></ion-icon>
-        {{ 'settings_page.advanced_settings' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item button (click)="exportSettings()">
-        <ion-icon name="download" slot="start" color="success"></ion-icon>
-        <ion-label>{{ 'settings_page.export_settings' | translate }}</ion-label>
-        <ion-note slot="end">JSON</ion-note>
-      </ion-item>
 
-      <ion-item button (click)="importSettings()">
-        <ion-icon name="cloud-upload" slot="start" color="primary"></ion-icon>
-        <ion-label>{{ 'settings_page.import_settings' | translate }}</ion-label>
-        <ion-note slot="end">JSON</ion-note>
-      </ion-item>
-
-      <ion-item button (click)="resetSettings()">
-        <ion-icon name="refresh" slot="start" color="warning"></ion-icon>
-        <ion-label color="warning">{{ 'settings_page.reset_settings' | translate }}</ion-label>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
 
   <!-- Seção de Informações -->
   <ion-card class="settings-card">

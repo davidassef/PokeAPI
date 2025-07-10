@@ -245,7 +245,14 @@ export class AuthService {
    * Registra novo usuário e realiza login automático.
    * @param dados Dados de registro (nome, email, senha, contato)
    */
-  register(dados: { name: string; email: string; password: string; contact?: string }): Observable<{token: string; user: User}> {
+  register(dados: {
+    name: string;
+    email: string;
+    password: string;
+    contact?: string;
+    security_question: string;
+    security_answer: string;
+  }): Observable<{token: string; user: User}> {
     return this.http.post<User>('/api/v1/auth/register', dados).pipe(
       tap((user) => {
         console.log('[AuthService] Usuário registrado com sucesso:', user);

@@ -192,7 +192,8 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--surface-bg);
+  color: var(--text-color);
 }
 
 .interactive-element {
@@ -227,11 +228,13 @@
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--card-bg);
   padding: 15px;
   border-radius: 12px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  color: var(--text-color);
 }
 
 .stat-label {
@@ -261,7 +264,7 @@
 
 .stat-value {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-color);
   font-size: 0.95rem;
 }
 
@@ -278,7 +281,7 @@
 }
 
 .info-card h3 {
-  color: #fff;
+  color: var(--text-color);
   margin-bottom: 15px;
   font-size: 1.2rem;
   font-weight: 600;
@@ -391,17 +394,19 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 20px;
-      color: #fff;
+      color: var(--text-color);
       font-size: 1.2rem;
     }
   }
 
   .total-stats-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--card-bg);
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 20px;
     text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
 
     .stat-total {
       display: flex;
@@ -410,13 +415,13 @@
 
       .total-label {
         font-size: 1rem;
-        color: #b3b3b3;
+        color: var(--text-color-secondary);
       }
 
       .total-value {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #4ade80;
+        color: var(--success);
       }
     }
   }
@@ -427,9 +432,11 @@
     gap: 20px;
 
     .category {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--card-bg);
       border-radius: 12px;
       padding: 15px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
 
       h4 {
         display: flex;
@@ -437,7 +444,7 @@
         gap: 8px;
         margin-bottom: 15px;
         font-size: 1rem;
-        color: #fff;
+        color: var(--text-color);
       }
 
       &.offensive h4 { color: #ef4444; }
@@ -452,7 +459,7 @@
         .stat-name {
           width: 120px;
           font-size: 0.9rem;
-          color: #e5e5e5;
+          color: var(--text-color-secondary);
         }
 
         .stat-progress {
@@ -483,7 +490,7 @@
             min-width: 40px;
             text-align: right;
             font-weight: bold;
-            color: #fff;
+            color: var(--text-color);
           }
         }
       }
@@ -498,7 +505,7 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 15px;
-      color: #fff;
+      color: var(--text-color);
     }
 
     .abilities-grid {
@@ -523,7 +530,7 @@
 
           .ability-name {
             font-weight: bold;
-            color: #fff;
+            color: var(--text-color);
           }
 
           .ability-type {
@@ -538,7 +545,7 @@
 
         .ability-description {
           font-size: 0.9rem;
-          color: #b3b3b3;
+          color: var(--text-color-secondary);
           line-height: 1.4;
           margin: 0;
         }
@@ -557,7 +564,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 20px;
-    color: #fff;
+    color: var(--text-color);
     font-size: 1.2rem;
   }
 
@@ -581,15 +588,17 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--card-bg);
         border-radius: 12px;
         padding: 15px;
         flex: 1;
-        border: 2px solid transparent;
+        border: 2px solid var(--border-color);
         transition: all 0.3s ease;
+        box-shadow: var(--card-shadow);
 
         &:hover {
-          background: rgba(255, 255, 255, 0.12);
+          background: var(--surface-bg);
+          box-shadow: var(--card-shadow-hover);
         }
 
         .evolution-image {
@@ -603,14 +612,14 @@
         .evolution-info-text {
           h4 {
             margin: 0 0 5px 0;
-            color: #fff;
+            color: var(--text-color);
             font-size: 1rem;
           }
 
           .evolution-level, .evolution-method {
             display: block;
             font-size: 0.85rem;
-            color: #4ade80;
+            color: var(--success);
             margin-bottom: 2px;
           }
         }
@@ -621,7 +630,7 @@
         flex-direction: column;
         align-items: center;
         gap: 5px;
-        color: #4ade80;
+        color: var(--success);
 
         i {
           font-size: 1.2rem;
@@ -630,7 +639,7 @@
         .evolution-trigger {
           font-size: 0.8rem;
           text-align: center;
-          color: #b3b3b3;
+          color: var(--text-color-secondary);
         }
       }
     }
@@ -639,11 +648,11 @@
   .no-evolution {
     text-align: center;
     padding: 40px 20px;
-    color: #b3b3b3;
+    color: var(--text-color-secondary);
 
     i {
       font-size: 3rem;
-      color: #4ade80;
+      color: var(--success);
       margin-bottom: 15px;
       display: block;
     }
@@ -665,16 +674,16 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 15px;
-        color: #fff;
+        color: var(--text-color);
       }
 
       .growth-info {
         p {
           margin: 8px 0;
-          color: #e5e5e5;
+          color: var(--text-color-secondary);
 
           strong {
-            color: #4ade80;
+            color: var(--success);
           }
         }
       }
@@ -692,7 +701,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 20px;
-    color: #fff;
+    color: var(--text-color);
     font-size: 1.2rem;
   }
 
@@ -704,12 +713,14 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 15px;
-      color: #fff;
+      color: var(--text-color);
     }
 
     .flavor-container {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--card-bg);
       border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
       padding: 20px;
 
       .flavor-text-display {
@@ -742,7 +753,7 @@
           .flavor-text {
             font-size: 1rem;
             line-height: 1.6;
-            color: #e5e5e5;
+            color: var(--text-color-secondary);
             margin: 0;
             font-style: italic;
             text-align: center;
@@ -757,7 +768,7 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: #4ade80;
+            color: var(--success);
             font-size: 0.8rem;
             z-index: 10;
             background: rgba(0, 0, 0, 0.7);
@@ -790,7 +801,7 @@
             border: none;
             border-radius: 6px;
             padding: 8px 12px;
-            color: #4ade80;
+            color: var(--success);
             cursor: pointer;
             transition: all 0.3s ease;
 
@@ -805,7 +816,7 @@
           }
 
           .flavor-counter {
-            color: #b3b3b3;
+            color: var(--text-color-secondary);
             font-size: 0.9rem;
             min-width: 60px;
             text-align: center;
@@ -823,7 +834,7 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 15px;
-      color: #fff;
+      color: var(--text-color);
     }
 
     .bio-grid {
@@ -839,7 +850,7 @@
 
         i {
           font-size: 1.5rem;
-          color: #4ade80;
+          color: var(--success);
           margin-bottom: 8px;
           display: block;
         }
@@ -847,14 +858,14 @@
         .bio-label {
           display: block;
           font-size: 0.85rem;
-          color: #b3b3b3;
+          color: var(--text-color-secondary);
           margin-bottom: 5px;
         }
 
         .bio-value {
           font-size: 1.1rem;
           font-weight: bold;
-          color: #fff;
+          color: var(--text-color);
         }
       }
     }
@@ -868,7 +879,7 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 15px;
-      color: #fff;
+      color: var(--text-color);
     }
 
     .capture-grid {
@@ -884,7 +895,7 @@
 
         i {
           font-size: 1.5rem;
-          color: #fbbf24;
+          color: var(--warning);
           margin-bottom: 8px;
           display: block;
         }
@@ -892,14 +903,14 @@
         .capture-label {
           display: block;
           font-size: 0.85rem;
-          color: #b3b3b3;
+          color: var(--text-color-secondary);
           margin-bottom: 5px;
         }
 
         .capture-value {
           font-size: 1.1rem;
           font-weight: bold;
-          color: #fff;
+          color: var(--text-color);
         }
       }
     }
@@ -911,7 +922,7 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 15px;
-      color: #fff;
+      color: var(--text-color);
     }
 
     .trivia-list {
@@ -925,14 +936,14 @@
         margin-bottom: 12px;
 
         i {
-          color: #fbbf24;
+          color: var(--warning);
           margin-top: 2px;
           flex-shrink: 0;
         }
 
         p {
           margin: 0;
-          color: #e5e5e5;
+          color: var(--text-color-secondary);
           line-height: 1.5;
         }
       }
@@ -1285,7 +1296,7 @@
           .info-value {
             font-weight: bold;
             font-size: 1rem;
-            color: #fff;
+            color: var(--text-color);
             text-align: center;
           }
 
@@ -1449,7 +1460,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #fff;
+  color: var(--text-color);
   opacity: 0.8;
 
   .loading-spinner {
@@ -1458,7 +1469,7 @@
     ion-spinner {
       width: 32px;
       height: 32px;
-      color: #fff;
+      color: var(--primary);
     }
   }
 
@@ -1477,11 +1488,11 @@
   align-items: center;
   justify-content: center;
   padding: 30px 20px;
-  color: #fff;
+  color: var(--text-color);
   opacity: 0.8;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-bg);
   margin: 16px 0;
 
   .loading-spinner {
@@ -1490,7 +1501,7 @@
     ion-spinner {
       width: 24px;
       height: 24px;
-      color: #fff;
+      color: var(--primary);
     }
   }
 

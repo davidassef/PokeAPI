@@ -13,11 +13,13 @@ export class RegisterPage {
   contact = '';
   password = '';
   confirmPassword = '';
+  securityQuestion = '';
+  securityAnswer = '';
   error = '';
   loading = false;
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -35,21 +37,23 @@ export class RegisterPage {
       name: this.name,
       email: this.email,
       contact: this.contact || '',
-      password: this.password
+      password: this.password,
+      security_question: this.securityQuestion,
+      security_answer: this.securityAnswer
     };
 
     this.authService.register(userData).subscribe({
       next: (response) => {
         this.loading = false;
         // Mostrar mensagem de sucesso e redirecionar para login
-        this.router.navigate(['/login'], { 
-          queryParams: { registered: 'true' } 
+        this.router.navigate(['/login'], {
+          queryParams: { registered: 'true' }
         });
       },
       error: (err) => {
         this.loading = false;
         this.error = err.error?.detail || 'Erro ao registrar usuário. Tente novamente.';
-        
+
         // Tratamento específico para erros de validação
         if (err.status === 422 && err.error?.detail) {
           this.error = 'Dados inválidos: ' + err.error.detail.map((e: any) => e.msg).join(', ');

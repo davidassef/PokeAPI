@@ -37,6 +37,49 @@
   font-size: 15px;
   color: inherit;
 }
+
+.dropdown-arrow {
+  margin-left: 4px;
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.user-dropdown-content {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+  min-width: 200px;
+
+  ion-list {
+    background: transparent;
+
+    ion-item {
+      --background: transparent;
+      --color: var(--text-color);
+      --border-color: var(--border-color);
+      --inner-padding-end: 16px;
+      --inner-padding-start: 16px;
+      --padding-start: 0;
+      --padding-end: 0;
+      margin: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        --background: var(--surface-bg);
+        transform: translateX(2px);
+      }
+
+      ion-icon {
+        margin-right: 12px;
+      }
+
+      ion-label {
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}
 @media (max-width: 600px) {
   .auth-btn {
     font-size: 13px;
@@ -83,4 +126,4 @@
   box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
   filter: brightness(0.98);
   transform: scale(0.98);
-} 
+}

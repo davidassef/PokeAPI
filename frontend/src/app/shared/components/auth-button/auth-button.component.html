@@ -7,11 +7,35 @@
   <ion-button fill="solid" class="auth-btn" (click)="toggleUserMenu()">
     <ion-icon name="person-circle-outline"></ion-icon>
     <span class="user-greeting">{{ 'auth.hello' | translate }}, {{ user?.firstName || user?.name }}</span>
+    <ion-icon name="chevron-down-outline" class="dropdown-arrow"></ion-icon>
   </ion-button>
-  <ion-popover *ngIf="showUserMenu" (ionPopoverDidDismiss)="toggleUserMenu()">
-    <ion-list>
-      <ion-item button (click)="abrirPerfil()">{{ 'auth.profile' | translate }}</ion-item>
-      <ion-item button (click)="logout()">{{ 'auth.logout' | translate }}</ion-item>
-    </ion-list>
+  <ion-popover
+    *ngIf="showUserMenu"
+    (ionPopoverDidDismiss)="toggleUserMenu()"
+    [isOpen]="showUserMenu"
+    [showBackdrop]="true"
+    [dismissOnSelect]="true">
+    <ng-template>
+      <ion-content class="user-dropdown-content">
+        <ion-list lines="none">
+          <ion-item button (click)="openTrainerLevel()">
+            <ion-icon name="trophy-outline" slot="start" color="warning"></ion-icon>
+            <ion-label>{{ 'auth.trainer_level' | translate }}</ion-label>
+          </ion-item>
+          <ion-item button (click)="abrirPerfil()">
+            <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>{{ 'auth.view_profile' | translate }}</ion-label>
+          </ion-item>
+          <ion-item button (click)="openAccountSettings()">
+            <ion-icon name="settings-outline" slot="start" color="medium"></ion-icon>
+            <ion-label>{{ 'auth.account_settings' | translate }}</ion-label>
+          </ion-item>
+          <ion-item button (click)="logout()">
+            <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+            <ion-label>{{ 'auth.logout' | translate }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
   </ion-popover>
-</ng-template> 
+</ng-template>
