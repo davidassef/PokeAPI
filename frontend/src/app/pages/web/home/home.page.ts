@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, IonContent, LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
@@ -12,6 +12,7 @@ import { FilterOptions } from '../../../shared/components/search-filter/search-f
 import { DetailsModalComponent } from '../details/details-modal.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
+import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
 
 @Component({
   selector: 'app-home',
@@ -71,7 +72,8 @@ export class HomePage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private toastController: ToastController,
     private translate: TranslateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -299,7 +301,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   // Atualiza capturados sempre que a página Home for exibida
   ionViewWillEnter() {
+    document.body.classList.add('home-page-active');
     this.loadCaptured();
+  }
+
+  ionViewWillLeave() {
+    document.body.classList.remove('home-page-active');
   }
 
   /**
@@ -326,10 +333,24 @@ export class HomePage implements OnInit, OnDestroy {
     this.openDetailsModal(randomId);
   }
 
-  abrirLogin() {
-    // TODO: Abrir modal de login
-    console.log('Abrir modal de login');
-  }
+  abrirLogin = async () => {
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal-fixed'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        // Login bem-sucedido, atualizar estado
+        this.isAuthenticated = this.authService.isAuthenticated();
+        if (this.isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+        }
+      }
+    });
+
+    return await modal.present();
+  };
 
   abrirPerfil() {
     // TODO: Abrir modal de perfil do usuário

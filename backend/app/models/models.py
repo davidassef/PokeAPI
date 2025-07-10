@@ -17,6 +17,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     name = Column(String(100), nullable=False)  # Nome obrigatório
     contact = Column(String(100), nullable=True)  # Contato opcional (telefone, whatsapp, etc)
+    security_question = Column(String(50), nullable=True)  # Pergunta de segurança
+    security_answer_hash = Column(String(255), nullable=True)  # Resposta criptografada
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

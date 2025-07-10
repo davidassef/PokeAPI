@@ -6,12 +6,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.core.auth_middleware import get_current_active_user
+from core.database import get_db
+from core.auth_middleware import get_current_active_user
 from app.services.auth_service import auth_service
 from app.schemas.auth_schemas import (
     UserCreate, UserLogin, UserResponse, TokenResponse,
-    UserUpdate, PasswordChange, RefreshTokenRequest
+    UserUpdate, PasswordChange, RefreshTokenRequest,
+    PasswordResetRequest, SecurityQuestionResponse,
+    PasswordResetVerify, PasswordResetComplete
 )
 from app.models.models import User
 
@@ -259,7 +261,7 @@ async def debug_token(
             "validation_error": validation_error,
             "current_time": datetime.now().isoformat()
         }
-        
+
     except Exception as e:
         return {"error": f"Erro inesperado: {str(e)}"}
 
@@ -291,7 +293,7 @@ async def update_profile(
         current_user.contact = updated_data.contact
     db.commit()
     db.refresh(current_user)
-    
+
     # Gerar novo token JWT
     token_data = {
         "sub": current_user.id,
@@ -338,3 +340,63 @@ async def login_with_google():
             "name": name
         }
     }
+
+
+@router.post("/password-reset/request", response_model=SecurityQuestionResponse)
+async def request_password_reset(
+    request: PasswordResetRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Solicita recuperação de senha - retorna pergunta de segurança.
+    """
+    user = auth_service.get_user_by_email(db, request.email)
+    if not user or not user.security_question:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuário não encontrado ou sem pergunta de segurança configurada"
+        )
+
+    return SecurityQuestionResponse(
+        email=user.email,
+        security_question=user.security_question
+    )
+
+
+@router.post("/password-reset/verify")
+async def verify_security_answer(
+    request: PasswordResetVerify,
+    db: Session = Depends(get_db)
+):
+    """
+    Verifica resposta de segurança.
+    """
+    user = auth_service.get_user_by_email(db, request.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    if not auth_service.verify_security_answer(user, request.security_answer):
+        raise HTTPException(status_code=400, detail="Resposta de segurança incorreta")
+
+    return {"message": "Resposta verificada com sucesso"}
+
+
+@router.post("/password-reset/complete")
+async def complete_password_reset(
+    request: PasswordResetComplete,
+    db: Session = Depends(get_db)
+):
+    """
+    Completa a redefinição de senha.
+    """
+    success = auth_service.reset_password_with_security(
+        db, request.email, request.security_answer, request.new_password
+    )
+
+    if not success:
+        raise HTTPException(
+            status_code=400,
+            detail="Falha ao redefinir senha. Verifique os dados informados."
+        )
+
+    return {"message": "Senha redefinida com sucesso"}

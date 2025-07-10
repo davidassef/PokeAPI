@@ -6,9 +6,10 @@ import { AudioService } from '../../../core/services/audio.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthModalNewComponent } from '../auth-modal-new/auth-modal-new.component';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -37,7 +38,8 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     private capturedService: CapturedService,
     private authService: AuthService,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -72,35 +74,35 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
    */
   async onCaptureClick(event: Event) {
     event.stopPropagation();
-    
+
     // Evita múltiplos cliques rápidos
     if (this.isProcessing) {
       console.log('[PokemonCard] Operação de captura já em andamento, ignorando clique');
       return;
     }
-    
+
     // Verifica autenticação
     if (!this.authService.isAuthenticated()) {
-      console.log('[PokemonCard] Usuário não autenticado, exibindo mensagem');
-      await this.showToast('capture.auth_required', 'danger');
+      console.log('[PokemonCard] Usuário não autenticado, abrindo modal de login');
+      await this.openAuthModal();
       return;
     }
-    
+
     // Inicia o processo de captura/liberação
     this.isProcessing = true;
     this.isLoading = true;
     console.log(`[PokemonCard] Iniciando ${this.isCaptured ? 'libertação' : 'captura'} do Pokémon ${this.pokemon.id}`);
-    
+
     this.capturedService.toggleCaptured(this.pokemon).subscribe({
       next: (isCaptured) => {
         console.log(`[PokemonCard] Pokémon ${this.pokemon.id} ${isCaptured ? 'capturado' : 'liberado'} com sucesso`);
         this.isCaptured = isCaptured;
         this.captureToggle.emit({ pokemon: this.pokemon, isCaptured });
-        
+
         // Toca o som de captura/libertação
         this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release')
           .catch(error => console.error('[PokemonCard] Erro ao reproduzir som:', error));
-        
+
         // Exibe mensagem de sucesso
         const messageKey = isCaptured ? 'capture.success' : 'capture.released';
         this.showToast(messageKey, 'success');
@@ -111,7 +113,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
           error: error.error || error.message,
           status: error.status
         });
-        
+
         // Mensagem de erro adequada com base no status HTTP
         let messageKey = 'capture.error';
         if (error.status === 401 || error.status === 403) {
@@ -119,7 +121,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
         } else if (error.status === 0) {
           messageKey = 'capture.network_error';
         }
-        
+
         await this.showToast(messageKey, 'danger');
       },
       complete: () => {
@@ -129,7 +131,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   /**
    * Exibe uma mensagem toast para o usuário
    * @param messageKey Chave da mensagem de tradução
@@ -191,5 +193,29 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
 
   capitalizeName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  /**
+   * Abre o modal de autenticação
+   */
+  private async openAuthModal() {
+    this.isProcessing = false; // Reset processing state
+
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        // Login bem-sucedido, tentar capturar novamente
+        console.log('[PokemonCard] Login bem-sucedido, tentando capturar novamente');
+        setTimeout(() => {
+          this.onCaptureClick(new Event('click'));
+        }, 500);
+      }
+    });
+
+    return await modal.present();
   }
 }

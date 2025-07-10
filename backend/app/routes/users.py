@@ -4,7 +4,7 @@ Rotas da API para usuários.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.database import get_db
+from core.database import get_db
 from app.schemas.schemas import User, UserCreate, UserUpdate, UserWithFavorites
 from app.services.user_service import UserService
 

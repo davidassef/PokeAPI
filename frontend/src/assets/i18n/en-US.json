@@ -523,6 +523,74 @@
   "capture": {
     "auth_required": "You must be logged in to capture a Pokémon."
   },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile",
+    "hello": "Hello",
+    "welcome_back": "Welcome back!",
+    "create_account": "Create Account",
+    "reset_password": "Reset Password",
+    "login_subtitle": "Sign in to your account to continue",
+    "register_subtitle": "Create a new account to start your Pokémon journey",
+    "forgot_subtitle": "Enter your email to reset your password",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "confirm_password": "Confirm Password",
+    "security_question": "Security Question",
+    "select_security_question": "Select a question",
+    "security_question_pet": "What is the name of your first pet?",
+    "security_question_city": "In which city were you born?",
+    "security_question_school": "What is the name of your first school?",
+    "security_question_mother": "What is your mother's maiden name?",
+    "security_answer": "Security Answer",
+    "new_password": "New Password",
+    "confirm_new_password": "Confirm New Password",
+    "email_placeholder": "Enter your email",
+    "password_placeholder": "Enter your password",
+    "name_placeholder": "Enter your full name",
+    "confirm_password_placeholder": "Confirm your password",
+    "security_answer_placeholder": "Enter your answer",
+    "new_password_placeholder": "Enter new password",
+    "confirm_new_password_placeholder": "Confirm new password",
+    "login_button": "Sign In",
+    "register_button": "Create Account",
+    "find_account": "Find Account",
+    "verify_answer": "Verify Answer",
+    "reset_password_button": "Reset Password",
+    "forgot_password": "Forgot password?",
+    "no_account": "Don't have an account?",
+    "create_account_link": "Create Account",
+    "have_account": "Already have an account?",
+    "sign_in_link": "Sign In",
+    "back_to_login": "Back to Sign In",
+    "your_answer": "Your Answer",
+    "security_questions": {
+      "pet": "What is the name of your first pet?",
+      "city": "In which city were you born?",
+      "school": "What is the name of your first school?",
+      "mother": "What is your mother's maiden name?"
+    },
+    "errors": {
+      "required_fields": "Please fill in all required fields",
+      "invalid_email": "Please enter a valid email address",
+      "password_mismatch": "Passwords do not match",
+      "password_too_short": "Password must be at least 6 characters",
+      "login_failed": "Invalid email or password",
+      "register_failed": "Failed to create account",
+      "user_not_found": "User not found or no security question configured",
+      "incorrect_answer": "Incorrect security answer",
+      "reset_failed": "Failed to reset password"
+    },
+    "success": {
+      "account_created": "Account created successfully!",
+      "login_successful": "Login successful!",
+      "user_found": "User found! Answer the security question.",
+      "answer_correct": "Correct answer! You can now reset your password.",
+      "password_reset": "Password reset successfully!"
+    }
+  },
   "sync_with_server": "Sync with server",
   "synced": "Synced",
   "pending": "Pending",
@@ -531,11 +599,5 @@
     "level": "Level",
     "profile_settings": "Profile Settings",
     "logout": "Logout"
-  },
-  "auth": {
-    "login": "Login",
-    "logout": "Logout",
-    "profile": "Profile",
-    "hello": "Hello"
   }
 }

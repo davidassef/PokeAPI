@@ -70,9 +70,9 @@ export class ConnectionService {
     if (this.isChecking) return;
 
     this.isChecking = true;
-    const serverUrl = this.syncConfig.getClientServerUrl();
+    const serverUrl = this.syncConfig.getBackendUrl();
 
-    this.http.get(`${serverUrl}/api/client/health`, { observe: 'response' })
+    this.http.get(`${serverUrl}/health`, { observe: 'response' })
       .pipe(
         timeout(3000),
         map(() => true),
@@ -98,7 +98,7 @@ export class ConnectionService {
 
     // Notificar sobre mudanças na conectividade
     if (wasReachable && !isReachable) {
-      this.errorHandler.addConnectionWarning(this.syncConfig.getClientServerUrl());
+      this.errorHandler.addConnectionWarning(this.syncConfig.getBackendUrl());
     }
   }
 

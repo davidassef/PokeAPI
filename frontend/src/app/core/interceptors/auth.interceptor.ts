@@ -7,8 +7,8 @@ import {
   HttpErrorResponse,
   HttpEventType
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, tap, switchMap, filter, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
@@ -18,6 +18,9 @@ import { AuthService } from '../services/auth.service';
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+
   constructor(
     private authService: AuthService,
     private router: Router
@@ -28,10 +31,10 @@ export class AuthInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     console.log(`[AuthInterceptor] Interceptando requisição: ${request.method} ${request.url}`);
-    
+
     // Obtém o token do serviço de autenticação
     const token = this.authService.getToken();
-    
+
     // Clona a requisição e adiciona o token de autorização, se disponível
     if (token) {
       console.log('[AuthInterceptor] Token JWT encontrado, adicionando ao cabeçalho');
@@ -40,7 +43,7 @@ export class AuthInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`
         }
       });
-      
+
       // Log do header de autorização (apenas para depuração - remover em produção)
       console.log('[AuthInterceptor] Cabeçalho de autorização:', request.headers.get('Authorization')?.substring(0, 30) + '...');
     } else {
@@ -62,18 +65,11 @@ export class AuthInterceptor implements HttpInterceptor {
       }),
       catchError((error: HttpErrorResponse) => {
         console.error(`[AuthInterceptor] Erro na requisição ${request.method} ${request.url}:`, error);
-        
+
         // Se o erro for de autenticação (401) e não for uma rota de login/registro
         if (error.status === 401 && !request.url.includes('/auth/')) {
-          console.warn('[AuthInterceptor] Erro 401 - Não autorizado, redirecionando para login');
-          
-          // Limpa o estado de autenticação
-          this.authService.logout(false);
-          
-          // Redireciona para a página de login
-          this.router.navigate(['/login'], {
-            queryParams: { returnUrl: this.router.routerState.snapshot.url }
-          });
+          console.warn('[AuthInterceptor] Erro 401 - Tentando renovar token automaticamente');
+          return this.handle401Error(request, next);
         } else if (error.status === 403) {
           console.error('[AuthInterceptor] Erro 403 - Acesso negado (Forbidden)');
           console.error('Detalhes do erro:', {
@@ -83,10 +79,63 @@ export class AuthInterceptor implements HttpInterceptor {
             error: error.error
           });
         }
-        
+
         // Repassa o erro para o serviço que fez a requisição
         return throwError(() => error);
       })
     );
+  }
+
+  /**
+   * Trata erros 401 tentando renovar o token automaticamente
+   */
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (!this.isRefreshing) {
+      this.isRefreshing = true;
+      this.refreshTokenSubject.next(null);
+
+      return this.authService.refreshToken().pipe(
+        switchMap((tokenData: any) => {
+          this.isRefreshing = false;
+          this.refreshTokenSubject.next(tokenData.token);
+
+          // Retry a requisição original com o novo token
+          return next.handle(this.addTokenHeader(request, tokenData.token));
+        }),
+        catchError((err) => {
+          this.isRefreshing = false;
+
+          console.warn('[AuthInterceptor] Falha ao renovar token, redirecionando para login');
+
+          // Limpa o estado de autenticação
+          this.authService.logout(false);
+
+          // Redireciona para a página de login
+          this.router.navigate(['/login'], {
+            queryParams: { returnUrl: this.router.routerState.snapshot.url }
+          });
+
+          return throwError(() => err);
+        })
+      );
+    }
+
+    // Se já está renovando, aguarda o resultado
+    return this.refreshTokenSubject.pipe(
+      filter(token => token !== null),
+      take(1),
+      switchMap((token) => next.handle(this.addTokenHeader(request, token)))
+    );
+  }
+
+  /**
+   * Adiciona o token de autorização ao cabeçalho da requisição
+   */
+  private addTokenHeader(request: HttpRequest<any>, token: string): HttpRequest<any> {
+    return request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   }
 }

@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
+  <ion-toolbar color="warning">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -22,7 +22,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
-    <ion-toolbar color="primary">
+    <ion-toolbar color="warning">
       <ion-title size="large">{{ 'tabs.ranking' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
@@ -50,8 +50,8 @@
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ currentRanking[1].favoriteCount }}
         </span>
-        <app-pokemon-card 
-          [pokemon]="currentRanking[1].pokemon" 
+        <app-pokemon-card
+          [pokemon]="currentRanking[1].pokemon"
           (cardClick)="openDetailsModal(currentRanking[1].pokemon.id)"
           (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
@@ -62,8 +62,8 @@
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ currentRanking[0].favoriteCount }}
         </span>
-        <app-pokemon-card 
-          [pokemon]="currentRanking[0].pokemon" 
+        <app-pokemon-card
+          [pokemon]="currentRanking[0].pokemon"
           (cardClick)="openDetailsModal(currentRanking[0].pokemon.id)"
           (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
@@ -75,8 +75,8 @@
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ currentRanking[2].favoriteCount }}
         </span>
-        <app-pokemon-card 
-          [pokemon]="currentRanking[2].pokemon" 
+        <app-pokemon-card
+          [pokemon]="currentRanking[2].pokemon"
           (cardClick)="openDetailsModal(currentRanking[2].pokemon.id)"
           (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>

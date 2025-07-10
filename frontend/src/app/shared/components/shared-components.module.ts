@@ -13,7 +13,7 @@ import { SearchFilterComponent } from './search-filter/search-filter.component';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { ErrorNotificationComponent } from './error-notification/error-notification.component';
 import { AuthButtonComponent } from './auth-button/auth-button.component';
-import { AuthModalComponent } from './auth-modal/auth-modal.component';
+import { AuthModalNewComponent } from './auth-modal-new/auth-modal-new.component';
 import { UserProfileModalComponent } from './user-profile-modal/user-profile-modal.component';
 
 // Shared Modules
@@ -30,7 +30,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     SidebarMenuComponent,
     ErrorNotificationComponent,
     AuthButtonComponent,
-    AuthModalComponent,
+    AuthModalNewComponent,
     UserProfileModalComponent
   ],  imports: [
     CommonModule,
@@ -50,7 +50,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     SidebarMenuComponent,
     ErrorNotificationComponent,
     AuthButtonComponent,
-    AuthModalComponent,
+    AuthModalNewComponent,
     UserProfileModalComponent,
     SharedPipesModule,
     SharedDirectivesModule,

@@ -1,12 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
 import { Pokemon } from '../../../models/pokemon.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
 
 interface ImageVariant {
   url: string;
@@ -37,7 +39,9 @@ export class DetailsPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private toastController: ToastController,
     private translate: TranslateService,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private authService: AuthService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -90,6 +94,13 @@ export class DetailsPage implements OnInit, OnDestroy {
    */
   async toggleFavorite() {
     if (!this.pokemon) return;
+
+    // Verifica autenticação
+    if (!this.authService.isAuthenticated()) {
+      console.log('[DetailsPage] Usuário não autenticado, abrindo modal de login');
+      await this.openAuthModal();
+      return;
+    }
 
     try {
       if (this.isCaptured) {
@@ -319,5 +330,27 @@ export class DetailsPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Erro ao compartilhar:', error);
     }
+  }
+
+  /**
+   * Abre o modal de autenticação
+   */
+  private async openAuthModal() {
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        // Login bem-sucedido, tentar capturar novamente
+        console.log('[DetailsPage] Login bem-sucedido, tentando capturar novamente');
+        setTimeout(() => {
+          this.toggleFavorite();
+        }, 500);
+      }
+    });
+
+    return await modal.present();
   }
 }

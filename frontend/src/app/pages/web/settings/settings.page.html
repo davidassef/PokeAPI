@@ -68,18 +68,7 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Seção de Exibição -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="eye" color="tertiary"></ion-icon>
-        {{ 'settings_page.display_settings' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <!-- Removido toggle de shiny -->
-    </ion-card-content>
-  </ion-card>
+
 
   <!-- Seção de Favoritos -->
   <ion-card class="settings-card">
@@ -96,9 +85,7 @@
       <ion-item button (click)="importCaptured()">
         <ion-label>{{ 'settings_page.import_captured' | translate }}</ion-label>
       </ion-item>
-      <ion-item button (click)="clearAllCaptured()">
-        <ion-label color="danger">{{ 'settings_page.clear_all_captured' | translate }}</ion-label>
-      </ion-item>
+
     </ion-card-content>
   </ion-card>
 
@@ -186,20 +173,7 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Botão temporário para limpar capturas do usuário -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="trash-outline" color="danger"></ion-icon>
-        Limpar todas as capturas (TEMPORÁRIO)
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-button color="danger" expand="block" (click)="clearAllCaptured()">
-        Limpar capturas do usuário
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
+
 
   <!-- Espaçador para evitar sobreposição do player de música -->
   <div style="height: 120px;"></div>

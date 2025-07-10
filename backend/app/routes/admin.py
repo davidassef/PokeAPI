@@ -3,7 +3,7 @@ Rotas administrativas da API.
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.core.database import get_db
+from core.database import get_db
 from app.models.models import User, PokemonRanking
 from app.models.models import FavoritePokemon as FavoritePokemonModel
 from app.schemas.schemas import Message, FavoritePokemon
@@ -119,8 +119,8 @@ def clear_fictitious_data(db: Session = Depends(get_db)):
         fictitious_users = db.query(User).filter(
             (User.username.in_(["admin", "test", "demo"])) |
             (User.email.in_([
-                "admin@pokemon.com", 
-                "admin@pokeapi.com", 
+                "admin@pokemon.com",
+                "admin@pokeapi.com",
                 "test@test.com"
             ]))
         ).all()

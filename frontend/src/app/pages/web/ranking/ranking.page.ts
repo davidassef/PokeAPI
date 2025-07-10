@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, firstValueFrom, takeUntil, timeout } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
@@ -10,6 +10,7 @@ import { Pokemon } from '../../../models/pokemon.model';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
+import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
 
 interface PokemonRanking {
   pokemon: Pokemon;
@@ -126,7 +127,7 @@ export class RankingPage implements OnInit, OnDestroy {
    */
   private async updateCapturedStates(ranking: PokemonRanking[]): Promise<PokemonRanking[]> {
     if (!ranking || ranking.length === 0) return [];
-    
+
     try {
       // Verifica se o usuário está autenticado
       if (!this.authService.isAuthenticated()) {
@@ -136,7 +137,7 @@ export class RankingPage implements OnInit, OnDestroy {
       // Obtém os estados de captura em lote para melhor desempenho
       const pokemonIds = ranking.map(item => item.pokemon.id);
       const capturedStates = await this.capturedService.getCapturedStates(pokemonIds);
-      
+
       // Atualiza o cache local de estados de captura
       Object.entries(capturedStates).forEach(([pokemonId, isCaptured]) => {
         const id = parseInt(pokemonId, 10);
@@ -166,7 +167,7 @@ export class RankingPage implements OnInit, OnDestroy {
     if (!this.currentRanking) {
       return;
     }
-    
+
     this.currentRanking = this.currentRanking.map(item => ({
       ...item,
       pokemon: {
@@ -174,7 +175,7 @@ export class RankingPage implements OnInit, OnDestroy {
         isCaptured: this.capturedStates.get(item.pokemon.id) || false
       }
     }));
-    
+
     this.cdRef.detectChanges();
   }
 
@@ -203,19 +204,34 @@ export class RankingPage implements OnInit, OnDestroy {
   user: User | null = null;
   showUserMenu = false;
 
-  abrirLogin = () => {
-    // Redireciona para login
-    // Substitua pelo seu fluxo real
-    window.location.href = '/login';
+  abrirLogin = async () => {
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        // Login bem-sucedido, atualizar estado
+        this.isAuthenticated = this.authService.isAuthenticated();
+        if (this.isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+        }
+      }
+    });
+
+    return await modal.present();
   };
 
   abrirPerfil = () => {
-    window.location.href = '/profile';
+    // TODO: Implementar modal de perfil
+    console.log('Abrir perfil');
   };
 
   logout = () => {
-    // Substitua pelo seu fluxo real
-    window.location.href = '/logout';
+    this.authService.logout();
+    this.isAuthenticated = false;
+    this.user = null;
   };
 
   toggleUserMenu = () => {
@@ -231,7 +247,8 @@ export class RankingPage implements OnInit, OnDestroy {
     private translate: TranslateService,
     private syncService: SyncService,
     private authService: AuthService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -242,6 +259,14 @@ export class RankingPage implements OnInit, OnDestroy {
     this.loadRanking();
     this.loadLocalRanking('default-region');
     this.loadCapturedStates();
+  }
+
+  ionViewWillEnter() {
+    document.body.classList.add('ranking-page-active');
+  }
+
+  ionViewWillLeave() {
+    document.body.classList.remove('ranking-page-active');
   }
 
   ngOnDestroy() {
@@ -306,7 +331,7 @@ export class RankingPage implements OnInit, OnDestroy {
     // Mostra o indicador de carregamento apenas se não estiver em atualização rápida
     const isQuickUpdate = this.globalRanking.length > 0;
     let loading: HTMLIonLoadingElement | null = null;
-    
+
     if (!isQuickUpdate) {
       this.loading = true;
       loading = await this.loadingController.create({
@@ -319,13 +344,13 @@ export class RankingPage implements OnInit, OnDestroy {
 
     try {
       console.log('🚀 Iniciando carregamento do ranking...');
-      
+
       // Usa cache local para dados recentes se disponível
       const cacheKey = `ranking_${this.viewMode}_${new Date().toISOString().split('T')[0]}`;
       const cachedData = localStorage.getItem(cacheKey);
-      
+
       let backendRanking: BackendRankingItem[] = [];
-      
+
       if (cachedData && !isQuickUpdate) {
         console.log('📦 Usando dados em cache para ranking');
         backendRanking = JSON.parse(cachedData);
@@ -356,10 +381,10 @@ export class RankingPage implements OnInit, OnDestroy {
         .map((item: BackendRankingItem, idx: number) => {
           // Garante que o trend seja um dos valores válidos
           const validTrends = ['up', 'down', 'stable'] as const;
-          const trend = validTrends.includes(item.trend as any) 
-            ? item.trend as 'up' | 'down' | 'stable' 
+          const trend = validTrends.includes(item.trend as any)
+            ? item.trend as 'up' | 'down' | 'stable'
             : 'stable';
-            
+
           return {
             pokemonId: item.pokemon_id,
             favoriteCount: item.favorite_count || 0,
@@ -372,15 +397,15 @@ export class RankingPage implements OnInit, OnDestroy {
 
       // Busca os detalhes dos Pokémons com cache local
       console.log('📋 Buscando detalhes dos Pokémons...');
-      
+
       const pokemonPromises = mappedRanking.map(async (item: any) => {
         try {
           // Tenta obter do cache primeiro
           const cacheKey = `pokemon_${item.pokemonId}`;
           const cachedPokemon = localStorage.getItem(cacheKey);
-          
+
           let pokemon: Pokemon;
-          
+
           if (cachedPokemon) {
             pokemon = JSON.parse(cachedPokemon);
             console.log(`🔄 Usando Pokémon ${item.pokemonId} do cache`);
@@ -389,7 +414,7 @@ export class RankingPage implements OnInit, OnDestroy {
             // Armazena no cache por 1 dia
             localStorage.setItem(cacheKey, JSON.stringify(pokemon));
           }
-          
+
           return {
             pokemon: pokemon || this.getPlaceholderPokemon(item.pokemonId),
             favoriteCount: item.favoriteCount,
@@ -409,19 +434,19 @@ export class RankingPage implements OnInit, OnDestroy {
           } as PokemonRanking & { error: boolean }; // Tipo explícito para o objeto retornado
         }
       });
-      
+
       // Atualiza o ranking com os novos dados
       const newRanking = await Promise.all(pokemonPromises);
-      
+
       // Filtra itens inválidos e mapeia para o tipo correto
       const validRanking: PokemonRanking[] = [];
-      
+
       for (const item of newRanking) {
         // Pula itens com erro ou sem dados obrigatórios
         if ('error' in item || !item.pokemon || item.favoriteCount === undefined || item.rank === undefined) {
           continue;
         }
-        
+
         // Cria o item do ranking com a tipagem correta
         const rankingItem: PokemonRanking = {
           pokemon: item.pokemon,
@@ -429,18 +454,18 @@ export class RankingPage implements OnInit, OnDestroy {
           rank: item.rank,
           trend: this.getSafeTrend(item.trend)
         };
-        
+
         // Adiciona updatedAt se existir
         if ('updatedAt' in item) {
           rankingItem.updatedAt = item.updatedAt as string;
         }
-        
+
         validRanking.push(rankingItem);
       }
-      
+
       // Mantém o estado de captura dos Pokémons
       const updatedRanking = await this.updateCapturedStates(validRanking);
-      
+
       // Atualiza as propriedades reativas
       this.globalRanking = updatedRanking;
       this.currentRanking = updatedRanking.filter(item => item.pokemon && item.pokemon.id > 0);
@@ -488,17 +513,17 @@ export class RankingPage implements OnInit, OnDestroy {
       const response: LocalRankingItem[] = await firstValueFrom(
         this.pokeApiService.getLocalRanking(region).pipe(timeout(30000))
       );
-      
+
       if (!response) {
         throw new Error('Resposta indefinida ao buscar ranking local');
       }
-      
+
       const pokemonPromises = response.map(async (item: LocalRankingItem) => {
         try {
           const pokemon = await firstValueFrom(
             this.pokeApiService.getPokemon(item.pokemonId).pipe(timeout(30000))
           );
-          
+
           return {
             pokemon: pokemon!,
             favoriteCount: item.favoriteCount,
@@ -518,11 +543,11 @@ export class RankingPage implements OnInit, OnDestroy {
           } as PokemonRanking & { error: boolean };
         }
       });
-      
+
       // Atualiza o ranking local com os novos dados
       const newRanking = await Promise.all(pokemonPromises);
       this.localRanking = newRanking.filter((item): item is PokemonRanking => !('error' in item));
-      
+
       // Se estiver na visualização local, atualiza o ranking atual
       if (this.viewMode === 'local') {
         this.currentRanking = [...this.localRanking];
@@ -530,14 +555,14 @@ export class RankingPage implements OnInit, OnDestroy {
         this.updateCurrentRankingWithCapturedStates();
         this.cdRef.detectChanges();
       }
-      
+
     } catch (error) {
       console.error('Erro ao carregar ranking local:', error);
       this.showErrorToast('ERROR_LOADING_LOCAL_RANKING');
       this.localRanking = [];
     }
   }
-  
+
   /**
    * Alterna entre as visualizações global e local
    * @param mode Modo de visualização ('global' ou 'local')
@@ -546,21 +571,21 @@ export class RankingPage implements OnInit, OnDestroy {
     if (this.viewMode === mode) {
       return; // Já está na visualização solicitada
     }
-    
+
     this.viewMode = mode;
-    
+
     try {
       // Aplica o debounce de 300ms
       await new Promise<void>((resolve) => {
         if (this.debounceTimer) {
           clearTimeout(this.debounceTimer);
         }
-        
+
         this.debounceTimer = setTimeout(async () => {
           try {
             // Atualiza o ranking atual com base na visualização selecionada
             this.currentRanking = mode === 'global' ? [...this.globalRanking] : [...this.localRanking];
-            
+
             // Atualiza os estados de captura para o ranking atual
             if (this.currentRanking.length > 0) {
               console.log(`[Ranking] Atualizando estados de captura para ${this.currentRanking.length} itens`);
@@ -576,7 +601,7 @@ export class RankingPage implements OnInit, OnDestroy {
                 await this.loadLocalRanking('kanto'); // Você pode querer tornar isso configurável
               }
             }
-            
+
             this.cdRef.detectChanges();
             resolve();
           } catch (error) {
@@ -635,12 +660,12 @@ export class RankingPage implements OnInit, OnDestroy {
       const capturedPokemons = await firstValueFrom(this.capturedService.getCaptured());
       this.capturedCache.clear();
       this.capturedStates.clear();
-      
+
       capturedPokemons.forEach(pokemon => {
         this.capturedCache.set(pokemon.pokemon_id, true);
         this.capturedStates.set(pokemon.pokemon_id, true);
       });
-      
+
       this.cdRef.detectChanges();
     } catch (error) {
       console.error('[Ranking] Erro ao carregar estados de captura:', error);
@@ -704,23 +729,23 @@ export class RankingPage implements OnInit, OnDestroy {
     const { pokemon, isCaptured } = event;
     const pokemonId = pokemon.id;
     const action = isCaptured ? 'capturado' : 'liberado';
-    
+
     // Se já existe um debounce em andamento para este Pokémon, ignora o novo evento
     if (this.toggleDebounceTimer[pokemonId]) {
       console.log(`[Ranking] Ignorando clique rápido para o Pokémon ${pokemonId}`);
       return;
     }
-    
+
     // Configura o debounce
     this.toggleDebounceTimer[pokemonId] = window.setTimeout(() => {
       delete this.toggleDebounceTimer[pokemonId];
     }, 1000);
-    
+
     const loadingMessage = isCaptured ? 'capturing_pokemon' : 'releasing_pokemon';
     console.log(`[Ranking] Iniciando processo para ${action} o Pokémon ${pokemon.name} (ID: ${pokemonId})`);
-    
+
     let loading: HTMLIonLoadingElement | null = null;
-    
+
     try {
       // Mostra feedback visual imediato
       const translatedMessage = await firstValueFrom(this.translate.get(loadingMessage));
@@ -730,46 +755,46 @@ export class RankingPage implements OnInit, OnDestroy {
         spinner: 'crescent',
         backdropDismiss: false
       });
-      
+
       await loading.present();
-      
+
       // Atualização otimista da UI
       this.capturedCache.set(pokemonId, isCaptured);
       this.capturedStates.set(pokemonId, isCaptured);
       this.cdRef.detectChanges();
-      
+
       // Executa a ação de captura/liberação
       console.log(`[Ranking] Executando ação de ${action} no servidor...`);
-      
+
       // Executa a ação de forma assíncrona
       await this.capturedService.toggleCaptured(pokemon);
-      
+
       // Atualiza os estados de captura e ranking
       console.log('[Ranking] Atualizando estados de captura e ranking...');
       await Promise.all([
         this.loadCapturedStates(),
         this.loadRanking()
       ]);
-      
+
       // Feedback visual de sucesso
       const successMessage = isCaptured ? 'pokemon_captured' : 'pokemon_released';
       await this.showToast(successMessage, { name: pokemon.name });
-      
+
     } catch (error: unknown) {
       console.error(`[Ranking] Erro ao ${action} o Pokémon:`, error);
-      
+
       // Reverte a atualização otimista em caso de erro
       this.capturedCache.set(pokemonId, !isCaptured);
       this.capturedStates.set(pokemonId, !isCaptured);
       this.cdRef.detectChanges();
-      
+
       // Tratamento de erros específicos
       if (error instanceof Error) {
         if (error.name === 'TimeoutError') {
           await this.showErrorToast('network_timeout');
           return;
         }
-        
+
         // Verifica se é um erro HTTP
         const httpError = error as { status?: number };
         if (httpError.status === 401) {
@@ -777,11 +802,11 @@ export class RankingPage implements OnInit, OnDestroy {
           return;
         }
       }
-      
+
       // Erro genérico
       const errorMessage = isCaptured ? 'capture_error' : 'release_error';
       await this.showErrorToast(errorMessage, { name: pokemon.name });
-      
+
     } finally {
       // Limpa o loading se ainda estiver aberto
       if (loading) {
@@ -791,13 +816,13 @@ export class RankingPage implements OnInit, OnDestroy {
           console.error('[Ranking] Erro ao fechar loading:', e);
         }
       }
-      
+
       // Remove o debounce após a conclusão
       if (this.toggleDebounceTimer[pokemonId]) {
         clearTimeout(this.toggleDebounceTimer[pokemonId]);
         delete this.toggleDebounceTimer[pokemonId];
       }
-      
+
       // Força uma nova verificação de rede
       try {
         await this.syncService.forceSyncNow();
@@ -805,7 +830,7 @@ export class RankingPage implements OnInit, OnDestroy {
         console.error('[Ranking] Erro ao sincronizar:', e);
       }
     }
-    
+
     console.log(`[Ranking] Processo de ${action} concluído para o Pokémon ${pokemon.name}`);
   }
 

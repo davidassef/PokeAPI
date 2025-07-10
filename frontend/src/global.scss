@@ -137,6 +137,294 @@ ion-modal {
     background: var(--card-bg);
     color: var(--text-color);
   }
+
+  // Fixed auth modal styling
+  &.auth-modal-fixed {
+    --backdrop-opacity: 0.6;
+    --width: 100%;
+    --height: 100%;
+    --max-width: none;
+    --max-height: none;
+
+    .modal-wrapper {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 20000 !important;
+      background: rgba(0, 0, 0, 0.6) !important;
+      backdrop-filter: blur(4px) !important;
+    }
+
+    app-auth-modal-new {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      height: 100% !important;
+      pointer-events: none !important;
+    }
+  }
+}
+
+// Fix for ion-select-option visibility in all themes
+ion-select-option {
+  --color: var(--ion-text-color, #000000) !important;
+  color: var(--ion-text-color, #000000) !important;
+}
+
+// Fix for select popover in dark theme
+ion-popover.select-popover {
+  --background: var(--ion-background-color, #ffffff);
+  --color: var(--ion-text-color, #000000);
+
+  ion-list {
+    background: var(--ion-background-color, #ffffff);
+  }
+
+  ion-item {
+    --background: var(--ion-background-color, #ffffff);
+    --color: var(--ion-text-color, #000000);
+  }
+}
+
+// ===== COMPREHENSIVE SELECT DROPDOWN THEME FIXES =====
+
+// Base select styling for all themes
+ion-select {
+  --placeholder-color: var(--text-color);
+  --placeholder-opacity: 0.6;
+}
+
+// Light theme select options
+:root,
+.light-theme,
+body:not(.dark-theme) {
+  ion-select-option {
+    --color: #000000 !important;
+    color: #000000 !important;
+    --background: #ffffff !important;
+    background: #ffffff !important;
+  }
+
+  ion-popover.select-popover {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+
+    ion-list {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    ion-item {
+      --background: #ffffff !important;
+      --color: #000000 !important;
+      color: #000000 !important;
+    }
+
+    ion-radio {
+      --color: #000000 !important;
+      --color-checked: var(--ion-color-primary, #3880ff) !important;
+    }
+  }
+}
+
+// Dark theme select options
+.dark-theme,
+body.dark-theme {
+  ion-select-option {
+    --color: #ffffff !important;
+    color: #ffffff !important;
+    --background: #1a1a1a !important;
+    background: #1a1a1a !important;
+  }
+
+  ion-popover.select-popover {
+    --background: #1a1a1a !important;
+    --color: #ffffff !important;
+
+    ion-list {
+      background: #1a1a1a !important;
+      color: #ffffff !important;
+    }
+
+    ion-item {
+      --background: #1a1a1a !important;
+      --color: #ffffff !important;
+      color: #ffffff !important;
+    }
+
+    ion-radio {
+      --color: #ffffff !important;
+      --color-checked: var(--ion-color-primary, #3880ff) !important;
+    }
+  }
+}
+
+// System dark mode detection fallback
+@media (prefers-color-scheme: dark) {
+  body:not(.light-theme) {
+    ion-select-option {
+      --color: #ffffff !important;
+      color: #ffffff !important;
+      --background: #1a1a1a !important;
+      background: #1a1a1a !important;
+    }
+
+    ion-popover.select-popover {
+      --background: #1a1a1a !important;
+      --color: #ffffff !important;
+
+      ion-list {
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+      }
+
+      ion-item {
+        --background: #1a1a1a !important;
+        --color: #ffffff !important;
+        color: #ffffff !important;
+      }
+
+      ion-radio {
+        --color: #ffffff !important;
+        --color-checked: var(--ion-color-primary, #3880ff) !important;
+      }
+    }
+  }
+}
+
+// Force override for any remaining select option issues
+ion-select-option {
+  transition: all 0.2s ease !important;
+}
+
+// Ensure proper contrast for select interface
+ion-select::part(text) {
+  color: var(--text-color) !important;
+}
+
+ion-select::part(icon) {
+  color: var(--text-color) !important;
+  opacity: 0.7;
+}
+
+// ===== THEME-AWARE SCROLLBARS =====
+
+// Webkit scrollbars (Chrome, Safari, Edge)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+// Firefox scrollbars
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+// Ensure scrollbars are visible in both themes
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+// ===== GLOBAL THEME UTILITIES =====
+
+// Smooth transitions for theme changes
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+// Ensure proper text contrast
+.text-primary {
+  color: var(--text-color) !important;
+}
+
+.text-secondary {
+  color: var(--text-color-secondary) !important;
+}
+
+.text-muted {
+  color: var(--text-color-muted) !important;
+}
+
+// Background utilities
+.bg-surface {
+  background-color: var(--surface-bg) !important;
+}
+
+.bg-card {
+  background-color: var(--card-bg) !important;
+}
+
+// ===== ENHANCED CARD STYLING =====
+
+// Global card styling for better visual depth
+ion-card, .card, .pokemon-card, .settings-card {
+  background: var(--card-bg) !important;
+  box-shadow: var(--card-shadow) !important;
+  border-radius: var(--border-radius) !important;
+  border: 1px solid var(--border-color) !important;
+  transition: box-shadow 0.3s ease, transform 0.2s ease !important;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover) !important;
+    transform: translateY(-2px) !important;
+  }
+}
+
+// Specific styling for Pokemon cards
+.pokemon-card {
+  overflow: hidden;
+
+  .pokemon-image {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover .pokemon-image {
+    transform: scale(1.05);
+  }
+}
+
+// Settings page cards
+.settings-section {
+  background: var(--card-bg) !important;
+  box-shadow: var(--card-shadow) !important;
+  border-radius: var(--border-radius) !important;
+  border: 1px solid var(--border-color) !important;
+  margin-bottom: 16px;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover) !important;
+  }
 }
 
 // Estilos para Alert seguir o tema
@@ -195,6 +483,26 @@ ion-button.auth-btn {
   outline: none;
   transform: translateY(-2px) scale(1.04);
 }
+
+/* Tema azul específico para página Home */
+body.home-page-active ion-button.auth-btn {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%) !important;
+  --box-shadow: 0 4px 18px 0 rgba(25, 118, 210, 0.18), 0 2px 8px 0 rgba(66, 165, 245, 0.12) !important;
+  box-shadow: var(--box-shadow) !important;
+}
+body.home-page-active ion-button.auth-btn:hover,
+body.home-page-active ion-button.auth-btn:focus {
+  --background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%) !important;
+  box-shadow: 0 8px 28px 0 rgba(25, 118, 210, 0.22), 0 4px 16px 0 rgba(66, 165, 245, 0.16) !important;
+  filter: brightness(1.05);
+  transform: translateY(-4px) scale(1.07);
+}
+body.home-page-active ion-button.auth-btn:active {
+  --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%) !important;
+  box-shadow: 0 2px 6px 0 rgba(25, 118, 210, 0.12) !important;
+  filter: brightness(0.98);
+  transform: scale(0.97);
+}
 ion-button.auth-btn:hover,
 ion-button.auth-btn:focus {
   --background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
@@ -226,6 +534,26 @@ body.captured-page-active ion-button.auth-btn:focus {
 body.captured-page-active ion-button.auth-btn:active {
   --background: linear-gradient(90deg, #d32f2f 60%, #ff5252 100%) !important;
   box-shadow: 0 2px 6px 0 rgba(211, 47, 47, 0.12) !important;
+  filter: brightness(0.98);
+  transform: scale(0.97);
+}
+
+/* Tema amarelo para página de Ranking */
+body.ranking-page-active ion-button.auth-btn {
+  --background: linear-gradient(90deg, #ff9800 60%, #ffc107 100%) !important;
+  --box-shadow: 0 4px 18px 0 rgba(255, 152, 0, 0.18), 0 2px 8px 0 rgba(255, 193, 7, 0.12) !important;
+  box-shadow: var(--box-shadow) !important;
+}
+body.ranking-page-active ion-button.auth-btn:hover,
+body.ranking-page-active ion-button.auth-btn:focus {
+  --background: linear-gradient(90deg, #f57c00 60%, #ff9800 100%) !important;
+  box-shadow: 0 8px 28px 0 rgba(255, 152, 0, 0.22), 0 4px 16px 0 rgba(255, 193, 7, 0.16) !important;
+  filter: brightness(1.05);
+  transform: translateY(-4px) scale(1.07);
+}
+body.ranking-page-active ion-button.auth-btn:active {
+  --background: linear-gradient(90deg, #ff9800 60%, #ffc107 100%) !important;
+  box-shadow: 0 2px 6px 0 rgba(255, 152, 0, 0.12) !important;
   filter: brightness(0.98);
   transform: scale(0.97);
 }

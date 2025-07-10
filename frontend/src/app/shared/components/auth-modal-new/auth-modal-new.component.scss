@@ -1,0 +1,577 @@
+// Auth Modal Styles
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.auth-modal-container {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 450px;
+  max-height: 90vh;
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  position: relative;
+  z-index: 20001;
+  transform: translateZ(0);
+  border: 3px solid #2563eb;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  margin: 20px;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Header - Pokémon Theme with theme support
+.auth-modal-header {
+  position: relative;
+  padding: 30px 20px 25px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+  color: var(--ion-color-primary-contrast, #fff);
+  overflow: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+
+    .auth-icon-container {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+      .auth-icon {
+        font-size: 2.5rem;
+        color: #fff;
+      }
+    }
+
+    .auth-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin: 0;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10; // Ensure close button is always clickable
+    outline: none; // Remove default focus outline
+
+    // Accessibility: Add focus styles
+    &:focus {
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    }
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--ion-color-primary-contrast, #fff);
+      pointer-events: none; // Prevent icon from blocking clicks
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// Content - Theme aware
+.auth-modal-content {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+  background: var(--card-bg);
+  color: var(--text-color);
+  transition: background 0.3s ease, color 0.3s ease;
+
+  .auth-form {
+    .form-group {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+
+      .auth-input {
+        --background: var(--input-bg);
+        --border-color: var(--input-border);
+        --border-radius: 12px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        --color: var(--text-color);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+
+        &:focus-within {
+          --border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 102, 126, 234), 0.1);
+        }
+
+        &.error {
+          --border-color: #dc3545;
+          --background: var(--input-bg);
+        }
+      }
+
+      .auth-select {
+        --background: var(--input-bg);
+        --border-color: var(--input-border);
+        --border-radius: 12px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        --color: var(--text-color) !important;
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+
+        // Ensure proper theme integration
+        &::part(text) {
+          color: var(--text-color) !important;
+        }
+
+        &::part(icon) {
+          color: var(--text-color) !important;
+          opacity: 0.7;
+        }
+
+        &::part(placeholder) {
+          color: var(--placeholder-color) !important;
+        }
+      }
+
+      .password-input-container {
+        position: relative;
+
+        .password-toggle {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: var(--ion-color-medium, #666);
+          cursor: pointer;
+          padding: 8px;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: var(--ion-color-light, rgba(0, 0, 0, 0.05));
+            color: var(--text-color);
+          }
+
+          ion-icon {
+            font-size: 1.2rem;
+          }
+        }
+      }
+
+      .error-text {
+        color: var(--ion-color-danger, #dc3545);
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: block;
+        transition: color 0.3s ease;
+      }
+    }
+
+    .form-actions {
+      margin: 25px 0 20px;
+
+      .auth-submit-btn {
+        --background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        --color: #ffffff;
+        --border-radius: 12px;
+        --box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        height: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: 2px solid #2563eb;
+
+        &:hover:not([disabled]) {
+          --background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          --box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+          transform: translateY(-2px);
+        }
+
+        &[disabled] {
+          opacity: 0.6;
+        }
+
+        ion-spinner {
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .auth-links {
+      text-align: center;
+
+      .link-btn {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-decoration: underline;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: var(--secondary);
+        }
+      }
+    }
+  }
+
+  .security-question-container {
+    .security-question-text {
+      background: var(--input-bg);
+      padding: 15px;
+      border-radius: 12px;
+      border-left: 4px solid #2563eb;
+      margin-bottom: 20px;
+      font-weight: 500;
+      color: var(--text-color) !important;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+  }
+
+  .error-message, .success-message {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin: 15px 0;
+    font-size: 0.9rem;
+
+    ion-icon {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+  }
+
+  .error-message {
+    background: var(--ion-color-danger-tint, #fff5f5);
+    color: var(--ion-color-danger, #dc3545);
+    border: 1px solid var(--ion-color-danger-shade, #f5c6cb);
+    transition: all 0.3s ease;
+  }
+
+  .success-message {
+    background: var(--ion-color-success-tint, #f0fff4);
+    color: var(--ion-color-success, #28a745);
+    border: 1px solid var(--ion-color-success-shade, #c3e6cb);
+    transition: all 0.3s ease;
+  }
+}
+
+// Footer - Theme aware
+.auth-modal-footer {
+  padding: 20px 25px;
+  background: var(--input-bg);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  border-top: 1px solid #e9ecef;
+
+  .mode-switch {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: #667eea;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 5px;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes shimmer {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .auth-modal-overlay {
+    padding: 10px;
+  }
+
+  .auth-modal-container {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+
+  .auth-modal-header {
+    padding: 25px 15px 20px;
+
+    .header-content {
+      .auth-icon-container {
+        width: 70px;
+        height: 70px;
+
+        .auth-icon {
+          font-size: 2rem;
+        }
+      }
+
+      .auth-title {
+        font-size: 1.5rem;
+      }
+
+      .auth-subtitle {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Host element should be invisible - only the overlay should be visible
+:host {
+  // Make host element completely transparent and non-interfering
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  pointer-events: none; // Host doesn't intercept clicks
+  z-index: 9999;
+
+  // Ensure compatibility with Ionic modal system
+  &.modal-wrapper {
+    z-index: 9999 !important;
+  }
+}
+
+// Responsive behavior for modal overlay
+.auth-modal-overlay {
+  // Handle very small screens
+  @media (max-height: 600px) {
+    align-items: flex-start;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+}
+
+// Modal container responsive behavior
+.auth-modal-container {
+  // Handle very small screens
+  @media (max-height: 600px) {
+    max-height: calc(100vh - 40px);
+    min-height: 300px;
+  }
+}
+
+// Modal content styling
+.auth-modal-content {
+  position: relative;
+  z-index: 1;
+}
+
+// Ensure form elements are properly layered
+.auth-form {
+  position: relative;
+  z-index: 1;
+
+  // Ensure all form inputs are interactive
+  ion-input,
+  ion-select,
+  ion-button {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Dark theme specific overrides
+:host-context(.dark-theme) {
+  .auth-modal-container {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+  }
+
+  .auth-modal-header {
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, var(--background) 100%) !important;
+  }
+
+  .password-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .auth-submit-btn {
+    --box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+
+    &:hover:not([disabled]) {
+      --box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    }
+  }
+
+  .security-question-text {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+    border-left-color: #3b82f6 !important;
+  }
+}
+
+// Light theme specific overrides
+:host-context(.light-theme),
+:host-context(:root:not(.dark-theme)) {
+  .security-question-text {
+    background: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border-left-color: #2563eb !important;
+  }
+}
+
+// ===== AUTH MODAL SELECT DROPDOWN FIXES =====
+
+// Ensure auth modal select options have proper colors
+:host ::ng-deep {
+  // Light theme
+  &:not(.dark-theme) {
+    ion-select-option {
+      --color: #000000 !important;
+      color: #000000 !important;
+      --background: #ffffff !important;
+      background: #ffffff !important;
+    }
+
+    ion-popover.select-popover {
+      --background: #ffffff !important;
+      --color: #000000 !important;
+
+      ion-list {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+
+      ion-item {
+        --background: #ffffff !important;
+        --color: #000000 !important;
+        color: #000000 !important;
+      }
+    }
+  }
+
+  // Dark theme
+  &.dark-theme {
+    ion-select-option {
+      --color: #ffffff !important;
+      color: #ffffff !important;
+      --background: #1a1a1a !important;
+      background: #1a1a1a !important;
+    }
+
+    ion-popover.select-popover {
+      --background: #1a1a1a !important;
+      --color: #ffffff !important;
+
+      ion-list {
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+      }
+
+      ion-item {
+        --background: #1a1a1a !important;
+        --color: #ffffff !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .auth-modal-content {
+    padding: 20px 15px;
+  }
+
+  .auth-modal-footer {
+    padding: 15px;
+  }
+}

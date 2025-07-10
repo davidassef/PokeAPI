@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActionSheetController, ToastController } from '@ionic/angular';
+import { ActionSheetController, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AppSettings } from '../../../models/app.model';
@@ -8,6 +8,7 @@ import { CapturedService } from '../../../core/services/captured.service';
 import { SyncService } from '../../../core/services/sync.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
+import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
 
 @Component({
   selector: 'app-settings',
@@ -42,16 +43,34 @@ export class SettingsPage implements OnInit, OnDestroy {
   user: User | null = null;
   showUserMenu = false;
 
-  abrirLogin = () => {
-    window.location.href = '/login';
+  abrirLogin = async () => {
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        // Login bem-sucedido, atualizar estado
+        this.isAuthenticated = this.authService.isAuthenticated();
+        if (this.isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+        }
+      }
+    });
+
+    return await modal.present();
   };
 
   abrirPerfil = () => {
-    window.location.href = '/profile';
+    // TODO: Implementar modal de perfil
+    console.log('Abrir perfil');
   };
 
   logout = () => {
-    window.location.href = '/logout';
+    this.authService.logout();
+    this.isAuthenticated = false;
+    this.user = null;
   };
 
   toggleUserMenu = () => {
@@ -65,7 +84,8 @@ export class SettingsPage implements OnInit, OnDestroy {
     private actionSheetController: ActionSheetController,
     private capturedService: CapturedService,
     private syncService: SyncService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -196,12 +216,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     input.click();
   }
 
-  clearAllCaptured() {
-    this.capturedService.clearAllCaptured().subscribe({
-      next: () => this.showToast('captured.cleared'),
-      error: () => this.showToast('Erro ao limpar capturas')
-    });
-  }
+
 
   async exportSettings() {
     const data = await this.settingsService.exportSettings();

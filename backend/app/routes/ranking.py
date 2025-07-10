@@ -4,7 +4,7 @@ Rotas da API para ranking de Pokémons.
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.database import get_db
+from core.database import get_db
 from app.schemas.schemas import PokemonRanking
 from app.services.favorite_service import FavoriteService
 

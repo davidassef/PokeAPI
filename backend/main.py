@@ -73,31 +73,31 @@ async def log_requests(request: Request, call_next):
     """Middleware para log detalhado de requisições e respostas."""
     request_id = f"{time.time():.0f}-{os.urandom(4).hex()}"
     start_time = time.time()
-    
+
     # Log da requisição
     logger.info(
         "[%s] %s %s\nHeaders: %s\nQuery Params: %s",
         request_id,
         request.method,
         request.url,
-        {k: v for k, v in request.headers.items() 
+        {k: v for k, v in request.headers.items()
          if k.lower() not in ['authorization']},
         dict(request.query_params)
     )
-    
+
     # Capturar o corpo da requisição se for POST/PUT
     if request.method in ("POST", "PUT"):
         body = await request.body()
         if body:
             try:
                 logger.debug(
-                    "[%s] Request Body: %s", 
-                    request_id, 
+                    "[%s] Request Body: %s",
+                    request_id,
                     body.decode()
                 )
             except UnicodeDecodeError:
                 logger.debug("[%s] Request Body: <binary data>", request_id)
-    
+
     try:
         response = await call_next(request)
     except Exception as e:
@@ -107,10 +107,10 @@ async def log_requests(request: Request, call_next):
             str(e)
         )
         raise
-    
+
     # Log da resposta
     process_time = (time.time() - start_time) * 1000
-    
+
     # Log detalhado para erros 4xx/5xx
     if response.status_code >= 400:
         logger.warning(
@@ -130,7 +130,7 @@ async def log_requests(request: Request, call_next):
             response.status_code,
             process_time
         )
-    
+
     return response
 
 # CORS Configuration
@@ -176,24 +176,24 @@ app.add_middleware(
 async def add_cors_headers(request: Request, call_next):
     """Adiciona headers CORS manualmente para garantir compatibilidade."""
     origin = request.headers.get("origin")
-    
+
     # Verifica se a origem está na lista de origens permitidas
     if origin and any(origin.startswith(allowed) for allowed in origins):
         response = await call_next(request)
-        
+
         # Adiciona headers CORS
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Methods"] = "*"
         response.headers["Access-Control-Allow-Headers"] = "*"
-        
+
         return response
-    
+
     return await call_next(request)
 
 # Imports tardios para evitar problemas de inicialização
 try:
-    from app.core.database import engine
+    from core.database import engine
     from app.models.models import Base
     from app.routes import users, favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth
 
@@ -249,7 +249,7 @@ async def test_frontend_connection():
 async def database_status():
     """Verifica o status do banco de dados sem popular dados."""
     try:
-        from app.core.database import get_db
+        from core.database import get_db
         from app.models.models import User, PokemonRanking
 
         db = next(get_db())

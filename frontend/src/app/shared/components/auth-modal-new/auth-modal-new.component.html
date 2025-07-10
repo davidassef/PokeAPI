@@ -1,0 +1,351 @@
+<div class="auth-modal-container">
+
+    <!-- Header do Modal -->
+    <div class="auth-modal-header" [style.background]="getHeaderGradient()">
+      <div class="header-content">
+        <div class="auth-icon-container">
+          <ion-icon [name]="getHeaderIcon()" class="auth-icon"></ion-icon>
+        </div>
+        <h2 class="auth-title">{{ getTitle() | translate }}</h2>
+        <p class="auth-subtitle">{{ getSubtitle() | translate }}</p>
+      </div>
+      <button class="close-btn" (click)="fechar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Conteúdo do Modal -->
+    <div class="auth-modal-content">
+
+      <!-- Modo Login -->
+      <div *ngIf="modo === 'login'" class="auth-form">
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="form-group">
+            <label for="email">{{ 'auth.email' | translate }}</label>
+            <ion-input
+              id="email"
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              required
+              placeholder="{{ 'auth.email_placeholder' | translate }}"
+              class="auth-input"
+              [class.error]="erro && erro.includes('email')"
+            ></ion-input>
+          </div>
+
+          <div class="form-group">
+            <label for="password">{{ 'auth.password' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="password"
+                [type]="showPassword ? 'text' : 'password'"
+                [(ngModel)]="senha"
+                name="password"
+                required
+                placeholder="{{ 'auth.password_placeholder' | translate }}"
+                class="auth-input"
+                [class.error]="erro && erro.includes('senha')"
+              ></ion-input>
+              <button type="button" class="password-toggle" (click)="togglePassword()">
+                <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <ion-button
+              type="submit"
+              expand="block"
+              class="auth-submit-btn"
+              [disabled]="loading || !email || !senha"
+            >
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              <span *ngIf="!loading">{{ 'auth.login' | translate }}</span>
+            </ion-button>
+          </div>
+
+          <div class="auth-links">
+            <button type="button" class="link-btn" (click)="modo = 'forgot'">
+              {{ 'auth.forgot_password' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modo Registro -->
+      <div *ngIf="modo === 'register'" class="auth-form">
+        <form (ngSubmit)="registrar()" #registerForm="ngForm">
+          <div class="form-group">
+            <label for="name">{{ 'auth.name' | translate }}</label>
+            <ion-input
+              id="name"
+              type="text"
+              [(ngModel)]="nome"
+              name="name"
+              required
+              placeholder="{{ 'auth.name_placeholder' | translate }}"
+              class="auth-input"
+            ></ion-input>
+          </div>
+
+          <div class="form-group">
+            <label for="email-register">{{ 'auth.email' | translate }}</label>
+            <ion-input
+              id="email-register"
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              required
+              placeholder="{{ 'auth.email_placeholder' | translate }}"
+              class="auth-input"
+            ></ion-input>
+          </div>
+
+          <div class="form-group">
+            <label for="password-register">{{ 'auth.password' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="password-register"
+                [type]="showPassword ? 'text' : 'password'"
+                [(ngModel)]="senha"
+                name="password"
+                required
+                placeholder="{{ 'auth.password_placeholder' | translate }}"
+                class="auth-input"
+              ></ion-input>
+              <button type="button" class="password-toggle" (click)="togglePassword()">
+                <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-password">{{ 'auth.confirm_password' | translate }}</label>
+            <div class="password-input-container">
+              <ion-input
+                id="confirm-password"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                [(ngModel)]="confirmarSenha"
+                name="confirmPassword"
+                required
+                placeholder="{{ 'auth.confirm_password_placeholder' | translate }}"
+                class="auth-input"
+                [class.error]="senha !== confirmarSenha && confirmarSenha"
+              ></ion-input>
+              <button type="button" class="password-toggle" (click)="toggleConfirmPassword()">
+                <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+            <small *ngIf="senha !== confirmarSenha && confirmarSenha" class="error-text">
+              {{ 'auth.passwords_dont_match' | translate }}
+            </small>
+          </div>
+
+          <!-- Pergunta de Segurança -->
+          <div class="form-group">
+            <label for="security-question">{{ 'auth.security_question' | translate }}</label>
+            <ion-select
+              id="security-question"
+              [(ngModel)]="perguntaSeguranca"
+              name="securityQuestion"
+              required
+              placeholder="{{ 'auth.select_security_question' | translate }}"
+              class="auth-select"
+            >
+              <ion-select-option value="pet">{{ 'auth.security_question_pet' | translate }}</ion-select-option>
+              <ion-select-option value="city">{{ 'auth.security_question_city' | translate }}</ion-select-option>
+              <ion-select-option value="school">{{ 'auth.security_question_school' | translate }}</ion-select-option>
+              <ion-select-option value="mother">{{ 'auth.security_question_mother' | translate }}</ion-select-option>
+            </ion-select>
+          </div>
+
+          <div class="form-group">
+            <label for="security-answer">{{ 'auth.security_answer' | translate }}</label>
+            <ion-input
+              id="security-answer"
+              type="text"
+              [(ngModel)]="respostaSeguranca"
+              name="securityAnswer"
+              required
+              placeholder="{{ 'auth.security_answer_placeholder' | translate }}"
+              class="auth-input"
+            ></ion-input>
+          </div>
+
+          <div class="form-actions">
+            <ion-button
+              type="submit"
+              expand="block"
+              class="auth-submit-btn"
+              [disabled]="loading || !nome || !email || !senha || !confirmarSenha || senha !== confirmarSenha || !perguntaSeguranca || !respostaSeguranca"
+            >
+              <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+              <span *ngIf="!loading">{{ 'auth.create_account' | translate }}</span>
+            </ion-button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modo Recuperação de Senha -->
+      <div *ngIf="modo === 'forgot'" class="auth-form">
+        <div *ngIf="!usuarioEncontrado">
+          <!-- Passo 1: Buscar usuário por email -->
+          <form (ngSubmit)="buscarUsuario()" #forgotForm="ngForm">
+            <div class="form-group">
+              <label for="email-forgot">{{ 'auth.email' | translate }}</label>
+              <ion-input
+                id="email-forgot"
+                type="email"
+                [(ngModel)]="email"
+                name="email"
+                required
+                placeholder="{{ 'auth.email_placeholder' | translate }}"
+                class="auth-input"
+              ></ion-input>
+            </div>
+
+            <div class="form-actions">
+              <ion-button
+                type="submit"
+                expand="block"
+                class="auth-submit-btn"
+                [disabled]="loading || !email"
+              >
+                <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+                <span *ngIf="!loading">{{ 'auth.find_account' | translate }}</span>
+              </ion-button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="usuarioEncontrado">
+          <!-- Passo 2: Responder pergunta de segurança -->
+          <div class="security-question-container">
+            <p class="security-question-text">{{ getPerguntaSegurancaTexto() }}</p>
+
+            <form (ngSubmit)="verificarResposta()" #securityForm="ngForm">
+              <div class="form-group">
+                <label for="security-answer-forgot">{{ 'auth.your_answer' | translate }}</label>
+                <ion-input
+                  id="security-answer-forgot"
+                  type="text"
+                  [(ngModel)]="respostaSeguranca"
+                  name="securityAnswer"
+                  required
+                  placeholder="{{ 'auth.security_answer_placeholder' | translate }}"
+                  class="auth-input"
+                ></ion-input>
+              </div>
+
+              <div class="form-actions">
+                <ion-button
+                  type="submit"
+                  expand="block"
+                  class="auth-submit-btn"
+                  [disabled]="loading || !respostaSeguranca"
+                >
+                  <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+                  <span *ngIf="!loading">{{ 'auth.verify_answer' | translate }}</span>
+                </ion-button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div *ngIf="podeRedefinirSenha">
+          <!-- Passo 3: Redefinir senha -->
+          <form (ngSubmit)="redefinirSenha()" #resetForm="ngForm">
+            <div class="form-group">
+              <label for="new-password">{{ 'auth.new_password' | translate }}</label>
+              <div class="password-input-container">
+                <ion-input
+                  id="new-password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  [(ngModel)]="novaSenha"
+                  name="newPassword"
+                  required
+                  placeholder="{{ 'auth.new_password_placeholder' | translate }}"
+                  class="auth-input"
+                ></ion-input>
+                <button type="button" class="password-toggle" (click)="togglePassword()">
+                  <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirm-new-password">{{ 'auth.confirm_new_password' | translate }}</label>
+              <div class="password-input-container">
+                <ion-input
+                  id="confirm-new-password"
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  [(ngModel)]="confirmarNovaSenha"
+                  name="confirmNewPassword"
+                  required
+                  placeholder="{{ 'auth.confirm_new_password_placeholder' | translate }}"
+                  class="auth-input"
+                  [class.error]="novaSenha !== confirmarNovaSenha && confirmarNovaSenha"
+                ></ion-input>
+                <button type="button" class="password-toggle" (click)="toggleConfirmPassword()">
+                  <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                </button>
+              </div>
+              <small *ngIf="novaSenha !== confirmarNovaSenha && confirmarNovaSenha" class="error-text">
+                {{ 'auth.passwords_dont_match' | translate }}
+              </small>
+            </div>
+
+            <div class="form-actions">
+              <ion-button
+                type="submit"
+                expand="block"
+                class="auth-submit-btn"
+                [disabled]="loading || !novaSenha || !confirmarNovaSenha || novaSenha !== confirmarNovaSenha"
+              >
+                <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+                <span *ngIf="!loading">{{ 'auth.reset_password' | translate }}</span>
+              </ion-button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Mensagem de Erro -->
+      <div *ngIf="erro" class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ erro }}</span>
+      </div>
+
+      <!-- Mensagem de Sucesso -->
+      <div *ngIf="sucesso" class="success-message">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>{{ sucesso }}</span>
+      </div>
+    </div>
+
+    <!-- Footer do Modal -->
+    <div class="auth-modal-footer">
+      <div class="mode-switch">
+        <ng-container *ngIf="modo === 'login'">
+          <span>{{ 'auth.no_account' | translate }}</span>
+          <button class="link-btn" (click)="modo = 'register'">
+            {{ 'auth.create_account' | translate }}
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="modo === 'register'">
+          <span>{{ 'auth.have_account' | translate }}</span>
+          <button class="link-btn" (click)="modo = 'login'">
+            {{ 'auth.login' | translate }}
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="modo === 'forgot'">
+          <button class="link-btn" (click)="voltarParaLogin()">
+            {{ 'auth.back_to_login' | translate }}
+          </button>
+        </ng-container>
+      </div>
+    </div>
+</div>

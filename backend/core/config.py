@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     secret_key: str = os.getenv("SECRET_KEY", secrets.token_urlsafe(32))
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
+
+    # Security Configuration
+    bcrypt_rounds: int = 12  # Número de rounds para bcrypt (mais seguro)
+    password_min_length: int = 6
+    password_max_length: int = 100
 
     class Config:
         env_file = ".env"

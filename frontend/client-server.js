@@ -256,14 +256,25 @@ class ClientServer {
       // Importar fetch dinamicamente
       const fetch = await import('node-fetch').then(m => m.default);
 
+      const clientUrl = isProduction
+        ? 'https://pokeapiapp-client-server.onrender.com'
+        : `http://localhost:${this.port}`;
+
       const registrationData = {
-        client_url: `http://localhost:${this.port}`,
+        client_url: clientUrl,
         user_id: 'user_1',
         client_type: 'web',
         capabilities: ['capture', 'favorite']
       };
 
-      const response = await fetch('http://localhost:8000/api/v1/pull-sync/register-client', {
+      // Detectar se estamos em produção (Render) ou desenvolvimento
+      const isProduction = process.env.RENDER || process.env.NODE_ENV === 'production';
+      
+      const backendUrl = isProduction
+        ? 'https://pokeapi-la6k.onrender.com'
+        : 'http://localhost:8000';
+      
+      const response = await fetch(`${backendUrl}/api/v1/pull-sync/register-client`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

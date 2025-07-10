@@ -4,8 +4,8 @@ Rotas da API para favoritos.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.database import get_db
-from app.core.auth import get_current_active_user
+from core.database import get_db
+from core.auth import get_current_active_user
 from app.models.models import User
 from app.schemas.schemas import FavoritePokemon, FavoritePokemonCreate, Message
 from app.services.favorite_service import FavoriteService
@@ -66,18 +66,18 @@ def check_multiple_favorites(
 ):
     """
     Verifica quais Pokémons de uma lista estão nos favoritos do usuário.
-    
+
     Args:
         pokemon_ids: Lista de IDs de Pokémon para verificar
-    
+
     Returns:
-        Dicionário onde as chaves são os IDs dos Pokémons (como strings) e os 
+        Dicionário onde as chaves são os IDs dos Pokémons (como strings) e os
         valores são booleanos indicando se estão nos favoritos
     """
     service = FavoriteService()
     return service.check_multiple_favorites(
-        db=db, 
-        user_id=current_user.id, 
+        db=db,
+        user_id=current_user.id,
         pokemon_ids=pokemon_ids
     )
 

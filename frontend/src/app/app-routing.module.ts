@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
+import { NoAuthGuard } from './core/guards/no-auth.guard';
 
 const routes: Routes = [
   {
@@ -9,22 +11,26 @@ const routes: Routes = [
   },
   {
     path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)  },
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
   {
     path: 'pokemon/:id',
     loadChildren: () => import('./pages/web/details/details.module').then(m => m.DetailsPageModule)
   },
   {
     path: 'sync-admin',
-    loadChildren: () => import('./pages/sync-admin/sync-admin.module').then(m => m.SyncAdminModule)
+    loadChildren: () => import('./pages/sync-admin/sync-admin.module').then(m => m.SyncAdminModule),
+    canActivate: [AuthGuard]
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/web/login/login.module').then(m => m.LoginPageModule)
+    loadChildren: () => import('./pages/web/login/login.module').then(m => m.LoginPageModule),
+    canActivate: [NoAuthGuard]
   },
   {
     path: 'register',
-    loadChildren: () => import('./pages/web/register/register.module').then(m => m.RegisterPageModule)
+    loadChildren: () => import('./pages/web/register/register.module').then(m => m.RegisterPageModule),
+    canActivate: [NoAuthGuard]
   }
 ];
 @NgModule({

@@ -35,7 +35,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
       title: 'menu.captured',
       url: '/tabs/captured',
       icon: 'cube-outline',
-      color: 'success'
+      color: 'danger'
     },
     {
       title: 'menu.ranking',

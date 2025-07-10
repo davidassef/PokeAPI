@@ -13,16 +13,8 @@ import { AuthService } from './core/services/auth.service';
   standalone: false,
 })
 export class AppComponent implements OnInit {
-  mostrarAuthModal = false;
   mostrarPerfilModal = false;
   user: User | null = null;
-
-  abrirLogin = () => {
-    this.mostrarAuthModal = true;
-  };
-  fecharAuthModal = () => {
-    this.mostrarAuthModal = false;
-  };
 
   abrirPerfil = () => {
     this.mostrarPerfilModal = true;
@@ -49,7 +41,7 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     await this.storage.create();
     // As configurações já são carregadas no initializeApp
-    
+
     // Inscrever para atualizações do usuário autenticado
     this.authService.currentUser$.subscribe(user => {
       this.user = user;

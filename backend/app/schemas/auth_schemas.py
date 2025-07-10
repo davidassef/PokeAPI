@@ -12,6 +12,8 @@ class UserCreate(BaseModel):
     password: str
     name: str  # Nome obrigatório
     contact: Optional[str] = None  # Contato opcional
+    security_question: str  # Pergunta de segurança obrigatória
+    security_answer: str  # Resposta de segurança obrigatória
 
     @validator('name')
     def validate_name(cls, v):
@@ -31,7 +33,33 @@ class UserCreate(BaseModel):
     def validate_password(cls, v):
         if len(v) < 6:
             raise ValueError('Senha deve ter pelo menos 6 caracteres')
+        if len(v) > 100:
+            raise ValueError('Senha deve ter no máximo 100 caracteres')
+
+        # Validações de força da senha
+        if not any(c.islower() for c in v):
+            raise ValueError('Senha deve conter pelo menos uma letra minúscula')
+        if not any(c.isupper() for c in v):
+            raise ValueError('Senha deve conter pelo menos uma letra maiúscula')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Senha deve conter pelo menos um número')
+
         return v
+
+    @validator('security_question')
+    def validate_security_question(cls, v):
+        valid_questions = ['pet', 'city', 'school', 'mother']
+        if v not in valid_questions:
+            raise ValueError('Pergunta de segurança inválida')
+        return v
+
+    @validator('security_answer')
+    def validate_security_answer(cls, v):
+        if len(v.strip()) < 2:
+            raise ValueError('Resposta de segurança deve ter pelo menos 2 caracteres')
+        if len(v) > 100:
+            raise ValueError('Resposta de segurança deve ter no máximo 100 caracteres')
+        return v.strip().lower()  # Normalizar para comparação
 
 
 class UserLogin(BaseModel):
@@ -108,3 +136,35 @@ class PasswordReset(BaseModel):
 class RefreshTokenRequest(BaseModel):
     """Schema para requisição de refresh token."""
     refresh_token: str
+
+
+class PasswordResetRequest(BaseModel):
+    """Schema para solicitação de recuperação de senha."""
+    email: EmailStr
+
+
+class SecurityQuestionResponse(BaseModel):
+    """Schema para resposta da pergunta de segurança."""
+    email: str
+    security_question: str
+
+
+class PasswordResetVerify(BaseModel):
+    """Schema para verificação da resposta de segurança."""
+    email: EmailStr
+    security_answer: str
+
+
+class PasswordResetComplete(BaseModel):
+    """Schema para completar a redefinição de senha."""
+    email: EmailStr
+    security_answer: str
+    new_password: str
+
+    @validator('new_password')
+    def validate_new_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('Nova senha deve ter pelo menos 6 caracteres')
+        if len(v) > 100:
+            raise ValueError('Nova senha deve ter no máximo 100 caracteres')
+        return v

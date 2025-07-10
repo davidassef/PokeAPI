@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, IonContent, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
@@ -12,6 +12,7 @@ import { Pokemon } from '../../../models/pokemon.model';
 import { FilterOptions } from '../../../shared/components/search-filter/search-filter.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
+import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
 
 @Component({
   selector: 'app-captured',
@@ -69,7 +70,8 @@ export class CapturedPage implements OnInit, OnDestroy {
     private translate: TranslateService,
     public router: Router,
     private syncService: SyncService,
-    private authService: AuthService
+    private authService: AuthService,
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -237,24 +239,43 @@ export class CapturedPage implements OnInit, OnDestroy {
     await toast.present();
   }
 
-  abrirLogin = () => {
-    this.router.navigate(['/login']);
+  abrirLogin = async () => {
+    const modal = await this.modalController.create({
+      component: AuthModalNewComponent,
+      cssClass: 'auth-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        // Login bem-sucedido, atualizar estado
+        this.isAuthenticated = this.authService.isAuthenticated();
+        if (this.isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+          this.loadCaptured();
+        }
+      }
+    });
+
+    return await modal.present();
   };
 
   abrirPerfil = () => {
-    this.router.navigate(['/profile']);
+    // TODO: Implementar modal de perfil
+    console.log('Abrir perfil');
   };
 
   logout = () => {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.isAuthenticated = false;
+    this.user = null;
+    this.capturedPokemon = [];
   };
 
   toggleUserMenu = () => {
     this.showUserMenu = !this.showUserMenu;
   };
 
-  abrirCadastro() {
-    this.router.navigate(['/register']);
-  }
+  abrirCadastro = async () => {
+    await this.abrirLogin(); // Usar o mesmo modal que tem opção de registro
+  };
 }

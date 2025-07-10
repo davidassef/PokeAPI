@@ -58,20 +58,20 @@ ion-menu {
   }
 
   .menu-content {
-    --background: #f8f9fa;
+    --background: var(--background);
     padding: 0;
 
     .user-stats-section {
-      background: white;
+      background: var(--card-bg);
       padding: 20px 16px;
       margin-bottom: 12px;
-      border-bottom: 1px solid #e9ecef;
+      border-bottom: 1px solid var(--border-color);
 
       h3 {
         margin: 0 0 16px 0;
         font-size: 16px;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--text-color);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
@@ -87,14 +87,14 @@ ion-menu {
           flex-direction: column;
           align-items: center;
           padding: 12px 8px;
-          background: #f8f9fa;
-          border-radius: 12px;
-          border: 1px solid #e9ecef;
+          background: var(--surface-bg);
+          border-radius: var(--border-radius);
+          border: 1px solid var(--border-color);
           transition: all 0.3s ease;
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
           }
 
           .stat-icon {
@@ -102,6 +102,7 @@ ion-menu {
 
             ion-icon {
               font-size: 24px;
+              color: var(--text-color);
             }
           }
 
@@ -112,14 +113,14 @@ ion-menu {
               display: block;
               font-size: 18px;
               font-weight: 700;
-              color: #2c3e50;
+              color: var(--text-color);
               line-height: 1;
             }
 
             .stat-label {
               display: block;
               font-size: 11px;
-              color: #6c757d;
+              color: var(--text-color-secondary);
               text-transform: uppercase;
               letter-spacing: 0.5px;
               margin-top: 2px;
@@ -142,14 +143,14 @@ ion-menu {
             margin-bottom: 8px;
             font-size: 14px;
             font-weight: 500;
-            color: #495057;
+            color: var(--text-color-secondary);
           }
 
           ion-progress-bar {
             height: 8px;
             border-radius: 4px;
-            --background: #e9ecef;
-            --progress-background: var(--ion-color-primary);
+            --background: var(--border-color);
+            --progress-background: var(--primary);
           }
         }
       }
@@ -158,7 +159,7 @@ ion-menu {
     .navigation-section,
     .features-section,
     .language-section {
-      background: white;
+      background: var(--card-bg);
       margin-bottom: 12px;
       padding: 0;
 
@@ -167,7 +168,7 @@ ion-menu {
         padding: 16px 16px 8px 16px;
         font-size: 14px;
         font-weight: 600;
-        color: #6c757d;
+        color: var(--text-color-secondary);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
@@ -178,12 +179,12 @@ ion-menu {
 
         .menu-item {
           --background: transparent;
-          --background-hover: #f8f9fa;
-          --background-activated: #e9ecef;
-          --color: #2c3e50;
+          --background-hover: var(--input-bg);
+          --background-activated: var(--border-color);
+          --color: var(--text-color);
           --border-color: transparent;
           margin: 0 8px 4px 8px;
-          border-radius: 12px;
+          border-radius: var(--border-radius);
           transition: all 0.3s ease;
 
           &:hover {
@@ -192,10 +193,11 @@ ion-menu {
 
           ion-icon {
             margin-right: 4px;
+            color: var(--text-color);
 
             &.chevron {
               font-size: 16px;
-              color: #adb5bd;
+              color: var(--text-color-secondary);
               transition: transform 0.3s ease;
             }
           }
@@ -209,12 +211,12 @@ ion-menu {
               margin: 0;
               font-size: 15px;
               font-weight: 500;
-              color: #2c3e50;
+              color: var(--text-color);
             }
           }
 
           ion-badge {
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             font-size: 11px;
             font-weight: 600;
             min-width: 20px;
@@ -227,7 +229,7 @@ ion-menu {
         .language-item {
           &.selected {
             --background: rgba(var(--ion-color-success-rgb), 0.1);
-            border: 1px solid var(--ion-color-success);
+            border: 1px solid var(--success);
           }
 
           .language-flag {
@@ -240,64 +242,50 @@ ion-menu {
   }
 }
 
-// Dark theme support
-@media (prefers-color-scheme: dark) {
+// ===== UNIFIED THEME SUPPORT =====
+// All theme variables are now handled by the global CSS variables system
+// No need for separate dark theme rules since we use CSS variables
+
+// Additional theme-specific enhancements
+.dark-theme {
   ion-menu {
-    .menu-content {
-      --background: #1a1a1a;
-
-      .user-stats-section,
-      .navigation-section,
-      .features-section,
-      .language-section {
-        background: #2c2c2c;
-        border-bottom-color: #404040;
-
-        h3 {
-          color: #adb5bd;
+    .menu-header {
+      .header-content {
+        .user-greeting {
+          background: var(--card-bg) !important;
+          color: var(--text-color) !important;
         }
 
-        .stats-cards {
-          .stat-card {
-            background: #1a1a1a;
-            border-color: #404040;
+        .user-dropdown {
+          background: var(--card-bg) !important;
+          border: 1px solid var(--border-color) !important;
 
-            .stat-info {
-              .stat-number {
-                color: #fff;
-              }
-
-              .stat-label {
-                color: #adb5bd;
-              }
-            }
+          ion-item {
+            --color: var(--text-color) !important;
           }
         }
+      }
+    }
+  }
+}
 
-        .progress-section {
-          .progress-item {
-            .progress-header {
-              color: #adb5bd;
-            }
-
-            ion-progress-bar {
-              --background: #404040;
-            }
+// System dark mode detection fallback
+@media (prefers-color-scheme: dark) {
+  body:not(.light-theme) {
+    ion-menu {
+      .menu-header {
+        .header-content {
+          .user-greeting {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
           }
-        }
 
-        .menu-list {
-          .menu-item {
-            --background-hover: #404040;
-            --background-activated: #525252;
-            --color: #fff;
+          .user-dropdown {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
 
-            ion-label h3 {
-              color: #fff;
-            }
-
-            .chevron {
-              color: #6c757d;
+            ion-item {
+              --color: var(--text-color) !important;
             }
           }
         }

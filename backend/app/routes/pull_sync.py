@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.core.database import get_db
+from core.database import get_db
 from app.schemas.schemas import (
     PullRequest,
     PullResponse,
@@ -236,10 +236,10 @@ async def force_clear_storage(db: Session = Depends(get_db)):
     try:
         # Limpar storage
         pull_service.storage_service.force_clear_and_rebuild()
-        
+
         # Forçar sincronização
         result = await pull_service.sync_with_storage_system(db)
-        
+
         return {
             "message": "Storage limpo e reconstruído com sucesso",
             "sync_result": result

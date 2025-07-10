@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Dict, List
 from sqlalchemy.orm import Session
 from app.services.pokeapi_service import pokeapi_service
-from app.core.database import get_db
+from core.database import get_db
 from app.services.translation_service import get_or_translate_flavor
 import requests
 
