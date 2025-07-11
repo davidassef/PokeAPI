@@ -193,6 +193,37 @@ PokeAPIApp/
 
 ---
 
+## 🐛 Problemas Conhecidos e Limitações
+
+### ⚠️ **Sistema de Registro de Usuários - Falha na Criação de Contas**
+
+**📅 Identificado em:** 11/07/2025
+**🔍 Status:** Em investigação
+**💥 Impacto:** Usuários não conseguem criar novas contas através do formulário de registro
+
+**📋 Descrição do Problema:**
+O sistema de registro de usuários está apresentando falhas durante a criação de novas contas. Embora o AuthInterceptor esteja funcionando corretamente (detecta rotas públicas e não adiciona token), há problemas subsequentes no processo de registro que impedem a conclusão bem-sucedida.
+
+**🔧 Evidências Técnicas:**
+```
+[AuthService] Iniciando registro de usuário: {email: 'davidassef@gmail.com', name: 'David'}
+[AuthInterceptor] Interceptando requisição: POST /api/v1/auth/register
+[AuthInterceptor] Rota pública detectada, não adicionando token: /api/v1/auth/register
+[AuthInterceptor] Enviando requisição para: /api/v1/auth/register
+```
+
+**🛠️ Workaround Temporário:**
+- Administradores podem criar contas de usuário através do painel administrativo
+- Usuários existentes podem fazer login normalmente
+- Todas as outras funcionalidades do sistema permanecem operacionais
+
+**👨‍💻 Para Desenvolvedores:**
+- Investigar possível deadlock no banco de dados SQLite
+- Verificar logs do backend para identificar ponto de falha
+- Testar conectividade entre frontend (porta 8100) e backend (porta 8000)
+
+---
+
 ## 🤝 Contribuição
 
 Contribuições são bem-vindas!
