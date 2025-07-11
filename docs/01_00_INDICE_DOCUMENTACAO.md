@@ -1,8 +1,8 @@
 # 📚 PokeAPIApp - Índice de Documentação
 
-🗓️ **Última atualização**: 11/07/2025  
-📋 **Status**: Documentação reorganizada com nomenclatura enterprise  
-🎯 **Versão**: 1.0.0 - Estrutura profissional e intuitiva
+🗓️ **Última atualização**: 11/07/2025
+📋 **Status**: Documentação reorganizada com nomenclatura enterprise
+🎯 **Versão**: 1.5 - Sistema de autenticação aprimorado e correções de persistência
 
 ---
 
@@ -12,7 +12,7 @@ Este índice organiza toda a documentação do PokeAPIApp seguindo **padrões en
 
 ### 🏗️ **Nova Estrutura Enterprise**
 - **01-09**: 🚀 **Guias de Início** (Getting Started)
-- **10-19**: 🏗️ **Documentação Técnica** (Technical)  
+- **10-19**: 🏗️ **Documentação Técnica** (Technical)
 - **20-29**: 🌐 **Deploy e Infraestrutura** (Deploy)
 - **30-39**: 🎮 **Funcionalidades** (Features)
 - **40-49**: 👑 **Administração** (Admin)
@@ -194,6 +194,6 @@ Este índice organiza toda a documentação do PokeAPIApp seguindo **padrões en
 
 ---
 
-*📚 Documentação organizada e mantida pela equipe de desenvolvimento*  
-*🔄 Data: 11/07/2025 - Versão 1.0.0*  
+*📚 Documentação organizada e mantida pela equipe de desenvolvimento*
+*🔄 Data: 11/07/2025 - Versão 1.0.0*
 *✅ Status: Estrutura enterprise implementada com sucesso*

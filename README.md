@@ -1,6 +1,6 @@
-# 🚀 PokeAPIApp
+# 🚀 PokeAPIApp v1.5
 
-🗓️ Última atualização: 11/07/2025 | ✨ **8 Melhorias Implementadas**
+🗓️ Última atualização: 11/07/2025 | ✨ **Sistema de Autenticação Aprimorado**
 
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=for-the-badge)](https://github.com/davidassef/PokeAPI)
 [![Frontend](https://img.shields.io/badge/Frontend-Ionic%20+%20Angular-blue?style=for-the-badge&logo=ionic)](https://ionicframework.com/)
