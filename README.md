@@ -56,12 +56,12 @@
 ### 🌙 **Tema Escuro**
 | Home (Pokédex) | Detalhes do Pokémon | Ranking |
 |:-------------:|:------------------:|:-------:|
-| ![Home Dark](frontend/src/assets/img/Home-Web.png) | ![Detalhes Dark](frontend/src/assets/img/Modal-Details-Web.png) | ![Ranking Dark](frontend/src/assets/img/Ranking-Web.png) |
+| ![Home Dark](frontend/src/assets/img/Home-Web-Dark-Theme.png) | ![Detalhes Dark](frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png) | ![Ranking Dark](frontend/src/assets/img/Ranking-Web.png) |
 
 ### ☀️ **Tema Claro**
 | Home (Pokédex) | Detalhes do Pokémon |
 |:-------------:|:------------------:|
-| ![Home Light](frontend/src/assets/img/Home-Web-Light-Theme.png) | ![Detalhes Light](frontend/src/assets/img/Modal-Details-Web_Light-Theme.png) |
+| ![Home Light](frontend/src/assets/img/Home-Web-Light-Theme.png) | ![Detalhes Light](frontend/src/assets/img/Modal-Details-Web-Light-Theme.png) |
 
 </div>
 
