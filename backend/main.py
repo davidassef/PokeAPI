@@ -85,18 +85,12 @@ async def log_requests(request: Request, call_next):
         dict(request.query_params)
     )
 
-    # Capturar o corpo da requisição se for POST/PUT
+    # Log básico sem consumir o corpo da requisição (evita travamento)
     if request.method in ("POST", "PUT"):
-        body = await request.body()
-        if body:
-            try:
-                logger.debug(
-                    "[%s] Request Body: %s",
-                    request_id,
-                    body.decode()
-                )
-            except UnicodeDecodeError:
-                logger.debug("[%s] Request Body: <binary data>", request_id)
+        logger.debug(
+            "[%s] Request Body: <não logado para evitar consumir stream>",
+            request_id
+        )
 
     try:
         response = await call_next(request)
@@ -169,27 +163,7 @@ app.add_middleware(
     max_age=86400,  # 24 horas
 )
 
-# Adiciona headers CORS manualmente para garantir compatibilidade
-
-
-@app.middleware("http")
-async def add_cors_headers(request: Request, call_next):
-    """Adiciona headers CORS manualmente para garantir compatibilidade."""
-    origin = request.headers.get("origin")
-
-    # Verifica se a origem está na lista de origens permitidas
-    if origin and any(origin.startswith(allowed) for allowed in origins):
-        response = await call_next(request)
-
-        # Adiciona headers CORS
-        response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        response.headers["Access-Control-Allow-Methods"] = "*"
-        response.headers["Access-Control-Allow-Headers"] = "*"
-
-        return response
-
-    return await call_next(request)
+# CORS duplicado removido - usando apenas CORSMiddleware do FastAPI
 
 # Imports tardios para evitar problemas de inicialização
 try:
@@ -222,7 +196,7 @@ except (ImportError, ModuleNotFoundError, AttributeError) as e:
 async def root():
     """Endpoint raiz da API."""
     return {
-        "message": "🚀 PokeAPI Backend v1.0.0",
+        "message": "🚀 PokeAPI Backend v1.5",
         "status": "online",
         "docs": "/docs",
         "redoc": "/redoc"
@@ -232,7 +206,7 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check da API."""
-    return {"status": "healthy", "version": "1.0.0"}
+    return {"status": "healthy", "version": "1.5"}
 
 
 # REMOVED: Test endpoints for security

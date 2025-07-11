@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # API Config
     app_name: str = "PokeAPI Backend"
-    app_version: str = "1.0.0"
+    app_version: str = "1.5"
     debug: bool = True
 
     # Database
@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
 
     # Security Configuration
-    bcrypt_rounds: int = 12  # Número de rounds para bcrypt (mais seguro)
+    bcrypt_rounds: int = 8  # Número de rounds para bcrypt (balanceado: seguro mas rápido)
     password_min_length: int = 6
     password_max_length: int = 100
 
