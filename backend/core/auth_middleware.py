@@ -4,9 +4,9 @@ Middleware e dependências para autenticação JWT.
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from ..core.database import get_db
-from ..services.auth_service import auth_service
-from ..models.models import User
+from core.database import get_db
+from app.services.auth_service import auth_service
+from app.models.models import User
 
 
 # Esquema de autenticação Bearer
