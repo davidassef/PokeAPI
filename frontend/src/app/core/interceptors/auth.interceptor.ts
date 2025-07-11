@@ -32,11 +32,15 @@ export class AuthInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     console.log(`[AuthInterceptor] Interceptando requisição: ${request.method} ${request.url}`);
 
+    // Lista de rotas públicas que não precisam de autenticação
+    const publicRoutes = ['/auth/login', '/auth/register', '/auth/reset-password'];
+    const isPublicRoute = publicRoutes.some(route => request.url.includes(route));
+
     // Obtém o token do serviço de autenticação
     const token = this.authService.getToken();
 
-    // Clona a requisição e adiciona o token de autorização, se disponível
-    if (token) {
+    // Clona a requisição e adiciona o token de autorização, se disponível e não for rota pública
+    if (token && !isPublicRoute) {
       console.log('[AuthInterceptor] Token JWT encontrado, adicionando ao cabeçalho');
       request = request.clone({
         setHeaders: {
@@ -46,6 +50,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
       // Log do header de autorização (apenas para depuração - remover em produção)
       console.log('[AuthInterceptor] Cabeçalho de autorização:', request.headers.get('Authorization')?.substring(0, 30) + '...');
+    } else if (isPublicRoute) {
+      console.log('[AuthInterceptor] Rota pública detectada, não adicionando token:', request.url);
     } else {
       console.warn('[AuthInterceptor] Nenhum token JWT encontrado para a requisição:', request.url);
     }

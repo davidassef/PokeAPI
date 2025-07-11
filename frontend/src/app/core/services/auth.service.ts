@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 import { User } from '../../models/user.model';
+import { UserRole, getDefaultRole, isValidRole } from '../../models/user-role.enum';
 
 /** Interface para resposta de autenticação */
 interface AuthResponse {
@@ -38,11 +39,13 @@ interface DecodedToken {
   name?: string;
   firstName?: string;
   email?: string;
+  role?: string;
   level?: number;
   roles?: string[];
   iat?: number;
   exp: number;
   avatar?: string;
+  security_question?: string;
   [key: string]: unknown;
 }
 
@@ -253,18 +256,24 @@ export class AuthService {
     security_question: string;
     security_answer: string;
   }): Observable<{token: string; user: User}> {
+    console.log('[AuthService] Iniciando registro de usuário:', { email: dados.email, name: dados.name });
+
     return this.http.post<User>('/api/v1/auth/register', dados).pipe(
       tap((user) => {
         console.log('[AuthService] Usuário registrado com sucesso:', user);
-        // Para registro, vamos fazer login automático
-        this.currentUserSubject.next(user);
-        this.authState.next(true);
       }),
       switchMap((user) => {
+        console.log('[AuthService] Fazendo login automático após registro...');
         // Após registro bem-sucedido, fazer login automático
         return this.login(dados.email, dados.password);
       }),
-      catchError(error => this.handleError('registro')(error))
+      tap((result) => {
+        console.log('[AuthService] Login automático após registro bem-sucedido:', result);
+      }),
+      catchError(error => {
+        console.error('[AuthService] Erro durante registro:', error);
+        return this.handleError('registro')(error);
+      })
     );
   }
 
@@ -297,6 +306,14 @@ export class AuthService {
    */
   get currentUser$(): Observable<User | null> {
     return this.currentUserSubject.asObservable();
+  }
+
+  /**
+   * Método público para obter o observable do usuário atual
+   * (para compatibilidade com RbacService)
+   */
+  getCurrentUser$(): Observable<User | null> {
+    return this.currentUser$;
   }
 
   /**
@@ -374,15 +391,23 @@ export class AuthService {
         return null;
       }
 
+      // Determina o role do usuário
+      let userRole: UserRole = getDefaultRole();
+      if (payload.role && isValidRole(payload.role)) {
+        userRole = payload.role as UserRole;
+      }
+
       // Cria o objeto de usuário com valores padrão seguros
       const user: User = {
         id: payload.sub || payload.id || '',
         name: payload.name || 'Usuário',
         firstName: payload.firstName || payload.name?.split(' ')[0] || 'Usuário',
         email: payload.email || '',
+        role: userRole,
         level: typeof payload.level === 'number' ? Math.max(1, payload.level) : 1,
         // Adiciona propriedades adicionais do payload, se existirem
         ...(payload['avatar'] && { avatar: String(payload['avatar']) }),
+        ...(payload['security_question'] && { security_question: String(payload['security_question']) }),
         roles: Array.isArray(payload['roles']) ? payload['roles'] : []
       };
 
