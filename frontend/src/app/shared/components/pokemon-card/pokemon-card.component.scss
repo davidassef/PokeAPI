@@ -396,16 +396,29 @@
 // Theme-specific overrides using CSS classes
 :host-context(.light-theme) {
   .pokemon-card {
-    // Enhanced visual depth for light theme
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    border: 1px solid #e9ecef;
+    // Enhanced visual depth for light theme with more visible gray background
+    background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
 
     .pokemon-image-container {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border: 1px solid #dee2e6;
+      // Enhanced background for better contrast in light theme
+      background: linear-gradient(135deg, #f1f3f4 0%, #dee2e6 100%);
+      border: 1px solid #ced4da;
+      padding: 16px;
+      border-radius: 12px;
+      transition: background-color 0.3s ease;
 
       .pokemon-image {
-        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+        transition: transform 0.3s ease, filter 0.3s ease;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
+
+        .pokemon-image {
+          filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+        }
       }
     }
 
@@ -442,10 +455,75 @@
   }
 }
 
+// Admin Controls
+.admin-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+
+  .admin-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    ion-icon {
+      font-size: 16px;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.edit-btn {
+      background: rgba(66, 165, 245, 0.9);
+      color: white;
+
+      &:hover {
+        background: rgba(66, 165, 245, 1);
+      }
+    }
+
+    &.delete-btn {
+      background: rgba(244, 67, 54, 0.9);
+      color: white;
+
+      &:hover {
+        background: rgba(244, 67, 54, 1);
+      }
+    }
+  }
+}
+
+// Show admin controls on hover
+.pokemon-card:hover .admin-controls {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 :host-context(.dark-theme) {
   .pokemon-card {
     .pokemon-image-container {
       background: var(--surface-bg);
+    }
+
+    .admin-controls {
+      .admin-btn {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
     }
   }
 }
