@@ -89,10 +89,29 @@ export class SettingsPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.user = this.authService.getCurrentUser();
-    }
+    // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo
+    this.authService.getAuthState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuthenticated => {
+        console.log('[SettingsPage] Estado de autenticação atualizado:', isAuthenticated);
+        this.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+          console.log('[SettingsPage] Usuário carregado:', this.user);
+        } else {
+          this.user = null;
+          console.log('[SettingsPage] Usuário deslogado');
+        }
+      });
+
+    // Inscrever-se no usuário atual
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        console.log('[SettingsPage] Usuário atual atualizado:', user);
+        this.user = user;
+      });
+
     this.loadSettings();
     this.checkSyncStatus();
   }

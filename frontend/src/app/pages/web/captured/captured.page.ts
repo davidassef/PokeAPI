@@ -75,11 +75,30 @@ export class CapturedPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.user = this.authService.getCurrentUser();
-      this.loadCaptured();
-    }
+    // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo
+    this.authService.getAuthState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuthenticated => {
+        console.log('[CapturedPage] Estado de autenticação atualizado:', isAuthenticated);
+        this.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+          this.loadCaptured();
+          console.log('[CapturedPage] Usuário carregado:', this.user);
+        } else {
+          this.user = null;
+          this.capturedPokemon = [];
+          console.log('[CapturedPage] Usuário deslogado');
+        }
+      });
+
+    // Inscrever-se no usuário atual
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        console.log('[CapturedPage] Usuário atual atualizado:', user);
+        this.user = user;
+      });
   }
 
   ionViewWillEnter() {

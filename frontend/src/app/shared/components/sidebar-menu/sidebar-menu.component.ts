@@ -74,7 +74,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   isAuthenticated = false;
   user: User | null = null;
-  showUserMenu = false;
+  // ✅ CORREÇÃO: showUserMenu removido (dropdown de perfil não está mais no sidemenu)
 
   constructor(
     private router: Router,
@@ -228,7 +228,5 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     window.location.reload();
   }
 
-  toggleUserMenu() {
-    this.showUserMenu = !this.showUserMenu;
-  }
+  // ✅ CORREÇÃO: toggleUserMenu removido (dropdown de perfil não está mais no sidemenu)
 }

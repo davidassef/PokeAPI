@@ -88,10 +88,29 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadPaginatedPokemons();
     this.loadCaptured();
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.user = this.authService.getCurrentUser();
-    }
+
+    // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo
+    this.authService.getAuthState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuthenticated => {
+        console.log('[HomePage] Estado de autenticação atualizado:', isAuthenticated);
+        this.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+          console.log('[HomePage] Usuário carregado:', this.user);
+        } else {
+          this.user = null;
+          console.log('[HomePage] Usuário deslogado');
+        }
+      });
+
+    // Inscrever-se no usuário atual
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        console.log('[HomePage] Usuário atual atualizado:', user);
+        this.user = user;
+      });
 
     // Verifica permissões de administrador
     this.rbacService.hasPermission(Permission.ADD_POKEMON)

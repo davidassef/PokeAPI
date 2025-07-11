@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
-import { tap, catchError, map, switchMap } from 'rxjs/operators';
+import { tap, catchError, map, switchMap, timeout, retry, retryWhen, delay, take } from 'rxjs/operators';
 import { User } from '../../models/user.model';
 import { UserRole, getDefaultRole, isValidRole } from '../../models/user-role.enum';
 
@@ -258,20 +258,72 @@ export class AuthService {
   }): Observable<{token: string; user: User}> {
     console.log('[AuthService] Iniciando registro de usuário:', { email: dados.email, name: dados.name });
 
-    return this.http.post<User>('/api/v1/auth/register', dados).pipe(
+    // Garantir que os dados estão no formato correto
+    const dadosLimpos = {
+      email: dados.email.trim().toLowerCase(),
+      password: dados.password,
+      name: dados.name.trim(),
+      contact: dados.contact?.trim() || null,
+      security_question: dados.security_question,
+      security_answer: dados.security_answer.trim().toLowerCase()
+    };
+
+    console.log('[AuthService] Dados formatados para envio:', {
+      email: dadosLimpos.email,
+      name: dadosLimpos.name,
+      security_question: dadosLimpos.security_question,
+      hasContact: !!dadosLimpos.contact
+    });
+
+    return this.http.post<User>('/api/v1/auth/register', dadosLimpos, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
+      timeout(30000), // Timeout aumentado para 30 segundos
+      // Retry logic: tenta até 3 vezes com delay crescente
+      retryWhen(errors =>
+        errors.pipe(
+          tap(error => {
+            console.warn('[AuthService] Tentativa de registro falhou, tentando novamente...', error);
+          }),
+          delay(2000), // Aguarda 2 segundos antes de tentar novamente
+          take(2) // Máximo 2 tentativas adicionais (3 total)
+        )
+      ),
       tap((user) => {
         console.log('[AuthService] Usuário registrado com sucesso:', user);
       }),
       switchMap((user) => {
         console.log('[AuthService] Fazendo login automático após registro...');
         // Após registro bem-sucedido, fazer login automático
-        return this.login(dados.email, dados.password);
+        return this.login(dadosLimpos.email, dados.password).pipe(
+          timeout(15000), // Timeout menor para login
+          retry(1) // Uma tentativa adicional para login
+        );
       }),
       tap((result) => {
         console.log('[AuthService] Login automático após registro bem-sucedido:', result);
       }),
       catchError(error => {
         console.error('[AuthService] Erro durante registro:', error);
+        console.error('[AuthService] Detalhes do erro:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error,
+          name: error.name
+        });
+
+        // Tratamento específico para diferentes tipos de erro
+        if (error.name === 'TimeoutError') {
+          console.error('[AuthService] TIMEOUT: Operação demorou mais que o esperado');
+          return throwError(() => ({
+            ...error,
+            userMessage: 'A operação está demorando mais que o esperado. Tente novamente.'
+          }));
+        }
+
         return this.handleError('registro')(error);
       })
     );
