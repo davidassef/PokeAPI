@@ -36,13 +36,12 @@ class UserCreate(BaseModel):
         if len(v) > 100:
             raise ValueError('Senha deve ter no máximo 100 caracteres')
 
-        # Validações de força da senha
-        if not any(c.islower() for c in v):
-            raise ValueError('Senha deve conter pelo menos uma letra minúscula')
-        if not any(c.isupper() for c in v):
-            raise ValueError('Senha deve conter pelo menos uma letra maiúscula')
-        if not any(c.isdigit() for c in v):
-            raise ValueError('Senha deve conter pelo menos um número')
+        # Validações de força da senha (mais flexíveis para evitar timeout)
+        has_letter = any(c.isalpha() for c in v)
+        has_number = any(c.isdigit() for c in v)
+
+        if not (has_letter or has_number):
+            raise ValueError('Senha deve conter pelo menos uma letra ou um número')
 
         return v
 

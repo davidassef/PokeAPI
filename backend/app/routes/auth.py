@@ -30,13 +30,54 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """
     Registra um novo usuário.
     """
+    import logging
+    import time
+    logger = logging.getLogger(__name__)
+
+    start_time = time.time()
+
     try:
+        logger.info(f"[REGISTER] 🚀 Iniciando registro para email: {user_data.email}")
+        logger.info(f"[REGISTER] 📋 Dados recebidos: name={user_data.name}, security_question={user_data.security_question}")
+
+        # Checkpoint 1: Validação inicial
+        logger.info("[REGISTER] ✅ Validação inicial iniciada")
+
+        # Checkpoint 2: Criação do usuário
+        creation_start = time.time()
+        logger.info("[REGISTER] 👤 Criando usuário no banco de dados...")
+
         user = auth_service.create_user(db, user_data)
-        return UserResponse.from_orm(user)
+        creation_time = time.time() - creation_start
+
+        logger.info(f"[REGISTER] ✅ Usuário criado com sucesso: ID={user.id}, email={user.email}")
+        logger.info(f"[REGISTER] ⏱️ Tempo de criação: {creation_time:.2f}s")
+
+        # Checkpoint 3: Preparação da resposta
+        response_start = time.time()
+        response = UserResponse.from_orm(user)
+        response_time = time.time() - response_start
+
+        total_time = time.time() - start_time
+        logger.info("[REGISTER] 🎯 Registro concluído com sucesso!")
+        logger.info(f"[REGISTER] ⏱️ Tempo total: {total_time:.2f}s (criação: {creation_time:.2f}s, resposta: {response_time:.2f}s)")
+
+        return response
+
     except ValueError as e:
+        error_time = time.time() - start_time
+        logger.error(f"[REGISTER] ❌ Erro de validação após {error_time:.2f}s: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
+        )
+    except Exception as e:
+        error_time = time.time() - start_time
+        logger.error(f"[REGISTER] 💥 Erro interno após {error_time:.2f}s: {str(e)}")
+        logger.error("[REGISTER] 🔍 Stack trace:", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro interno do servidor durante o registro"
         )
 
 
