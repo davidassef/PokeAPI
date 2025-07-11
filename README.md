@@ -53,11 +53,31 @@
 
 <div align="center">
 
+### 🌙 **Tema Escuro**
 | Home (Pokédex) | Detalhes do Pokémon | Ranking |
 |:-------------:|:------------------:|:-------:|
-| ![Home](frontend/src/assets/img/Home-Web.png) | ![Detalhes](frontend/src/assets/img/Modal-Details-Web.png) | ![Ranking](frontend/src/assets/img/Ranking-Web.png) |
+| ![Home Dark](frontend/src/assets/img/Home-Web.png) | ![Detalhes Dark](frontend/src/assets/img/Modal-Details-Web.png) | ![Ranking Dark](frontend/src/assets/img/Ranking-Web.png) |
+
+### ☀️ **Tema Claro**
+| Home (Pokédex) | Detalhes do Pokémon |
+|:-------------:|:------------------:|
+| ![Home Light](frontend/src/assets/img/Home-Web-Light-Theme.png) | ![Detalhes Light](frontend/src/assets/img/Modal-Details-Web_Light-Theme.png) |
 
 </div>
+
+### 🎨 **Destaques Visuais das Melhorias Recentes**
+
+<details>
+<summary><strong>✨ Melhorias de Interface Implementadas - Clique para expandir</strong></summary>
+
+- **🌈 Sistema de Temas Robusto**: Transição suave entre modo claro e escuro
+- **📱 Cards Otimizados**: Gradientes melhorados para melhor contraste no tema claro
+- **🔍 Modal Responsivo**: Abas que respondem adequadamente aos temas
+- **📊 Elementos Biográficos**: Altura, peso, stats e habilidades com contraste aprimorado
+- **♿ Acessibilidade WCAG AA**: Contraste mínimo 4.5:1 mantido em todos os componentes
+- **🎯 Consistência Visual**: Cores harmonizadas em toda a aplicação
+
+</details>
 
 ---
 
@@ -78,8 +98,9 @@
 - 🏆 **Ranking Dinâmico**: Veja os Pokémon mais populares da comunidade
 - 🎵 **Player Musical**: Trilha sonora imersiva com controles integrados
 - 🌐 **Multi-idioma**: Interface em Português, Inglês e Espanhol
-- 🌙 **Temas**: Modo claro e escuro com transições suaves
+- 🌙 **Temas**: Modo claro e escuro com transições suaves e contraste WCAG AA
 - 📱 **Responsivo**: Experiência otimizada para desktop, tablet e mobile
+- 🎨 **Interface Moderna**: Cards com gradientes otimizados e elementos bem contrastados
 
 ### 👑 **Para Administradores**
 - ➕ **Gerenciar Pokémon**: Adicionar novos Pokémon ao banco de dados
