@@ -172,26 +172,70 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.mostrarErro('auth.errors.invalid_email');
+      return;
+    }
+
+    // Validar pergunta de segurança
+    const validQuestions = ['pet', 'city', 'school', 'mother'];
+    if (!validQuestions.includes(this.perguntaSeguranca)) {
+      this.mostrarErro('auth.errors.invalid_security_question');
+      return;
+    }
+
     this.loading = true;
     this.erro = '';
 
     const dadosRegistro = {
-      name: this.nome,
-      email: this.email,
+      name: this.nome.trim(),
+      email: this.email.trim().toLowerCase(),
       password: this.senha,
       security_question: this.perguntaSeguranca,
-      security_answer: this.respostaSeguranca
+      security_answer: this.respostaSeguranca.trim()
     };
 
+    console.log('[AuthModal] Iniciando registro com dados:', {
+      name: dadosRegistro.name,
+      email: dadosRegistro.email,
+      security_question: dadosRegistro.security_question
+    });
+
     this.authService.register(dadosRegistro).subscribe({
-      next: () => {
+      next: (result) => {
+        console.log('[AuthModal] Registro bem-sucedido:', result);
         this.loading = false;
         this.mostrarSucesso('auth.success.account_created');
         setTimeout(() => this.fechar(true), 1500);
       },
       error: (err) => {
+        console.error('[AuthModal] Erro no registro:', err);
         this.loading = false;
-        this.mostrarErro('auth.errors.register_failed');
+
+        // Tratamento específico de erros com foco em timeout
+        if (err.name === 'TimeoutError' || err.userMessage) {
+          console.error('[AuthModal] TIMEOUT detectado:', err);
+          this.mostrarErro('auth.errors.timeout_error');
+        } else if (err.status === 400) {
+          if (err.error?.detail?.includes('Email já está em uso')) {
+            this.mostrarErro('auth.errors.email_already_exists');
+          } else if (err.error?.detail?.includes('Pergunta de segurança inválida')) {
+            this.mostrarErro('auth.errors.invalid_security_question');
+          } else {
+            this.mostrarErro('auth.errors.validation_failed');
+          }
+        } else if (err.status === 0 || err.status === 504 || err.status === 408) {
+          console.error('[AuthModal] Erro de conectividade/timeout:', err);
+          this.mostrarErro('auth.errors.connection_timeout');
+        } else if (err.status >= 500) {
+          console.error('[AuthModal] Erro interno do servidor:', err);
+          this.mostrarErro('auth.errors.server_error');
+        } else {
+          console.error('[AuthModal] Erro genérico:', err);
+          this.mostrarErro('auth.errors.register_failed');
+        }
       }
     });
   }

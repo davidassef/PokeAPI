@@ -1,10 +1,10 @@
 ion-content {
-  --background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+  --background: linear-gradient(135deg, #0c1445 0%, #061029 100%);
 }
 
-// Dark theme - darker blue background for better visual comfort
+// Dark theme - usar a mesma cor azul oceano profundo para consistência visual
 :host-context(.dark-theme) ion-content {
-  --background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  --background: linear-gradient(135deg, #0c1445 0%, #061029 100%);
 }
 
 // Admin Add Pokemon Button
@@ -262,10 +262,10 @@ ion-content {
   }
 }
 
-// Dark theme support
+// Dark theme support - usar a mesma cor azul oceano profundo para consistência
 @media (prefers-color-scheme: dark) {
   ion-content {
-    --background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --background: linear-gradient(135deg, #0c1445 0%, #061029 100%);
   }
 
   .search-container {

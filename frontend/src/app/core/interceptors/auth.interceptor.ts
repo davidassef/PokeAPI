@@ -33,8 +33,10 @@ export class AuthInterceptor implements HttpInterceptor {
     console.log(`[AuthInterceptor] Interceptando requisição: ${request.method} ${request.url}`);
 
     // Lista de rotas públicas que não precisam de autenticação
-    const publicRoutes = ['/auth/login', '/auth/register', '/auth/reset-password'];
+    const publicRoutes = ['/auth/login', '/auth/register', '/auth/reset-password', '/health'];
     const isPublicRoute = publicRoutes.some(route => request.url.includes(route));
+
+    console.log(`[AuthInterceptor] URL: ${request.url}, É rota pública: ${isPublicRoute}`);
 
     // Obtém o token do serviço de autenticação
     const token = this.authService.getToken();
@@ -71,6 +73,8 @@ export class AuthInterceptor implements HttpInterceptor {
       }),
       catchError((error: HttpErrorResponse) => {
         console.error(`[AuthInterceptor] Erro na requisição ${request.method} ${request.url}:`, error);
+        console.error(`[AuthInterceptor] Status: ${error.status}, StatusText: ${error.statusText}`);
+        console.error(`[AuthInterceptor] Error details:`, error.error);
 
         // Se o erro for de autenticação (401) e não for uma rota de login/registro
         if (error.status === 401 && !request.url.includes('/auth/')) {
@@ -84,6 +88,10 @@ export class AuthInterceptor implements HttpInterceptor {
             headers: request.headers,
             error: error.error
           });
+        } else if (error.status === 0) {
+          console.error('[AuthInterceptor] Erro de conectividade - Backend pode estar offline');
+        } else if (error.status >= 500) {
+          console.error('[AuthInterceptor] Erro interno do servidor');
         }
 
         // Repassa o erro para o serviço que fez a requisição

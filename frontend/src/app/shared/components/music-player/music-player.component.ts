@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AudioService } from '../../../core/services/audio.service';
 import { SettingsService } from '../../../core/services/settings.service';
@@ -16,7 +16,8 @@ export interface Track {
 @Component({
   selector: 'app-music-player',
   templateUrl: './music-player.component.html',
-  styleUrls: ['./music-player.component.scss']
+  styleUrls: ['./music-player.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MusicPlayerComponent implements OnInit, OnDestroy {
   // Estado principal do player
@@ -38,7 +39,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   // Controles internos
   private destroy$ = new Subject<void>();
-  private audio?: HTMLAudioElement;
 
   constructor(
     private audioService: AudioService,
@@ -59,7 +59,6 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    this.cleanupAudio();
   }
 
   // ===== INICIALIZAÇÃO =====
@@ -107,26 +106,60 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   private loadSettings() {
     this.settingsService.settings$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        // Debounce para evitar múltiplas atualizações durante mudanças de tema
+        debounceTime(100)
+      )
       .subscribe(settings => {
-        this.volume = settings.musicEnabled ? 0.7 : 0;
-        this.isMuted = !settings.musicEnabled;
-        if (this.audio) {
-          this.audio.volume = this.isMuted ? 0 : this.volume;
+        console.log('[MusicPlayer] Configurações atualizadas:', {
+          musicEnabled: settings.musicEnabled,
+          theme: settings.theme,
+          darkMode: settings.darkMode
+        });
+
+        // Atualizar apenas configurações de áudio, não o estado de reprodução
+        const newVolume = settings.musicEnabled ? (settings.musicVolume || 0.7) : 0;
+        const newMuted = !settings.musicEnabled;
+
+        // Só atualizar se realmente mudou para evitar re-renderizações desnecessárias
+        if (this.volume !== newVolume || this.isMuted !== newMuted) {
+          this.volume = newVolume;
+          this.isMuted = newMuted;
+
+          // Aplicar ao AudioService (fonte única da verdade)
+          if (settings.musicEnabled) {
+            this.audioService.setVolume(newVolume);
+          }
+
+          console.log('[MusicPlayer] Volume/mute atualizados:', { volume: newVolume, muted: newMuted });
         }
       });
   }
 
   private setupAudioService() {
     this.audioService.audioState$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        // Adicionar debounce para evitar múltiplas atualizações durante mudanças de tema
+        debounceTime(50)
+      )
       .subscribe(state => {
+        console.log('[MusicPlayer] Estado do AudioService atualizado:', {
+          isPlaying: state.isPlaying,
+          currentTrack: state.currentTrack?.name,
+          currentTime: state.currentTime
+        });
+
+        // Sincronizar APENAS com o AudioService - fonte única da verdade
         this.isPlaying = state.isPlaying;
         this.volume = state.volume;
         this.currentTime = state.currentTime;
         this.duration = state.duration;
         this.isLoading = state.isLoading;
-        this.cdr.detectChanges();
+
+        // Forçar detecção de mudanças apenas se necessário
+        this.cdr.markForCheck();
       });
   }
 
@@ -151,7 +184,15 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.defaultTrackForLanguage = this.playlist.find(track => track.id === trackId) || null;
 
     if (!this.currentTrack && this.defaultTrackForLanguage) {
-      this.loadTrack(this.defaultTrackForLanguage, false);
+      // Carregar track padrão usando AudioService
+      this.audioService.loadTrack(this.defaultTrackForLanguage.id)
+        .then(() => {
+          this.currentTrack = this.defaultTrackForLanguage;
+          console.log('[MusicPlayer] Track padrão carregada:', this.defaultTrackForLanguage?.title);
+        })
+        .catch(error => {
+          console.error('[MusicPlayer] Erro ao carregar track padrão:', error);
+        });
     }
   }
 
@@ -186,118 +227,119 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadTrack(track: Track, autoplay = false) {
-    this.currentTrack = track;
-    this.isLoading = true;
 
-    this.cleanupAudio();
-
-    this.audio = new Audio();
-    this.audio.src = track.url;
-    this.audio.volume = this.isMuted ? 0 : this.volume;
-    this.audio.loop = true;
-
-    this.audio.addEventListener('loadedmetadata', () => {
-      this.duration = this.audio?.duration || 0;
-      this.isLoading = false;
-      this.cdr.detectChanges();
-
-      if (autoplay) {
-        this.audio?.play().catch(e => console.error('Erro no autoplay:', e));
-        this.isPlaying = true;
-      }
-    });
-
-    this.audio.addEventListener('timeupdate', () => {
-      this.currentTime = this.audio?.currentTime || 0;
-      this.cdr.detectChanges();
-    });
-
-    this.audio.addEventListener('ended', () => {
-      this.playNext();
-    });
-
-    this.audio.addEventListener('error', (error) => {
-      console.error('MusicPlayer: Erro no áudio:', error);
-      this.isLoading = false;
-      this.isPlaying = false;
-      this.cdr.detectChanges();
-    });
-
-    this.audio.load();
-  }
 
   async togglePlay() {
-    if (!this.audio || !this.currentTrack) return;
+    if (!this.currentTrack) return;
 
     try {
-      if (this.isPlaying) {
-        this.audio.pause();
-        this.audioService.pause();
-      } else {
-        await this.audio.play();
-        this.audioService.play();
-      }
-      this.isPlaying = !this.isPlaying;
-      this.cdr.detectChanges();
+      console.log('[MusicPlayer] Toggle play - Estado atual:', this.isPlaying);
+
+      // Usar APENAS o AudioService - fonte única da verdade
+      await this.audioService.togglePlayPause();
+
+      console.log('[MusicPlayer] Toggle play concluído');
     } catch (error) {
       console.error('MusicPlayer: Erro no toggle play:', error);
-      this.isPlaying = false;
-      this.cdr.detectChanges();
     }
   }
 
   toggleMute() {
     this.isMuted = !this.isMuted;
-    if (this.audio) {
-      this.audio.volume = this.isMuted ? 0 : this.volume;
-    }
+
+    // Usar AudioService para controlar volume
+    const newVolume = this.isMuted ? 0 : this.volume;
+    this.audioService.setVolume(newVolume);
+
+    // Salvar configuração
     this.settingsService.saveSettings({ musicEnabled: !this.isMuted });
+
+    console.log('[MusicPlayer] Mute toggled:', { isMuted: this.isMuted, volume: newVolume });
   }
 
   setVolume(event: any) {
-    this.volume = event.detail.value / 100;
-    if (this.audio) {
-      this.audio.volume = this.isMuted ? 0 : this.volume;
+    const newVolume = event.detail.value / 100;
+    this.volume = newVolume;
+
+    // Usar AudioService para controlar volume
+    if (!this.isMuted) {
+      this.audioService.setVolume(newVolume);
     }
+
+    console.log('[MusicPlayer] Volume alterado:', newVolume);
   }
 
   seek(event: any) {
-    if (this.audio && this.duration > 0) {
+    if (this.duration > 0) {
       const seekTime = (event.detail.value / 100) * this.duration;
-      this.audio.currentTime = seekTime;
+
+      // Usar AudioService para seek
       this.audioService.seek(seekTime);
+
+      console.log('[MusicPlayer] Seek para:', seekTime);
     }
   }
 
-  playPrevious() {
+  async playPrevious() {
     if (!this.currentTrack) return;
 
     const currentIndex = this.playlist.findIndex(track => track.id === this.currentTrack!.id);
     const previousIndex = currentIndex > 0 ? currentIndex - 1 : this.playlist.length - 1;
+    const previousTrack = this.playlist[previousIndex];
 
-    this.loadTrack(this.playlist[previousIndex]);
-    if (this.isPlaying) {
-      setTimeout(() => this.togglePlay(), 100);
+    try {
+      await this.audioService.loadTrack(previousTrack.id);
+
+      if (this.isPlaying) {
+        await this.audioService.play();
+      }
+
+      this.currentTrack = previousTrack;
+      console.log('[MusicPlayer] Track anterior carregada:', previousTrack.title);
+    } catch (error) {
+      console.error('[MusicPlayer] Erro ao carregar track anterior:', error);
     }
   }
 
-  playNext() {
+  async playNext() {
     if (!this.currentTrack) return;
 
     const currentIndex = this.playlist.findIndex(track => track.id === this.currentTrack!.id);
     const nextIndex = currentIndex < this.playlist.length - 1 ? currentIndex + 1 : 0;
+    const nextTrack = this.playlist[nextIndex];
 
-    this.loadTrack(this.playlist[nextIndex]);
-    if (this.isPlaying) {
-      setTimeout(() => this.togglePlay(), 100);
+    try {
+      await this.audioService.loadTrack(nextTrack.id);
+
+      if (this.isPlaying) {
+        await this.audioService.play();
+      }
+
+      this.currentTrack = nextTrack;
+      console.log('[MusicPlayer] Próxima track carregada:', nextTrack.title);
+    } catch (error) {
+      console.error('[MusicPlayer] Erro ao carregar próxima track:', error);
     }
   }
 
-  selectTrack(track: Track) {
-    this.loadTrack(track);
-    if (this.isPlaying) {
-      setTimeout(() => this.togglePlay(), 100);
+  async selectTrack(track: Track) {
+    console.log('[MusicPlayer] Selecionando track:', track.title);
+
+    try {
+      // Usar AudioService para carregar a track
+      await this.audioService.loadTrack(track.id);
+
+      // Se estava tocando, continuar tocando a nova track
+      if (this.isPlaying) {
+        await this.audioService.play();
+      }
+
+      // Atualizar track atual local para UI
+      this.currentTrack = track;
+
+      console.log('[MusicPlayer] Track selecionada com sucesso');
+    } catch (error) {
+      console.error('[MusicPlayer] Erro ao selecionar track:', error);
     }
   }
 
@@ -338,13 +380,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     return 'volume-high';
   }
 
-  private cleanupAudio() {
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.src = '';
-      this.audio = undefined;
-    }
-  }
+
 
   // ===== EVENTOS DO DOCUMENTO =====
 
