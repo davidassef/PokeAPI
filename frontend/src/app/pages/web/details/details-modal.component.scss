@@ -240,7 +240,7 @@
 .stat-label {
   display: block;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-color-secondary);
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -1593,5 +1593,151 @@
 
   &:hover i {
     transform: scale(1.1);
+  }
+}
+
+// Theme-specific styles for modal tabs
+:host-context(.light-theme) {
+  .modal-tabs {
+    // Light theme - using music player gradient as reference
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal-tabs button {
+    color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &[aria-selected="true"] {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.25);
+      border-bottom: 3px solid #fff;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Theme-specific styles for better contrast in light theme
+:host-context(.light-theme) {
+  // Biological info items (height, weight, BMI)
+  .bio-item {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+
+    .bio-label {
+      color: var(--text-color-secondary);
+    }
+
+    .bio-value {
+      color: var(--text-color);
+    }
+  }
+
+  // Stat cards
+  .stat-card {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+
+    .stat-label {
+      color: var(--text-color-secondary) !important;
+    }
+
+    .stat-value {
+      color: var(--text-color) !important;
+    }
+  }
+
+  // Info cards
+  .info-card {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  // Ability cards
+  .ability-card {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+
+    .ability-description {
+      color: var(--text-color-secondary);
+    }
+  }
+
+  // Evolution detail cards
+  .detail-card {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  // Total stats card
+  .total-stats-card {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  // Stats categories
+  .stats-categories .category {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  // Flavor text cards
+  .flavor-card {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  // Capture info items (capture rate, base happiness, etc.)
+  .capture-item {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+
+    .capture-label {
+      color: var(--text-color-secondary);
+    }
+
+    .capture-value {
+      color: var(--text-color);
+    }
+  }
+
+  // Trivia items (curiosities/facts)
+  .trivia-item {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+
+    p {
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  .modal-tabs {
+    // Dark theme - darker gradient for consistency
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal-tabs button {
+    color: rgba(255, 255, 255, 0.7);
+
+    &:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &[aria-selected="true"] {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+      border-bottom: 3px solid var(--pokemon-primary-color, #4f46e5);
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
   }
 }
