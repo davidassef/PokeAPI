@@ -1,7 +1,7 @@
 """
 Rotas da API para ranking de Pokémons.
 """
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from core.database import get_db
@@ -23,27 +23,4 @@ def get_stats(db: Session = Depends(get_db)):
     return FavoriteService.get_stats(db)
 
 
-@router.get("/local")
-def get_local_ranking(region: str = Query(...)):
-    """Endpoint local de ranking (mock inicial)."""
-    return []
-
-
-@router.get("/debug/favorites")
-async def debug_favorites(db: Session = Depends(get_db)):
-    """Endpoint temporário para depuração da tabela de favoritos"""
-    from app.models.models import FavoritePokemon
-    favorites = db.query(FavoritePokemon).all()
-    return {
-        "count": len(favorites),
-        "favorites": [
-            {
-                "id": fav.id,
-                "user_id": fav.user_id,
-                "pokemon_id": fav.pokemon_id,
-                "pokemon_name": fav.pokemon_name,
-                "added_at": fav.added_at.isoformat() if fav.added_at else None
-            }
-            for fav in favorites
-        ]
-    }
+# REMOVED: Mock and debug endpoints for security

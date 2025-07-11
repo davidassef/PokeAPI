@@ -72,11 +72,12 @@ class AuthService:
 
             user_id: int = payload.get("sub")
             email: str = payload.get("email")
+            role: str = payload.get("role", "user")  # Role padrão se não especificado
 
             if user_id is None or email is None:
                 return None
 
-            token_data = TokenData(user_id=user_id, email=email)
+            token_data = TokenData(user_id=user_id, email=email, role=role)
             return token_data
 
         except JWTError:

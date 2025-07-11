@@ -38,6 +38,20 @@
            alt="Pokébola fechada"
            class="pokeball-icon">
     </button>
+
+    <!-- Admin Controls -->
+    <div *ngIf="shouldShowAdminControls" class="admin-controls">
+      <button class="admin-btn edit-btn"
+              (click)="openEditPokemonModal($event)"
+              [title]="'admin.pokemon.buttons.edit' | translate">
+        <ion-icon name="create-outline"></ion-icon>
+      </button>
+      <button class="admin-btn delete-btn"
+              (click)="deletePokemon($event)"
+              [title]="'admin.pokemon.buttons.delete' | translate">
+        <ion-icon name="trash-outline"></ion-icon>
+      </button>
+    </div>
   </div>
 
   <!-- Pokemon Info -->

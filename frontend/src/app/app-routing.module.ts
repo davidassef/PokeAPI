@@ -21,16 +21,6 @@ const routes: Routes = [
     path: 'sync-admin',
     loadChildren: () => import('./pages/sync-admin/sync-admin.module').then(m => m.SyncAdminModule),
     canActivate: [AuthGuard]
-  },
-  {
-    path: 'login',
-    loadChildren: () => import('./pages/web/login/login.module').then(m => m.LoginPageModule),
-    canActivate: [NoAuthGuard]
-  },
-  {
-    path: 'register',
-    loadChildren: () => import('./pages/web/register/register.module').then(m => m.RegisterPageModule),
-    canActivate: [NoAuthGuard]
   }
 ];
 @NgModule({

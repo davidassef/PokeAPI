@@ -80,5 +80,6 @@ export class AppComponent implements OnInit {
 const usuarioTeste: User = {
   id: '1',
   name: 'Teste',
-  email: 'teste@teste.com'
+  email: 'teste@teste.com',
+  role: 'user' as any // Temporary fix for test user
 };

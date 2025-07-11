@@ -82,16 +82,4 @@ def check_multiple_favorites(
     )
 
 
-# Manter rotas públicas para compatibilidade (podem ser removidas posteriormente)
-@router.get("/user/{user_id}", response_model=List[FavoritePokemon])
-def get_user_favorites_public(user_id: int, db: Session = Depends(get_db)):
-    """Busca favoritos do usuário (rota pública para compatibilidade)."""
-    return FavoriteService.get_user_favorites(db, user_id)
-
-
-@router.get("/check/{user_id}/{pokemon_id}")
-def check_favorite_public(user_id: int, pokemon_id: int,
-                          db: Session = Depends(get_db)):
-    """Verifica se Pokémon é favorito do usuário (rota pública para compatibilidade)."""
-    is_favorite = FavoriteService.is_favorite(db, user_id, pokemon_id)
-    return {"is_favorite": is_favorite}
+# REMOVED: Legacy public endpoints for security

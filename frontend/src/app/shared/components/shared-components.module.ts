@@ -17,6 +17,7 @@ import { AuthModalNewComponent } from './auth-modal-new/auth-modal-new.component
 import { UserProfileModalComponent } from './user-profile-modal/user-profile-modal.component';
 import { ProfileModalComponent } from './profile-modal/profile-modal.component';
 import { AccountSettingsModalComponent } from './account-settings-modal/account-settings-modal.component';
+import { AdminPokemonModalComponent } from './admin-pokemon-modal/admin-pokemon-modal.component';
 
 // Shared Modules
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -35,7 +36,8 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AuthModalNewComponent,
     UserProfileModalComponent,
     ProfileModalComponent,
-    AccountSettingsModalComponent
+    AccountSettingsModalComponent,
+    AdminPokemonModalComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -58,6 +60,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     UserProfileModalComponent,
     ProfileModalComponent,
     AccountSettingsModalComponent,
+    AdminPokemonModalComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,

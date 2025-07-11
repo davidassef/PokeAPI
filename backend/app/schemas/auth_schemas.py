@@ -74,6 +74,7 @@ class UserResponse(BaseModel):
     email: str
     name: str
     contact: Optional[str] = None
+    role: str  # Role do usuário
     is_active: bool
     created_at: datetime
     updated_at: datetime
@@ -94,6 +95,7 @@ class TokenData(BaseModel):
     """Schema para dados do token JWT."""
     user_id: Optional[int] = None
     email: Optional[str] = None
+    role: Optional[str] = "user"  # Role do usuário
 
 
 class UserUpdate(BaseModel):

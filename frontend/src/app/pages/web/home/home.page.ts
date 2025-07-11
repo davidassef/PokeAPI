@@ -6,6 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
+import { RbacService, Permission } from '../../../core/services/rbac.service';
 import { PokemonFilters } from '../../../models/app.model';
 import { Pokemon } from '../../../models/pokemon.model';
 import { FilterOptions } from '../../../shared/components/search-filter/search-filter.component';
@@ -13,6 +14,7 @@ import { DetailsModalComponent } from '../details/details-modal.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
 import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
+import { AdminPokemonModalComponent } from '../../../shared/components/admin-pokemon-modal/admin-pokemon-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -42,11 +44,17 @@ export class HomePage implements OnInit, OnDestroy {
     sortOrder: 'asc'
   };
 
+
+
   captured: number[] = [];
   private destroy$ = new Subject<void>();
 
   showDetailsModal = false;
   selectedPokemonId: number | null = null;
+
+  // Admin controls
+  canAddPokemon = false;
+  isAdmin = false;
 
   isAuthenticated = false;
   user: User | null = null;
@@ -73,7 +81,8 @@ export class HomePage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private translate: TranslateService,
     private authService: AuthService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private rbacService: RbacService
   ) {}
 
   ngOnInit() {
@@ -83,6 +92,19 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.isAuthenticated) {
       this.user = this.authService.getCurrentUser();
     }
+
+    // Verifica permissões de administrador
+    this.rbacService.hasPermission(Permission.ADD_POKEMON)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(canAdd => {
+        this.canAddPokemon = canAdd;
+      });
+
+    this.rbacService.isAdmin()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+      });
   }
 
   ngOnDestroy() {
@@ -364,5 +386,77 @@ export class HomePage implements OnInit, OnDestroy {
 
   toggleUserMenu() {
     this.showUserMenu = !this.showUserMenu;
+  }
+
+  // Método para abrir modal de adicionar Pokemon (apenas para admins)
+  async openAddPokemonModal() {
+    if (!this.canAddPokemon) {
+      console.warn('Usuário não tem permissão para adicionar Pokemon');
+      return;
+    }
+
+    const modal = await this.modalController.create({
+      component: AdminPokemonModalComponent,
+      cssClass: 'admin-pokemon-modal',
+      componentProps: {
+        mode: 'add'
+      },
+      backdropDismiss: true,
+      showBackdrop: true
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success && result.data.pokemon) {
+        // Pokemon foi adicionado com sucesso
+        this.showSuccessToast('admin.pokemon.success.created');
+        // Recarregar a lista de Pokemon
+        this.loadPaginatedPokemons();
+      }
+    });
+
+    return await modal.present();
+  }
+
+  // Método para lidar com atualização de Pokemon
+  onPokemonUpdated(updatedPokemon: Pokemon) {
+    // Encontrar e atualizar o Pokemon na lista
+    const index = this.pokemon.findIndex(p => p.id === updatedPokemon.id);
+    if (index !== -1) {
+      this.pokemon[index] = updatedPokemon;
+      this.updatePaginatedPokemons();
+    }
+    this.showSuccessToast('admin.pokemon.success.updated');
+  }
+
+  // Método para lidar com exclusão de Pokemon
+  onPokemonDeleted(pokemonId: number) {
+    // Remover o Pokemon da lista
+    this.pokemon = this.pokemon.filter(p => p.id !== pokemonId);
+    this.updatePaginatedPokemons();
+    this.showSuccessToast('admin.pokemon.success.deleted');
+  }
+
+  private async showSuccessToast(messageKey: string) {
+    const message = await this.translate.get(messageKey).toPromise();
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: 'success'
+    });
+    await toast.present();
+  }
+
+  private updatePaginatedPokemons() {
+    // Atualizar a paginação após mudanças na lista
+    this.totalPokemons = this.pokemon.length;
+    this.totalPages = Math.ceil(this.totalPokemons / this.pokemonPerPage);
+
+    // Verificar se a página atual ainda é válida
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+
+    this.loadPaginatedPokemons();
   }
 }

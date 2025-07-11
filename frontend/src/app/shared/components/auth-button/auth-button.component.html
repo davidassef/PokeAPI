@@ -7,6 +7,9 @@
   <ion-button fill="solid" class="auth-btn" (click)="toggleUserMenu()">
     <ion-icon name="person-circle-outline"></ion-icon>
     <span class="user-greeting">{{ 'auth.hello' | translate }}, {{ user?.firstName || user?.name }}</span>
+    <ion-badge *ngIf="shouldShowAdminBadge" [color]="roleBadgeColor" class="admin-badge">
+      {{ userRoleLabel }}
+    </ion-badge>
     <ion-icon name="chevron-down-outline" class="dropdown-arrow"></ion-icon>
   </ion-button>
   <ion-popover

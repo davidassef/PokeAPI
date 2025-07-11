@@ -6,10 +6,12 @@ import { AudioService } from '../../../core/services/audio.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { RbacService, Permission } from '../../../core/services/rbac.service';
 import { ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthModalNewComponent } from '../auth-modal-new/auth-modal-new.component';
+import { AdminPokemonModalComponent } from '../admin-pokemon-modal/admin-pokemon-modal.component';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -24,11 +26,19 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
   @Input() isCaptured = false;
   @Input() customBadge?: number;
   @Input() favoriteCount?: number;
+  @Input() showAdminControls = true; // Controla se mostra botões de admin
   @Output() captureToggle = new EventEmitter<{ pokemon: Pokemon, isCaptured: boolean }>();
   @Output() cardClick = new EventEmitter<Pokemon>();
+  @Output() pokemonUpdated = new EventEmitter<Pokemon>(); // Evento para quando Pokemon é atualizado
+  @Output() pokemonDeleted = new EventEmitter<number>(); // Evento para quando Pokemon é deletado
+
   isLoading = false;
   imageUrl: string = '';
+  canManagePokemon = false;
+  isAdmin = false;
+
   private capturedSub?: Subscription;
+  private rbacSub?: Subscription;
   private isProcessing = false;
 
   constructor(
@@ -37,6 +47,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     private pokeApiService: PokeApiService,
     private capturedService: CapturedService,
     private authService: AuthService,
+    private rbacService: RbacService,
     private toastController: ToastController,
     private translate: TranslateService,
     private modalController: ModalController
@@ -48,11 +59,21 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
         this.isCaptured = isCaptured;
       });
     });
+
+    // Verifica permissões de administrador
+    this.rbacSub = this.rbacService.canManagePokemon().subscribe(canManage => {
+      this.canManagePokemon = canManage;
+    });
+
+    this.rbacService.isAdmin().subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+    });
     this.loadPokemonImage();
   }
 
   ngOnDestroy() {
     this.capturedSub?.unsubscribe();
+    this.rbacSub?.unsubscribe();
   }
 
   private loadPokemonImage() {
@@ -217,5 +238,51 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     });
 
     return await modal.present();
+  }
+
+  // Métodos de administração
+  async openEditPokemonModal(event: Event) {
+    event.stopPropagation();
+
+    const modal = await this.modalController.create({
+      component: AdminPokemonModalComponent,
+      cssClass: 'admin-pokemon-modal',
+      componentProps: {
+        pokemon: this.pokemon,
+        mode: 'edit'
+      },
+      backdropDismiss: true,
+      showBackdrop: true
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.success) {
+        if (result.data.pokemon) {
+          // Pokemon foi atualizado
+          this.pokemonUpdated.emit(result.data.pokemon);
+          this.showToast('admin.pokemon.success.updated', 'success');
+        } else {
+          // Pokemon foi deletado
+          this.pokemonDeleted.emit(this.pokemon.id);
+          this.showToast('admin.pokemon.success.deleted', 'success');
+        }
+      }
+    });
+
+    return await modal.present();
+  }
+
+  async deletePokemon(event: Event) {
+    event.stopPropagation();
+
+    // Abre o modal de edição em modo de exclusão
+    await this.openEditPokemonModal(event);
+  }
+
+
+
+  // Getter para verificar se deve mostrar controles de admin
+  get shouldShowAdminControls(): boolean {
+    return this.showAdminControls && this.canManagePokemon && this.isAdmin;
   }
 }

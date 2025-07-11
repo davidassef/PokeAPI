@@ -20,7 +20,7 @@
         </ng-container>
         <ng-container *ngIf="isAuthenticated && user">
           <div class="user-greeting" (click)="toggleUserMenu()" style="margin-left: 12px; cursor: pointer; display: flex; align-items: center;">
-            <span>{{ 'user.greeting' | translate }}, {{ user.firstName || user.name || 'Treinador' }}!</span>
+            <span>{{ 'user.greeting' | translate }}, {{ user.firstName || user.name || ('user.trainer' | translate) }}!</span>
             <ion-icon name="chevron-down-outline" style="margin-left: 4px;"></ion-icon>
           </div>
           <div class="user-dropdown" *ngIf="showUserMenu" style="position: absolute; right: 16px; top: 56px; background: var(--ion-background-color, #222); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); min-width: 200px; z-index: 1000;">

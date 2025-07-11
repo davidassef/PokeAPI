@@ -308,7 +308,10 @@
     "settings": "Configuración",
     "your_progress": "Tu Progreso",
     "seen": "Vistos",
+    "viewed": "Visualizados",
     "caught": "Capturados",
+    "not_logged_in": "No Conectado",
+    "login_to_view_progress": "Inicia sesión para ver tu progreso y estadísticas",
     "completion": "Completado",
     "capture_rate": "Tasa de Captura",
     "navigation": "Navegación",
@@ -493,7 +496,15 @@
     "greeting": "Hola",
     "level": "Nivel",
     "profile_settings": "Configuración de Perfil",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "trainer": "Entrenador"
+  },
+  "admin": {
+    "roles": {
+      "visitor": "Visitante",
+      "user": "Usuario",
+      "administrator": "Administrador"
+    }
   },
   "auth": {
     "welcome_back": "¡Bienvenido de vuelta!",

@@ -4,7 +4,15 @@ Modelos do banco de dados para o PokeAPI App.
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from ..core.database import Base
+from core.database import Base
+from enum import Enum
+
+
+class UserRole(str, Enum):
+    """Enum para roles de usuário."""
+    VISITOR = "visitor"
+    USER = "user"
+    ADMINISTRATOR = "administrator"
 
 
 class User(Base):
@@ -19,9 +27,11 @@ class User(Base):
     contact = Column(String(100), nullable=True)  # Contato opcional (telefone, whatsapp, etc)
     security_question = Column(String(50), nullable=True)  # Pergunta de segurança
     security_answer_hash = Column(String(255), nullable=True)  # Resposta criptografada
+    role = Column(String(20), default=UserRole.USER.value, nullable=False)  # Role do usuário
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    last_login = Column(DateTime(timezone=True), nullable=True)  # Último login
 
     # Relacionamentos
     favorites = relationship("FavoritePokemon", back_populates="user")

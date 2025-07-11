@@ -183,7 +183,10 @@
     "settings": "Settings",
     "your_progress": "Your Progress",
     "seen": "Seen",
+    "viewed": "Viewed",
     "caught": "Caught",
+    "not_logged_in": "Not Connected",
+    "login_to_view_progress": "Log in to view your progress and statistics",
     "completion": "Completion",
     "capture_rate": "Capture Rate",
     "navigation": "Navigation",
@@ -598,6 +601,14 @@
     "greeting": "Hello",
     "level": "Level",
     "profile_settings": "Profile Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "trainer": "Trainer"
+  },
+  "admin": {
+    "roles": {
+      "visitor": "Visitor",
+      "user": "User",
+      "administrator": "Administrator"
+    }
   }
 }

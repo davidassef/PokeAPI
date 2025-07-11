@@ -2,10 +2,16 @@
 Fixtures e configurações compartilhadas para testes.
 """
 import pytest
+import sys
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-from app.core.database import get_db, Base
+
+# Adicionar o diretório backend ao path para importações
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from core.database import get_db, Base
 from app.models.models import User, FavoritePokemon, PokemonRanking
 from main import app
 

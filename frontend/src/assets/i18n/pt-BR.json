@@ -515,7 +515,15 @@
     "greeting": "Olá",
     "level": "Nível",
     "profile_settings": "Configurações de Perfil",
-    "logout": "Sair"
+    "logout": "Sair",
+    "trainer": "Treinador"
+  },
+  "admin": {
+    "roles": {
+      "visitor": "Visitante",
+      "user": "Usuário",
+      "administrator": "Administrador"
+    }
   },
   "auth": {
     "login": "Fazer Login",
@@ -611,5 +619,84 @@
       "answer_correct": "Resposta correta! Agora você pode redefinir sua senha.",
       "password_reset": "Senha redefinida com sucesso!"
     }
+  },
+  "admin": {
+    "pokemon": {
+      "add_title": "Adicionar Novo Pokémon",
+      "edit_title": "Editar Pokémon",
+      "sections": {
+        "basic_info": "Informações Básicas",
+        "types": "Tipos",
+        "stats": "Estatísticas",
+        "abilities": "Habilidades",
+        "images": "Imagens"
+      },
+      "fields": {
+        "name": "Nome",
+        "height": "Altura",
+        "weight": "Peso",
+        "base_experience": "Experiência Base",
+        "image_default": "Imagem Padrão",
+        "image_shiny": "Imagem Shiny",
+        "image_artwork": "Arte Oficial"
+      },
+      "placeholders": {
+        "name": "Digite o nome do Pokémon",
+        "select_type": "Selecione um tipo",
+        "ability_name": "Nome da habilidade"
+      },
+      "buttons": {
+        "add": "Adicionar Pokémon",
+        "create": "Criar Pokémon",
+        "update": "Atualizar Pokémon",
+        "delete": "Excluir Pokémon",
+        "edit": "Editar",
+        "add_type": "Adicionar Tipo",
+        "add_ability": "Adicionar Habilidade"
+      },
+      "validation": {
+        "form_invalid": "Por favor, preencha todos os campos obrigatórios",
+        "types_required": "Pelo menos um tipo é obrigatório",
+        "duplicate_types": "Não é possível ter tipos duplicados"
+      },
+      "success": {
+        "created": "Pokémon criado com sucesso!",
+        "updated": "Pokémon atualizado com sucesso!",
+        "deleted": "Pokémon excluído com sucesso!"
+      },
+      "error": {
+        "save_failed": "Erro ao salvar Pokémon",
+        "delete_failed": "Erro ao excluir Pokémon",
+        "load_failed": "Erro ao carregar dados do Pokémon"
+      },
+      "delete": {
+        "confirm_title": "Confirmar Exclusão",
+        "confirm_message": "Tem certeza que deseja excluir o Pokémon {{name}}? Esta ação não pode ser desfeita.",
+        "confirm_button": "Excluir"
+      }
+    },
+    "roles": {
+      "administrator": "Administrador",
+      "user": "Usuário",
+      "visitor": "Visitante"
+    },
+    "permissions": {
+      "access_denied": "Acesso negado",
+      "admin_required": "Permissões de administrador necessárias",
+      "insufficient_permissions": "Permissões insuficientes"
+    }
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "close": "Fechar",
+    "loading": "Carregando...",
+    "success": "Sucesso",
+    "error": "Erro",
+    "warning": "Aviso",
+    "info": "Informação"
   }
 }

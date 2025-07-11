@@ -7,6 +7,40 @@ ion-content {
   --background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
 }
 
+// Admin Add Pokemon Button
+.add-pokemon-btn {
+  --background: linear-gradient(90deg, #4caf50 0%, #66bb6a 100%);
+  --color: white;
+  --border-radius: 20px;
+  --box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --background: linear-gradient(90deg, #388e3c 0%, #4caf50 100%);
+    --box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    --box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+
+    // Hide text on mobile, show only icon
+    span {
+      display: none;
+    }
+  }
+}
+
 // Search container
 .search-container {
   padding: 16px;

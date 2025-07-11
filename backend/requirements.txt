@@ -1,19 +1,48 @@
-# Requisitos para rodar o backend e scripts de tradução com Python 3.11
-# 
-# Recomendações:
-# 1. Instale o Python 3.11: https://www.python.org/downloads/release/python-3110/
-# 2. Crie um ambiente virtual:
-#    python3.11 -m venv venv
-#    venv\Scripts\activate  (Windows)
-#    source venv/bin/activate (Linux/Mac)
-# 3. Instale as dependências:
-#    pip install -r requirements.txt
+# PokeAPIApp Backend Requirements
+# Python 3.11+ required
+#
+# Installation Instructions:
+# 1. Create virtual environment: python -m venv venv
+# 2. Activate: venv\Scripts\activate (Windows) or source venv/bin/activate (Linux/Mac)
+# 3. Install dependencies: pip install -r requirements.txt
 
-# Dependências do backend
-fastapi
-uvicorn
-sqlalchemy
-pydantic
-python-dotenv
-# Dependência para tradução automática
-googletrans==4.0.0-rc1 
+# Core FastAPI Dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Database & ORM
+sqlalchemy>=2.0.0
+alembic>=1.12.0
+
+# Data Validation & Serialization
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Authentication & Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-dotenv>=1.0.0
+
+# HTTP Client for external APIs
+httpx>=0.25.0
+requests>=2.31.0
+
+# Translation Service
+googletrans==4.0.0-rc1
+
+# Testing Framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Development Tools
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+
+# Production Dependencies
+gunicorn>=21.2.0
+
+# Optional: For enhanced logging
+structlog>=23.1.0

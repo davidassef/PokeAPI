@@ -9,7 +9,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
+from core.database import get_db
 from app.models.models import User
 from app.services.auth_service import auth_service
 
@@ -231,9 +231,9 @@ def optional_authentication(
         return None
 
     try:
-        logger.debug("Token recebido: %s...", 
+        logger.debug("Token recebido: %s...",
                    credentials.credentials[:20])
-        
+
         # Verifica o token JWT
         token_data = auth_service.verify_token(
             credentials.credentials
@@ -257,7 +257,7 @@ def optional_authentication(
         if user is None:
             logger.debug("Usuário não encontrado na autenticação opcional")
             return None
-            
+
         if not user.is_active:
             logger.debug(
                 "Usuário inativo tentou autenticação opcional: %s",

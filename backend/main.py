@@ -195,7 +195,7 @@ async def add_cors_headers(request: Request, call_next):
 try:
     from core.database import engine
     from app.models.models import Base
-    from app.routes import users, favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth
+    from app.routes import favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth, pokemon_management
 
     # Criar tabelas vazias (sem dados iniciais)
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
@@ -203,16 +203,18 @@ try:
 
     # Incluir rotas
     app.include_router(auth.router, prefix="/api/v1")
-    app.include_router(users.router, prefix="/api/v1")
     app.include_router(favorites.router, prefix="/api/v1")
     app.include_router(ranking.router, prefix="/api/v1")
     app.include_router(pokemon.router, prefix="/api/v1")
+    app.include_router(pokemon_management.router, prefix="/api/v1")  # Rotas RBAC de Pokemon
     app.include_router(sync_capture.router, prefix="/api/v1")
     app.include_router(admin.router, prefix="/api/v1")
     app.include_router(pull_sync.router, prefix="/api/v1")
 
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     print(f"Warning: Error importing modules: {e}")
+    import traceback
+    traceback.print_exc()
     # Continua a execução sem os módulos de rotas se houver erro
 
 
@@ -233,42 +235,7 @@ async def health_check():
     return {"status": "healthy", "version": "1.0.0"}
 
 
-@app.get("/api/test-frontend")
-async def test_frontend_connection():
-    """Endpoint específico para testar conexão do frontend."""
-    return {
-        "message": "Frontend conectado com sucesso!",
-        "backend_url": "https://pokeapi-la6k.onrender.com",
-        "frontend_url": "https://pokeapi-frontend.onrender.com",
-        "status": "connected",
-        "timestamp": "2025-07-05T01:15:00Z"
-    }
-
-
-@app.get("/api/database-status")
-async def database_status():
-    """Verifica o status do banco de dados sem popular dados."""
-    try:
-        from core.database import get_db
-        from app.models.models import User, PokemonRanking
-
-        db = next(get_db())
-
-        # Contar registros existentes
-        user_count = db.query(User).count()
-        ranking_count = db.query(PokemonRanking).count()
-
-        return {
-            "message": "Status do banco de dados",
-            "status": "success",
-            "data": {
-                "users": user_count,
-                "rankings": ranking_count,
-                "is_empty": user_count == 0 and ranking_count == 0
-            }
-        }
-    except (ImportError, AttributeError, TypeError) as e:
-        return {"message": f"Erro ao verificar status: {str(e)}", "status": "error"}
+# REMOVED: Test endpoints for security
 
 
 if __name__ == "__main__":

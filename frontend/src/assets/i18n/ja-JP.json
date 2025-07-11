@@ -183,7 +183,10 @@
     "settings": "設定",
     "your_progress": "あなたの進捗",
     "seen": "見つけた数",
+    "viewed": "閲覧した数",
     "caught": "捕獲した数",
+    "not_logged_in": "未接続",
+    "login_to_view_progress": "進捗と統計を表示するにはログインしてください",
     "completion": "完了率",
     "capture_rate": "捕獲率",
     "navigation": "ナビゲーション",
@@ -530,7 +533,15 @@
     "greeting": "こんにちは",
     "level": "レベル",
     "profile_settings": "プロフィール設定",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "trainer": "トレーナー"
+  },
+  "admin": {
+    "roles": {
+      "visitor": "ビジター",
+      "user": "ユーザー",
+      "administrator": "管理者"
+    }
   },
   "auth": {
     "welcome_back": "おかえりなさい！",

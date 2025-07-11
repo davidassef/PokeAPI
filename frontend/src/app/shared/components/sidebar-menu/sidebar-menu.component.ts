@@ -172,7 +172,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
 
     modal.onDidDismiss().then((result) => {
       if (result.data?.success) {
-        console.log('[SidebarMenu] Authentication successful');
+        // Authentication successful
         // Stats will be updated automatically via subscriptions
       }
     });
@@ -188,11 +188,11 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
         break;
       case 'menu.type_chart':
         // TODO: Implement type chart modal
-        console.log('Type chart not implemented yet');
+        // Type chart not implemented yet
         break;
       case 'menu.stats':
         // TODO: Implement stats modal
-        console.log('Stats modal not implemented yet');
+        // Stats modal not implemented yet
         break;
     }
     await this.menuController.close();
@@ -216,13 +216,11 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
 
   abrirLogin() {
-    // TODO: Abrir modal de login
-    console.log('Abrir modal de login');
+    // TODO: Open login modal
   }
 
   abrirPerfil() {
-    // TODO: Abrir modal de perfil do usuário
-    console.log('Abrir modal de perfil do usuário');
+    // TODO: Open user profile modal
   }
 
   logout() {
