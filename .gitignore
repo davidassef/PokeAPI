@@ -473,3 +473,21 @@ __marimo__/
 # Docker
 .dockerignore
 docker-compose.override.yml
+
+# =============================================================================
+# AUGMENT CODE - ARQUIVOS E DIRETÓRIOS DO ASSISTENTE DE IA
+# =============================================================================
+
+# Diretório principal do Augment
+.augment/
+
+# Cache do Augment
+augment_cache/
+
+# Arquivos de configuração do Augment
+.augment_config
+.augment_settings
+
+# Logs do Augment
+augment.log
+augment_*.log
