@@ -8,122 +8,168 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="mobile-settings-container">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'tabs.settings' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <!-- Theme Settings -->
-    <ion-card class="settings-card-mobile">
+  <!-- Loading -->
+  <app-loading-spinner
+    *ngIf="loading"
+    [overlay]="false"
+    size="medium"
+    type="standard"
+    [message]="'settings_page.loading' | translate">
+  </app-loading-spinner>
+
+  <div class="mobile-settings-container">
+    <!-- Seção de Idioma e Tema -->
+    <ion-card class="settings-card-mobile" *ngIf="!loading">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="color-palette-outline"></ion-icon>
+          <ion-icon name="globe-outline" color="primary"></ion-icon>
           {{ 'settings_page.language_theme' | translate }}
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-item lines="none">
-          <ion-label>{{ 'settings_page.dark_theme' | translate }}</ion-label>
-          <ion-toggle
-            [checked]="settings.darkMode"
-            (ionChange)="toggleDarkMode()"
-            slot="end">
-          </ion-toggle>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Audio Settings -->
-    <ion-card class="settings-card-mobile">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="musical-notes-outline"></ion-icon>
-          {{ 'settings_page.audio_settings' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item lines="none">
-          <ion-label>{{ 'settings_page.enable_music' | translate }}</ion-label>
-          <ion-toggle
-            [checked]="settings.musicEnabled"
-            (ionChange)="toggleMusic()"
-            slot="end">
-          </ion-toggle>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Language Settings -->
-    <ion-card class="settings-card-mobile">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="language-outline"></ion-icon>
-          {{ 'settings_page.language' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item button (click)="openLanguageModal()" lines="none">
+        <!-- Seleção de idioma -->
+        <ion-item button (click)="openLanguageModal()">
+          <ion-icon name="language-outline" slot="start" color="medium"></ion-icon>
           <ion-label>
             <h3>{{ 'settings_page.language' | translate }}</h3>
             <p>{{ getCurrentLanguageName() }}</p>
           </ion-label>
           <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
         </ion-item>
+
+        <!-- Seleção de tema -->
+        <ion-item lines="none">
+          <ion-icon name="moon-outline" slot="start" color="medium"></ion-icon>
+          <ion-label>{{ 'settings_page.dark_theme' | translate }}</ion-label>
+          <ion-toggle
+            [(ngModel)]="settings.darkMode"
+            (ionChange)="onThemeChange($event)"
+            slot="end">
+          </ion-toggle>
+        </ion-item>
       </ion-card-content>
     </ion-card>
 
-    <!-- Display Settings -->
-    <ion-card class="settings-card-mobile">
+    <!-- Seção de Configurações de Áudio -->
+    <ion-card class="settings-card-mobile" *ngIf="!loading">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="grid-outline"></ion-icon>
+          <ion-icon name="musical-notes-outline" color="primary"></ion-icon>
+          {{ 'settings_page.audio_settings' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Música -->
+        <ion-item>
+          <ion-icon name="musical-note-outline" slot="start" color="medium"></ion-icon>
+          <ion-label>{{ 'settings_page.enable_music' | translate }}</ion-label>
+          <ion-toggle
+            [(ngModel)]="settings.musicEnabled"
+            (ionChange)="onSettingChange('musicEnabled', $event.detail.checked)"
+            slot="end">
+          </ion-toggle>
+        </ion-item>
+
+        <!-- Som -->
+        <ion-item>
+          <ion-icon name="volume-high-outline" slot="start" color="medium"></ion-icon>
+          <ion-label>{{ 'settings_page.enable_sounds' | translate }}</ion-label>
+          <ion-toggle
+            [(ngModel)]="settings.soundEnabled"
+            (ionChange)="onSettingChange('soundEnabled', $event.detail.checked)"
+            slot="end">
+          </ion-toggle>
+        </ion-item>
+
+        <!-- Vibração -->
+        <ion-item lines="none">
+          <ion-icon name="phone-portrait-outline" slot="start" color="medium"></ion-icon>
+          <ion-label>{{ 'settings_page.enable_vibration' | translate }}</ion-label>
+          <ion-toggle
+            [(ngModel)]="settings.vibrationEnabled"
+            (ionChange)="onSettingChange('vibrationEnabled', $event.detail.checked)"
+            slot="end">
+          </ion-toggle>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Seção de Exibição -->
+    <ion-card class="settings-card-mobile" *ngIf="!loading">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="grid-outline" color="primary"></ion-icon>
           {{ 'settings_page.display_settings' | translate }}
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-item button (click)="openPokemonPerPageModal()" lines="none">
+        <!-- Pokémon por página -->
+        <ion-item lines="none">
+          <ion-icon name="apps-outline" slot="start" color="medium"></ion-icon>
           <ion-label>
             <h3>{{ 'settings_page.pokemon_per_page' | translate }}</h3>
-            <p>{{ settings.pokemonPerPage }} {{ 'settings_page.pokemon_per_page_desc' | translate }}</p>
+            <p>{{ settings.pokemonPerPage }} Pokémon</p>
           </ion-label>
-          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+          <ion-select
+            [(ngModel)]="settings.pokemonPerPage"
+            (ionChange)="onSettingChange('pokemonPerPage', $event.detail.value)"
+            interface="popover"
+            slot="end">
+            <ion-select-option value="10">10</ion-select-option>
+            <ion-select-option value="20">20</ion-select-option>
+            <ion-select-option value="30">30</ion-select-option>
+            <ion-select-option value="50">50</ion-select-option>
+          </ion-select>
         </ion-item>
       </ion-card-content>
     </ion-card>
 
-    <!-- App Info -->
-    <ion-card class="settings-card-mobile">
+    <!-- Seção de Informações do App -->
+    <ion-card class="settings-card-mobile" *ngIf="!loading">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="information-circle-outline"></ion-icon>
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
           {{ 'settings_page.app_info' | translate }}
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
+        <!-- Sobre o App -->
         <ion-item button (click)="showAbout()">
-          <ion-icon name="help-circle" slot="start" color="primary"></ion-icon>
+          <ion-icon name="help-circle-outline" slot="start" color="medium"></ion-icon>
           <ion-label>{{ 'settings_page.about_app' | translate }}</ion-label>
           <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
         </ion-item>
 
-        <ion-item lines="none">
-          <ion-icon name="code-slash" slot="start" color="secondary"></ion-icon>
+        <!-- Versão -->
+        <ion-item>
+          <ion-icon name="code-slash-outline" slot="start" color="medium"></ion-icon>
           <ion-label>{{ 'settings_page.version' | translate }}</ion-label>
-          <ion-note slot="end">1.5</ion-note>
+          <ion-note slot="end">1.5.0</ion-note>
         </ion-item>
 
-        <ion-item lines="none">
-          <ion-icon name="globe" slot="start" color="tertiary"></ion-icon>
+        <!-- Fonte de Dados -->
+        <ion-item>
+          <ion-icon name="globe-outline" slot="start" color="medium"></ion-icon>
           <ion-label>{{ 'settings_page.data_source' | translate }}</ion-label>
           <ion-note slot="end">PokéAPI</ion-note>
         </ion-item>
 
-        <ion-item lines="none">
-          <ion-icon name="desktop" slot="start" color="warning"></ion-icon>
+        <!-- Plataforma -->
+        <ion-item>
+          <ion-icon name="phone-portrait-outline" slot="start" color="medium"></ion-icon>
           <ion-label>{{ 'settings_page.platform' | translate }}</ion-label>
           <ion-note slot="end">Mobile</ion-note>
         </ion-item>
 
-        <!-- Informações de créditos -->
+        <!-- Créditos -->
         <ion-item lines="none">
-          <ion-icon name="heart" slot="start" color="danger"></ion-icon>
+          <ion-icon name="heart-outline" slot="start" color="medium"></ion-icon>
           <ion-label>
             <h3>{{ 'MADE_WITH_LOVE' | translate }}</h3>
             <p>{{ 'POWERED_BY_POKEAPI' | translate }}</p>

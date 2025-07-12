@@ -63,10 +63,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   private loadSettings() {
     this.settingsService.settings$.pipe(takeUntil(this.destroy$)).subscribe(settings => {
       this.settings = { ...settings };
-
-      // Aplicar tema quando as configurações carregam
-      this.applyTheme(settings.darkMode);
-
       console.log('⚙️ Settings loaded in mobile:', {
         darkMode: settings.darkMode,
         theme: settings.theme,
@@ -115,66 +111,76 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.showToast('settings_page.language_changed');
   }
 
-  async toggleDarkMode() {
-    const newDarkMode = !this.settings.darkMode;
-
-    // Atualizar configurações locais
-    this.settings.darkMode = newDarkMode;
-    this.settings.theme = newDarkMode ? 'dark' : 'light';
-
-    try {
-      // Salvar no SettingsService
-      await this.settingsService.saveSettings({
-        darkMode: newDarkMode,
-        theme: this.settings.theme
-      });
-
-      // Aplicar tema imediatamente
-      this.applyTheme(newDarkMode);
-
-      // Mostrar feedback visual
-      this.showToast('settings_page.theme_update');
-
-      console.log(`🌙 Tema alterado para: ${newDarkMode ? 'dark' : 'light'}`);
-    } catch (error) {
-      console.error('❌ Erro ao alterar tema:', error);
-      // Reverter mudança local em caso de erro
-      this.settings.darkMode = !newDarkMode;
-      this.settings.theme = !newDarkMode ? 'dark' : 'light';
-    }
-  }
-
   /**
-   * Aplica o tema com transição suave
+   * Altera tema (compatível com versão web)
    */
-  private applyTheme(darkMode: boolean) {
-    const body = document.body;
-
-    // Adicionar classe de transição
-    body.classList.add('theme-transition');
-
-    // Aplicar/remover classe de tema
-    if (darkMode) {
-      body.classList.add('dark-theme');
-      body.classList.remove('light-theme');
-    } else {
-      body.classList.remove('dark-theme');
-      body.classList.add('light-theme');
+  async onThemeChange(event: any) {
+    try {
+      // O toggle envia o novo valor (true/false)
+      const darkMode = event.detail ? event.detail.checked : event;
+      this.settings.darkMode = darkMode;
+      this.settings.theme = darkMode ? 'dark' : 'light';
+      await this.settingsService.saveSettings({ darkMode, theme: this.settings.theme });
+      // Aplica/remover classe global
+      if (darkMode) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+      // Animação de transição suave
+      document.body.classList.add('theme-transition');
+      setTimeout(() => document.body.classList.remove('theme-transition'), 400);
+      this.showToast('settings_page.theme_update');
+    } catch (error) {
+      console.error('Erro ao alterar tema:', error);
     }
-
-    // Remover classe de transição após animação
-    setTimeout(() => {
-      body.classList.remove('theme-transition');
-    }, 300);
-  }
-
-  toggleMusic() {
-    const newMusicEnabled = !this.settings.musicEnabled;
-    this.onSettingChange('musicEnabled', newMusicEnabled);
   }
 
   onSettingChange(setting: keyof AppSettings, value: any) {
     this.settingsService.saveSettings({ [setting]: value });
+  }
+
+  /**
+   * Abre modal de seleção de Pokémon por página
+   */
+  async openPokemonPerPageModal() {
+    const alert = await this.alertController.create({
+      header: await this.translate.get('settings_page.pokemon_per_page').toPromise(),
+      inputs: [
+        { name: 'pokemonPerPage', type: 'radio', label: '10', value: 10, checked: this.settings.pokemonPerPage === 10 },
+        { name: 'pokemonPerPage', type: 'radio', label: '20', value: 20, checked: this.settings.pokemonPerPage === 20 },
+        { name: 'pokemonPerPage', type: 'radio', label: '30', value: 30, checked: this.settings.pokemonPerPage === 30 },
+        { name: 'pokemonPerPage', type: 'radio', label: '50', value: 50, checked: this.settings.pokemonPerPage === 50 }
+      ],
+      buttons: [
+        {
+          text: await this.translate.get('CANCEL').toPromise(),
+          role: 'cancel'
+        },
+        {
+          text: await this.translate.get('CONFIRM').toPromise(),
+          handler: (data) => {
+            if (data) {
+              this.onSettingChange('pokemonPerPage', data);
+              this.showToast('settings_page.pokemon_per_page_updated');
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  /**
+   * Mostra informações sobre o app
+   */
+  async showAbout() {
+    const alert = await this.alertController.create({
+      header: await this.translate.get('settings_page.about_app').toPromise(),
+      message: await this.translate.get('settings_page.about_description').toPromise(),
+      buttons: [await this.translate.get('OK').toPromise()]
+    });
+    await alert.present();
   }
 
   /**
@@ -191,59 +197,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     await toast.present();
   }
 
-  async showAbout() {
-    const alert = await this.alertController.create({
-      header: await this.translate.get('settings_page.about_app').toPromise(),
-      message: `
-        <div style="text-align: center; padding: 16px;">
-          <h3>${await this.translate.get('app.name').toPromise()}</h3>
-          <p><strong>${await this.translate.get('settings_page.version').toPromise()}:</strong> 1.5</p>
-          <p><strong>${await this.translate.get('settings_page.platform').toPromise()}:</strong> Mobile</p>
-          <p><strong>${await this.translate.get('settings_page.data_source').toPromise()}:</strong> PokéAPI</p>
-          <br>
-          <p>${await this.translate.get('MADE_WITH_LOVE').toPromise()}</p>
-          <p>${await this.translate.get('POWERED_BY_POKEAPI').toPromise()}</p>
-        </div>
-      `,
-      buttons: [
-        {
-          text: await this.translate.get('common.close').toPromise(),
-          role: 'cancel'
-        }
-      ]
-    });
 
-    await alert.present();
-  }
-
-  async openPokemonPerPageModal() {
-    const alert = await this.alertController.create({
-      header: await this.translate.get('settings_page.pokemon_per_page').toPromise(),
-      inputs: this.pokemonPerPageOptions.map(option => ({
-        name: 'pokemonPerPage',
-        type: 'radio',
-        label: option.toString(),
-        value: option,
-        checked: option === this.settings.pokemonPerPage
-      })),
-      buttons: [
-        {
-          text: await this.translate.get('common.cancel').toPromise(),
-          role: 'cancel'
-        },
-        {
-          text: await this.translate.get('common.confirm').toPromise(),
-          handler: (selectedValue) => {
-            if (selectedValue && selectedValue !== this.settings.pokemonPerPage) {
-              this.onSettingChange('pokemonPerPage', selectedValue);
-              this.showToast('settings_page.pokemon_per_page_changed');
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
 
 }
