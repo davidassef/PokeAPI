@@ -1,0 +1,136 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="mobile-settings-container">
+
+    <!-- Theme Settings -->
+    <ion-card class="settings-card-mobile">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="color-palette-outline"></ion-icon>
+          {{ 'settings_page.language_theme' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>{{ 'settings_page.dark_theme' | translate }}</ion-label>
+          <ion-toggle
+            [checked]="settings.darkMode"
+            (ionChange)="toggleDarkMode()"
+            slot="end">
+          </ion-toggle>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Audio Settings -->
+    <ion-card class="settings-card-mobile">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="musical-notes-outline"></ion-icon>
+          {{ 'settings_page.audio_settings' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>{{ 'settings_page.enable_music' | translate }}</ion-label>
+          <ion-toggle
+            [checked]="settings.musicEnabled"
+            (ionChange)="toggleMusic()"
+            slot="end">
+          </ion-toggle>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Language Settings -->
+    <ion-card class="settings-card-mobile">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="language-outline"></ion-icon>
+          {{ 'settings_page.language' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item button (click)="openLanguageModal()" lines="none">
+          <ion-label>
+            <h3>{{ 'settings_page.language' | translate }}</h3>
+            <p>{{ getCurrentLanguageName() }}</p>
+          </ion-label>
+          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Display Settings -->
+    <ion-card class="settings-card-mobile">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="grid-outline"></ion-icon>
+          {{ 'settings_page.display_settings' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item button (click)="openPokemonPerPageModal()" lines="none">
+          <ion-label>
+            <h3>{{ 'settings_page.pokemon_per_page' | translate }}</h3>
+            <p>{{ settings.pokemonPerPage }} {{ 'settings_page.pokemon_per_page_desc' | translate }}</p>
+          </ion-label>
+          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- App Info -->
+    <ion-card class="settings-card-mobile">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="information-circle-outline"></ion-icon>
+          {{ 'settings_page.app_info' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item button (click)="showAbout()">
+          <ion-icon name="help-circle" slot="start" color="primary"></ion-icon>
+          <ion-label>{{ 'settings_page.about_app' | translate }}</ion-label>
+          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon name="code-slash" slot="start" color="secondary"></ion-icon>
+          <ion-label>{{ 'settings_page.version' | translate }}</ion-label>
+          <ion-note slot="end">1.5</ion-note>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon name="globe" slot="start" color="tertiary"></ion-icon>
+          <ion-label>{{ 'settings_page.data_source' | translate }}</ion-label>
+          <ion-note slot="end">PokéAPI</ion-note>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon name="desktop" slot="start" color="warning"></ion-icon>
+          <ion-label>{{ 'settings_page.platform' | translate }}</ion-label>
+          <ion-note slot="end">Mobile</ion-note>
+        </ion-item>
+
+        <!-- Informações de créditos -->
+        <ion-item lines="none">
+          <ion-icon name="heart" slot="start" color="danger"></ion-icon>
+          <ion-label>
+            <h3>{{ 'MADE_WITH_LOVE' | translate }}</h3>
+            <p>{{ 'POWERED_BY_POKEAPI' | translate }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>

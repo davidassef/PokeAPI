@@ -18,6 +18,8 @@ import { UserProfileModalComponent } from './user-profile-modal/user-profile-mod
 import { ProfileModalComponent } from './profile-modal/profile-modal.component';
 import { AccountSettingsModalComponent } from './account-settings-modal/account-settings-modal.component';
 import { AdminPokemonModalComponent } from './admin-pokemon-modal/admin-pokemon-modal.component';
+import { PokemonDetailsMobileComponent } from './pokemon-details-mobile/pokemon-details-mobile.component';
+import { CacheStatsComponent } from './cache-stats/cache-stats.component';
 
 // Shared Modules
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -37,7 +39,9 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     UserProfileModalComponent,
     ProfileModalComponent,
     AccountSettingsModalComponent,
-    AdminPokemonModalComponent
+    AdminPokemonModalComponent,
+    PokemonDetailsMobileComponent,
+    CacheStatsComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -61,6 +65,8 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     ProfileModalComponent,
     AccountSettingsModalComponent,
     AdminPokemonModalComponent,
+    PokemonDetailsMobileComponent,
+    CacheStatsComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,

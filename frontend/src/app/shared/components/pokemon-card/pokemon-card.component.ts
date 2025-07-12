@@ -12,6 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthModalNewComponent } from '../auth-modal-new/auth-modal-new.component';
 import { AdminPokemonModalComponent } from '../admin-pokemon-modal/admin-pokemon-modal.component';
+import { ToastNotificationService } from '../../../core/services/toast-notification.service';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -50,7 +51,8 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     private rbacService: RbacService,
     private toastController: ToastController,
     private translate: TranslateService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private toastNotification: ToastNotificationService
   ) {}
 
   ngOnInit() {
@@ -124,9 +126,12 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
         this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release')
           .catch(error => console.error('[PokemonCard] Erro ao reproduzir som:', error));
 
-        // Exibe mensagem de sucesso
-        const messageKey = isCaptured ? 'capture.success' : 'capture.released';
-        this.showToast(messageKey, 'success');
+        // Exibe mensagem de sucesso usando toast inteligente
+        if (isCaptured) {
+          this.toastNotification.showPokemonCaptured(this.pokemon.name);
+        } else {
+          this.toastNotification.showPokemonReleased(this.pokemon.name);
+        }
       },
       error: async (error: any) => {
         console.error('[PokemonCard] Erro ao alternar estado de captura:', {
@@ -143,7 +148,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
           messageKey = 'capture.network_error';
         }
 
-        await this.showToast(messageKey, 'danger');
+        await this.toastNotification.showError(messageKey);
       },
       complete: () => {
         console.log(`[PokemonCard] Operação de ${this.isCaptured ? 'captura' : 'libertação'} concluída`);
@@ -217,6 +222,27 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Callback quando a imagem começa a carregar
+   */
+  onImageStartLoading(): void {
+    console.log(`🔄 Loading image for ${this.pokemon.name}`);
+  }
+
+  /**
+   * Callback quando a imagem é carregada com sucesso
+   */
+  onImageLoaded(): void {
+    console.log(`✅ Image loaded for ${this.pokemon.name}`);
+  }
+
+  /**
+   * Callback quando há erro no carregamento da imagem
+   */
+  onImageError(error: Error): void {
+    console.error(`❌ Image error for ${this.pokemon.name}:`, error);
+  }
+
+  /**
    * Abre o modal de autenticação
    */
   private async openAuthModal() {
@@ -260,11 +286,11 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
         if (result.data.pokemon) {
           // Pokemon foi atualizado
           this.pokemonUpdated.emit(result.data.pokemon);
-          this.showToast('admin.pokemon.success.updated', 'success');
+          this.toastNotification.showSuccess('admin.pokemon.success.updated');
         } else {
           // Pokemon foi deletado
           this.pokemonDeleted.emit(this.pokemon.id);
-          this.showToast('admin.pokemon.success.deleted', 'success');
+          this.toastNotification.showSuccess('admin.pokemon.success.deleted');
         }
       }
     });

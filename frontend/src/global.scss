@@ -25,6 +25,8 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -467,7 +469,9 @@ ion-alert {
   }
 }
 
-// Estilos para Toast seguir o tema
+// ===== SISTEMA DE TOAST INTELIGENTE =====
+
+// Estilos base para Toast seguir o tema
 ion-toast {
   --background: var(--card-bg);
   --color: var(--text-color);
@@ -475,6 +479,214 @@ ion-toast {
   .toast-wrapper {
     background: var(--card-bg);
     color: var(--text-color);
+  }
+}
+
+// Toasts inteligentes com animações e estilos aprimorados
+.smart-toast {
+  --border-radius: 12px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --min-height: 56px;
+
+  .toast-wrapper {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .toast-message {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .toast-button {
+    --color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      --color: rgba(255, 255, 255, 1);
+    }
+  }
+}
+
+// Tipos específicos de toast
+.toast-success {
+  --background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #2e7d32;
+  }
+}
+
+.toast-error {
+  --background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #c62828;
+  }
+}
+
+.toast-warning {
+  --background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #ef6c00;
+  }
+}
+
+.toast-info {
+  --background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #1565c0;
+  }
+}
+
+// Toasts especiais para Pokémon
+.pokemon-capture-toast {
+  --background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #2e7d32;
+    position: relative;
+
+    &::before {
+      content: '⚡';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      animation: captureGlow 1.5s ease-in-out infinite;
+    }
+  }
+
+  .toast-message {
+    margin-left: 32px;
+    font-weight: 600;
+  }
+}
+
+.pokemon-release-toast {
+  --background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #ef6c00;
+    position: relative;
+
+    &::before {
+      content: '💔';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      animation: releaseFloat 2s ease-in-out infinite;
+    }
+  }
+
+  .toast-message {
+    margin-left: 32px;
+    font-weight: 600;
+  }
+}
+
+// Toast de autenticação
+.auth-toast {
+  --background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  --color: white;
+
+  .toast-wrapper {
+    background: var(--background);
+    border-left: 4px solid #4527a0;
+    position: relative;
+
+    &::before {
+      content: '👤';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+    }
+  }
+
+  .toast-message {
+    margin-left: 32px;
+    font-weight: 600;
+  }
+}
+
+// Animações para toasts especiais
+@keyframes captureGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+@keyframes releaseFloat {
+  0%, 100% {
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    transform: translateY(-50%) translateX(2px);
+  }
+}
+
+// Responsividade para mobile
+@media (max-width: 768px) {
+  .smart-toast {
+    --min-height: 48px;
+
+    .toast-message {
+      font-size: 13px;
+    }
+
+    .toast-wrapper {
+      margin: 8px;
+      max-width: calc(100vw - 16px);
+    }
+  }
+
+  .pokemon-capture-toast,
+  .pokemon-release-toast,
+  .auth-toast {
+    .toast-message {
+      margin-left: 28px;
+    }
+
+    .toast-wrapper::before {
+      left: 10px;
+      font-size: 14px;
+    }
+  }
+}
+
+// Dark theme adjustments
+@media (prefers-color-scheme: dark) {
+  .smart-toast {
+    .toast-wrapper {
+      border-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+    }
   }
 }
 
@@ -603,4 +815,47 @@ ion-toolbar {
     width: 110px;
     right: 44px;
   }
+}
+
+/* Lazy Load Image Directive Styles */
+@import "app/shared/directives/lazy-load-image.scss";
+
+/* Theme Transition Styles */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease !important;
+
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+  }
+
+  ion-card {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+  }
+
+  ion-item {
+    transition: background-color 0.3s ease !important;
+  }
+
+  ion-button {
+    transition: background-color 0.3s ease, color 0.3s ease !important;
+  }
+
+  .pokemon-card {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+  }
+}
+
+/* Ensure proper theme application */
+body.light-theme {
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+  --ion-card-background: #ffffff;
+  --ion-item-background: #ffffff;
+}
+
+body.dark-theme {
+  --ion-background-color: #121212;
+  --ion-text-color: #ffffff;
+  --ion-card-background: #1e1e1e;
+  --ion-item-background: #1e1e1e;
 }

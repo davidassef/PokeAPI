@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 8500; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal Web(8500) > Modal Mobile(8000) > Music(7000)
   backdrop-filter: blur(4px);
 }
 

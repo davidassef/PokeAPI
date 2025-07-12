@@ -13,10 +13,16 @@
 
   <!-- Pokemon Image -->
   <div class="pokemon-image-container">
-    <img [src]="imageUrl || 'assets/img/pokemon-placeholder.png'"
+    <img [appLazyLoadImage]="imageUrl"
          [alt]="pokemon.name"
+         [placeholder]="'assets/img/pokemon-placeholder.png'"
+         [errorImage]="'assets/img/pokemon-error.png'"
+         [retryAttempts]="3"
+         [rootMargin]="'100px'"
          class="pokemon-image"
-         loading="lazy">
+         (imageLoaded)="onImageLoaded()"
+         (imageError)="onImageError($event)"
+         (imageStartLoading)="onImageStartLoading()">
 
     <!-- Capture Button -->
     <button *ngIf="showCaptureButton"

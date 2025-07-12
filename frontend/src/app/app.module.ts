@@ -14,6 +14,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedComponentsModule } from './shared/components/shared-components.module';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { CacheInterceptor } from './core/interceptors/cache.interceptor';
 import { AuthService } from './core/services/auth.service';
 
 export function createTranslateLoader(http: HttpClient) {
@@ -40,6 +41,7 @@ export function createTranslateLoader(http: HttpClient) {
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     {
       provide: APP_INITIALIZER,

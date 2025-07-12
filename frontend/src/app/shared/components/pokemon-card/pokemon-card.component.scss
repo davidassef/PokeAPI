@@ -362,12 +362,17 @@
       }
 
       .capture-btn {
-        padding: 2px 4px;
+        // Área de toque aumentada para melhor usabilidade mobile
+        padding: 8px 12px;
         font-size: 0.9rem;
+        min-width: 48px; // Área mínima recomendada para touch
+        min-height: 48px;
+        border-radius: 24px; // Mais arredondado para mobile
 
         .pokeball-icon {
-          width: 18px;
-          height: 18px;
+          // Ícones maiores para melhor visibilidade e toque
+          width: 28px;
+          height: 28px;
         }
       }
     }
@@ -387,6 +392,26 @@
         .type-badge {
           font-size: 11px;
           padding: 3px 10px;
+        }
+      }
+    }
+  }
+}
+
+// Otimizações específicas para telas muito pequenas
+@media (max-width: 480px) {
+  .pokemon-card {
+    .pokemon-image-container {
+      .capture-btn {
+        // Manter área de toque adequada mesmo em telas muito pequenas
+        min-width: 44px;
+        min-height: 44px;
+        padding: 6px 10px;
+
+        .pokeball-icon {
+          // Tamanho otimizado para telas muito pequenas
+          width: 24px;
+          height: 24px;
         }
       }
     }

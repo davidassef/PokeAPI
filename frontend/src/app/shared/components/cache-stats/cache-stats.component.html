@@ -1,0 +1,95 @@
+<ion-card class="cache-stats-card">
+  <ion-card-header>
+    <ion-card-title>
+      <ion-icon name="speedometer-outline"></ion-icon>
+      Estatísticas do Cache
+    </ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <!-- Estatísticas principais -->
+    <div class="stats-grid">
+      
+      <!-- Total de itens -->
+      <div class="stat-item">
+        <ion-icon name="layers-outline" color="primary"></ion-icon>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalItems }}</div>
+          <div class="stat-label">Itens no Cache</div>
+        </div>
+      </div>
+
+      <!-- Tamanho total -->
+      <div class="stat-item">
+        <ion-icon name="archive-outline" color="secondary"></ion-icon>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatSize(stats.totalSize) }}</div>
+          <div class="stat-label">Tamanho Total</div>
+        </div>
+      </div>
+
+      <!-- Taxa de hit -->
+      <div class="stat-item">
+        <ion-icon name="checkmark-circle-outline" [color]="getHitRateColor()"></ion-icon>
+        <div class="stat-content">
+          <div class="stat-value" [style.color]="'var(--ion-color-' + getHitRateColor() + ')'">
+            {{ stats.hitRate.toFixed(1) }}%
+          </div>
+          <div class="stat-label">Taxa de Hit</div>
+        </div>
+      </div>
+
+      <!-- Taxa de miss -->
+      <div class="stat-item">
+        <ion-icon name="close-circle-outline" color="medium"></ion-icon>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.missRate.toFixed(1) }}%</div>
+          <div class="stat-label">Taxa de Miss</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Estatísticas detalhadas -->
+    <div class="detailed-stats">
+      <h4>Detalhes</h4>
+      
+      <div class="detail-row">
+        <span class="detail-label">Hits:</span>
+        <span class="detail-value success">{{ stats.hits }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label">Misses:</span>
+        <span class="detail-value medium">{{ stats.misses }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="detail-label">Evictions:</span>
+        <span class="detail-value danger">{{ stats.evictions }}</span>
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="cache-actions">
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        color="warning"
+        (click)="cleanup()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Limpar Expirados
+      </ion-button>
+      
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        color="danger"
+        (click)="clearCache()">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Limpar Tudo
+      </ion-button>
+    </div>
+
+  </ion-card-content>
+</ion-card>

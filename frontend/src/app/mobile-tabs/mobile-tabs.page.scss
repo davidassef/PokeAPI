@@ -1,0 +1,82 @@
+// ===== MOBILE TABS STYLES =====
+
+ion-tab-bar {
+  --background: var(--card-bg);
+  --color: var(--text-color);
+  --color-selected: #fff;
+  
+  // Mobile optimizations
+  height: 60px;
+  padding-bottom: env(safe-area-inset-bottom);
+  
+  // Garantir que o tab bar fique sempre visível
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.dark-theme ion-tab-bar {
+  --background: #23272f;
+  --color: #fff;
+  --color-selected: #fff;
+}
+
+ion-tab-button {
+  color: var(--text-color);
+  font-size: 12px;
+  min-height: 50px;
+  padding: 4px 8px;
+
+  ion-icon {
+    font-size: 22px;
+    margin-bottom: 2px;
+  }
+
+  ion-label {
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 2px;
+    line-height: 1.2;
+  }
+}
+
+.dark-theme ion-tab-button {
+  color: #fff;
+}
+
+// Ajustes específicos para mobile
+@media (max-width: 480px) {
+  ion-tab-button {
+    font-size: 11px;
+    padding: 2px 4px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    ion-label {
+      font-size: 10px;
+    }
+  }
+}
+
+// Landscape mode adjustments
+@media (max-width: 768px) and (orientation: landscape) {
+  ion-tab-bar {
+    height: 50px;
+  }
+  
+  ion-tab-button {
+    min-height: 45px;
+    
+    ion-icon {
+      font-size: 18px;
+    }
+    
+    ion-label {
+      font-size: 10px;
+    }
+  }
+}

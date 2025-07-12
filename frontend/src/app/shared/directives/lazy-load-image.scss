@@ -1,0 +1,284 @@
+/**
+ * Estilos para a diretiva de lazy loading de imagens
+ */
+
+/* Estados base */
+img[appLazyLoadImage] {
+  transition: all 0.3s ease-in-out;
+  background-color: var(--ion-color-light);
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Estado de loading */
+.lazy-loading {
+  opacity: 0.7;
+  filter: blur(2px);
+  background: linear-gradient(
+    90deg,
+    var(--ion-color-light) 25%,
+    var(--ion-color-light-shade) 50%,
+    var(--ion-color-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  
+  /* Skeleton loading effect */
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: loading-shimmer 2s infinite;
+  }
+}
+
+/* Estado carregado */
+.lazy-loaded {
+  opacity: 1;
+  filter: none;
+  transform: scale(1);
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Estado de erro */
+.lazy-error {
+  opacity: 0.6;
+  filter: grayscale(100%);
+  background-color: var(--ion-color-danger-tint);
+  border: 2px dashed var(--ion-color-danger);
+  
+  /* Ícone de erro */
+  position: relative;
+  
+  &::after {
+    content: '⚠️';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    z-index: 1;
+  }
+}
+
+/* Animações */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Variações por tamanho */
+.lazy-loading.small {
+  &::before {
+    animation-duration: 1s;
+  }
+}
+
+.lazy-loading.large {
+  &::before {
+    animation-duration: 3s;
+  }
+}
+
+/* Tema escuro */
+.dark-theme {
+  img[appLazyLoadImage] {
+    background-color: var(--ion-color-dark-shade);
+  }
+  
+  .lazy-loading {
+    background: linear-gradient(
+      90deg,
+      var(--ion-color-dark-shade) 25%,
+      var(--ion-color-dark-tint) 50%,
+      var(--ion-color-dark-shade) 75%
+    );
+    
+    &::before {
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+    }
+  }
+  
+  .lazy-error {
+    background-color: var(--ion-color-danger-shade);
+    border-color: var(--ion-color-danger-tint);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .lazy-loading {
+    animation-duration: 1s; /* Mais rápido em mobile */
+  }
+  
+  .lazy-loaded:hover {
+    transform: none; /* Remover hover em mobile */
+  }
+}
+
+/* Estados específicos para cards de Pokémon */
+.pokemon-card img[appLazyLoadImage] {
+  width: 100%;
+  height: 120px;
+  border-radius: 8px 8px 0 0;
+}
+
+.pokemon-card .lazy-loading {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &::after {
+    content: '🔄';
+    font-size: 1.5rem;
+    animation: spin 2s linear infinite;
+  }
+}
+
+.pokemon-card .lazy-error {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &::after {
+    content: '❌';
+    font-size: 1.5rem;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Estados para ranking cards */
+.ranking-card img[appLazyLoadImage] {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.ranking-card .lazy-loading {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  
+  &::after {
+    content: '⭐';
+    font-size: 1.2rem;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+/* Estados para modal de detalhes */
+.pokemon-details img[appLazyLoadImage] {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+}
+
+.pokemon-details .lazy-loading {
+  width: 200px;
+  height: 200px;
+  
+  &::after {
+    content: '🎮';
+    font-size: 2rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  40% {
+    transform: translate(-50%, -50%) translateY(-10px);
+  }
+  60% {
+    transform: translate(-50%, -50%) translateY(-5px);
+  }
+}
+
+/* Performance optimizations */
+img[appLazyLoadImage] {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Reduzir animações para usuários que preferem */
+@media (prefers-reduced-motion: reduce) {
+  .lazy-loading,
+  .lazy-loaded,
+  .lazy-error {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .lazy-loaded:hover {
+    transform: none !important;
+  }
+}

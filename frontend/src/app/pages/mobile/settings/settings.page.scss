@@ -1,0 +1,71 @@
+.mobile-settings-container {
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.settings-card-mobile {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-card-header {
+    padding-bottom: 8px;
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 24px;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  ion-card-content {
+    padding-top: 0;
+
+    ion-item {
+      --padding-start: 0;
+      --padding-end: 0;
+      --inner-padding-end: 0;
+      --min-height: 48px;
+
+      ion-label {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      ion-note {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ion-color-primary);
+      }
+
+      ion-toggle {
+        --handle-width: 24px;
+        --handle-height: 24px;
+        --track-width: 48px;
+        --track-height: 28px;
+      }
+
+      ion-select {
+        --padding-start: 8px;
+        --padding-end: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+// Dark theme adjustments
+@media (prefers-color-scheme: dark) {
+  .settings-card-mobile {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}

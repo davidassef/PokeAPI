@@ -1,0 +1,295 @@
+// ===== MOBILE HOME PAGE STYLES =====
+
+// Container principal mobile
+.page-container-mobile {
+  padding: 8px;
+  min-height: 100vh;
+  background: var(--ion-background-color);
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden; // Previne scroll horizontal
+}
+
+// Header mobile otimizado
+.header-center {
+  flex: 1;
+  text-align: center;
+
+  ion-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.header-auth-btn-mobile {
+  min-width: 70px;
+
+  app-auth-button {
+    ion-button {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      font-size: 12px;
+      min-height: 36px;
+
+      .user-greeting {
+        font-size: 11px;
+
+        // Ocultar texto em telas muito pequenas
+        @media (max-width: 480px) {
+          display: none;
+        }
+      }
+
+      .admin-badge {
+        font-size: 8px;
+        padding: 1px 3px;
+      }
+    }
+  }
+}
+
+// Admin button mobile
+.add-pokemon-btn-mobile {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  font-size: 12px;
+  min-height: 36px;
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+// Search container mobile
+.search-container-mobile {
+  padding: 8px;
+  background: var(--ion-color-primary-tint);
+  border-bottom: 1px solid var(--ion-color-primary-shade);
+}
+
+// Loading container mobile
+.loading-container-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    margin-bottom: 16px;
+    --color: var(--ion-color-primary);
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// Pokemon grid mobile - 2 colunas
+.pokemon-grid-mobile {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 8px 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .pokemon-card-mobile {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: hidden; // Previne conteúdo vazando
+  }
+
+  // Garantir que os cards não sejam cortados
+  app-pokemon-card {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    box-sizing: border-box;
+  }
+}
+
+// Empty state mobile
+.empty-state-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    color: var(--ion-color-dark);
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+// Paginação mobile
+.pagination-mobile {
+  padding: 16px 8px;
+  border-top: 1px solid var(--ion-color-light);
+  background: var(--ion-background-color);
+}
+
+.pagination-controls-mobile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+
+  ion-button {
+    min-width: 44px;
+    min-height: 44px;
+    --border-radius: 12px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  .page-info-mobile {
+    flex: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0 8px;
+    min-width: 60px;
+  }
+}
+
+.pagination-info-mobile {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+}
+
+// FABs mobile - Reposicionados para evitar sobreposição com music player
+.surprise-fab-mobile {
+  --size: 48px; // Reduzido de 56px para 48px
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
+  z-index: 6000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+}
+
+.scroll-top-fab-mobile {
+  --size: 44px; // Reduzido de 48px para 44px
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
+  z-index: 6000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+}
+
+// Animações mobile
+.pokemon-card-mobile {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Otimizações para telas muito pequenas
+@media (max-width: 360px) {
+  .page-container-mobile {
+    padding: 4px;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .pokemon-grid-mobile {
+    gap: 4px;
+    padding: 4px 0;
+
+    app-pokemon-card {
+      max-width: calc(50vw - 6px); // 50% da viewport menos gap
+    }
+  }
+
+  .header-center ion-title {
+    font-size: 16px;
+  }
+
+  .pagination-controls-mobile {
+    gap: 2px;
+
+    ion-button {
+      min-width: 40px;
+      min-height: 40px;
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+
+    .page-info-mobile {
+      font-size: 13px;
+      margin: 0 4px;
+    }
+  }
+}
+
+// Landscape mode para mobile
+@media (max-width: 768px) and (orientation: landscape) {
+  .pokemon-grid-mobile {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .surprise-fab-mobile,
+  .scroll-top-fab-mobile {
+    margin-bottom: 140px; // Ajustado para landscape (music player + tabs reduzido)
+  }
+}
+
+// Dark theme adjustments
+@media (prefers-color-scheme: dark) {
+  .search-container-mobile {
+    background: var(--ion-color-primary-shade);
+    border-bottom-color: var(--ion-color-primary);
+  }
+
+  .pagination-mobile {
+    border-top-color: var(--ion-color-dark);
+  }
+
+  .empty-state-mobile {
+    h3 {
+      color: var(--ion-color-light);
+    }
+  }
+}
+
+// Safe area para iPhone
+.page-container-mobile {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.surprise-fab-mobile,
+.scroll-top-fab-mobile {
+  margin-bottom: calc(160px + env(safe-area-inset-bottom)); // Ajustado para evitar sobreposição
+}

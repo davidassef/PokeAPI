@@ -138,3 +138,76 @@
   filter: brightness(0.98);
   transform: scale(0.98);
 }
+
+// Responsive design
+@media (max-width: 768px) {
+  .auth-btn {
+    min-width: 110px;
+    height: 38px;
+    font-size: 15px;
+    margin-left: 12px;
+    padding: 0 20px;
+  }
+
+  :host ::ng-deep ion-button.auth-btn {
+    min-width: 110px;
+    height: 38px;
+    font-size: 15px;
+    margin-left: 12px;
+    padding: 0 20px;
+  }
+
+  .user-greeting {
+    font-size: 14px;
+    margin-left: 6px;
+  }
+
+  .admin-badge {
+    font-size: 9px;
+    padding: 2px 5px;
+    margin-left: 6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .auth-btn {
+    min-width: 90px;
+    height: 36px;
+    font-size: 14px;
+    margin-left: 8px;
+    padding: 0 16px;
+    --border-radius: 18px;
+  }
+
+  :host ::ng-deep ion-button.auth-btn {
+    min-width: 90px;
+    height: 36px;
+    font-size: 14px;
+    margin-left: 8px;
+    padding: 0 16px;
+    --border-radius: 18px;
+  }
+
+  .user-greeting {
+    font-size: 13px;
+    margin-left: 4px;
+
+    // Ocultar texto em telas muito pequenas
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+
+  .admin-badge {
+    font-size: 8px;
+    padding: 1px 4px;
+    margin-left: 4px;
+    margin-right: 2px;
+  }
+
+  .dropdown-arrow {
+    font-size: 14px;
+    margin-left: 4px;
+  }
+}
+

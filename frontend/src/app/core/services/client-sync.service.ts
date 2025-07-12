@@ -65,7 +65,7 @@ export class ClientSyncService {
       synced: false,
       metadata: {
         removed: removed,
-        client_version: '1.0.0',
+        client_version: '1.5',
         device_info: navigator.userAgent
       }
     };
@@ -213,7 +213,7 @@ export class ClientSyncService {
       client_id: this.USER_ID,
       client_url: window.location.origin,
       timestamp: new Date().toISOString(),
-      version: '1.0.0'
+      version: '1.5'
     };
   }
 

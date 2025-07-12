@@ -3,23 +3,39 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Ionic App</title>
+  <title>PokeAPIApp v1.5 - Pokédex Responsiva</title>
 
   <base href="/" />
 
+  <!-- Meta tags otimizadas para mobile -->
   <meta name="color-scheme" content="light dark" />
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
+
+  <!-- PWA e Mobile optimizations -->
+  <meta name="theme-color" content="#42a5f5" />
+  <meta name="description" content="Pokédex interativa com sistema de captura, ranking e autenticação. Totalmente responsiva para mobile e desktop." />
+  <meta name="keywords" content="pokemon, pokedex, mobile, responsive, ionic, angular" />
+
+  <!-- Touch icons para diferentes dispositivos -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="PokeAPIApp" />
 
   <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
 
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- add to homescreen for ios -->
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <!-- Preload de recursos críticos para performance -->
+  <link rel="preload" href="assets/img/pokedex.png" as="image" />
+  <link rel="preconnect" href="https://pokeapi.co" />
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+
+  <!-- Manifest para PWA -->
+  <link rel="manifest" href="manifest.json" />
 </head>
 
 <body>

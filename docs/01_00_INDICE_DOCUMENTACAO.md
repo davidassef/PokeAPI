@@ -195,5 +195,5 @@ Este índice organiza toda a documentação do PokeAPIApp seguindo **padrões en
 ---
 
 *📚 Documentação organizada e mantida pela equipe de desenvolvimento*
-*🔄 Data: 11/07/2025 - Versão 1.0.0*
+*🔄 Data: 11/07/2025 - Versão 1.5*
 *✅ Status: Estrutura enterprise implementada com sucesso*

@@ -259,6 +259,7 @@
     "app_info": "アプリ情報",
     "about_app": "アプリについて",
     "version": "バージョン",
+    "platform": "プラットフォーム",
     "data_source": "データソース",
     "clear_all_favorites": "全ての捕獲ポケモンをクリア",
     "theme_update": "テーマが正常に更新されました！",
@@ -272,16 +273,11 @@
   },
   "ranking_page": {
     "most_loved_pokemon": "最も愛されているポケモン",
-    "your_favorite_pokemon": "あなたの捕獲ポケモン",
     "global_popularity_desc": "最も捕獲されているポケモンのグローバルランキング。",
-    "local_favorites_desc": "あなたのローカル捕獲ポケモン。",
     "total_stats": "総合ステータス",
     "loading_ranking": "ランキング読み込み中...",
-    "no_local_ranking": "ローカルランキングが見つかりません",
-    "add_favorites_for_ranking": "ランキングを表示するには捕獲ポケモンを追加してください。",
     "ranking_info": "ランキングについて",
     "global_ranking_info": "グローバルランキングは毎日更新されます。",
-    "local_ranking_info": "あなたの捕獲ポケモンに基づくランキング。",
     "updated_daily": "毎日更新",
     "no_global_ranking": "グローバルランキングが利用できません。",
     "no_global_ranking_desc": "グローバルランキングを表示するのに十分なデータがまだありません。ポケモンを捕獲してお気に入りに追加して参加しましょう！",
@@ -383,7 +379,8 @@
     "description": "説明",
     "scroll_down": "下にスクロールしてもっと見る",
     "NO_FLAVOR_TEXT_AVAILABLE": "説明が利用できません",
-    "NO_ABILITY_DESCRIPTION_AVAILABLE": "特性の説明が利用できません"
+    "NO_ABILITY_DESCRIPTION_AVAILABLE": "特性の説明が利用できません",
+    "hidden": "隠れ"
   },
   "abilities": {
     "overgrow": "しんりょく",
@@ -461,6 +458,21 @@
     "white": "白",
     "yellow": "黄"
   },
+  "pokemon": {
+    "colors": {
+      "black": "黒",
+      "blue": "青",
+      "brown": "茶",
+      "gray": "灰",
+      "grey": "灰",
+      "green": "緑",
+      "pink": "ピンク",
+      "purple": "紫",
+      "red": "赤",
+      "white": "白",
+      "yellow": "黄"
+    }
+  },
   "trivia": {
     "bulbasaur_first": "フシギダネは全国図鑑で最初のポケモンです",
     "starter_pokemon": "これは御三家ポケモンです",
@@ -535,6 +547,24 @@
     "profile_settings": "プロフィール設定",
     "logout": "ログアウト",
     "trainer": "トレーナー"
+  },
+  "details": {
+    "trivia": {
+      "legendary_stats": "このポケモンは600を超える伝説的なステータスを持っています！",
+      "exceptional_stats": "このポケモンは500を超える優秀なステータスを持っています！",
+      "very_heavy": "このポケモンはとても重く、{{weight}}kgもあります！",
+      "very_tall": "このポケモンはとても高く、{{height}}メートルもあります！",
+      "dragon_type": "ドラゴンタイプのポケモンは力と威厳で知られています！",
+      "psychic_type": "エスパータイプのポケモンは並外れた精神力を持っています！",
+      "ghost_type": "ゴーストタイプのポケモンは壁を通り抜けることができ、神秘的です！",
+      "dual_type": "このポケモンは{{types}}の複合タイプで、バトルで多様性を提供します！",
+      "high_experience": "このポケモンはバトルで倒されると多くの経験値を与えます！",
+      "bulbasaur_first": "フシギダネは全国図鑑の最初のポケモンです（#001）！",
+      "mewtwo_origin": "ミュウツーはミュウとの遺伝子実験によって作られました！",
+      "mew_original": "ミュウはすべてのポケモンの祖先と考えられています！",
+      "pikachu_mascot": "ピカチュウはポケモンフランチャイズの公式マスコットです！",
+      "generic": "このポケモンは特別な特徴を持つユニークな存在です！"
+    }
   },
   "admin": {
     "roles": {

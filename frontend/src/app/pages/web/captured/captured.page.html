@@ -6,17 +6,6 @@
     <div class="header-center">
       <ion-title>{{ 'tabs.captured' | translate }}</ion-title>
     </div>
-    <div class="header-auth-btn-fixed">
-      <app-auth-button
-        [isAuthenticated]="isAuthenticated"
-        [user]="user"
-        [showUserMenu]="showUserMenu"
-        [abrirLogin]="abrirLogin"
-        [abrirPerfil]="abrirPerfil"
-        [logout]="logout"
-        [toggleUserMenu]="toggleUserMenu"
-      ></app-auth-button>
-    </div>
     <ion-buttons slot="end">
       <ion-button (click)="toggleSearch()">
         <ion-icon name="search-outline"></ion-icon>
@@ -52,16 +41,8 @@
 
   <!-- Conteúdo normal se autenticado -->
   <ng-container *ngIf="isAuthenticated">
-    <!-- Loading -->
-    <app-loading-spinner
-      *ngIf="loading && capturedPokemon.length === 0"
-      [overlay]="true"
-      size="large"
-      [message]="'captured.loading' | translate">
-    </app-loading-spinner>
-
-    <!-- Pagination Controls -->
-    <div class="pagination-controls" *ngIf="paginatedCaptured.length > 0">
+    <!-- Pagination Controls (Moved to Top) -->
+    <div class="pagination-controls" *ngIf="!loading && paginatedCaptured.length > 0">
       <ion-button fill="outline" size="small" (click)="firstPage()" [disabled]="currentPage === 1">
         <ion-icon name="play-back-outline"></ion-icon>
       </ion-button>
@@ -76,6 +57,14 @@
         <ion-icon name="play-forward-outline"></ion-icon>
       </ion-button>
     </div>
+
+    <!-- Loading -->
+    <app-loading-spinner
+      *ngIf="loading && capturedPokemon.length === 0"
+      [overlay]="true"
+      size="large"
+      [message]="'captured.loading' | translate">
+    </app-loading-spinner>
 
     <!-- Pokemon Grid -->
     <div class="page-container">

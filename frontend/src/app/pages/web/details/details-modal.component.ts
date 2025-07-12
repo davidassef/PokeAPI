@@ -6,6 +6,7 @@ import { forkJoin, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
+import { PokemonCacheService } from '../../../core/services/pokemon-cache.service';
 
 @Component({
   selector: 'app-details-modal',
@@ -63,7 +64,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     private modalController: ModalController,
     private translate: TranslateService,
     private http: HttpClient,
-    private viewedPokemonService: ViewedPokemonService
+    private viewedPokemonService: ViewedPokemonService,
+    private cacheService: PokemonCacheService
   ) {}
 
   ngOnInit() {
@@ -250,6 +252,37 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(`Buscando flavors para idioma: ${lang} Pokemon ID: ${pokemonId}`);
     this.isLoadingFlavor = true;
 
+    // Tentar usar cache inteligente primeiro
+    this.cacheService.getFlavorTexts(pokemonId, lang)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (cachedFlavors: string[]) => {
+          if (cachedFlavors && cachedFlavors.length > 0) {
+            console.log(`✅ Flavor texts obtidos do cache: ${cachedFlavors.length} textos`);
+            this.flavorTexts = cachedFlavors;
+            this.flavorText = cachedFlavors[0];
+            this.currentFlavorIndex = 0;
+            this.isLoadingFlavor = false;
+
+            // Pré-carregar flavor texts dos Pokémon adjacentes
+            this.cacheService.preloadAdjacentPokemon(pokemonId, lang);
+
+            // Verificar indicador de scroll após carregamento
+            setTimeout(() => this.checkScrollIndicator(), 100);
+            return;
+          }
+
+          // Fallback para método anterior se cache não retornar dados
+          this.fetchFlavorTextFallback(lang, pokemonId);
+        },
+        error: (error) => {
+          console.error('❌ Erro ao buscar flavor texts do cache:', error);
+          this.fetchFlavorTextFallback(lang, pokemonId);
+        }
+      });
+  }
+
+  private fetchFlavorTextFallback(lang: string, pokemonId: number) {
     // Para pt-BR, sempre usar tradução local primeiro
     if (lang === 'pt-BR' || lang === 'pt') {
       console.log('🇧🇷 Idioma português detectado, priorizando traduções locais');

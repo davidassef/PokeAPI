@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, from, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import {
   Pokemon,
   PokemonListResponse,
@@ -9,6 +9,8 @@ import {
   PokemonListItem
 } from '../../models/pokemon.model';
 import { environment } from '../../../environments/environment';
+import { CacheService } from './cache.service';
+import { ImagePreloadService } from './image-preload.service';
 
 /**
  * Serviço para comunicação com a PokeAPI
@@ -23,9 +25,20 @@ export class PokeApiService {
   private pokemonCacheSubject = new BehaviorSubject<Map<string, Pokemon>>(new Map());
   private speciesCacheSubject = new BehaviorSubject<Map<string, PokemonSpecies>>(new Map());
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private cacheService: CacheService,
+    private imagePreloadService: ImagePreloadService
+  ) {
     console.log('[PokeApiService] Backend URL configurada:', this.backendUrl);
     console.log('[PokeApiService] Environment:', environment);
+
+    // Configurar cache para Pokémon
+    this.cacheService.configure({
+      maxSize: 100, // 100MB para dados de Pokémon
+      defaultTTL: 60 * 60 * 1000, // 1 hora para dados de Pokémon
+      cleanupInterval: 10 * 60 * 1000 // Limpeza a cada 10 minutos
+    });
   }
 
   /**
@@ -35,11 +48,49 @@ export class PokeApiService {
    * @returns Observable com lista de Pokémons
    */
   getPokemonList(limit: number = 20, offset: number = 0): Observable<PokemonListResponse> {
-    const params = new HttpParams()
-      .set('limit', limit.toString())
-      .set('offset', offset.toString());
+    const cacheKey = `pokemon_list_${limit}_${offset}`;
 
-    return this.http.get<PokemonListResponse>(`${this.baseUrl}/pokemon`, { params });
+    return this.cacheService.get<PokemonListResponse>(
+      cacheKey,
+      () => {
+        const params = new HttpParams()
+          .set('limit', limit.toString())
+          .set('offset', offset.toString());
+
+        return this.http.get<PokemonListResponse>(`${this.baseUrl}/pokemon`, { params });
+      },
+      30 * 60 * 1000 // 30 minutos TTL para listas
+    ).pipe(
+      tap(response => {
+        // Preload das primeiras imagens da lista
+        this.preloadPokemonImages(response.results.slice(0, 10));
+      })
+    );
+  }
+
+  /**
+   * Precarrega imagens de uma lista de Pokémon
+   */
+  preloadPokemonImages(pokemonList: PokemonListItem[], priority: 'high' | 'medium' | 'low' = 'medium'): void {
+    const imageUrls = pokemonList.map(pokemon => {
+      const id = this.extractIdFromUrl(pokemon.url);
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+    });
+
+    this.imagePreloadService.preloadBatch(imageUrls, priority).subscribe(
+      results => {
+        const successCount = results.filter(success => success).length;
+        console.log(`📸 Preloaded ${successCount}/${imageUrls.length} Pokemon images`);
+      }
+    );
+  }
+
+  /**
+   * Extrai ID da URL do Pokémon
+   */
+  private extractIdFromUrl(url: string): string {
+    const matches = url.match(/\/(\d+)\/$/);
+    return matches ? matches[1] : '1';
   }
 
   /**
@@ -48,21 +99,29 @@ export class PokeApiService {
    * @returns Observable com dados do Pokémon
    */
   getPokemon(identifier: string | number): Observable<Pokemon> {
-    const key = identifier.toString().toLowerCase();
-    const cached = this.pokemonCacheSubject.value.get(key);
+    const cacheKey = `pokemon_${identifier.toString().toLowerCase()}`;
 
-    if (cached) {
-      return from([cached]);
-    }
-
-    return this.http.get<Pokemon>(`${this.baseUrl}/pokemon/${identifier}`).pipe(
-      map(pokemon => {
-        // Adiciona ao cache
-        const cache = this.pokemonCacheSubject.value;
-        cache.set(key, pokemon);
-        cache.set(pokemon.id.toString(), pokemon);
-        this.pokemonCacheSubject.next(cache);
-        return pokemon;
+    return this.cacheService.get<Pokemon>(
+      cacheKey,
+      () => this.http.get<Pokemon>(`${this.baseUrl}/pokemon/${identifier}`).pipe(
+        map(pokemon => {
+          // Cache adicional por ID se o identifier for nome
+          if (isNaN(Number(identifier))) {
+            this.cacheService.set(`pokemon_${pokemon.id}`, pokemon);
+          }
+          return pokemon;
+        })
+      ),
+      2 * 60 * 60 * 1000 // 2 horas TTL para dados de Pokémon
+    ).pipe(
+      tap(pokemon => {
+        // Preload da imagem do Pokémon
+        if (pokemon.sprites?.other?.['official-artwork']?.front_default) {
+          this.imagePreloadService.preload(
+            pokemon.sprites.other['official-artwork'].front_default,
+            'high'
+          ).subscribe();
+        }
       })
     );
   }
@@ -204,21 +263,29 @@ export class PokeApiService {
    * @returns Observable com lista de rankings globais
    */
   getGlobalRanking(): Observable<any[]> {
-    // Configura os headers com o token JWT se disponível
-    const headers: { [key: string]: string } = {};
-    const token = localStorage.getItem('jwt_token');
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    // Usa o backend FastAPI em vez da PokeAPI
-    return this.http.get<any[]>(`${this.backendUrl}/ranking/`, { headers }).pipe(
-      map(response => this.normalizeRankingResponse(response)),
-      catchError(error => {
-        console.error('Erro ao buscar ranking global:', error);
-        return from([[]]);
-      })
+    const cacheKey = 'ranking_global';
+
+    return this.cacheService.get<any[]>(
+      cacheKey,
+      () => {
+        // Configura os headers com o token JWT se disponível
+        const headers: { [key: string]: string } = {};
+        const token = localStorage.getItem('jwt_token');
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // Usa o backend FastAPI em vez da PokeAPI
+        return this.http.get<any[]>(`${this.backendUrl}/ranking/`, { headers }).pipe(
+          map(response => this.normalizeRankingResponse(response)),
+          catchError(error => {
+            console.error('Erro ao buscar ranking global:', error);
+            return from([[]]);
+          })
+        );
+      },
+      5 * 60 * 1000 // 5 minutos TTL para rankings (dados mais dinâmicos)
     );
   }
 
@@ -246,24 +313,32 @@ export class PokeApiService {
    * @returns Observable com lista de rankings locais
    */
   getLocalRanking(region: string): Observable<any[]> {
-    // Configura os headers com o token JWT se disponível
-    const headers: { [key: string]: string } = {};
-    const token = localStorage.getItem('jwt_token');
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    // Usa a URL base do backend
-    return this.http.get<any[]>(`${this.backendUrl}/ranking/local`, {
-      params: new HttpParams().set('region', region),
-      headers
-    }).pipe(
-      map(response => this.normalizeRankingResponse(response)),
-      catchError(error => {
-        console.error('Erro ao buscar ranking local:', error);
-        return from([[]]);
-      })
+    const cacheKey = `ranking_local_${region}`;
+
+    return this.cacheService.get<any[]>(
+      cacheKey,
+      () => {
+        // Configura os headers com o token JWT se disponível
+        const headers: { [key: string]: string } = {};
+        const token = localStorage.getItem('jwt_token');
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // Usa a URL base do backend
+        return this.http.get<any[]>(`${this.backendUrl}/ranking/local`, {
+          params: new HttpParams().set('region', region),
+          headers
+        }).pipe(
+          map(response => this.normalizeRankingResponse(response)),
+          catchError(error => {
+            console.error('Erro ao buscar ranking local:', error);
+            return from([[]]);
+          })
+        );
+      },
+      3 * 60 * 1000 // 3 minutos TTL para ranking local
     );
   }
 
@@ -537,22 +612,30 @@ export class PokeApiService {
    * @returns Observable com array de objetos contendo pokemon_id, pokemon_name e favorite_count
    */
   getGlobalRankingFromBackend(limit: number = 10): Observable<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>> {
-    // Configura os headers com o token JWT se disponível
-    const headers: { [key: string]: string } = {};
-    const token = localStorage.getItem('jwt_token');
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    
-    return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
-      `${this.backendUrl}/ranking/?limit=${limit}`,
-      { headers }
-    ).pipe(
-      catchError(error => {
-        console.error('Erro ao buscar ranking global:', error);
-        return of([]); // Retorna array vazio em caso de erro
-      })
+    const cacheKey = `ranking_backend_global_${limit}`;
+
+    return this.cacheService.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
+      cacheKey,
+      () => {
+        // Configura os headers com o token JWT se disponível
+        const headers: { [key: string]: string } = {};
+        const token = localStorage.getItem('jwt_token');
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
+          `${this.backendUrl}/ranking/?limit=${limit}`,
+          { headers }
+        ).pipe(
+          catchError(error => {
+            console.error('Erro ao buscar ranking global:', error);
+            return of([]); // Retorna array vazio em caso de erro
+          })
+        );
+      },
+      5 * 60 * 1000 // 5 minutos TTL para ranking do backend
     );
   }
 

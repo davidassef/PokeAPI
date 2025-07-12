@@ -3,6 +3,7 @@ import { ModalController, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastNotificationService } from '../../../core/services/toast-notification.service';
 
 @Component({
   selector: 'app-auth-modal-new',
@@ -51,7 +52,8 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private modalController: ModalController,
     private toastController: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastNotification: ToastNotificationService
   ) {}
 
   ngOnInit() {
@@ -146,7 +148,7 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     this.authService.login(this.email, this.senha).subscribe({
       next: () => {
         this.loading = false;
-        this.mostrarSucesso('auth.success.login_successful');
+        this.toastNotification.showAuthSuccess('auth.success.login_successful');
         setTimeout(() => this.fechar(true), 1500);
       },
       error: (err) => {
@@ -207,7 +209,7 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
       next: (result) => {
         console.log('[AuthModal] Registro bem-sucedido:', result);
         this.loading = false;
-        this.mostrarSucesso('auth.success.account_created');
+        this.toastNotification.showAuthSuccess('auth.success.account_created');
         setTimeout(() => this.fechar(true), 1500);
       },
       error: (err) => {

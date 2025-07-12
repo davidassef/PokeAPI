@@ -1,0 +1,395 @@
+// ===== MOBILE RANKING PAGE STYLES =====
+
+.mobile-ranking-container {
+  padding: 8px;
+  min-height: 100vh;
+  background: var(--ion-background-color);
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding-bottom: 80px; // Espaço para tab bar
+}
+
+// Header mobile otimizado
+.header-center {
+  flex: 1;
+  text-align: center;
+
+  ion-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ion-color-warning-contrast);
+  }
+}
+
+.header-auth-btn-mobile {
+  min-width: 70px;
+
+  app-auth-button {
+    ion-button {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      font-size: 12px;
+      min-height: 36px;
+
+      .user-greeting {
+        font-size: 11px;
+
+        @media (max-width: 480px) {
+          display: none;
+        }
+      }
+
+      .admin-badge {
+        font-size: 8px;
+        padding: 1px 3px;
+      }
+    }
+  }
+}
+
+// Toggle de modo (Global/Local)
+.ranking-mode-toggle-mobile {
+  padding: 12px 16px;
+  background: var(--card-bg);
+  margin-bottom: 16px;
+  border-radius: 12px;
+  margin: 8px;
+
+  ion-segment {
+    --background: transparent;
+    --color: var(--text-color);
+    --color-checked: var(--ion-color-warning);
+    --border-radius: 8px;
+    --indicator-color: var(--ion-color-warning);
+
+    ion-segment-button {
+      --color: var(--text-color);
+      --color-checked: var(--ion-color-warning-contrast);
+      --background-checked: var(--ion-color-warning);
+      font-size: 14px;
+      font-weight: 600;
+      min-height: 40px;
+
+      ion-label {
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Lista de ranking mobile
+.ranking-list-mobile {
+  padding: 0 8px;
+}
+
+// Pódio mobile (Top 3)
+.mobile-podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 16px 8px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255, 193, 7, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.podium-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+
+  &.podium-first-mobile {
+    order: 2;
+    transform: scale(1.1);
+    z-index: 3;
+
+    .podium-pokemon-card {
+      border: 3px solid var(--ion-color-warning);
+      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
+    }
+  }
+
+  &.podium-second-mobile {
+    order: 1;
+    transform: scale(0.95);
+  }
+
+  &.podium-third-mobile {
+    order: 3;
+    transform: scale(0.95);
+  }
+}
+
+.podium-medal-mobile,
+.podium-crown-mobile {
+  font-size: 24px;
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.capture-count-badge-mobile {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--ion-color-danger);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+  ion-icon {
+    font-size: 10px;
+  }
+}
+
+.champion-banner-mobile {
+  background: linear-gradient(135deg, var(--ion-color-warning) 0%, var(--ion-color-warning-shade) 100%);
+  color: var(--ion-color-warning-contrast);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 8px;
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+}
+
+// Grid de ranking mobile (4º em diante)
+.mobile-ranking-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.ranking-item-mobile {
+  display: flex;
+  align-items: center;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+  }
+}
+
+.ranking-badge-mobile {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  margin-right: 12px;
+  flex-shrink: 0;
+
+  &.ranking-badge-gold {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #8B4513;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  }
+
+  &.ranking-badge-silver {
+    background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
+    color: #404040;
+    box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
+  }
+
+  &.ranking-badge-bronze {
+    background: linear-gradient(135deg, #CD7F32 0%, #B8860B 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(205, 127, 50, 0.4);
+  }
+}
+
+.ranking-content-mobile {
+  flex: 1;
+  min-width: 0;
+
+  .ranking-pokemon-card-mobile {
+    width: 100%;
+  }
+}
+
+// Estados de loading e empty
+.loading-container-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.empty-state-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 300px;
+
+  ion-icon {
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  h2 {
+    color: var(--text-color);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  ion-button {
+    --border-radius: 20px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+    font-weight: 600;
+  }
+}
+
+// Responsividade para telas muito pequenas
+@media (max-width: 480px) {
+  .mobile-podium {
+    gap: 4px;
+    padding: 12px 4px;
+
+    .podium-card {
+      &.podium-first-mobile {
+        transform: scale(1.05);
+      }
+
+      &.podium-second-mobile,
+      &.podium-third-mobile {
+        transform: scale(0.9);
+      }
+    }
+  }
+
+  .podium-medal-mobile,
+  .podium-crown-mobile {
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .capture-count-badge-mobile {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+
+  .champion-banner-mobile {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+
+  .ranking-item-mobile {
+    padding: 8px;
+  }
+
+  .ranking-badge-mobile {
+    min-width: 28px;
+    height: 28px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+}
+
+// Landscape mode
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-ranking-container {
+    padding-bottom: 140px; // Espaço para music player + tab bar
+  }
+
+  .mobile-podium {
+    padding: 12px 8px;
+  }
+
+  .mobile-ranking-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+// Dark theme adjustments
+@media (prefers-color-scheme: dark) {
+  .ranking-mode-toggle-mobile {
+    background: var(--ion-color-dark-shade);
+    border: 1px solid var(--ion-color-dark-tint);
+  }
+
+  .mobile-podium {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.15) 100%);
+  }
+
+  .ranking-item-mobile {
+    background: var(--ion-color-dark-shade);
+    border: 1px solid var(--ion-color-dark-tint);
+  }
+}
+
+// Safe area para iPhone
+.mobile-ranking-container {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}

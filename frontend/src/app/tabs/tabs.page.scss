@@ -1,7 +1,15 @@
+// ===== TABS RESPONSIVAS =====
+
 ion-tab-bar {
   --background: var(--card-bg);
   --color: var(--text-color);
   --color-selected: #fff;
+
+  // Mobile optimizations
+  @media (max-width: 576px) {
+    height: 60px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 .dark-theme ion-tab-bar {
@@ -16,6 +24,27 @@ ion-tab-button {
 
 .dark-theme ion-tab-button {
   color: #fff;
+}
+
+// Responsive design for mobile
+@media (max-width: 576px) {
+  ion-tab-button {
+    font-size: 12px;
+    min-height: 50px;
+    padding: 4px 8px;
+
+    ion-icon {
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+
+    ion-label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+  }
 }
 
 ion-tab-bar ion-icon, ion-tab-bar ion-label {

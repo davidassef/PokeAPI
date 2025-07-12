@@ -56,10 +56,11 @@ export class AppComponent implements OnInit {
       // Aguardar o carregamento das configurações
       await this.settingsService.loadSettings();
 
-      // Obter idioma das configurações
+      // Obter configurações salvas
       const settings = this.settingsService.getCurrentSettings();
       const savedLanguage = settings.language;
 
+      // Configurar idioma
       if (savedLanguage) {
         this.translate.use(savedLanguage);
       } else {
@@ -73,7 +74,40 @@ export class AppComponent implements OnInit {
         const detectedLanguage = (langToUse || 'pt-BR') as 'pt-BR' | 'en-US' | 'es-ES' | 'ja-JP';
         await this.settingsService.saveSettings({ language: detectedLanguage });
       }
+
+      // Aplicar tema salvo
+      this.applyInitialTheme(settings);
+
+      console.log('🚀 App initialized with settings:', {
+        language: settings.language,
+        theme: settings.theme,
+        darkMode: settings.darkMode
+      });
     });
+  }
+
+  /**
+   * Aplica o tema inicial baseado nas configurações salvas
+   */
+  private applyInitialTheme(settings: any) {
+    const body = document.body;
+
+    // Remover classes de tema existentes
+    body.classList.remove('dark-theme', 'light-theme');
+
+    // Aplicar tema baseado nas configurações
+    if (settings.theme === 'auto') {
+      // Detectar preferência do sistema
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      body.classList.add(prefersDark ? 'dark-theme' : 'light-theme');
+      console.log(`🌙 Auto theme applied: ${prefersDark ? 'dark' : 'light'}`);
+    } else if (settings.darkMode || settings.theme === 'dark') {
+      body.classList.add('dark-theme');
+      console.log('🌙 Dark theme applied');
+    } else {
+      body.classList.add('light-theme');
+      console.log('☀️ Light theme applied');
+    }
   }
 }
 

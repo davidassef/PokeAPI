@@ -11,7 +11,7 @@
   bottom: 80px; // Acima da tab bar
   left: 16px;
   right: 16px;
-  z-index: 1000;
+  z-index: 7000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000) > Music(7000)
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); // Light theme default
   border-radius: 16px;
   color: var(--button-text);

@@ -19,7 +19,7 @@
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
   overflow: hidden;
   position: relative;
-  z-index: 20001;
+  z-index: 10000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal Web(8500) > Modal Mobile(8000) > Music(7000)
   transform: translateZ(0);
   border: 3px solid var(--primary);
   pointer-events: auto;
@@ -417,11 +417,11 @@
   height: 100%;
   background: transparent !important;
   pointer-events: none; // Host doesn't intercept clicks
-  z-index: 9999;
+  z-index: 10000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal Web(8500) > Modal Mobile(8000) > Music(7000)
 
   // Ensure compatibility with Ionic modal system
   &.modal-wrapper {
-    z-index: 9999 !important;
+    z-index: 10000 !important; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal Web(8500) > Modal Mobile(8000) > Music(7000)
   }
 }
 

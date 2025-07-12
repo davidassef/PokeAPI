@@ -6,17 +6,6 @@
     <div class="header-center">
       <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
     </div>
-    <div class="header-auth-btn-fixed">
-      <app-auth-button
-        [isAuthenticated]="isAuthenticated"
-        [user]="user"
-        [showUserMenu]="showUserMenu"
-        [abrirLogin]="abrirLogin"
-        [abrirPerfil]="abrirPerfil"
-        [logout]="logout"
-        [toggleUserMenu]="toggleUserMenu"
-      ></app-auth-button>
-    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -91,7 +80,7 @@
       <ion-item>
         <ion-icon name="code-slash" slot="start" color="secondary"></ion-icon>
         <ion-label>{{ 'settings_page.version' | translate }}</ion-label>
-        <ion-note slot="end">1.0.0</ion-note>
+        <ion-note slot="end">1.5</ion-note>
       </ion-item>
 
       <ion-item>

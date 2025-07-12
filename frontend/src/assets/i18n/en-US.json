@@ -104,32 +104,8 @@
     "create_account_hint": "Don't have an account?",
     "create_account_link": "Create one now"
   },
-  "ranking": {
-    "title": "Global Ranking",
-    "mostFavorited": "Most Captured",
-    "position": "Position",
-    "captured": "Captured",
-    "empty": "Ranking not available",
-    "emptyMessage": "Ranking will be updated soon!"
-  },
-  "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "theme": "Theme",
-    "music": "Music",
-    "volume": "Volume",
-    "about": "About",
-    "version": "Version",
-    "developer": "Developer",
-    "light": "Light",
-    "dark": "Dark",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "select_language": "Select Language",
-    "language_updated": "Language updated successfully!",
-    "imported": "Settings imported successfully!",
-    "reset": "Settings reset!"
-  },
+
+
   "music": {
     "play": "Play",
     "pause": "Pause",
@@ -259,6 +235,7 @@
     "app_info": "App Info",
     "about_app": "About the App",
     "version": "Version",
+    "platform": "Platform",
     "data_source": "Data Source",
     "clear_all_favorites": "Clear all captured",
     "theme_update": "Theme updated successfully!",
@@ -266,22 +243,20 @@
     "import_captured": "Import captured",
     "clear_all_captured": "Clear all captured",
     "language_updated": "Language updated successfully!",
+    "language_changed": "Language changed successfully!",
+    "pokemon_per_page_desc": "per page",
+    "pokemon_per_page_changed": "Setting changed successfully!",
     "sync_with_server": "Sync with server",
     "synced": "Synced",
     "pending": "Pending"
   },
   "ranking_page": {
     "most_loved_pokemon": "Most Loved Pokémon",
-    "your_favorite_pokemon": "Your Captured",
     "global_popularity_desc": "Global ranking of most captured Pokémon.",
-    "local_favorites_desc": "Your locally captured Pokémon.",
     "total_stats": "Total Stats",
     "loading_ranking": "Loading ranking...",
-    "no_local_ranking": "No local ranking found",
-    "add_favorites_for_ranking": "Add captured to see the ranking.",
     "ranking_info": "About Ranking",
     "global_ranking_info": "Global ranking updated daily.",
-    "local_ranking_info": "Ranking based on your captured.",
     "updated_daily": "Updated daily",
     "no_global_ranking": "No global ranking available.",
     "no_global_ranking_desc": "There's not enough data yet to display the global ranking. Capture and favorite Pokémon to participate!",
@@ -383,7 +358,22 @@
     "description": "Description",
     "scroll_down": "Scroll down to see more",
     "NO_FLAVOR_TEXT_AVAILABLE": "Description not available",
-    "NO_ABILITY_DESCRIPTION_AVAILABLE": "Ability description not available"
+    "NO_ABILITY_DESCRIPTION_AVAILABLE": "Ability description not available",
+    "image_not_available": "Image not available",
+    "official_artwork": "Official Artwork",
+    "dream_world": "Dream World",
+    "home": "Pokémon Home",
+    "artwork_shiny": "Official Artwork Shiny",
+    "front_default": "Front Default",
+    "back_default": "Back Default",
+    "front_shiny": "Front Shiny",
+    "back_shiny": "Back Shiny",
+    "front_female": "Front Female",
+    "back_female": "Back Female",
+    "front_shiny_female": "Front Shiny Female",
+    "back_shiny_female": "Back Shiny Female",
+    "image_placeholder": "Default Image",
+    "image": "Image"
   },
   "abilities": {
     "overgrow": "Overgrow",
@@ -460,6 +450,21 @@
     "red": "Red",
     "white": "White",
     "yellow": "Yellow"
+  },
+  "pokemon": {
+    "colors": {
+      "black": "Black",
+      "blue": "Blue",
+      "brown": "Brown",
+      "gray": "Gray",
+      "grey": "Gray",
+      "green": "Green",
+      "pink": "Pink",
+      "purple": "Purple",
+      "red": "Red",
+      "white": "White",
+      "yellow": "Yellow"
+    }
   },
   "trivia": {
     "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex",
@@ -604,11 +609,43 @@
     "logout": "Logout",
     "trainer": "Trainer"
   },
+  "details": {
+    "trivia": {
+      "legendary_stats": "This Pokémon has legendary stats with a total above 600!",
+      "exceptional_stats": "This Pokémon has exceptional stats with a total above 500!",
+      "very_heavy": "This Pokémon is very heavy, weighing {{weight}} kg!",
+      "very_tall": "This Pokémon is very tall, measuring {{height}} meters!",
+      "dragon_type": "Dragon-type Pokémon are known for their strength and majesty!",
+      "psychic_type": "Psychic-type Pokémon possess extraordinary mental powers!",
+      "ghost_type": "Ghost-type Pokémon can phase through walls and are mysterious!",
+      "dual_type": "This Pokémon has dual type: {{types}}, offering versatility in battle!",
+      "high_experience": "This Pokémon offers a lot of experience when defeated in battle!",
+      "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex (#001)!",
+      "mewtwo_origin": "Mewtwo was created through genetic experiments with Mew!",
+      "mew_original": "Mew is considered the ancestor of all Pokémon!",
+      "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
+      "generic": "This Pokémon has unique characteristics that make it special!"
+    }
+  },
   "admin": {
     "roles": {
       "visitor": "Visitor",
       "user": "User",
       "administrator": "Administrator"
     }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
   }
 }

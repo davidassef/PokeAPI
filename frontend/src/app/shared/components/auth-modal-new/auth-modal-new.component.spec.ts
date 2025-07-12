@@ -277,4 +277,161 @@ describe('AuthModalNewComponent', () => {
     component.close();
     expect(mockModalController.dismiss).toHaveBeenCalledWith({ success: false });
   });
+
+  describe('Form Validation', () => {
+    it('should validate email format', () => {
+      component.loginEmail = 'invalid-email';
+      expect(component.isValidEmail()).toBeFalse();
+
+      component.loginEmail = 'valid@email.com';
+      expect(component.isValidEmail()).toBeTrue();
+    });
+
+    it('should validate password strength', () => {
+      component.registerPassword = '123';
+      expect(component.isValidPassword()).toBeFalse();
+
+      component.registerPassword = 'StrongPassword123!';
+      expect(component.isValidPassword()).toBeTrue();
+    });
+
+    it('should validate password confirmation', () => {
+      component.registerPassword = 'password123';
+      component.confirmPassword = 'different123';
+      expect(component.passwordsMatch()).toBeFalse();
+
+      component.confirmPassword = 'password123';
+      expect(component.passwordsMatch()).toBeTrue();
+    });
+
+    it('should validate required fields for login', () => {
+      component.loginEmail = '';
+      component.loginPassword = '';
+      expect(component.isLoginFormValid()).toBeFalse();
+
+      component.loginEmail = 'test@example.com';
+      component.loginPassword = 'password123';
+      expect(component.isLoginFormValid()).toBeTrue();
+    });
+
+    it('should validate required fields for registration', () => {
+      component.registerName = '';
+      component.registerEmail = '';
+      component.registerPassword = '';
+      expect(component.isRegisterFormValid()).toBeFalse();
+
+      component.registerName = 'Test User';
+      component.registerEmail = 'test@example.com';
+      component.registerPassword = 'password123';
+      component.confirmPassword = 'password123';
+      component.securityQuestion = 'Test Question';
+      component.securityAnswer = 'Test Answer';
+      expect(component.isRegisterFormValid()).toBeTrue();
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle network errors', async () => {
+      component.loginEmail = 'test@example.com';
+      component.loginPassword = 'password123';
+
+      mockAuthService.login.and.returnValue(throwError({
+        status: 0,
+        message: 'Network error'
+      }));
+
+      await component.login();
+
+      expect(component.loading).toBeFalse();
+      expect(component.error).toContain('network_error');
+    });
+
+    it('should handle server errors', async () => {
+      component.loginEmail = 'test@example.com';
+      component.loginPassword = 'password123';
+
+      mockAuthService.login.and.returnValue(throwError({
+        status: 500,
+        message: 'Internal server error'
+      }));
+
+      await component.login();
+
+      expect(component.loading).toBeFalse();
+      expect(component.error).toContain('server_error');
+    });
+
+    it('should handle timeout errors', async () => {
+      component.loginEmail = 'test@example.com';
+      component.loginPassword = 'password123';
+
+      mockAuthService.login.and.returnValue(throwError({
+        name: 'TimeoutError',
+        message: 'Request timeout'
+      }));
+
+      await component.login();
+
+      expect(component.loading).toBeFalse();
+      expect(component.error).toContain('timeout_error');
+    });
+  });
+
+  describe('Security Features', () => {
+    it('should prevent multiple simultaneous login attempts', async () => {
+      component.loginEmail = 'test@example.com';
+      component.loginPassword = 'password123';
+      component.loading = true;
+
+      await component.login();
+
+      expect(mockAuthService.login).not.toHaveBeenCalled();
+    });
+
+    it('should clear sensitive data on component destroy', () => {
+      component.loginPassword = 'sensitive';
+      component.registerPassword = 'sensitive';
+      component.confirmPassword = 'sensitive';
+      component.securityAnswer = 'sensitive';
+
+      component.ngOnDestroy();
+
+      expect(component.loginPassword).toBe('');
+      expect(component.registerPassword).toBe('');
+      expect(component.confirmPassword).toBe('');
+      expect(component.securityAnswer).toBe('');
+    });
+
+    it('should sanitize input data', () => {
+      const maliciousInput = '<script>alert("xss")</script>';
+      component.registerName = maliciousInput;
+
+      const sanitized = component.sanitizeInput(component.registerName);
+      expect(sanitized).not.toContain('<script>');
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper ARIA labels', () => {
+      const compiled = fixture.nativeElement;
+      const emailInput = compiled.querySelector('input[type="email"]');
+      const passwordInput = compiled.querySelector('input[type="password"]');
+
+      expect(emailInput.getAttribute('aria-label')).toBeTruthy();
+      expect(passwordInput.getAttribute('aria-label')).toBeTruthy();
+    });
+
+    it('should announce errors to screen readers', async () => {
+      component.loginEmail = 'invalid';
+      component.loginPassword = 'wrong';
+
+      mockAuthService.login.and.returnValue(throwError('Login failed'));
+
+      await component.login();
+
+      const errorElement = fixture.nativeElement.querySelector('[role="alert"]');
+      expect(errorElement).toBeTruthy();
+      expect(errorElement.textContent).toContain('login_failed');
+    });
+  });
 });

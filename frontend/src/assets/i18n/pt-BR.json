@@ -104,32 +104,8 @@
     "create_account_hint": "Não tem conta?",
     "create_account_link": "Crie uma agora"
   },
-  "ranking": {
-    "title": "Ranking Global",
-    "mostFavorited": "Mais Capturados",
-    "position": "Posição",
-    "captured": "Capturados",
-    "empty": "Ranking não disponível",
-    "emptyMessage": "O ranking será atualizado em breve!"
-  },
-  "settings": {
-    "title": "Configurações",
-    "language": "Idioma",
-    "theme": "Tema",
-    "music": "Música",
-    "volume": "Volume",
-    "about": "Sobre",
-    "version": "Versão",
-    "developer": "Desenvolvedor",
-    "light": "Claro",
-    "dark": "Escuro",
-    "enabled": "Habilitada",
-    "disabled": "Desabilitada",
-    "select_language": "Selecionar Idioma",
-    "language_updated": "Idioma atualizado com sucesso!",
-    "imported": "Configurações importadas com sucesso!",
-    "reset": "Configurações redefinidas!"
-  },
+
+
   "music": {
     "play": "Tocar",
     "pause": "Pausar",
@@ -259,6 +235,7 @@
     "app_info": "Informações do App",
     "about_app": "Sobre o App",
     "version": "Versão",
+    "platform": "Plataforma",
     "data_source": "Fonte de Dados",
     "clear_all_favorites": "Limpar todos os capturados",
     "theme_update": "Tema atualizado com sucesso!",
@@ -266,22 +243,20 @@
     "import_captured": "Importar capturados",
     "clear_all_captured": "Limpar todos os capturados",
     "language_updated": "Idioma atualizado com sucesso!",
+    "language_changed": "Idioma alterado com sucesso!",
+    "pokemon_per_page_desc": "por página",
+    "pokemon_per_page_changed": "Configuração alterada com sucesso!",
     "sync_with_server": "Sincronização com o servidor",
     "synced": "Sincronizado",
     "pending": "Pendente"
   },
   "ranking_page": {
     "most_loved_pokemon": "Pokémons mais amados",
-    "your_favorite_pokemon": "Seus capturados",
     "global_popularity_desc": "Ranking global dos Pokémons mais capturados.",
-    "local_favorites_desc": "Seus Pokémons capturados locais.",
     "total_stats": "Total de Status",
     "loading_ranking": "Carregando ranking...",
-    "no_local_ranking": "Nenhum ranking local encontrado",
-    "add_favorites_for_ranking": "Adicione capturados para ver o ranking.",
     "ranking_info": "Sobre o Ranking",
     "global_ranking_info": "Ranking global atualizado diariamente.",
-    "local_ranking_info": "Ranking baseado nos seus capturados.",
     "updated_daily": "Atualizado diariamente",
     "no_global_ranking": "Nenhum ranking global disponível.",
     "no_global_ranking_desc": "Ainda não há dados suficientes para exibir o ranking global. Capture e favorite Pokémons para participar!",
@@ -383,7 +358,22 @@
     "description": "Descrição",
     "scroll_down": "Role para baixo para ver mais",
     "NO_FLAVOR_TEXT_AVAILABLE": "Descrição não disponível em português",
-    "NO_ABILITY_DESCRIPTION_AVAILABLE": "Descrição da habilidade não disponível"
+    "NO_ABILITY_DESCRIPTION_AVAILABLE": "Descrição da habilidade não disponível",
+    "image_not_available": "Imagem não disponível",
+    "official_artwork": "Arte Oficial",
+    "dream_world": "Dream World",
+    "home": "Pokémon Home",
+    "artwork_shiny": "Arte Oficial Shiny",
+    "front_default": "Frente Normal",
+    "back_default": "Costas Normal",
+    "front_shiny": "Frente Shiny",
+    "back_shiny": "Costas Shiny",
+    "front_female": "Frente Fêmea",
+    "back_female": "Costas Fêmea",
+    "front_shiny_female": "Frente Shiny Fêmea",
+    "back_shiny_female": "Costas Shiny Fêmea",
+    "image_placeholder": "Imagem Padrão",
+    "image": "Imagem"
   },
   "abilities": {
     "overgrow": "Supercrescimento",
@@ -461,6 +451,21 @@
     "white": "Branco",
     "yellow": "Amarelo"
   },
+  "pokemon": {
+    "colors": {
+      "black": "Preto",
+      "blue": "Azul",
+      "brown": "Marrom",
+      "gray": "Cinza",
+      "grey": "Cinza",
+      "green": "Verde",
+      "pink": "Rosa",
+      "purple": "Roxo",
+      "red": "Vermelho",
+      "white": "Branco",
+      "yellow": "Amarelo"
+    }
+  },
   "trivia": {
     "bulbasaur_first": "Bulbasaur é o primeiro Pokémon na Pokédex Nacional",
     "starter_pokemon": "Este é um Pokémon inicial",
@@ -517,6 +522,24 @@
     "profile_settings": "Configurações de Perfil",
     "logout": "Sair",
     "trainer": "Treinador"
+  },
+  "details": {
+    "trivia": {
+      "legendary_stats": "Este Pokémon possui estatísticas lendárias com total acima de 600!",
+      "exceptional_stats": "Este Pokémon possui estatísticas excepcionais com total acima de 500!",
+      "very_heavy": "Este Pokémon é muito pesado, pesando {{weight}} kg!",
+      "very_tall": "Este Pokémon é muito alto, medindo {{height}} metros!",
+      "dragon_type": "Pokémon do tipo Dragão são conhecidos por sua força e majestade!",
+      "psychic_type": "Pokémon do tipo Psíquico possuem poderes mentais extraordinários!",
+      "ghost_type": "Pokémon do tipo Fantasma podem atravessar paredes e são misteriosos!",
+      "dual_type": "Este Pokémon possui duplo tipo: {{types}}, oferecendo versatilidade em batalha!",
+      "high_experience": "Este Pokémon oferece muita experiência quando derrotado em batalha!",
+      "bulbasaur_first": "Bulbasaur é o primeiro Pokémon na Pokédex Nacional (#001)!",
+      "mewtwo_origin": "Mewtwo foi criado através de experimentos genéticos com Mew!",
+      "mew_original": "Mew é considerado o ancestral de todos os Pokémon!",
+      "pikachu_mascot": "Pikachu é o mascote oficial da franquia Pokémon!",
+      "generic": "Este Pokémon possui características únicas que o tornam especial!"
+    }
   },
   "admin": {
     "roles": {
@@ -696,6 +719,7 @@
   "common": {
     "save": "Salvar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "delete": "Excluir",
     "edit": "Editar",
     "add": "Adicionar",

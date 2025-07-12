@@ -1,0 +1,142 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <div class="header-center">
+      <ion-title>{{ 'tabs.home' | translate }}</ion-title>
+    </div>
+    <ion-buttons slot="end">
+      <!-- Admin: Add Pokemon Button (mobile optimized) -->
+      <ion-button
+        *ngIf="canAddPokemon && isAdmin"
+        (click)="openAddPokemonModal()"
+        fill="solid"
+        color="success"
+        class="add-pokemon-btn-mobile">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="toggleSearch()">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <!-- Search and Filter Component -->
+  <div *ngIf="showSearch" class="search-container-mobile">
+    <app-search-filter
+      [currentFilters]="currentFilterOptions"
+      (filtersChanged)="onFiltersChanged($event)"
+      (searchChanged)="onSearchChanged($event)">
+    </app-search-filter>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'tabs.home' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="page-container-mobile">
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading-container-mobile">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>{{ 'home.loading' | translate }}</p>
+    </div>
+
+    <!-- Mobile Pagination (Moved to Top) -->
+    <div *ngIf="!loading && paginatedPokemons.length > 0" class="pagination-mobile">
+      <div class="pagination-controls-mobile">
+        <ion-button
+          (click)="firstPage()"
+          [disabled]="currentPage === 1"
+          fill="clear"
+          size="small">
+          <ion-icon name="play-back-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          (click)="prevPage()"
+          [disabled]="currentPage === 1"
+          fill="clear"
+          size="small">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-button>
+
+        <div class="page-info-mobile">
+          {{ currentPage }} / {{ totalPages }}
+        </div>
+
+        <ion-button
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          fill="clear"
+          size="small">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button
+          (click)="lastPage()"
+          [disabled]="currentPage === totalPages"
+          fill="clear"
+          size="small">
+          <ion-icon name="play-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="pagination-info-mobile">
+        {{ 'pagination.showing' | translate }} {{ (currentPage - 1) * pokemonPerPage + 1 }} -
+        {{ Math.min(currentPage * pokemonPerPage, totalPokemons) }} {{ 'pagination.of' | translate }} {{ totalPokemons }}
+      </div>
+    </div>
+
+    <!-- Pokemon Grid Mobile -->
+    <div *ngIf="!loading && paginatedPokemons.length > 0" class="pokemon-grid-mobile">
+      <app-pokemon-card
+        *ngFor="let pokemon of paginatedPokemons; trackBy: trackByPokemonId; let i = index"
+        [pokemon]="pokemon"
+        [isCaptured]="isCaptured(pokemon.id)"
+        [animationDelay]="getAnimationDelay(i)"
+        (captureToggled)="onCaptureToggled($event)"
+        (cardClick)="openDetailsModal(pokemon.id)"
+        class="pokemon-card-mobile">
+      </app-pokemon-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && paginatedPokemons.length === 0" class="empty-state-mobile">
+      <ion-icon name="search-outline" color="medium"></ion-icon>
+      <h3>{{ 'home.no_results' | translate }}</h3>
+      <p>{{ 'home.try_different_search' | translate }}</p>
+      <ion-button (click)="clearFilters()" fill="outline" color="primary">
+        {{ 'home.clear_filters' | translate }}
+      </ion-button>
+    </div>
+
+
+  </div>
+
+  <!-- Mobile FAB for Surprise Me -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="surpreendaMe()" color="warning" class="surprise-fab-mobile">
+      <ion-icon name="shuffle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Scroll to Top FAB -->
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="scrollToTop()" color="light" class="scroll-top-fab-mobile">
+      <ion-icon name="arrow-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Details Modal Mobile -->
+  <app-pokemon-details-mobile
+    *ngIf="showDetailsModal && selectedPokemonId"
+    [pokemonId]="selectedPokemonId"
+    [isOpen]="showDetailsModal"
+    (modalClosed)="closeDetailsModal()">
+  </app-pokemon-details-mobile>
+</ion-content>
