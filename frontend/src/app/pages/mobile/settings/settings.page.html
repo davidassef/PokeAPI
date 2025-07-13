@@ -1,9 +1,14 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="secondary">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
+    <div class="header-center">
+      <ion-title>{{ 'tabs.settings' | translate }}</ion-title>
+    </div>
+    <ion-buttons slot="end" style="opacity:0; pointer-events:none;">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -33,7 +38,6 @@
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Seleção de idioma -->
         <ion-item button (click)="openLanguageModal()">
           <ion-icon name="language-outline" slot="start" color="medium"></ion-icon>
           <ion-label>
@@ -42,9 +46,7 @@
           </ion-label>
           <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
         </ion-item>
-
-        <!-- Seleção de tema -->
-        <ion-item lines="none">
+        <ion-item>
           <ion-icon name="moon-outline" slot="start" color="medium"></ion-icon>
           <ion-label>{{ 'settings_page.dark_theme' | translate }}</ion-label>
           <ion-toggle
@@ -56,8 +58,6 @@
       </ion-card-content>
     </ion-card>
 
-
-
     <!-- Seção de Informações do App -->
     <ion-card class="settings-card-mobile" *ngIf="!loading">
       <ion-card-header>
@@ -67,27 +67,20 @@
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Sobre o App -->
         <ion-item button (click)="showAbout()">
           <ion-icon name="help-circle" slot="start" color="primary"></ion-icon>
           <ion-label>{{ 'settings_page.about_app' | translate }}</ion-label>
         </ion-item>
-
-        <!-- Versão -->
         <ion-item>
           <ion-icon name="code-slash" slot="start" color="secondary"></ion-icon>
           <ion-label>{{ 'settings_page.version' | translate }}</ion-label>
           <ion-note slot="end">1.5</ion-note>
         </ion-item>
-
-        <!-- Fonte de Dados -->
         <ion-item>
           <ion-icon name="globe" slot="start" color="tertiary"></ion-icon>
           <ion-label>{{ 'settings_page.data_source' | translate }}</ion-label>
           <ion-note slot="end">PokéAPI</ion-note>
         </ion-item>
-
-        <!-- Créditos -->
         <ion-item lines="none">
           <ion-icon name="heart" slot="start" color="danger"></ion-icon>
           <ion-label>
@@ -99,25 +92,7 @@
     </ion-card>
 
     <!-- Seção de Sincronização -->
-    <ion-card class="settings-card-mobile">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="cloud-done" color="success"></ion-icon>
-          {{ 'settings_page.sync_with_server' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item lines="none">
-          <ion-icon name="sync" slot="start" [color]="syncPending ? 'warning' : 'success'"></ion-icon>
-          <ion-label>{{ 'settings_page.sync_with_server' | translate }}</ion-label>
-          <ion-note slot="end" [color]="syncPending ? 'warning' : 'success'">
-            <span *ngIf="!syncPending">{{ 'settings_page.synced' | translate }}</span>
-            <span *ngIf="syncPending">{{ 'settings_page.pending' | translate }}</span>
-          </ion-note>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-
+    <!-- Removido o card de sincronização, não é mais necessário -->
   </div>
 
   <!-- Espaçador para evitar sobreposição do player de música -->

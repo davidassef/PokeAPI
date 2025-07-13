@@ -1,5 +1,32 @@
 // ===== MOBILE SETTINGS PAGE STYLES =====
-// Using unified theme system for consistency
+// Usar variáveis globais para máxima coesão com a versão web
+
+ion-header {
+  ion-toolbar {
+    --background: var(--primary) !important;
+    --color: #fff !important;
+    color: var(--primary) !important;
+    ion-title {
+      color: #fff !important;
+      font-weight: 600;
+    }
+    ion-buttons {
+      ion-menu-button {
+        --color: #fff !important;
+      }
+    }
+  }
+}
+
+.dark-theme, body.dark-theme {
+  ion-header {
+    ion-toolbar {
+      --background: var(--primary-dark) !important;
+      --color: #fff !important;
+      color: var(--primary-dark) !important;
+    }
+  }
+}
 
 ion-content {
   --background: var(--settings-bg);
@@ -28,85 +55,109 @@ ion-content {
 
   ion-card-header {
     padding-bottom: 8px;
-
     ion-card-title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 18px;
-      font-weight: 600;
-
+      gap: 12px;
+      font-size: 1.2rem;
+      font-weight: 700; // Bold para hierarquia
+      color: var(--settings-title-color); // Variável global para tema
+      transition: color 0.3s ease;
       ion-icon {
         font-size: 24px;
-        color: var(--primary);
+        color: var(--settings-title-color); // Unificar cor dos ícones de destaque
         transition: color 0.3s ease;
       }
     }
   }
 
   ion-card-content {
-    padding-top: 0;
-
+    padding-top: 8px;
     ion-item {
-      --padding-start: 0;
-      --padding-end: 0;
+      --padding-start: 12px;
+      --padding-end: 12px;
       --inner-padding-end: 0;
       --min-height: 48px;
-
+      --background: transparent;
+      --border-color: var(--border-color);
+      --color: var(--text-color);
+      color: var(--text-color);
+      margin-bottom: 8px;
+      border-radius: var(--border-radius);
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      &:hover {
+        border-color: var(--border-color);
+        background: var(--hover-bg);
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
       ion-label {
         font-size: 16px;
         font-weight: 500;
+        color: var(--text-color);
+        h3 {
+          color: var(--text-color);
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 1.4;
+        }
+        p {
+          color: #A9A9A9; // Cinza claro para textos secundários
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 1.3;
+          opacity: 0.95;
+          margin-top: 2px;
+        }
       }
-
       ion-note {
         font-size: 14px;
         font-weight: 600;
-        color: var(--ion-color-primary);
+        color: var(--primary);
       }
-
-      ion-toggle {
-        --handle-width: 24px;
-        --handle-height: 24px;
-        --track-width: 48px;
-        --track-height: 28px;
-        --handle-spacing: 2px;
-        --background: var(--input-bg);
-        --background-checked: var(--primary);
-        --handle-background: var(--text-color);
-        --handle-background-checked: var(--text-color);
-        --border-radius: 14px;
-        --handle-border-radius: 12px;
-        transition: all 0.3s ease;
+      ion-icon[slot="start"] {
+        margin-right: 16px;
+        font-size: 22px;
+        color: var(--settings-title-color);
+        transition: color 0.3s ease;
       }
-
-      ion-select {
-        --padding-start: 8px;
-        --padding-end: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--ion-color-primary);
+      ion-icon[slot="end"] {
+        color: var(--text-color-secondary);
       }
     }
   }
 }
 
-// Dark theme adjustments
-@media (prefers-color-scheme: dark) {
+// Responsividade
+@media (max-width: 576px) {
   .settings-card-mobile {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin: 12px 8px;
+    ion-card-header ion-card-title {
+      font-size: 1.1rem;
+      ion-icon {
+        font-size: 20px;
+      }
+    }
   }
 }
 
-// ===== MELHORIAS DE ACESSIBILIDADE MOBILE =====
-// Redução de movimento para usuários sensíveis
-@media (prefers-reduced-motion: reduce) {
-  .settings-card-mobile,
-  ion-item,
-  ion-toggle,
-  ion-icon {
-    transition: none !important;
-    animation: none !important;
+@media (min-width: 768px) {
+  .settings-card-mobile {
+    max-width: 600px;
+    margin: 16px auto;
   }
+}
+
+// Acessibilidade e foco
+ion-item[button]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+ion-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
 }
 
 // Melhor contraste para usuários com necessidades especiais
@@ -124,17 +175,6 @@ ion-content {
   }
 }
 
-// Focus states melhorados para navegação por teclado
-ion-item[button]:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-ion-toggle:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
-}
-
 // Melhorias para touch devices
 @media (hover: none) and (pointer: coarse) {
   ion-item[button] {
@@ -142,9 +182,82 @@ ion-toggle:focus-visible {
   }
 
   ion-toggle {
-    --track-width: 52px;
-    --track-height: 32px;
-    --handle-width: 28px;
-    --handle-height: 28px;
+    --track-width: 48px;
+    --track-height: 28px;
+    --handle-width: 24px;
+    --handle-height: 24px;
+    --handle-spacing: 2px;
+    --border-radius: 14px;
+    --handle-border-radius: 12px;
+    
+    // Melhor contraste para mobile
+    --background: var(--ion-color-light-shade);
+    --background-checked: var(--primary);
+    --handle-background: var(--text-color);
+    --handle-background-checked: var(--text-color);
+    
+    // Sombra sutil para profundidade
+    --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    
+    // Transições suaves
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    // Efeito de toque
+    &:active {
+      transform: scale(0.95);
+      --handle-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// Estilos gerais para ion-toggle (mobile e desktop)
+ion-toggle {
+  --background: var(--ion-color-light-shade);
+  --background-checked: var(--primary);
+  --handle-background: var(--text-color);
+  --handle-background-checked: var(--text-color);
+  
+  // Proporções elegantes
+  --handle-width: 20px;
+  --handle-height: 20px;
+  --track-width: 44px;
+  --track-height: 24px;
+  --handle-spacing: 2px;
+  
+  // Transições suaves
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Melhor contraste e aparência
+  --border-radius: 12px;
+  --handle-border-radius: 10px;
+  
+  // Sombra sutil para profundidade
+  --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  
+  // Efeito hover (apenas para desktop)
+  @media (hover: hover) {
+    &:hover {
+      --handle-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+      transform: scale(1.05);
+    }
+  }
+  
+  // Efeito ativo
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ion-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 auto;
   }
 }
