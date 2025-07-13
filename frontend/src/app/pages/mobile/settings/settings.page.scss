@@ -17,7 +17,14 @@ ion-content {
   box-shadow: var(--card-shadow);
   background: var(--card-bg);
   backdrop-filter: blur(10px);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+
+  // Hover effect para mobile (touch)
+  &:active {
+    box-shadow: var(--card-shadow-hover);
+    transform: scale(0.98);
+  }
 
   ion-card-header {
     padding-bottom: 8px;
@@ -31,7 +38,8 @@ ion-content {
 
       ion-icon {
         font-size: 24px;
-        color: var(--ion-color-primary);
+        color: var(--primary);
+        transition: color 0.3s ease;
       }
     }
   }
@@ -61,6 +69,14 @@ ion-content {
         --handle-height: 24px;
         --track-width: 48px;
         --track-height: 28px;
+        --handle-spacing: 2px;
+        --background: var(--input-bg);
+        --background-checked: var(--primary);
+        --handle-background: var(--text-color);
+        --handle-background-checked: var(--text-color);
+        --border-radius: 14px;
+        --handle-border-radius: 12px;
+        transition: all 0.3s ease;
       }
 
       ion-select {
@@ -78,5 +94,57 @@ ion-content {
 @media (prefers-color-scheme: dark) {
   .settings-card-mobile {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ===== MELHORIAS DE ACESSIBILIDADE MOBILE =====
+// Redução de movimento para usuários sensíveis
+@media (prefers-reduced-motion: reduce) {
+  .settings-card-mobile,
+  ion-item,
+  ion-toggle,
+  ion-icon {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+// Melhor contraste para usuários com necessidades especiais
+@media (prefers-contrast: high) {
+  .settings-card-mobile {
+    border: 2px solid var(--border-color);
+  }
+
+  ion-item {
+    border: 1px solid var(--border-color);
+  }
+
+  ion-icon {
+    filter: contrast(1.2);
+  }
+}
+
+// Focus states melhorados para navegação por teclado
+ion-item[button]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+ion-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+// Melhorias para touch devices
+@media (hover: none) and (pointer: coarse) {
+  ion-item[button] {
+    --min-height: 56px; // Maior área de toque
+  }
+
+  ion-toggle {
+    --track-width: 52px;
+    --track-height: 32px;
+    --handle-width: 28px;
+    --handle-height: 28px;
   }
 }

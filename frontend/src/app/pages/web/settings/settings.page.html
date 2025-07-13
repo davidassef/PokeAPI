@@ -51,7 +51,6 @@
           [(ngModel)]="settings.darkMode"
           (ionChange)="onThemeChange($event)"
           slot="end">
-          {{ 'settings_page.dark_theme' | translate }}
         </ion-toggle>
       </ion-item>
     </ion-card-content>
@@ -110,8 +109,9 @@
     </ion-card-header>
     <ion-card-content>
       <ion-item lines="none">
+        <ion-icon name="sync" slot="start" [color]="syncPending ? 'warning' : 'success'"></ion-icon>
         <ion-label>{{ 'settings_page.sync_with_server' | translate }}</ion-label>
-        <ion-note slot="end" [ngStyle]="{ color: syncPending ? '#b71c1c' : '#2ecc40', 'font-weight': 'bold' }">
+        <ion-note slot="end" [color]="syncPending ? 'warning' : 'success'">
           <span *ngIf="!syncPending">{{ 'settings_page.synced' | translate }}</span>
           <span *ngIf="syncPending">{{ 'settings_page.pending' | translate }}</span>
         </ion-note>

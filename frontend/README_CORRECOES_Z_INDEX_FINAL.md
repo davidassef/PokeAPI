@@ -73,7 +73,7 @@ body:has(app-auth-modal-new) app-music-player .music-player {
 private setupModalObserver() {
   this.modalObserver = new MutationObserver((mutations) => {
     // Detectar TODOS os tipos de modais incluindo autenticação
-    if (element.classList?.contains('mobile-modal-overlay') || 
+    if (element.classList?.contains('mobile-modal-overlay') ||
         element.classList?.contains('details-modal-overlay') ||
         element.classList?.contains('auth-modal-container') ||
         element.tagName === 'APP-AUTH-MODAL-NEW') {
@@ -91,7 +91,7 @@ private setupModalObserver() {
   left: 16px;
   right: 16px;
   z-index: var(--z-music-player);
-  
+
   &.modal-open {
     z-index: 100 !important; // Quando modal aberto
   }
@@ -236,7 +236,7 @@ app-auth-modal-new ~ app-music-player .music-player {
    const player = document.querySelector('.music-player');
    console.log('Position:', window.getComputedStyle(player).position);
    console.log('Bottom:', window.getComputedStyle(player).bottom);
-   
+
    // Verificar FABs removidos
    console.log('FABs:', document.querySelectorAll('ion-fab').length);
    ```
@@ -301,6 +301,143 @@ npm test
 # Execute SCRIPT_TESTE_FINAL_TODAS_CORRECOES.js
 ```
 
-**Data da Implementação:** 13 de julho de 2025  
-**Status:** ✅ CONCLUÍDO E VALIDADO  
+**Data da Implementação:** 13 de julho de 2025
+**Status:** ✅ CONCLUÍDO E VALIDADO
 **Próximos Passos:** Implementação futura de FABs com z-index correto (se necessário)
+
+---
+
+## 🎨 **REFATORAÇÃO PÁGINA SETTINGS - CORREÇÕES DE TEMA E UX**
+
+### **📊 RESUMO DA REFATORAÇÃO:**
+
+Esta seção documenta a refatoração completa da página Settings implementada em **13 de julho de 2025**, focando em:
+
+- ✅ **Switch de Tema**: Proporções corretas e remoção de texto duplicado
+- ✅ **Responsividade**: Cards e elementos responsivos ao tema dark/light
+- ✅ **Ícones**: Cores consistentes e apropriadas
+- ✅ **Acessibilidade**: Suporte a reduced motion e high contrast
+- ✅ **UX**: Hover effects, transições suaves e melhor contraste
+- ✅ **Sincronização**: Visual melhorado com ícones dinâmicos
+
+### **🔧 PROBLEMAS RESOLVIDOS:**
+
+#### **1. Switch de Tema Melhorado**
+- **Problema**: Texto duplicado dentro do ion-toggle
+- **Solução**: Removido texto interno, mantendo apenas o label externo
+- **Melhorias**: Proporções otimizadas (48x28px track, 24x24px handle)
+
+#### **2. Responsividade ao Tema**
+- **Problema**: Elementos não respondendo corretamente às variáveis de tema
+- **Solução**: Implementação consistente de variáveis CSS unificadas
+- **Melhorias**: Transições suaves (0.3s) e bordas melhoradas
+
+#### **3. Ícones e Cores**
+- **Problema**: Ícones sem cores apropriadas ou inconsistentes
+- **Solução**: Cores definidas (primary, secondary, medium) para cada contexto
+- **Melhorias**: Ícone de sincronização dinâmico (success/warning)
+
+#### **4. Acessibilidade**
+- **Problema**: Falta de suporte a preferências de acessibilidade
+- **Solução**: Implementação de prefers-reduced-motion e prefers-contrast
+- **Melhorias**: Focus states melhorados e áreas de toque otimizadas
+
+### **📁 ARQUIVOS MODIFICADOS:**
+
+#### **Páginas Web:**
+- `frontend/src/app/pages/web/settings/settings.page.html` - Remoção de texto duplicado, ícones melhorados
+- `frontend/src/app/pages/web/settings/settings.page.scss` - Responsividade, acessibilidade, hover effects
+
+#### **Páginas Mobile:**
+- `frontend/src/app/pages/mobile/settings/settings.page.html` - Ícones de sincronização melhorados
+- `frontend/src/app/pages/mobile/settings/settings.page.scss` - Acessibilidade mobile, touch optimization
+
+#### **Scripts de Teste:**
+- `frontend/SCRIPT_TESTE_SETTINGS_REFATORACAO.js` - Validação completa das melhorias
+
+### **🎯 MELHORIAS IMPLEMENTADAS:**
+
+#### **CSS Unificado:**
+```scss
+// Switch de tema otimizado
+ion-toggle {
+  --handle-width: 24px;
+  --handle-height: 24px;
+  --track-width: 48px;
+  --track-height: 28px;
+  --handle-spacing: 2px;
+  --border-radius: 14px;
+  --handle-border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+// Cards responsivos
+.settings-card {
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+// Acessibilidade
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+@media (prefers-contrast: high) {
+  .settings-card { border: 2px solid var(--border-color); }
+}
+```
+
+#### **HTML Melhorado:**
+```html
+<!-- Switch sem texto duplicado -->
+<ion-toggle [(ngModel)]="settings.darkMode" (ionChange)="onThemeChange($event)" slot="end">
+</ion-toggle>
+
+<!-- Sincronização com ícone dinâmico -->
+<ion-icon name="sync" slot="start" [color]="syncPending ? 'warning' : 'success'"></ion-icon>
+<ion-note slot="end" [color]="syncPending ? 'warning' : 'success'">
+  <span *ngIf="!syncPending">{{ 'settings_page.synced' | translate }}</span>
+  <span *ngIf="syncPending">{{ 'settings_page.pending' | translate }}</span>
+</ion-note>
+```
+
+### **✅ VALIDAÇÃO:**
+
+#### **Como Testar:**
+1. Execute `SCRIPT_TESTE_SETTINGS_REFATORACAO.js` no DevTools
+2. Teste mudança de tema (dark/light)
+3. Verifique hover effects nos cards
+4. Teste navegação por teclado (Tab)
+5. Verifique responsividade em diferentes tamanhos de tela
+
+#### **Critérios de Sucesso:**
+- ✅ Switch de tema sem texto duplicado
+- ✅ Cards respondem ao tema com transições suaves
+- ✅ Ícones com cores apropriadas e consistentes
+- ✅ Suporte a preferências de acessibilidade
+- ✅ Hover effects funcionando corretamente
+- ✅ Sincronização com visual melhorado
+
+### **🎉 RESULTADO FINAL:**
+
+**Antes da Refatoração:**
+- ❌ Switch de tema com texto duplicado
+- ❌ Cards não responsivos ao tema
+- ❌ Ícones sem cores consistentes
+- ❌ Falta de suporte à acessibilidade
+- ❌ Hover effects básicos
+
+**Depois da Refatoração:**
+- ✅ Switch de tema com proporções corretas
+- ✅ Cards totalmente responsivos ao tema
+- ✅ Ícones com cores apropriadas e dinâmicas
+- ✅ Suporte completo à acessibilidade
+- ✅ Hover effects e transições suaves
+- ✅ UX melhorada em todas as interações
+
+**🎨 PÁGINA SETTINGS COMPLETAMENTE REFATORADA E OTIMIZADA!**
