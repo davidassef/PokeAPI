@@ -113,17 +113,17 @@
             <div class="info-item">
               <i class="fas fa-ruler-vertical"></i>
               <span class="info-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
-              <span class="info-label">{{ 'modal.height' | translate }}</span>
+              <span class="info-label">{{ 'pokemon.height' | translate }}</span>
             </div>
             <div class="info-item">
               <i class="fas fa-weight"></i>
               <span class="info-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
-              <span class="info-label">{{ 'modal.weight' | translate }}</span>
+              <span class="info-label">{{ 'pokemon.weight' | translate }}</span>
             </div>
             <div class="info-item">
               <i class="fas fa-star"></i>
               <span class="info-value">{{ getBaseExperience() }}</span>
-              <span class="info-label">{{ 'modal.base_exp' | translate }}</span>
+              <span class="info-label">{{ 'pokemon.base_experience' | translate }}</span>
             </div>
           </div>
         </div>
@@ -262,14 +262,14 @@
 
             <!-- Habilidades -->
             <div class="abilities-section" *ngIf="shouldShowCombatData() && pokemon?.abilities?.length">
-              <h4><i class="fas fa-magic"></i> {{ 'modal.abilities' | translate }}</h4>
+              <h4><i class="fas fa-magic"></i> {{ 'pokemon.abilities' | translate }}</h4>
               <div class="abilities-grid">
                 <div class="ability-card"
                      *ngFor="let ability of pokemon?.abilities"
                      [ngClass]="{ 'hidden': ability.is_hidden }">
                   <div class="ability-header">
                     <span class="ability-name">{{ getTranslatedAbilityName(ability.ability.name) }}</span>
-                    <span class="ability-type" *ngIf="ability.is_hidden">{{ 'modal.hidden_ability' | translate }}</span>
+                    <span class="ability-type" *ngIf="ability.is_hidden">{{ 'pokemon.hidden_ability' | translate }}</span>
                   </div>
 
                   <!-- Descrição da habilidade com loading state -->
@@ -444,12 +444,12 @@
             <div class="bio-grid">
               <div class="bio-item">
                 <i class="fas fa-ruler-vertical"></i>
-                <span class="bio-label">{{ 'modal.height' | translate }}</span>
+                <span class="bio-label">{{ 'pokemon.height' | translate }}</span>
                 <span class="bio-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
               </div>
               <div class="bio-item">
                 <i class="fas fa-weight"></i>
-                <span class="bio-label">{{ 'modal.weight' | translate }}</span>
+                <span class="bio-label">{{ 'pokemon.weight' | translate }}</span>
                 <span class="bio-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
               </div>
               <div class="bio-item">

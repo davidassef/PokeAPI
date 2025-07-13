@@ -189,14 +189,14 @@
   --size: 48px; // Reduzido de 56px para 48px
   --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
-  z-index: 6000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+  z-index: var(--z-fab); // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
 }
 
 .scroll-top-fab-mobile {
   --size: 44px; // Reduzido de 48px para 44px
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
-  z-index: 6000; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+  z-index: var(--z-fab); // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
 }
 
 // Animações mobile

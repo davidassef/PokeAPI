@@ -1,4 +1,12 @@
 {
+  "COMMON": {
+    "HEIGHT": "高さ",
+    "WEIGHT": "重さ"
+  },
+  "OK": "OK",
+  "RANKING": {
+    "CHAMPION": "チャンピオン"
+  },
   "app": {
     "name": "ポケモン図鑑",
     "title": "ポケモン図鑑",
@@ -26,7 +34,9 @@
     "height": "高さ",
     "weight": "重さ",
     "experience": "経験値",
+    "base_experience": "基本経験値",
     "abilities": "特性",
+    "hidden_ability": "隠れ特性",
     "stats": "ステータス",
     "types": "タイプ",
     "description": "説明",
@@ -40,7 +50,20 @@
     "searchPlaceholder": "ポケモンの名前を入力...",
     "generation": "世代",
     "habitat": "生息地",
-    "color": "色"
+    "color": "色",
+    "colors": {
+      "black": "黒",
+      "blue": "青",
+      "brown": "茶",
+      "gray": "灰",
+      "grey": "灰",
+      "green": "緑",
+      "pink": "ピンク",
+      "purple": "紫",
+      "red": "赤",
+      "white": "白",
+      "yellow": "黄"
+    }
   },
   "stats": {
     "hp": "HP",
@@ -140,6 +163,7 @@
   "filters": {
     "all": "すべて",
     "sortBy": "並び替え",
+    "sort_by": "並び替え",
     "sortByName": "名前",
     "sortById": "番号",
     "ascending": "昇順",
@@ -207,6 +231,7 @@
     "loading": "読み込み中...",
     "no_results": "結果が見つかりません",
     "no_results_message": "フィルターを調整するか、別の名前で検索してください。",
+    "try_different_search": "別の検索を試すか、フィルターをクリアしてください。",
     "clear_filters": "フィルターをクリア",
     "loading_more": "さらに読み込み中...",
     "placeholder": "ポケモンの名前またはIDを入力...",
@@ -258,6 +283,7 @@
     "advanced_settings": "高度な設定",
     "app_info": "アプリ情報",
     "about_app": "アプリについて",
+    "about_description": "PokeAPIAppは、現代的な技術で開発されたポケモンの世界を探索するための完全なアプリケーションです。",
     "version": "バージョン",
     "platform": "プラットフォーム",
     "data_source": "データソース",
@@ -283,6 +309,8 @@
     "no_global_ranking_desc": "グローバルランキングを表示するのに十分なデータがまだありません。ポケモンを捕獲してお気に入りに追加して参加しましょう！",
     "EXPLORE_POKEMON": "ポケモンを探索",
     "champion": "チャンピオン！",
+    "add_favorites_for_ranking": "ランキングを作成するためにお気に入りを追加してください！",
+    "no_local_ranking": "ローカルランキングが利用できません",
     "timeout_error": "ランキング読み込みタイムアウト。再試行してください。",
     "error_loading_ranking": "ランキング読み込みエラー",
     "error_loading_local_ranking": "ローカルランキング読み込みエラー",
@@ -297,14 +325,9 @@
     "default": "通常",
     "shiny": "色違い",
     "basic_info": "基本情報",
-    "height": "高さ",
-    "weight": "重さ",
-    "base_experience": "基本経験値",
     "generation": "世代",
     "stats": "ステータス",
     "total": "合計",
-    "abilities": "特性",
-    "hidden": "隠れ特性",
     "moves": "技",
     "recent_moves": "最近の技",
     "images": "画像",
@@ -318,6 +341,10 @@
     "added_to_captured": "ポケモンを捕獲しました！",
     "error_loading": "詳細読み込みエラー",
     "url_copied": "URLをクリップボードにコピーしました！",
+    "evolution": "進化",
+    "curiosities": "豆知識",
+    "no_evolution": "このポケモンは進化しません",
+    "no_description": "日本語での説明は利用できません",
     "trivia": {
       "legendary_stats": "このポケモンは伝説級のステータスを持っています！（合計 > 600）",
       "exceptional_stats": "このポケモンは優秀なステータスを持っています！（合計 > 500）",
@@ -336,9 +363,6 @@
     }
   },
   "modal": {
-    "height": "高さ",
-    "weight": "重さ",
-    "base_exp": "基本経験値",
     "overview": "概要",
     "combat": "戦闘",
     "evolution": "進化",
@@ -347,21 +371,19 @@
     "offensive_stats": "攻撃ステータス",
     "defensive_stats": "防御ステータス",
     "utility_stats": "ユーティリティステータス",
-    "abilities": "特性",
     "physical_characteristics": "物理的特徴",
     "bmi": "BMI",
     "capture_info": "捕獲情報",
     "capture_rate": "捕獲率",
     "base_happiness": "基本なつき度",
+    "base_experience": "基本経験値",
     "color": "色",
     "combat_stats": "戦闘ステータス",
     "total_base": "基本合計",
-    "hidden_ability": "隠れ特性",
     "evolution_title": "進化",
     "growth_info": "成長情報",
     "egg_groups": "タマゴグループ",
     "growth_rate": "成長速度",
-    "base_experience": "基本経験値",
     "descriptions": "説明",
     "trivia_title": "知っていましたか？",
     "no_more_text": "これ以上のテキストはありません",
@@ -458,21 +480,6 @@
     "white": "白",
     "yellow": "黄"
   },
-  "pokemon": {
-    "colors": {
-      "black": "黒",
-      "blue": "青",
-      "brown": "茶",
-      "gray": "灰",
-      "grey": "灰",
-      "green": "緑",
-      "pink": "ピンク",
-      "purple": "紫",
-      "red": "赤",
-      "white": "白",
-      "yellow": "黄"
-    }
-  },
   "trivia": {
     "bulbasaur_first": "フシギダネは全国図鑑で最初のポケモンです",
     "starter_pokemon": "これは御三家ポケモンです",
@@ -548,29 +555,41 @@
     "logout": "ログアウト",
     "trainer": "トレーナー"
   },
-  "details": {
-    "trivia": {
-      "legendary_stats": "このポケモンは600を超える伝説的なステータスを持っています！",
-      "exceptional_stats": "このポケモンは500を超える優秀なステータスを持っています！",
-      "very_heavy": "このポケモンはとても重く、{{weight}}kgもあります！",
-      "very_tall": "このポケモンはとても高く、{{height}}メートルもあります！",
-      "dragon_type": "ドラゴンタイプのポケモンは力と威厳で知られています！",
-      "psychic_type": "エスパータイプのポケモンは並外れた精神力を持っています！",
-      "ghost_type": "ゴーストタイプのポケモンは壁を通り抜けることができ、神秘的です！",
-      "dual_type": "このポケモンは{{types}}の複合タイプで、バトルで多様性を提供します！",
-      "high_experience": "このポケモンはバトルで倒されると多くの経験値を与えます！",
-      "bulbasaur_first": "フシギダネは全国図鑑の最初のポケモンです（#001）！",
-      "mewtwo_origin": "ミュウツーはミュウとの遺伝子実験によって作られました！",
-      "mew_original": "ミュウはすべてのポケモンの祖先と考えられています！",
-      "pikachu_mascot": "ピカチュウはポケモンフランチャイズの公式マスコットです！",
-      "generic": "このポケモンは特別な特徴を持つユニークな存在です！"
-    }
-  },
   "admin": {
     "roles": {
       "visitor": "ビジター",
       "user": "ユーザー",
       "administrator": "管理者"
+    },
+    "pokemon": {
+      "buttons": {
+        "add": "ポケモンを追加",
+        "edit": "編集",
+        "delete": "削除",
+        "add_ability": "特性を追加",
+        "add_type": "タイプを追加"
+      },
+      "fields": {
+        "name": "名前",
+        "height": "高さ",
+        "weight": "重さ",
+        "base_experience": "基本経験値",
+        "image_default": "デフォルト画像",
+        "image_shiny": "色違い画像",
+        "image_artwork": "アートワーク画像"
+      },
+      "sections": {
+        "basic_info": "基本情報",
+        "stats": "ステータス",
+        "types": "タイプ",
+        "abilities": "特性",
+        "images": "画像"
+      },
+      "placeholders": {
+        "name": "ポケモン名を入力",
+        "ability_name": "特性名を入力",
+        "select_type": "タイプを選択"
+      }
     }
   },
   "auth": {
@@ -639,6 +658,39 @@
       "user_found": "ユーザーが見つかりました！セキュリティ質問に答えてください。",
       "answer_correct": "正しい回答です！パスワードをリセットできます。",
       "password_reset": "パスワードが正常にリセットされました！"
-    }
+    },
+    "account_settings": "アカウント設定",
+    "cancel": "キャンセル",
+    "change_password": "パスワード変更",
+    "change_password_desc": "アカウントのパスワードを更新",
+    "current_password": "現在のパスワード",
+    "current_password_placeholder": "現在のパスワードを入力",
+    "delete_account": "アカウント削除",
+    "delete_account_desc": "アカウントを完全に削除",
+    "delete_account_warning": "この操作は元に戻せません",
+    "first_name": "名",
+    "first_name_placeholder": "名を入力",
+    "last_name": "姓",
+    "last_name_placeholder": "姓を入力",
+    "new_password_confirm": "新しいパスワード確認",
+    "passwords_dont_match": "パスワードが一致しません",
+    "save_changes": "変更を保存",
+    "trainer_level": "トレーナーレベル",
+    "verify_current_password": "現在のパスワードを確認",
+    "view_profile": "プロフィール表示"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "delete": "削除",
+    "edit": "編集",
+    "add": "追加",
+    "close": "閉じる",
+    "loading": "読み込み中...",
+    "success": "成功",
+    "error": "エラー",
+    "warning": "警告",
+    "info": "情報"
   }
 }

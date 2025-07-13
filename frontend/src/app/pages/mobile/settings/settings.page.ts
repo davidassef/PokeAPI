@@ -24,6 +24,8 @@ export class SettingsPage implements OnInit, OnDestroy {
     autoPlayMusic: false
   };
 
+  syncPending = false;
+
   languages = [
     { code: 'pt-BR', name: 'Português (Brasil)', flag: '🇧🇷' },
     { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
@@ -31,7 +33,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     { code: 'ja-JP', name: '日本語 (Japanese)', flag: '🇯🇵' }
   ];
 
-  pokemonPerPageOptions = [10, 20, 30, 50, 100];
+
 
   private destroy$ = new Subject<void>();
 
@@ -140,36 +142,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.settingsService.saveSettings({ [setting]: value });
   }
 
-  /**
-   * Abre modal de seleção de Pokémon por página
-   */
-  async openPokemonPerPageModal() {
-    const alert = await this.alertController.create({
-      header: await this.translate.get('settings_page.pokemon_per_page').toPromise(),
-      inputs: [
-        { name: 'pokemonPerPage', type: 'radio', label: '10', value: 10, checked: this.settings.pokemonPerPage === 10 },
-        { name: 'pokemonPerPage', type: 'radio', label: '20', value: 20, checked: this.settings.pokemonPerPage === 20 },
-        { name: 'pokemonPerPage', type: 'radio', label: '30', value: 30, checked: this.settings.pokemonPerPage === 30 },
-        { name: 'pokemonPerPage', type: 'radio', label: '50', value: 50, checked: this.settings.pokemonPerPage === 50 }
-      ],
-      buttons: [
-        {
-          text: await this.translate.get('CANCEL').toPromise(),
-          role: 'cancel'
-        },
-        {
-          text: await this.translate.get('CONFIRM').toPromise(),
-          handler: (data) => {
-            if (data) {
-              this.onSettingChange('pokemonPerPage', data);
-              this.showToast('settings_page.pokemon_per_page_updated');
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
+
 
   /**
    * Mostra informações sobre o app

@@ -86,15 +86,15 @@
       <ion-card-content>
         <div class="info-grid">
           <div class="info-item">
-            <span class="label">{{ 'details.height' | translate }}</span>
+            <span class="label">{{ 'pokemon.height' | translate }}</span>
             <span class="value">{{ pokemon.height | pokemonHeight }}</span>
           </div>
           <div class="info-item">
-            <span class="label">{{ 'details.weight' | translate }}</span>
+            <span class="label">{{ 'pokemon.weight' | translate }}</span>
             <span class="value">{{ pokemon.weight | pokemonWeight }}</span>
           </div>
           <div class="info-item">
-            <span class="label">{{ 'details.base_experience' | translate }}</span>
+            <span class="label">{{ 'pokemon.base_experience' | translate }}</span>
             <span class="value">{{ pokemon.base_experience || 'N/A' }}</span>
           </div>
         </div>
@@ -130,7 +130,7 @@
     <!-- Abilities -->
     <ion-card class="abilities-card">
       <ion-card-header>
-        <ion-card-title>{{ 'details.abilities' | translate }}</ion-card-title>
+        <ion-card-title>{{ 'pokemon.abilities' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <div class="abilities-list">
@@ -140,7 +140,7 @@
             [color]="ability.is_hidden ? 'warning' : 'primary'">
             <ion-label>
               {{ ability.ability.name | titlecase }}
-              <span *ngIf="ability.is_hidden"> ({{ 'details.hidden' | translate }})</span>
+              <span *ngIf="ability.is_hidden"> ({{ 'pokemon.hidden_ability' | translate }})</span>
             </ion-label>
           </ion-chip>
         </div>

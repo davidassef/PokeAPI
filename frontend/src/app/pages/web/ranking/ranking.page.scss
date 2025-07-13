@@ -1,10 +1,10 @@
 ion-content {
-  --background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  --background: var(--ranking-bg);
 }
 
 // Dark theme - darker yellow/orange background for better visual comfort
 :host-context(.dark-theme) ion-content {
-  --background: linear-gradient(135deg, #f57f17 0%, #e65100 100%);
+  --background: var(--ranking-bg);
 }
 
 // Seletor de ranking

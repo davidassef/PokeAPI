@@ -514,11 +514,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
 
   // Métodos de utilidade
   getTranslatedTypeName(typeName: string): string {
-    return this.translate.instant(`pokemon.types.${typeName}`) || typeName;
+    return this.translate.instant(`types.${typeName}`) || typeName;
   }
 
   getTranslatedStatName(statName: string): string {
-    return this.translate.instant(`pokemon.stats.${statName}`) || statName;
+    return this.translate.instant(`stats.${statName}`) || statName;
   }
 
   getStatPercentage(baseStat: number): number {

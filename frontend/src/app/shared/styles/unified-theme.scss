@@ -1,0 +1,550 @@
+// ===== UNIFIED THEME SYSTEM FOR POKEAPIAPP =====
+// Este arquivo define variáveis CSS globais para padronizar estilos entre páginas web e mobile
+
+// ===== CORE COLOR PALETTE =====
+:root {
+  // Primary Colors (Blue theme for Home)
+  --primary: #42a5f5;
+  --primary-dark: #1976d2;
+  --primary-light: #64b5f6;
+  --primary-contrast: #ffffff;
+
+  // Secondary Colors (Red theme for Captured)
+  --secondary: #e74c3c;
+  --secondary-dark: #c0392b;
+  --secondary-light: #ff5252;
+  --secondary-contrast: #ffffff;
+
+  // Tertiary Colors (Yellow theme for Ranking)
+  --tertiary: #ffd700;
+  --tertiary-dark: #ff8c00;
+  --tertiary-light: #ffed4e;
+  --tertiary-contrast: #222222;
+
+  // Success, Warning, Danger
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --info: #2196f3;
+
+  // Neutral Colors
+  --white: #ffffff;
+  --black: #000000;
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #eeeeee;
+  --gray-300: #e0e0e0;
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #424242;
+  --gray-900: #212121;
+}
+
+// ===== LIGHT THEME VARIABLES =====
+:root,
+.light-theme {
+  // Background Colors
+  --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  --surface-bg: #ffffff;
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --input-bg: #f8f9fa;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+
+  // Text Colors
+  --text-color: #212529;
+  --text-color-secondary: #6c757d;
+  --text-color-light: #adb5bd;
+  --placeholder-color: #6c757d;
+
+  // Border and Shadow
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  // Page-specific backgrounds
+  --home-bg: linear-gradient(135deg, #0c1445 0%, #061029 100%);
+  --captured-bg: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  --ranking-bg: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  --settings-bg: var(--background);
+
+  // Interactive Elements
+  --hover-bg: rgba(0, 0, 0, 0.04);
+  --active-bg: rgba(0, 0, 0, 0.08);
+  --focus-ring: 0 0 0 3px rgba(66, 165, 245, 0.3);
+}
+
+// ===== DARK THEME VARIABLES =====
+.dark-theme {
+  // Background Colors
+  --background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  --surface-bg: #2d2d2d;
+  --card-bg: rgba(45, 55, 72, 0.95);
+  --input-bg: #374151;
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+
+  // Text Colors
+  --text-color: #f8f9fa;
+  --text-color-secondary: #adb5bd;
+  --text-color-light: #6c757d;
+  --placeholder-color: #9ca3af;
+
+  // Border and Shadow
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  // Page-specific backgrounds (darker versions)
+  --home-bg: linear-gradient(135deg, #0c1445 0%, #061029 100%);
+  --captured-bg: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
+  --ranking-bg: linear-gradient(135deg, #f57f17 0%, #e65100 100%);
+  --settings-bg: var(--background);
+
+  // Interactive Elements
+  --hover-bg: rgba(255, 255, 255, 0.08);
+  --active-bg: rgba(255, 255, 255, 0.12);
+  --focus-ring: 0 0 0 3px rgba(66, 165, 245, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light-theme) {
+    // Background Colors
+    --background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    --surface-bg: #2d2d2d;
+    --card-bg: rgba(45, 55, 72, 0.95);
+    --input-bg: #374151;
+    --overlay-bg: rgba(0, 0, 0, 0.7);
+
+    // Text Colors
+    --text-color: #f8f9fa;
+    --text-color-secondary: #adb5bd;
+    --text-color-light: #6c757d;
+    --placeholder-color: #9ca3af;
+
+    // Border and Shadow
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+    // Page-specific backgrounds (darker versions)
+    --home-bg: linear-gradient(135deg, #0c1445 0%, #061029 100%);
+    --captured-bg: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
+    --ranking-bg: linear-gradient(135deg, #f57f17 0%, #e65100 100%);
+    --settings-bg: var(--background);
+
+    // Interactive Elements
+    --hover-bg: rgba(255, 255, 255, 0.08);
+    --active-bg: rgba(255, 255, 255, 0.12);
+    --focus-ring: 0 0 0 3px rgba(66, 165, 245, 0.5);
+  }
+}
+
+// ===== COMPONENT MIXINS =====
+@mixin card-style {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+@mixin button-style($color: var(--primary)) {
+  --background: #{$color};
+  --color: var(--white);
+  --border-radius: var(--border-radius);
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@mixin input-style {
+  --background: var(--input-bg);
+  --color: var(--text-color);
+  --border-color: var(--border-color);
+  --placeholder-color: var(--placeholder-color);
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+
+  &:focus {
+    --border-color: var(--primary);
+    box-shadow: var(--focus-ring);
+  }
+}
+
+@mixin text-style($size: 1rem, $weight: 400) {
+  font-size: #{$size};
+  font-weight: #{$weight};
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+// ===== RESPONSIVE BREAKPOINTS =====
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+@mixin media-breakpoint-up($name) {
+  $min: map-get($breakpoints, $name);
+  @if $min != 0 {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-down($name) {
+  $max: map-get($breakpoints, $name) - 0.02;
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+// ===== GRID SYSTEM =====
+@mixin pokemon-grid($columns: 4, $gap: 16px) {
+  display: grid;
+  grid-template-columns: repeat(#{$columns}, 1fr);
+  gap: #{$gap};
+  padding: 0;
+  max-width: 100%;
+  margin: 0 auto;
+
+  @include media-breakpoint-down(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include media-breakpoint-down(md) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: #{$gap * 0.75};
+  }
+
+  @include media-breakpoint-down(sm) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: #{$gap * 0.5};
+  }
+}
+
+// ===== ANIMATION UTILITIES =====
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// ===== UTILITY CLASSES =====
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+  }
+}
+
+// ===== Z-INDEX HIERARCHY =====
+:root {
+  --z-auth-modal: 10000;
+  --z-sidemenu: 9000;
+  --z-pokemon-modal: 8000;
+  --z-music-player: 7000;
+  --z-fab: 6000;
+  --z-header: 5000;
+  --z-overlay: 4000;
+  --z-card: 1000;
+  --z-base: 1;
+}
+
+// ===== SAFE AREA SUPPORT =====
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+// ===== ACCESSIBILITY =====
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// ===== PAGE LAYOUT STANDARDS =====
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+
+  @include media-breakpoint-down(lg) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  @include media-breakpoint-down(md) {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  @include media-breakpoint-down(sm) {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+.page-container-mobile {
+  padding: 8px;
+  min-height: 100vh;
+  background: var(--ion-background-color);
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @include media-breakpoint-down(xs) {
+    padding: 4px;
+  }
+}
+
+// ===== POKEMON GRID STANDARDS =====
+.pokemon-grid {
+  @include pokemon-grid(4, 16px);
+}
+
+.pokemon-grid-mobile {
+  @include pokemon-grid(2, 8px);
+
+  @media (max-width: 768px) and (orientation: landscape) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+}
+
+// ===== PAGINATION STANDARDS =====
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 16px auto 8px auto;
+  padding: 8px 0;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  max-width: 600px;
+
+  ion-button {
+    min-width: 80px;
+    @include button-style();
+  }
+
+  .page-info {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--primary);
+  }
+
+  @include media-breakpoint-down(sm) {
+    gap: 4px;
+    padding: 8px 0;
+
+    ion-button {
+      min-width: 44px;
+      font-size: 20px;
+      padding: 0 6px;
+      --border-radius: 12px;
+    }
+
+    .page-info {
+      flex: 1;
+      text-align: center;
+      font-size: 13px;
+      margin: 0 2px;
+    }
+  }
+}
+
+// ===== SEARCH CONTAINER STANDARDS =====
+.search-container {
+  padding: 16px;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+
+  @include media-breakpoint-down(md) {
+    padding: 8px;
+  }
+}
+
+// ===== EMPTY STATE STANDARDS =====
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-color);
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  h2, h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+
+    @include media-breakpoint-down(md) {
+      font-size: 18px;
+    }
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+    color: var(--text-color-secondary);
+
+    @include media-breakpoint-down(md) {
+      font-size: 14px;
+    }
+  }
+
+  ion-button {
+    @include button-style();
+    --border-radius: 24px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+  }
+}
+
+// ===== LOADING STATE STANDARDS =====
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    margin-bottom: 16px;
+    --color: var(--primary);
+  }
+
+  p {
+    color: var(--text-color-secondary);
+    font-size: 16px;
+    margin: 0;
+
+    @include media-breakpoint-down(md) {
+      font-size: 14px;
+    }
+  }
+}
+
+// ===== PRINT STYLES =====
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .page-container,
+  .page-container-mobile {
+    box-shadow: none !important;
+    background: white !important;
+  }
+}

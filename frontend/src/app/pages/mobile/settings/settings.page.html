@@ -56,120 +56,40 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Seção de Configurações de Áudio -->
-    <ion-card class="settings-card-mobile" *ngIf="!loading">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="musical-notes-outline" color="primary"></ion-icon>
-          {{ 'settings_page.audio_settings' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <!-- Música -->
-        <ion-item>
-          <ion-icon name="musical-note-outline" slot="start" color="medium"></ion-icon>
-          <ion-label>{{ 'settings_page.enable_music' | translate }}</ion-label>
-          <ion-toggle
-            [(ngModel)]="settings.musicEnabled"
-            (ionChange)="onSettingChange('musicEnabled', $event.detail.checked)"
-            slot="end">
-          </ion-toggle>
-        </ion-item>
 
-        <!-- Som -->
-        <ion-item>
-          <ion-icon name="volume-high-outline" slot="start" color="medium"></ion-icon>
-          <ion-label>{{ 'settings_page.enable_sounds' | translate }}</ion-label>
-          <ion-toggle
-            [(ngModel)]="settings.soundEnabled"
-            (ionChange)="onSettingChange('soundEnabled', $event.detail.checked)"
-            slot="end">
-          </ion-toggle>
-        </ion-item>
-
-        <!-- Vibração -->
-        <ion-item lines="none">
-          <ion-icon name="phone-portrait-outline" slot="start" color="medium"></ion-icon>
-          <ion-label>{{ 'settings_page.enable_vibration' | translate }}</ion-label>
-          <ion-toggle
-            [(ngModel)]="settings.vibrationEnabled"
-            (ionChange)="onSettingChange('vibrationEnabled', $event.detail.checked)"
-            slot="end">
-          </ion-toggle>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Seção de Exibição -->
-    <ion-card class="settings-card-mobile" *ngIf="!loading">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="grid-outline" color="primary"></ion-icon>
-          {{ 'settings_page.display_settings' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <!-- Pokémon por página -->
-        <ion-item lines="none">
-          <ion-icon name="apps-outline" slot="start" color="medium"></ion-icon>
-          <ion-label>
-            <h3>{{ 'settings_page.pokemon_per_page' | translate }}</h3>
-            <p>{{ settings.pokemonPerPage }} Pokémon</p>
-          </ion-label>
-          <ion-select
-            [(ngModel)]="settings.pokemonPerPage"
-            (ionChange)="onSettingChange('pokemonPerPage', $event.detail.value)"
-            interface="popover"
-            slot="end">
-            <ion-select-option value="10">10</ion-select-option>
-            <ion-select-option value="20">20</ion-select-option>
-            <ion-select-option value="30">30</ion-select-option>
-            <ion-select-option value="50">50</ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
 
     <!-- Seção de Informações do App -->
     <ion-card class="settings-card-mobile" *ngIf="!loading">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <ion-icon name="information-circle" color="primary"></ion-icon>
           {{ 'settings_page.app_info' | translate }}
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <!-- Sobre o App -->
         <ion-item button (click)="showAbout()">
-          <ion-icon name="help-circle-outline" slot="start" color="medium"></ion-icon>
+          <ion-icon name="help-circle" slot="start" color="primary"></ion-icon>
           <ion-label>{{ 'settings_page.about_app' | translate }}</ion-label>
-          <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
         </ion-item>
 
         <!-- Versão -->
         <ion-item>
-          <ion-icon name="code-slash-outline" slot="start" color="medium"></ion-icon>
+          <ion-icon name="code-slash" slot="start" color="secondary"></ion-icon>
           <ion-label>{{ 'settings_page.version' | translate }}</ion-label>
-          <ion-note slot="end">1.5.0</ion-note>
+          <ion-note slot="end">1.5</ion-note>
         </ion-item>
 
         <!-- Fonte de Dados -->
         <ion-item>
-          <ion-icon name="globe-outline" slot="start" color="medium"></ion-icon>
+          <ion-icon name="globe" slot="start" color="tertiary"></ion-icon>
           <ion-label>{{ 'settings_page.data_source' | translate }}</ion-label>
           <ion-note slot="end">PokéAPI</ion-note>
         </ion-item>
 
-        <!-- Plataforma -->
-        <ion-item>
-          <ion-icon name="phone-portrait-outline" slot="start" color="medium"></ion-icon>
-          <ion-label>{{ 'settings_page.platform' | translate }}</ion-label>
-          <ion-note slot="end">Mobile</ion-note>
-        </ion-item>
-
         <!-- Créditos -->
         <ion-item lines="none">
-          <ion-icon name="heart-outline" slot="start" color="medium"></ion-icon>
+          <ion-icon name="heart" slot="start" color="danger"></ion-icon>
           <ion-label>
             <h3>{{ 'MADE_WITH_LOVE' | translate }}</h3>
             <p>{{ 'POWERED_BY_POKEAPI' | translate }}</p>
@@ -178,5 +98,27 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Seção de Sincronização -->
+    <ion-card class="settings-card-mobile">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="cloud-done" color="success"></ion-icon>
+          {{ 'settings_page.sync_with_server' | translate }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>{{ 'settings_page.sync_with_server' | translate }}</ion-label>
+          <ion-note slot="end" [ngStyle]="{ color: syncPending ? '#b71c1c' : '#2ecc40', 'font-weight': 'bold' }">
+            <span *ngIf="!syncPending">{{ 'settings_page.synced' | translate }}</span>
+            <span *ngIf="syncPending">{{ 'settings_page.pending' | translate }}</span>
+          </ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
   </div>
+
+  <!-- Espaçador para evitar sobreposição do player de música -->
+  <div style="height: 120px;"></div>
 </ion-content>

@@ -1,10 +1,10 @@
 ion-content {
-  --background: linear-gradient(135deg, #0c1445 0%, #061029 100%);
+  --background: var(--home-bg);
 }
 
 // Dark theme - usar a mesma cor azul oceano profundo para consistência visual
 :host-context(.dark-theme) ion-content {
-  --background: linear-gradient(135deg, #0c1445 0%, #061029 100%);
+  --background: var(--home-bg);
 }
 
 // Admin Add Pokemon Button
@@ -41,30 +41,18 @@ ion-content {
   }
 }
 
-// Search container
+// Search container - using unified styles
 .search-container {
-  padding: 16px;
-  background: var(--card-bg);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  // Inherits from unified-theme.scss
 }
 
-// Pokemon Grid
+// Pokemon Grid - using unified styles
 .page-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
-  box-sizing: border-box;
+  // Inherits from unified-theme.scss
 }
 
 .pokemon-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  padding: 0;
-  max-width: 100%;
-  margin: 0 auto 24px auto;
+  // Inherits from unified-theme.scss
 }
 
 .grid-pagination {

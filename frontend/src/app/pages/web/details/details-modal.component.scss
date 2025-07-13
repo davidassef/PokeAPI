@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 8500; // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal Web(8500) > Modal Mobile(8000) > Music(7000)
+  z-index: var(--z-pokemon-modal); // Hierarquia: Auth(10000) > Sidemenu(9000) > Pokemon Modal(8000) > Music(7000) > FAB(6000) > Header(5000)
   backdrop-filter: blur(4px);
 }
 
@@ -309,7 +309,7 @@
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(10px);
-  z-index: 10;
+  z-index: 100; // Z-index relativo dentro do modal
 }
 
 .close-button:hover {
@@ -770,7 +770,7 @@
             gap: 4px;
             color: var(--success);
             font-size: 0.8rem;
-            z-index: 10;
+            z-index: 50; // Z-index relativo dentro do modal
             background: rgba(0, 0, 0, 0.7);
             padding: 6px 8px;
             border-radius: 6px;

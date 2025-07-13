@@ -1,7 +1,7 @@
 ion-menu {
   --width: 320px;
   // Hierarquia de z-index: Auth(10000) > Sidemenu(9000) > Modal(8000) > Music(7000)
-  z-index: 9000;
+  z-index: var(--z-sidemenu);
 
   .menu-header {
     --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

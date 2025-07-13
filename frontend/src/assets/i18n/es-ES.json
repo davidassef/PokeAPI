@@ -1,4 +1,12 @@
 {
+  "COMMON": {
+    "HEIGHT": "Altura",
+    "WEIGHT": "Peso"
+  },
+  "OK": "OK",
+  "RANKING": {
+    "CHAMPION": "Campeón"
+  },
   "app": {
     "name": "Pokédex",
     "title": "Pokédex",
@@ -26,7 +34,9 @@
     "height": "Altura",
     "weight": "Peso",
     "experience": "Experiencia",
+    "base_experience": "Experiencia Base",
     "abilities": "Habilidades",
+    "hidden_ability": "Habilidad Oculta",
     "stats": "Estadísticas",
     "types": "Tipos",
     "description": "Descripción",
@@ -40,7 +50,20 @@
     "searchPlaceholder": "Escribe el nombre del Pokémon...",
     "generation": "Generación",
     "habitat": "Hábitat",
-    "color": "Color"
+    "color": "Color",
+    "colors": {
+      "black": "Negro",
+      "blue": "Azul",
+      "brown": "Marrón",
+      "gray": "Gris",
+      "grey": "Gris",
+      "green": "Verde",
+      "pink": "Rosa",
+      "purple": "Morado",
+      "red": "Rojo",
+      "white": "Blanco",
+      "yellow": "Amarillo"
+    }
   },
   "stats": {
     "hp": "HP",
@@ -158,6 +181,7 @@
     "advanced_settings": "Configuraciones avanzadas",
     "app_info": "Información de la App",
     "about_app": "Acerca de la App",
+    "about_description": "PokeAPIApp es una aplicación completa para explorar el mundo Pokémon, desarrollada con tecnologías modernas.",
     "version": "Versión",
     "platform": "Plataforma",
     "data_source": "Fuente de Datos",
@@ -180,6 +204,56 @@
     "restart": "Reiniciar",
     "volume": "Volumen",
     "opening_tracks": "Pistas de Apertura"
+  },
+  "filters": {
+    "all": "Todos",
+    "sortBy": "Ordenar por",
+    "sort_by": "Ordenar por",
+    "sortByName": "Nombre",
+    "sortById": "Número",
+    "ascending": "Ascendente",
+    "descending": "Descendente",
+    "filterByType": "Filtrar por tipo",
+    "generation": "Generación",
+    "generation_1": "Generación I (Kanto)",
+    "generation_2": "Generación II (Johto)",
+    "generation_3": "Generación III (Hoenn)",
+    "generation_4": "Generación IV (Sinnoh)",
+    "generation_5": "Generación V (Unova)",
+    "generation_6": "Generación VI (Kalos)",
+    "generation_7": "Generación VII (Alola)",
+    "generation_8": "Generación VIII (Galar)",
+    "sort_by_id": "Número de Pokédex",
+    "sort_by_name": "Nombre",
+    "sort_by_height": "Altura",
+    "sort_by_weight": "Peso",
+    "all_generations": "Todas las generaciones",
+    "select_generation": "Seleccionar generación",
+    "clear_all": "Limpiar todo",
+    "filters_types": "Tipos",
+    "advanced_filters": "Filtros avanzados",
+    "types_elements": "Tipos de elementos",
+    "types_movement": "Tipos de movimiento"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página",
+    "of": "de",
+    "showing": "Mostrando"
+  },
+  "home": {
+    "loading": "Cargando",
+    "no_results": "No se encontraron resultados",
+    "no_results_message": "Intenta ajustar los filtros o buscar otro nombre.",
+    "try_different_search": "Intenta otra búsqueda o limpia el filtro.",
+    "clear_filters": "Limpiar filtros",
+    "loading_more": "Cargando más...",
+    "placeholder": "Escribe el nombre del Pokémon o ID...",
+    "added_to_captured": "¡Pokémon añadido a capturados!",
+    "removed_from_captured": "¡Pokémon eliminado de capturados!",
+    "error_loading": "Error al cargar Pokémon",
+    "surpreenda_me": "¡Sorpréndeme!"
   },
   "menu": {
     "home": "Pokédex",
@@ -209,9 +283,6 @@
     "ja-JP": "日本語"
   },
   "modal": {
-    "height": "Altura",
-    "weight": "Peso",
-    "base_exp": "EXP Base",
     "overview": "Visión General",
     "combat": "Combate",
     "evolution": "Evolución",
@@ -220,7 +291,6 @@
     "offensive_stats": "Estadísticas Ofensivas",
     "defensive_stats": "Estadísticas Defensivas",
     "utility_stats": "Estadísticas de Utilidad",
-    "abilities": "Habilidades",
     "total_base_stats": "Total de Stats Base",
     "evolution_chain": "Cadena Evolutiva",
     "current_pokemon": "Pokémon Actual",
@@ -242,16 +312,14 @@
     "scroll_down": "Desplázate hacia abajo para ver más",
     "NO_FLAVOR_TEXT_AVAILABLE": "Descripción no disponible",
     "NO_ABILITY_DESCRIPTION_AVAILABLE": "Descripción de habilidad no disponible",
-    "hidden": "Oculta",
     "capture_rate": "Tasa de Captura",
     "base_happiness": "Felicidad Base",
+    "base_experience": "Experiencia Base",
     "color": "Color",
     "combat_stats": "Estadísticas de Combate",
     "total_base": "Total Base",
-    "hidden_ability": "Oculta",
     "evolution_title": "Evolución",
     "growth_info": "Información de Crecimiento",
-    "base_experience": "Experiencia Base",
     "descriptions": "Descripciones",
     "trivia_title": "¿Sabías que?"
   },
@@ -285,22 +353,27 @@
   },
   "evolution": {
     "methods": {
-      "level_up": "Subir de nivel",
-      "use_item": "Usar objeto",
+      "level": "Nivel",
       "trade": "Intercambio",
+      "stone": "Piedra",
       "happiness": "Felicidad",
-      "time_of_day": "Hora del día",
-      "location": "Localización",
-      "level_up_holding_item": "Subir de nivel con objeto",
-      "trade_holding_item": "Intercambio con objeto",
-      "gender": "Género",
-      "relative_physical_stats": "Estadísticas físicas relativas",
-      "turn_upside_down": "Dar vuelta al dispositivo",
+      "special": "Condiciones especiales",
+      "base_form": "Forma base",
+      "evolves_by_level": "Evoluciona por nivel",
+      "evolves_by_trade": "Evoluciona por intercambio",
+      "evolves_with_stone": "Evoluciona con piedra",
+      "evolves_by_happiness": "Evoluciona por felicidad",
+      "special_evolution": "Evolución especial"
+    },
+    "triggers": {
+      "level_up": "Subir de nivel",
+      "trade": "Intercambio",
+      "use_item": "Usar objeto",
+      "shed": "Cambio natural",
       "spin": "Girar",
-      "affection": "Afecto",
-      "beauty": "Belleza",
-      "party_species": "Especie en el equipo",
-      "party_type": "Tipo en el equipo",
+      "tower_of_darkness": "Torre de la Oscuridad",
+      "tower_of_waters": "Torre de las Aguas",
+      "three_critical_hits": "Tres golpes críticos",
       "take_damage": "Recibir daño",
       "other": "Otras condiciones"
     }
@@ -325,21 +398,6 @@
     "red": "Rojo",
     "white": "Blanco",
     "yellow": "Amarillo"
-  },
-  "pokemon": {
-    "colors": {
-      "black": "Negro",
-      "blue": "Azul",
-      "brown": "Marrón",
-      "gray": "Gris",
-      "grey": "Gris",
-      "green": "Verde",
-      "pink": "Rosa",
-      "purple": "Morado",
-      "red": "Rojo",
-      "white": "Blanco",
-      "yellow": "Amarillo"
-    }
   },
   "trivia": {
     "bulbasaur_first": "Bulbasaur es el primer Pokémon en la Pokédex Nacional",
@@ -396,6 +454,32 @@
     "trainer": "Entrenador"
   },
   "details": {
+    "back": "Volver",
+    "title": "Detalles de {{name}}",
+    "loading": "Cargando detalles...",
+    "default": "Normal",
+    "shiny": "Shiny",
+    "basic_info": "Información Básica",
+    "generation": "Generación",
+    "stats": "Estadísticas",
+    "total": "Total",
+    "moves": "Movimientos",
+    "recent_moves": "Movimientos Recientes",
+    "images": "Imágenes",
+    "sprite_normal": "Sprite Normal",
+    "sprite_shiny": "Sprite Shiny",
+    "artwork": "Arte Oficial",
+    "error_title": "Error al cargar",
+    "error_message": "No se pudieron cargar los detalles del Pokémon.",
+    "retry": "Intentar de nuevo",
+    "removed_from_captured": "¡Pokémon eliminado de capturados!",
+    "added_to_captured": "¡Pokémon añadido a capturados!",
+    "error_loading": "Error al cargar detalles",
+    "url_copied": "¡URL copiada al portapapeles!",
+    "evolution": "Evolución",
+    "curiosities": "Curiosidades",
+    "no_evolution": "Este Pokémon no tiene evolución",
+    "no_description": "Descripción no disponible en español",
     "trivia": {
       "legendary_stats": "¡Este Pokémon tiene estadísticas legendarias con un total superior a 600!",
       "exceptional_stats": "¡Este Pokémon tiene estadísticas excepcionales con un total superior a 500!",
@@ -418,6 +502,36 @@
       "visitor": "Visitante",
       "user": "Usuario",
       "administrator": "Administrador"
+    },
+    "pokemon": {
+      "buttons": {
+        "add": "Añadir Pokémon",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "add_ability": "Añadir Habilidad",
+        "add_type": "Añadir Tipo"
+      },
+      "fields": {
+        "name": "Nombre",
+        "height": "Altura",
+        "weight": "Peso",
+        "base_experience": "Experiencia Base",
+        "image_default": "Imagen Predeterminada",
+        "image_shiny": "Imagen Shiny",
+        "image_artwork": "Imagen Artwork"
+      },
+      "sections": {
+        "basic_info": "Información Básica",
+        "stats": "Estadísticas",
+        "types": "Tipos",
+        "abilities": "Habilidades",
+        "images": "Imágenes"
+      },
+      "placeholders": {
+        "name": "Ingresa el nombre del Pokémon",
+        "ability_name": "Ingresa el nombre de la habilidad",
+        "select_type": "Selecciona tipo"
+      }
     }
   },
   "auth": {
@@ -486,7 +600,29 @@
       "user_found": "¡Usuario encontrado! Responde la pregunta de seguridad.",
       "answer_correct": "¡Respuesta correcta! Ahora puedes restablecer tu contraseña.",
       "password_reset": "¡Contraseña restablecida exitosamente!"
-    }
+    },
+    "account_settings": "Configuración de Cuenta",
+    "cancel": "Cancelar",
+    "change_password": "Cambiar Contraseña",
+    "change_password_desc": "Actualiza la contraseña de tu cuenta",
+    "current_password": "Contraseña Actual",
+    "current_password_placeholder": "Ingresa tu contraseña actual",
+    "delete_account": "Eliminar Cuenta",
+    "delete_account_desc": "Eliminar permanentemente tu cuenta",
+    "delete_account_warning": "Esta acción no se puede deshacer",
+    "first_name": "Nombre",
+    "first_name_placeholder": "Ingresa tu nombre",
+    "last_name": "Apellido",
+    "last_name_placeholder": "Ingresa tu apellido",
+    "new_password_confirm": "Confirmar Nueva Contraseña",
+    "passwords_dont_match": "Las contraseñas no coinciden",
+    "save_changes": "Guardar Cambios",
+    "trainer_level": "Nivel de Entrenador",
+    "verify_current_password": "Verificar Contraseña Actual",
+    "view_profile": "Ver Perfil",
+    "hello": "Hola",
+    "logout": "Cerrar sesión",
+    "reset_password": "Restablecer Contraseña"
   },
   "ranking_page": {
     "most_loved_pokemon": "Pokémon más queridos",
@@ -500,29 +636,14 @@
     "no_global_ranking_desc": "Aún no hay suficientes datos para mostrar el ranking global. ¡Captura y marca como favoritos Pokémon para participar!",
     "EXPLORE_POKEMON": "EXPLORAR POKÉMON",
     "champion": "¡Campeón!",
+    "add_favorites_for_ranking": "¡Añade favoritos para crear un ranking!",
+    "no_local_ranking": "No hay ranking local disponible",
     "timeout_error": "Tiempo de espera agotado al cargar ranking. Inténtalo de nuevo.",
     "error_loading_ranking": "Error al cargar ranking",
     "error_loading_local_ranking": "Error al cargar ranking local",
     "error_toggle_capture": "Error al alternar captura",
     "added_to_captured": "¡Pokémon añadido a capturados!",
     "removed_from_captured": "¡Pokémon eliminado de capturados!"
-  },
-  "settings_page": {
-    "language_theme": "Idioma y Tema",
-    "language": "Idioma",
-    "dark_theme": "Tema Oscuro",
-    "pokemon_per_page": "Pokémon por página",
-    "about_app": "Acerca de la aplicación",
-    "data_source": "Fuente de datos",
-    "app_version": "Versión de la aplicación",
-    "developer": "Desarrollador",
-    "github_repo": "Repositorio GitHub",
-    "pokeapi_credit": "Datos proporcionados por PokéAPI",
-    "language_updated": "¡Idioma actualizado correctamente!",
-    "pokemon_per_page_changed": "¡Configuración cambiada con éxito!",
-    "sync_with_server": "Sincronización con el servidor",
-    "synced": "Sincronizado",
-    "pending": "Pendiente"
   },
   "captured_page": {
     "auth_required": "Autenticación requerida",
@@ -542,76 +663,6 @@
     "confirm_remove": "¿Estás seguro de que quieres eliminar este Pokémon de tus capturados?",
     "removed_successfully": "Pokémon eliminado exitosamente",
     "error_removing": "Error al eliminar Pokémon"
-  },
-  "auth": {
-    "login": "Iniciar Sesión",
-    "register": "Registrarse",
-    "email": "Correo Electrónico",
-    "email_placeholder": "Ingresa tu correo electrónico",
-    "password": "Contraseña",
-    "password_placeholder": "Ingresa tu contraseña",
-    "name": "Nombre",
-    "name_placeholder": "Ingresa tu nombre completo",
-    "confirm_password": "Confirmar Contraseña",
-    "confirm_password_placeholder": "Confirma tu contraseña",
-    "security_question": "Pregunta de Seguridad",
-    "select_security_question": "Selecciona una pregunta",
-    "security_question_pet": "¿Cuál es el nombre de tu primera mascota?",
-    "security_question_city": "¿En qué ciudad naciste?",
-    "security_question_school": "¿Cuál es el nombre de tu primera escuela?",
-    "security_question_mother": "¿Cuál es el nombre de soltera de tu madre?",
-    "security_answer": "Respuesta de Seguridad",
-    "security_answer_placeholder": "Ingresa tu respuesta",
-    "forgot_password": "¿Olvidaste tu contraseña?",
-    "find_account": "Encontrar Cuenta",
-    "your_answer": "Tu Respuesta",
-    "verify_answer": "Verificar Respuesta",
-    "new_password": "Nueva Contraseña",
-    "new_password_placeholder": "Ingresa tu nueva contraseña",
-    "confirm_new_password": "Confirmar Nueva Contraseña",
-    "confirm_new_password_placeholder": "Confirma tu nueva contraseña",
-    "no_account": "¿No tienes una cuenta?",
-    "have_account": "¿Ya tienes una cuenta?",
-    "back_to_login": "Volver al Inicio de Sesión",
-    "login_button": "Iniciar Sesión",
-    "register_button": "Crear Cuenta",
-    "reset_password_button": "Restablecer Contraseña",
-    "create_account_link": "Crear Cuenta",
-    "sign_in_link": "Iniciar Sesión",
-    "security_questions": {
-      "pet": "¿Cuál es el nombre de tu primera mascota?",
-      "city": "¿En qué ciudad naciste?",
-      "school": "¿Cuál es el nombre de tu primera escuela?",
-      "mother": "¿Cuál es el nombre de soltera de tu madre?"
-    },
-    "errors": {
-      "required_fields": "Por favor, completa todos los campos obligatorios",
-      "invalid_email": "Por favor, ingresa un correo electrónico válido",
-      "password_mismatch": "Las contraseñas no coinciden",
-      "password_too_short": "La contraseña debe tener al menos 6 caracteres",
-      "login_failed": "Correo electrónico o contraseña inválidos",
-      "register_failed": "Error al crear cuenta",
-      "timeout_error": "La operación está tardando más de lo esperado. Inténtalo de nuevo en unos momentos.",
-      "connection_timeout": "Tiempo de conexión agotado. Verifica tu conexión e inténtalo de nuevo.",
-      "server_error": "Error interno del servidor. Inténtalo de nuevo más tarde.",
-      "email_already_exists": "Este correo electrónico ya está en uso. Intenta iniciar sesión o usa otro correo.",
-      "invalid_security_question": "Pregunta de seguridad inválida. Selecciona una de las opciones disponibles.",
-      "validation_failed": "Datos inválidos. Verifica la información e inténtalo de nuevo.",
-      "connection_failed": "Error de conexión con el servidor. Verifica tu internet.",
-      "user_not_found": "Usuario no encontrado o sin pregunta de seguridad configurada",
-      "incorrect_answer": "Respuesta de seguridad incorrecta",
-      "reset_failed": "Error al restablecer contraseña",
-      "update_failed": "Error al actualizar perfil",
-      "password_change_failed": "Error al cambiar contraseña",
-      "delete_account_failed": "Error al eliminar cuenta"
-    },
-    "success": {
-      "account_created": "¡Cuenta creada exitosamente!",
-      "login_successful": "¡Inicio de sesión exitoso!",
-      "user_found": "¡Usuario encontrado! Responde la pregunta de seguridad.",
-      "answer_correct": "¡Respuesta correcta! Ahora puedes restablecer tu contraseña.",
-      "password_reset": "¡Contraseña restablecida exitosamente!"
-    }
   },
   "common": {
     "save": "Guardar",

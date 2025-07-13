@@ -1,6 +1,6 @@
 <div class="admin-modal-overlay" (click)="closeModal()">
   <div class="admin-modal-container" (click)="$event.stopPropagation()">
-    
+
     <!-- Header -->
     <div class="modal-header">
       <h2>{{ modalTitle | translate }}</h2>
@@ -12,7 +12,7 @@
     <!-- Content -->
     <div class="modal-content">
       <form [formGroup]="pokemonForm" (ngSubmit)="savePokemon()">
-        
+
         <!-- Error/Success Messages -->
         <div class="message-container">
           <div class="error-message" *ngIf="error">
@@ -28,7 +28,7 @@
         <!-- Basic Information -->
         <div class="form-section">
           <h3>{{ 'admin.pokemon.sections.basic_info' | translate }}</h3>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="name">{{ 'admin.pokemon.fields.name' | translate }} *</label>
@@ -52,7 +52,7 @@
                 [class.error]="pokemonForm.get('height')?.invalid && pokemonForm.get('height')?.touched">
               </ion-input>
             </div>
-            
+
             <div class="form-group">
               <label for="weight">{{ 'admin.pokemon.fields.weight' | translate }} (hg) *</label>
               <ion-input
@@ -82,7 +82,7 @@
         <!-- Types -->
         <div class="form-section">
           <h3>{{ 'admin.pokemon.sections.types' | translate }}</h3>
-          
+
           <div formArrayName="types">
             <div *ngFor="let type of types.controls; let i = index" class="type-row">
               <div class="form-group flex-grow">
@@ -92,13 +92,13 @@
                   </ion-select-option>
                 </ion-select>
               </div>
-              
+
               <button type="button" class="remove-button" (click)="removeType(i)" [disabled]="types.length <= 1">
                 <ion-icon name="trash"></ion-icon>
               </button>
             </div>
           </div>
-          
+
           <button type="button" class="add-button" (click)="addType()" [disabled]="types.length >= 2">
             <ion-icon name="add"></ion-icon>
             {{ 'admin.pokemon.buttons.add_type' | translate }}
@@ -108,11 +108,11 @@
         <!-- Stats -->
         <div class="form-section">
           <h3>{{ 'admin.pokemon.sections.stats' | translate }}</h3>
-          
+
           <div formArrayName="stats">
             <div *ngFor="let stat of stats.controls; let i = index" [formGroupName]="i" class="stat-row">
               <div class="stat-label">
-                {{ ('pokemon.stats.' + stat.get('name')?.value) | translate }}
+                {{ ('stats.' + stat.get('name')?.value) | translate }}
               </div>
               <div class="stat-input">
                 <ion-input
@@ -130,7 +130,7 @@
         <!-- Abilities -->
         <div class="form-section">
           <h3>{{ 'admin.pokemon.sections.abilities' | translate }}</h3>
-          
+
           <div formArrayName="abilities">
             <div *ngFor="let ability of abilities.controls; let i = index" class="ability-row">
               <div class="form-group flex-grow">
@@ -140,13 +140,13 @@
                   [class.error]="ability.invalid && ability.touched">
                 </ion-input>
               </div>
-              
+
               <button type="button" class="remove-button" (click)="removeAbility(i)">
                 <ion-icon name="trash"></ion-icon>
               </button>
             </div>
           </div>
-          
+
           <button type="button" class="add-button" (click)="addAbility()">
             <ion-icon name="add"></ion-icon>
             {{ 'admin.pokemon.buttons.add_ability' | translate }}
@@ -156,7 +156,7 @@
         <!-- Sprites -->
         <div class="form-section">
           <h3>{{ 'admin.pokemon.sections.images' | translate }}</h3>
-          
+
           <div formGroupName="sprites">
             <div class="form-group">
               <label for="front_default">{{ 'admin.pokemon.fields.image_default' | translate }}</label>
@@ -166,7 +166,7 @@
                 placeholder="https://example.com/pokemon.png">
               </ion-input>
             </div>
-            
+
             <div class="form-group">
               <label for="front_shiny">{{ 'admin.pokemon.fields.image_shiny' | translate }}</label>
               <ion-input
@@ -175,7 +175,7 @@
                 placeholder="https://example.com/pokemon-shiny.png">
               </ion-input>
             </div>
-            
+
             <div class="form-group">
               <label for="official_artwork">{{ 'admin.pokemon.fields.image_artwork' | translate }}</label>
               <ion-input
@@ -196,16 +196,16 @@
         <button class="secondary-button" (click)="closeModal()" [disabled]="loading">
           {{ 'common.cancel' | translate }}
         </button>
-        
-        <button 
-          *ngIf="mode === 'edit'" 
-          class="danger-button" 
-          (click)="confirmDelete()" 
+
+        <button
+          *ngIf="mode === 'edit'"
+          class="danger-button"
+          (click)="confirmDelete()"
           [disabled]="loading">
           <ion-icon name="trash"></ion-icon>
           {{ 'admin.pokemon.buttons.delete' | translate }}
         </button>
-        
+
         <button class="primary-button" (click)="savePokemon()" [disabled]="loading || pokemonForm.invalid">
           <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
           <span *ngIf="!loading">

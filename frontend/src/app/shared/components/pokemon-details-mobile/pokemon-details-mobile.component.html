@@ -61,7 +61,7 @@
             <div *ngIf="!currentCarouselImage || !isValidImageUrl(currentCarouselImage)"
                  class="image-placeholder">
               <ion-icon name="help-outline"></ion-icon>
-              <p>{{ 'modal.image_not_available' | translate }}</p>
+              <p>{{ 'details.error_message' | translate }}</p>
             </div>
 
             <!-- Loading spinner para imagens -->
@@ -119,15 +119,15 @@
 
         <div class="physical-stats">
           <div class="stat-item">
-            <span class="label">{{ 'modal.height' | translate }}</span>
+            <span class="label">{{ 'pokemon.height' | translate }}</span>
             <span class="value">{{ (pokemon.height / 10).toFixed(1) }}m</span>
           </div>
           <div class="stat-item">
-            <span class="label">{{ 'modal.weight' | translate }}</span>
+            <span class="label">{{ 'pokemon.weight' | translate }}</span>
             <span class="value">{{ (pokemon.weight / 10).toFixed(1) }}kg</span>
           </div>
           <div class="stat-item">
-            <span class="label">{{ 'modal.base_exp' | translate }}</span>
+            <span class="label">{{ 'pokemon.base_experience' | translate }}</span>
             <span class="value">{{ getBaseExperience() }}</span>
           </div>
         </div>
@@ -141,7 +141,7 @@
                 [class.active]="activeTab === 'overview'"
                 (click)="setActiveTab('overview')">
           <ion-icon name="eye-outline"></ion-icon>
-          {{ 'modal.overview' | translate }}
+          {{ 'details.basic_info' | translate }}
         </button>
         <button class="tab-btn"
                 role="tab"
@@ -149,7 +149,7 @@
                 [class.active]="activeTab === 'combat'"
                 (click)="setActiveTab('combat')">
           <ion-icon name="flash-outline"></ion-icon>
-          {{ 'modal.combat' | translate }}
+          {{ 'details.stats' | translate }}
         </button>
         <button class="tab-btn"
                 role="tab"
@@ -157,7 +157,7 @@
                 [class.active]="activeTab === 'evolution'"
                 (click)="setActiveTab('evolution')">
           <ion-icon name="arrow-up-outline"></ion-icon>
-          {{ 'modal.evolution' | translate }}
+          {{ 'details.evolution' | translate }}
         </button>
         <button class="tab-btn"
                 role="tab"
@@ -165,7 +165,7 @@
                 [class.active]="activeTab === 'curiosities'"
                 (click)="setActiveTab('curiosities')">
           <ion-icon name="star-outline"></ion-icon>
-          {{ 'modal.curiosities' | translate }}
+          {{ 'details.curiosities' | translate }}
         </button>
       </div>
 
@@ -193,12 +193,12 @@
         <div class="tab-panel" *ngIf="activeTab === 'combat'">
           <div class="combat-content">
             <div class="combat-stats-detailed">
-              <h3><ion-icon name="flash-outline"></ion-icon> {{ 'modal.combat_stats' | translate }}</h3>
+              <h3><ion-icon name="flash-outline"></ion-icon> {{ 'details.stats' | translate }}</h3>
 
               <!-- Total de status -->
               <div class="total-stats-card">
                 <div class="stat-total">
-                  <span class="total-label">{{ 'modal.total_base' | translate }}</span>
+                  <span class="total-label">{{ 'details.total' | translate }}</span>
                   <span class="total-value">{{ getTotalStats() }}</span>
                 </div>
               </div>
@@ -207,7 +207,7 @@
               <div class="stats-categories">
                 <!-- Stats Ofensivos -->
                 <div class="category offensive">
-                  <h4><ion-icon name="flash-outline"></ion-icon> {{ 'modal.offensive_stats' | translate }}</h4>
+                  <h4><ion-icon name="flash-outline"></ion-icon> Stats Ofensivos</h4>
                   <div class="stat-row" *ngFor="let stat of getOffensiveStats()">
                     <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                     <span class="stat-value">{{ stat.base_stat }}</span>
@@ -219,7 +219,7 @@
 
                 <!-- Stats Defensivos -->
                 <div class="category defensive">
-                  <h4><ion-icon name="shield-outline"></ion-icon> {{ 'modal.defensive_stats' | translate }}</h4>
+                  <h4><ion-icon name="shield-outline"></ion-icon> Stats Defensivos</h4>
                   <div class="stat-row" *ngFor="let stat of getDefensiveStats()">
                     <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                     <span class="stat-value">{{ stat.base_stat }}</span>
@@ -231,7 +231,7 @@
 
                 <!-- Stats Utilitários -->
                 <div class="category utility">
-                  <h4><ion-icon name="speedometer-outline"></ion-icon> {{ 'modal.utility_stats' | translate }}</h4>
+                  <h4><ion-icon name="speedometer-outline"></ion-icon> Stats Utilitários</h4>
                   <div class="stat-row" *ngFor="let stat of getUtilityStats()">
                     <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                     <span class="stat-value">{{ stat.base_stat }}</span>
@@ -244,14 +244,14 @@
 
               <!-- Habilidades -->
               <div class="abilities-section" *ngIf="pokemon?.abilities?.length">
-                <h4><ion-icon name="flash-outline"></ion-icon> {{ 'modal.abilities' | translate }}</h4>
+                <h4><ion-icon name="flash-outline"></ion-icon> {{ 'pokemon.abilities' | translate }}</h4>
                 <div class="abilities-grid">
                   <div class="ability-card"
                        *ngFor="let ability of pokemon?.abilities"
                        [ngClass]="{ 'hidden': ability.is_hidden }">
                     <div class="ability-header">
                       <span class="ability-name">{{ ability.ability.name | titlecase }}</span>
-                      <span class="ability-badge" *ngIf="ability.is_hidden">{{ 'modal.hidden_ability' | translate }}</span>
+                      <span class="ability-badge" *ngIf="ability.is_hidden">{{ 'pokemon.hidden_ability' | translate }}</span>
                     </div>
                     <div class="ability-description">
                       {{ getAbilityDescription(ability.ability.name) }}
@@ -266,14 +266,14 @@
         <!-- Evolution Tab -->
         <div class="tab-panel" *ngIf="activeTab === 'evolution'">
           <div class="evolution-content">
-            <h3><ion-icon name="arrow-up-outline"></ion-icon> {{ 'modal.evolution' | translate }}</h3>
+            <h3><ion-icon name="arrow-up-outline"></ion-icon> {{ 'details.evolution' | translate }}</h3>
 
             <!-- Loading state para cadeia de evolução -->
             <div class="evolution-loading" *ngIf="!isEvolutionChainReady()">
               <div class="loading-spinner">
                 <ion-spinner name="crescent"></ion-spinner>
               </div>
-              <p>{{ 'app.loading' | translate }} {{ 'modal.evolution' | translate | lowercase }}</p>
+              <p>{{ 'app.loading' | translate }} {{ 'details.evolution' | translate | lowercase }}</p>
             </div>
 
             <!-- Cadeia de evolução carregada -->
@@ -291,7 +291,7 @@
                     <div class="evolution-info-text">
                       <h4>{{ stage.name | titlecase }}</h4>
                       <span class="evolution-level" *ngIf="stage.level">
-                        {{ 'modal.level' | translate }} {{ stage.level }}
+                        Nível {{ stage.level }}
                       </span>
                       <span class="evolution-method" *ngIf="stage.method && stage.method !== 'level'">
                         {{ getEvolutionMethodText(stage.method) }}
@@ -313,7 +313,7 @@
             <ng-template #noEvolution>
               <div class="no-evolution" *ngIf="isEvolutionChainReady()">
                 <ion-icon name="star-outline"></ion-icon>
-                <p>{{ 'modal.no_evolution' | translate }}</p>
+                <p>{{ 'details.no_evolution' | translate }}</p>
               </div>
             </ng-template>
           </div>
@@ -322,11 +322,11 @@
         <!-- Curiosities Tab -->
         <div class="tab-panel" *ngIf="activeTab === 'curiosities'">
           <div class="curiosities-content">
-            <h3><ion-icon name="star-outline"></ion-icon> {{ 'modal.curiosities' | translate }}</h3>
+            <h3><ion-icon name="star-outline"></ion-icon> {{ 'details.curiosities' | translate }}</h3>
 
             <!-- Flavor texts -->
             <div class="flavor-section">
-              <h4><ion-icon name="book-outline"></ion-icon> {{ 'modal.descriptions' | translate }}</h4>
+              <h4><ion-icon name="book-outline"></ion-icon> Descrições</h4>
               <div class="flavor-container">
 
                 <!-- Loading state para flavor texts -->
@@ -334,7 +334,7 @@
                   <div class="loading-spinner">
                     <ion-spinner name="crescent"></ion-spinner>
                   </div>
-                  <p>{{ 'app.loading' | translate }} {{ 'modal.descriptions' | translate | lowercase }}</p>
+                  <p>{{ 'app.loading' | translate }} descrições</p>
                 </div>
 
                 <!-- Flavor texts carregados -->
@@ -362,28 +362,28 @@
                 <!-- Estado quando não há flavor texts -->
                 <div class="no-flavor" *ngIf="!isLoadingFlavor && (!flavorTexts || flavorTexts.length === 0)">
                   <ion-icon name="information-circle-outline"></ion-icon>
-                  <p>{{ 'modal.NO_FLAVOR_TEXT_AVAILABLE' | translate }}</p>
+                  <p>{{ 'details.no_description' | translate }}</p>
                 </div>
               </div>
             </div>
 
             <!-- Características físicas -->
             <div class="biological-info">
-              <h4><ion-icon name="body-outline"></ion-icon> {{ 'modal.physical_characteristics' | translate }}</h4>
+              <h4><ion-icon name="body-outline"></ion-icon> Características Físicas</h4>
               <div class="bio-grid">
                 <div class="bio-item">
                   <ion-icon name="resize-outline"></ion-icon>
-                  <span class="bio-label">{{ 'modal.height' | translate }}</span>
+                  <span class="bio-label">{{ 'pokemon.height' | translate }}</span>
                   <span class="bio-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
                 </div>
                 <div class="bio-item">
                   <ion-icon name="barbell-outline"></ion-icon>
-                  <span class="bio-label">{{ 'modal.weight' | translate }}</span>
+                  <span class="bio-label">{{ 'pokemon.weight' | translate }}</span>
                   <span class="bio-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
                 </div>
                 <div class="bio-item">
                   <ion-icon name="calculator-outline"></ion-icon>
-                  <span class="bio-label">{{ 'modal.bmi' | translate }}</span>
+                  <span class="bio-label">IMC</span>
                   <span class="bio-value">{{ getPokemonBMI() }}</span>
                 </div>
               </div>
@@ -391,21 +391,21 @@
 
             <!-- Raridade e captura -->
             <div class="capture-info">
-              <h4><ion-icon name="target-outline"></ion-icon> {{ 'modal.capture_info' | translate }}</h4>
+              <h4><ion-icon name="target-outline"></ion-icon> Informações de Captura</h4>
               <div class="capture-grid">
                 <div class="capture-item">
                   <ion-icon name="locate-outline"></ion-icon>
-                  <span class="capture-label">{{ 'modal.capture_rate' | translate }}</span>
+                  <span class="capture-label">Taxa de Captura</span>
                   <span class="capture-value">{{ getCaptureRate() || 'N/A' }}</span>
                 </div>
                 <div class="capture-item">
                   <ion-icon name="heart-outline"></ion-icon>
-                  <span class="capture-label">{{ 'modal.base_happiness' | translate }}</span>
+                  <span class="capture-label">Felicidade Base</span>
                   <span class="capture-value">{{ getBaseHappiness() || 'N/A' }}</span>
                 </div>
                 <div class="capture-item">
                   <ion-icon name="color-palette-outline"></ion-icon>
-                  <span class="capture-label">{{ 'modal.color' | translate }}</span>
+                  <span class="capture-label">Cor</span>
                   <span class="capture-value">{{ getPokemonColor() || 'N/A' }}</span>
                 </div>
               </div>
@@ -413,7 +413,7 @@
 
             <!-- Trivia -->
             <div class="trivia-section">
-              <h4><ion-icon name="bulb-outline"></ion-icon> {{ 'modal.trivia_title' | translate }}</h4>
+              <h4><ion-icon name="bulb-outline"></ion-icon> Você Sabia?</h4>
               <div class="trivia-list">
                 <div class="trivia-item" *ngFor="let trivia of getPokemonTrivia()">
                   <ion-icon name="star-outline"></ion-icon>

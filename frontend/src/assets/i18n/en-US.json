@@ -1,4 +1,12 @@
 {
+  "COMMON": {
+    "HEIGHT": "Height",
+    "WEIGHT": "Weight"
+  },
+  "OK": "OK",
+  "RANKING": {
+    "CHAMPION": "Champion"
+  },
   "app": {
     "name": "Pokédex",
     "title": "Pokédex",
@@ -26,7 +34,9 @@
     "height": "Height",
     "weight": "Weight",
     "experience": "Experience",
+    "base_experience": "Base Experience",
     "abilities": "Abilities",
+    "hidden_ability": "Hidden Ability",
     "stats": "Stats",
     "types": "Types",
     "description": "Description",
@@ -40,7 +50,20 @@
     "searchPlaceholder": "Type Pokémon name...",
     "generation": "Generation",
     "habitat": "Habitat",
-    "color": "Color"
+    "color": "Color",
+    "colors": {
+      "black": "Black",
+      "blue": "Blue",
+      "brown": "Brown",
+      "gray": "Gray",
+      "grey": "Gray",
+      "green": "Green",
+      "pink": "Pink",
+      "purple": "Purple",
+      "red": "Red",
+      "white": "White",
+      "yellow": "Yellow"
+    }
   },
   "stats": {
     "hp": "HP",
@@ -116,6 +139,7 @@
   "filters": {
     "all": "All",
     "sortBy": "Sort by",
+    "sort_by": "Sort by",
     "sortByName": "Name",
     "sortById": "Number",
     "ascending": "Ascending",
@@ -183,6 +207,7 @@
     "loading": "Loading...",
     "no_results": "No results found",
     "no_results_message": "Try adjusting filters or searching another name.",
+    "try_different_search": "Try a different search or clear the filter.",
     "clear_filters": "Clear filters",
     "loading_more": "Loading more...",
     "placeholder": "Type Pokémon name or ID...",
@@ -234,6 +259,7 @@
     "advanced_settings": "Advanced settings",
     "app_info": "App Info",
     "about_app": "About the App",
+    "about_description": "PokeAPIApp is a complete application to explore the Pokémon world, developed with modern technologies.",
     "version": "Version",
     "platform": "Platform",
     "data_source": "Data Source",
@@ -262,6 +288,8 @@
     "no_global_ranking_desc": "There's not enough data yet to display the global ranking. Capture and favorite Pokémon to participate!",
     "EXPLORE_POKEMON": "EXPLORE POKÉMON",
     "champion": "Champion!",
+    "add_favorites_for_ranking": "Add favorites to create a ranking!",
+    "no_local_ranking": "No local ranking available",
     "timeout_error": "Timeout loading ranking. Try again.",
     "error_loading_ranking": "Error loading ranking",
     "error_loading_local_ranking": "Error loading local ranking",
@@ -276,14 +304,9 @@
     "default": "Normal",
     "shiny": "Shiny",
     "basic_info": "Basic Information",
-    "height": "Height",
-    "weight": "Weight",
-    "base_experience": "Base Experience",
     "generation": "Generation",
     "stats": "Stats",
     "total": "Total",
-    "abilities": "Abilities",
-    "hidden": "Hidden",
     "moves": "Moves",
     "recent_moves": "Recent Moves",
     "images": "Images",
@@ -297,6 +320,10 @@
     "added_to_captured": "Pokémon added to captured!",
     "error_loading": "Error loading details",
     "url_copied": "URL copied to clipboard!",
+    "evolution": "Evolution",
+    "curiosities": "Curiosities",
+    "no_evolution": "This Pokémon has no evolution",
+    "no_description": "Description not available in English",
     "trivia": {
       "legendary_stats": "This Pokémon has legendary stats! (Total > 600)",
       "exceptional_stats": "This Pokémon has exceptional stats! (Total > 500)",
@@ -315,9 +342,6 @@
     }
   },
   "modal": {
-    "height": "Height",
-    "weight": "Weight",
-    "base_exp": "Base EXP",
     "overview": "Overview",
     "combat": "Combat",
     "evolution": "Evolution",
@@ -326,21 +350,19 @@
     "offensive_stats": "Offensive Stats",
     "defensive_stats": "Defensive Stats",
     "utility_stats": "Utility Stats",
-    "abilities": "Abilities",
     "physical_characteristics": "Physical Characteristics",
     "bmi": "BMI",
     "capture_info": "Capture Information",
     "capture_rate": "Capture Rate",
     "base_happiness": "Base Happiness",
+    "base_experience": "Base Experience",
     "color": "Color",
     "combat_stats": "Combat Stats",
     "total_base": "Total Base",
-    "hidden_ability": "Hidden",
     "evolution_title": "Evolution",
     "growth_info": "Growth Information",
     "egg_groups": "Egg Groups",
     "growth_rate": "Growth Rate",
-    "base_experience": "Base Experience",
     "descriptions": "Descriptions",
     "trivia_title": "Did You Know?",
     "no_more_text": "No more text",
@@ -450,21 +472,6 @@
     "red": "Red",
     "white": "White",
     "yellow": "Yellow"
-  },
-  "pokemon": {
-    "colors": {
-      "black": "Black",
-      "blue": "Blue",
-      "brown": "Brown",
-      "gray": "Gray",
-      "grey": "Gray",
-      "green": "Green",
-      "pink": "Pink",
-      "purple": "Purple",
-      "red": "Red",
-      "white": "White",
-      "yellow": "Yellow"
-    }
   },
   "trivia": {
     "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex",
@@ -597,7 +604,26 @@
       "user_found": "User found! Answer the security question.",
       "answer_correct": "Correct answer! You can now reset your password.",
       "password_reset": "Password reset successfully!"
-    }
+    },
+    "account_settings": "Account Settings",
+    "cancel": "Cancel",
+    "change_password": "Change Password",
+    "change_password_desc": "Update your account password",
+    "current_password": "Current Password",
+    "current_password_placeholder": "Enter your current password",
+    "delete_account": "Delete Account",
+    "delete_account_desc": "Permanently delete your account",
+    "delete_account_warning": "This action cannot be undone",
+    "first_name": "First Name",
+    "first_name_placeholder": "Enter your first name",
+    "last_name": "Last Name",
+    "last_name_placeholder": "Enter your last name",
+    "new_password_confirm": "Confirm New Password",
+    "passwords_dont_match": "Passwords don't match",
+    "save_changes": "Save Changes",
+    "trainer_level": "Trainer Level",
+    "verify_current_password": "Verify Current Password",
+    "view_profile": "View Profile"
   },
   "sync_with_server": "Sync with server",
   "synced": "Synced",
@@ -609,29 +635,41 @@
     "logout": "Logout",
     "trainer": "Trainer"
   },
-  "details": {
-    "trivia": {
-      "legendary_stats": "This Pokémon has legendary stats with a total above 600!",
-      "exceptional_stats": "This Pokémon has exceptional stats with a total above 500!",
-      "very_heavy": "This Pokémon is very heavy, weighing {{weight}} kg!",
-      "very_tall": "This Pokémon is very tall, measuring {{height}} meters!",
-      "dragon_type": "Dragon-type Pokémon are known for their strength and majesty!",
-      "psychic_type": "Psychic-type Pokémon possess extraordinary mental powers!",
-      "ghost_type": "Ghost-type Pokémon can phase through walls and are mysterious!",
-      "dual_type": "This Pokémon has dual type: {{types}}, offering versatility in battle!",
-      "high_experience": "This Pokémon offers a lot of experience when defeated in battle!",
-      "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex (#001)!",
-      "mewtwo_origin": "Mewtwo was created through genetic experiments with Mew!",
-      "mew_original": "Mew is considered the ancestor of all Pokémon!",
-      "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
-      "generic": "This Pokémon has unique characteristics that make it special!"
-    }
-  },
   "admin": {
     "roles": {
       "visitor": "Visitor",
       "user": "User",
       "administrator": "Administrator"
+    },
+    "pokemon": {
+      "buttons": {
+        "add": "Add Pokémon",
+        "edit": "Edit",
+        "delete": "Delete",
+        "add_ability": "Add Ability",
+        "add_type": "Add Type"
+      },
+      "fields": {
+        "name": "Name",
+        "height": "Height",
+        "weight": "Weight",
+        "base_experience": "Base Experience",
+        "image_default": "Default Image",
+        "image_shiny": "Shiny Image",
+        "image_artwork": "Artwork Image"
+      },
+      "sections": {
+        "basic_info": "Basic Information",
+        "stats": "Stats",
+        "types": "Types",
+        "abilities": "Abilities",
+        "images": "Images"
+      },
+      "placeholders": {
+        "name": "Enter Pokémon name",
+        "ability_name": "Enter ability name",
+        "select_type": "Select type"
+      }
     }
   },
   "common": {

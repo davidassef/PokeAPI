@@ -1,4 +1,12 @@
 {
+  "COMMON": {
+    "HEIGHT": "Altura",
+    "WEIGHT": "Peso"
+  },
+  "OK": "OK",
+  "RANKING": {
+    "CHAMPION": "Campeão"
+  },
   "app": {
     "name": "Pokédex",
     "title": "Pokédex",
@@ -26,7 +34,9 @@
     "height": "Altura",
     "weight": "Peso",
     "experience": "Experiência",
+    "base_experience": "Experiência Base",
     "abilities": "Habilidades",
+    "hidden_ability": "Habilidade Oculta",
     "stats": "Estatísticas",
     "types": "Tipos",
     "description": "Descrição",
@@ -40,7 +50,20 @@
     "searchPlaceholder": "Digite o nome do Pokémon...",
     "generation": "Geração",
     "habitat": "Habitat",
-    "color": "Cor"
+    "color": "Cor",
+    "colors": {
+      "black": "Preto",
+      "blue": "Azul",
+      "brown": "Marrom",
+      "gray": "Cinza",
+      "grey": "Cinza",
+      "green": "Verde",
+      "pink": "Rosa",
+      "purple": "Roxo",
+      "red": "Vermelho",
+      "white": "Branco",
+      "yellow": "Amarelo"
+    }
   },
   "stats": {
     "hp": "HP",
@@ -183,6 +206,7 @@
     "loading": "Carregando",
     "no_results": "Nenhum resultado encontrado",
     "no_results_message": "Tente ajustar os filtros ou pesquisar outro nome.",
+    "try_different_search": "Tente outra busca ou limpe o filtro.",
     "clear_filters": "Limpar filtros",
     "loading_more": "Carregando mais...",
     "placeholder": "Digite o nome do Pokémon ou ID...",
@@ -234,6 +258,7 @@
     "advanced_settings": "Configurações avançadas",
     "app_info": "Informações do App",
     "about_app": "Sobre o App",
+    "about_description": "PokeAPIApp é uma aplicação completa para explorar o mundo Pokémon, desenvolvida com tecnologias modernas.",
     "version": "Versão",
     "platform": "Plataforma",
     "data_source": "Fonte de Dados",
@@ -262,6 +287,8 @@
     "no_global_ranking_desc": "Ainda não há dados suficientes para exibir o ranking global. Capture e favorite Pokémons para participar!",
     "EXPLORE_POKEMON": "EXPLORAR POKÉMONS",
     "champion": "Campeão!",
+    "add_favorites_for_ranking": "Adicione favoritos para criar um ranking!",
+    "no_local_ranking": "Nenhum ranking local disponível",
     "timeout_error": "Tempo limite ao carregar ranking. Tente novamente.",
     "error_loading_ranking": "Erro ao carregar ranking",
     "error_loading_local_ranking": "Erro ao carregar ranking local",
@@ -276,14 +303,9 @@
     "default": "Normal",
     "shiny": "Shiny",
     "basic_info": "Informações Básicas",
-    "height": "Altura",
-    "weight": "Peso",
-    "base_experience": "Experiência Base",
     "generation": "Geração",
     "stats": "Status",
     "total": "Total",
-    "abilities": "Habilidades",
-    "hidden": "Oculta",
     "moves": "Movimentos",
     "recent_moves": "Movimentos Recentes",
     "images": "Imagens",
@@ -297,6 +319,10 @@
     "added_to_captured": "Pokémon adicionado aos capturados!",
     "error_loading": "Erro ao carregar detalhes",
     "url_copied": "URL copiada para a área de transferência!",
+    "evolution": "Evolução",
+    "curiosities": "Curiosidades",
+    "no_evolution": "Este Pokémon não possui evolução",
+    "no_description": "Descrição não disponível em português",
     "trivia": {
       "legendary_stats": "Este Pokémon tem stats lendárias! (Total > 600)",
       "exceptional_stats": "Este Pokémon tem stats excepcionais! (Total > 500)",
@@ -315,9 +341,6 @@
     }
   },
   "modal": {
-    "height": "Altura",
-    "weight": "Peso",
-    "base_exp": "EXP Base",
     "overview": "Visão Geral",
     "combat": "Combate",
     "evolution": "Evolução",
@@ -326,21 +349,19 @@
     "offensive_stats": "Estatísticas Ofensivas",
     "defensive_stats": "Estatísticas Defensivas",
     "utility_stats": "Estatísticas de Utilidade",
-    "abilities": "Habilidades",
     "physical_characteristics": "Características Físicas",
     "bmi": "IMC",
     "capture_info": "Informações de Captura",
     "capture_rate": "Taxa de Captura",
     "base_happiness": "Felicidade Base",
+    "base_experience": "Experiência Base",
     "color": "Cor",
     "combat_stats": "Estatísticas de Combate",
     "total_base": "Total Base",
-    "hidden_ability": "Oculta",
     "evolution_title": "Evolução",
     "growth_info": "Informações de Crescimento",
     "egg_groups": "Grupo de Ovos",
     "growth_rate": "Taxa de Crescimento",
-    "base_experience": "Experiência Base",
     "descriptions": "Descrições",
     "trivia_title": "Você Sabia?",
     "no_more_text": "Não há mais texto",
@@ -451,21 +472,6 @@
     "white": "Branco",
     "yellow": "Amarelo"
   },
-  "pokemon": {
-    "colors": {
-      "black": "Preto",
-      "blue": "Azul",
-      "brown": "Marrom",
-      "gray": "Cinza",
-      "grey": "Cinza",
-      "green": "Verde",
-      "pink": "Rosa",
-      "purple": "Roxo",
-      "red": "Vermelho",
-      "white": "Branco",
-      "yellow": "Amarelo"
-    }
-  },
   "trivia": {
     "bulbasaur_first": "Bulbasaur é o primeiro Pokémon na Pokédex Nacional",
     "starter_pokemon": "Este é um Pokémon inicial",
@@ -522,24 +528,6 @@
     "profile_settings": "Configurações de Perfil",
     "logout": "Sair",
     "trainer": "Treinador"
-  },
-  "details": {
-    "trivia": {
-      "legendary_stats": "Este Pokémon possui estatísticas lendárias com total acima de 600!",
-      "exceptional_stats": "Este Pokémon possui estatísticas excepcionais com total acima de 500!",
-      "very_heavy": "Este Pokémon é muito pesado, pesando {{weight}} kg!",
-      "very_tall": "Este Pokémon é muito alto, medindo {{height}} metros!",
-      "dragon_type": "Pokémon do tipo Dragão são conhecidos por sua força e majestade!",
-      "psychic_type": "Pokémon do tipo Psíquico possuem poderes mentais extraordinários!",
-      "ghost_type": "Pokémon do tipo Fantasma podem atravessar paredes e são misteriosos!",
-      "dual_type": "Este Pokémon possui duplo tipo: {{types}}, oferecendo versatilidade em batalha!",
-      "high_experience": "Este Pokémon oferece muita experiência quando derrotado em batalha!",
-      "bulbasaur_first": "Bulbasaur é o primeiro Pokémon na Pokédex Nacional (#001)!",
-      "mewtwo_origin": "Mewtwo foi criado através de experimentos genéticos com Mew!",
-      "mew_original": "Mew é considerado o ancestral de todos os Pokémon!",
-      "pikachu_mascot": "Pikachu é o mascote oficial da franquia Pokémon!",
-      "generic": "Este Pokémon possui características únicas que o tornam especial!"
-    }
   },
   "admin": {
     "roles": {
