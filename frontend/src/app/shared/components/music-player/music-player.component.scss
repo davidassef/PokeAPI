@@ -41,6 +41,11 @@
     animation: autoMinimize 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  // Estado quando modal está aberto - reduzir z-index
+  &.modal-open {
+    z-index: 100 !important;
+  }
+
   .player-minimized {
     /* Layout do mini-player */
     display: flex;

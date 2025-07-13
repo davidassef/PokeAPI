@@ -276,6 +276,10 @@
     "language": "Idioma",
     "footer_text": "Desarrollado con ❤️ por David Assef"
   },
+  "music": {
+    "now_playing": "Reproduciendo",
+    "no_track_selected": "Ninguna pista seleccionada"
+  },
   "languages": {
     "pt-BR": "Português",
     "en-US": "English",
@@ -287,7 +291,7 @@
     "combat": "Combate",
     "evolution": "Evolución",
     "curiosities": "Curiosidades",
-    "basic_info": "Información Básica",
+    "basic_info": "Info. Básica",
     "offensive_stats": "Estadísticas Ofensivas",
     "defensive_stats": "Estadísticas Defensivas",
     "utility_stats": "Estadísticas de Utilidad",
@@ -459,7 +463,7 @@
     "loading": "Cargando detalles...",
     "default": "Normal",
     "shiny": "Shiny",
-    "basic_info": "Información Básica",
+    "basic_info": "Info. Básica",
     "generation": "Generación",
     "stats": "Estadísticas",
     "total": "Total",
@@ -521,7 +525,7 @@
         "image_artwork": "Imagen Artwork"
       },
       "sections": {
-        "basic_info": "Información Básica",
+        "basic_info": "Info. Básica",
         "stats": "Estadísticas",
         "types": "Tipos",
         "abilities": "Habilidades",

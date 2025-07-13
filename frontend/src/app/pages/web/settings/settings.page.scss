@@ -1,6 +1,6 @@
 ion-content {
   --background: var(--settings-bg);
-  padding-bottom: 140px;
+  --padding-bottom: var(--bottom-spacing-desktop);
 }
 
 // Cards de configurações - using unified theme variables

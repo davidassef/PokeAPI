@@ -327,6 +327,12 @@ $breakpoints: (
   --z-overlay: 4000;
   --z-card: 1000;
   --z-base: 1;
+
+  // ===== ESPAÇAMENTO INFERIOR =====
+  // Para visualização completa do conteúdo acima dos elementos fixos
+  --bottom-spacing-mobile: 160px; // Music player (80px) + Tab bar (60px) + Margem (20px)
+  --bottom-spacing-desktop: 100px; // Music player (80px) + Margem (20px)
+  --bottom-spacing-modal: 80px; // Espaçamento menor para modais
 }
 
 // ===== SAFE AREA SUPPORT =====

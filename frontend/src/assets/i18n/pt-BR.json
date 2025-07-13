@@ -196,6 +196,10 @@
     "language": "Idioma",
     "footer_text": "Desenvolvido com ❤️ por David Assef"
   },
+  "music": {
+    "now_playing": "Tocando Agora",
+    "no_track_selected": "Nenhuma música selecionada"
+  },
   "languages": {
     "pt-BR": "Português",
     "en-US": "Inglês",
@@ -302,7 +306,7 @@
     "loading": "Carregando detalhes...",
     "default": "Normal",
     "shiny": "Shiny",
-    "basic_info": "Informações Básicas",
+    "basic_info": "Info. Básicas",
     "generation": "Geração",
     "stats": "Status",
     "total": "Total",
@@ -345,7 +349,7 @@
     "combat": "Combate",
     "evolution": "Evolução",
     "curiosities": "Curiosidades",
-    "basic_info": "Informações Básicas",
+    "basic_info": "Info. Básicas",
     "offensive_stats": "Estatísticas Ofensivas",
     "defensive_stats": "Estatísticas Defensivas",
     "utility_stats": "Estatísticas de Utilidade",
@@ -643,7 +647,7 @@
       "add_title": "Adicionar Novo Pokémon",
       "edit_title": "Editar Pokémon",
       "sections": {
-        "basic_info": "Informações Básicas",
+        "basic_info": "Info. Básicas",
         "types": "Tipos",
         "stats": "Estatísticas",
         "abilities": "Habilidades",

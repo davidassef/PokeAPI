@@ -68,6 +68,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
       timestamp: new Date().toISOString()
     });
 
+    // Adicionar classe modal-open ao body para controlar z-index dos FABs
+    if (this.isOpen) {
+      document.body.classList.add('modal-open');
+    }
+
     // Ativar indicador de cache apenas em desenvolvimento
     this.showCacheStats = true; // Sempre ativo para demonstração
 
@@ -79,6 +84,9 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Remover classe modal-open do body
+    document.body.classList.remove('modal-open');
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -681,6 +689,8 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
 
   // Fechar modal
   closeModal() {
+    // Remover classe modal-open do body
+    document.body.classList.remove('modal-open');
     this.modalClosed.emit();
   }
 

@@ -198,12 +198,15 @@
   margin-top: 4px;
 }
 
-// FAB mobile - Reposicionado para evitar sobreposição com music player
-.scroll-top-fab-mobile {
-  --size: 44px; // Reduzido de 48px para 44px
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
-  z-index: var(--z-fab); // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+// ===== ESPAÇAMENTO INFERIOR =====
+// Para visualização completa do conteúdo acima dos elementos fixos
+.content-container {
+  padding-bottom: var(--bottom-spacing-mobile);
+}
+
+// Aplicar espaçamento ao ion-content
+ion-content {
+  --padding-bottom: var(--bottom-spacing-mobile);
 }
 
 // Animações mobile
@@ -267,9 +270,7 @@
     gap: 6px;
   }
 
-  .scroll-top-fab-mobile {
-    margin-bottom: 140px; // Ajustado para landscape (music player + tabs reduzido)
-  }
+  // FAB removido temporariamente
 }
 
 // Dark theme adjustments

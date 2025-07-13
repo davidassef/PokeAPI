@@ -194,6 +194,9 @@
   overflow-y: auto;
   background: var(--surface-bg);
   color: var(--text-color);
+
+  // Espaçamento inferior aumentado para melhor visualização
+  padding-bottom: 140px; // Aumentado de 80px para 140px
 }
 
 .interactive-element {

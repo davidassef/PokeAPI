@@ -221,6 +221,10 @@
     "language": "言語",
     "footer_text": "❤️ David Assefによって開発されました"
   },
+  "music": {
+    "now_playing": "再生中",
+    "no_track_selected": "トラックが選択されていません"
+  },
   "languages": {
     "pt-BR": "Português",
     "en-US": "English",

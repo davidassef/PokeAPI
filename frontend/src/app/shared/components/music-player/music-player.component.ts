@@ -39,6 +39,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
 
   // Controles internos
   private destroy$ = new Subject<void>();
+  private modalObserver?: MutationObserver;
+  public isModalOpen = false;
 
   constructor(
     private audioService: AudioService,
@@ -54,9 +56,16 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     this.isAutoMinimized = false;
 
     this.initializeComponent();
+    this.setupModalObserver();
+
+    // Verificar se já há modais abertos na inicialização
+    this.checkExistingModals();
   }
 
   ngOnDestroy() {
+    if (this.modalObserver) {
+      this.modalObserver.disconnect();
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -417,5 +426,89 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
       this.isAutoMinimized = false;
       this.cdr.detectChanges();
     }, 500);
+  }
+
+  // ===== OBSERVADOR DE MODAIS =====
+
+  private setupModalObserver() {
+    this.modalObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            const element = node as Element;
+            // Detectar se um modal foi adicionado (incluindo modal de autenticação)
+            if (element.classList?.contains('mobile-modal-overlay') ||
+                element.classList?.contains('details-modal-overlay') ||
+                element.classList?.contains('auth-modal-container') ||
+                element.tagName === 'APP-AUTH-MODAL-NEW' ||
+                element.querySelector?.('.mobile-modal-overlay, .details-modal-overlay, .auth-modal-container, app-auth-modal-new')) {
+              this.onModalOpened();
+            }
+          }
+        });
+
+        mutation.removedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            const element = node as Element;
+            // Detectar se um modal foi removido (incluindo modal de autenticação)
+            if (element.classList?.contains('mobile-modal-overlay') ||
+                element.classList?.contains('details-modal-overlay') ||
+                element.classList?.contains('auth-modal-container') ||
+                element.tagName === 'APP-AUTH-MODAL-NEW' ||
+                element.querySelector?.('.mobile-modal-overlay, .details-modal-overlay, .auth-modal-container, app-auth-modal-new')) {
+              this.onModalClosed();
+            }
+          }
+        });
+      });
+    });
+
+    this.modalObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    console.log('[MusicPlayer] Modal observer configurado');
+  }
+
+  private onModalOpened() {
+    this.isModalOpen = true;
+
+    // Forçar z-index baixo quando modal aberto
+    const musicPlayerElement = this.elementRef.nativeElement.querySelector('.music-player');
+    if (musicPlayerElement) {
+      musicPlayerElement.style.zIndex = '100';
+      console.log('[MusicPlayer] Modal detectado - z-index alterado para 100');
+    } else {
+      console.warn('[MusicPlayer] Elemento .music-player não encontrado');
+    }
+
+    console.log('[MusicPlayer] Modal aberto - isModalOpen:', this.isModalOpen);
+  }
+
+  private onModalClosed() {
+    this.isModalOpen = false;
+
+    // Restaurar z-index normal quando modal fechado
+    const musicPlayerElement = this.elementRef.nativeElement.querySelector('.music-player');
+    if (musicPlayerElement) {
+      musicPlayerElement.style.zIndex = 'var(--z-music-player)';
+      console.log('[MusicPlayer] Modal fechado - z-index restaurado para var(--z-music-player)');
+    } else {
+      console.warn('[MusicPlayer] Elemento .music-player não encontrado');
+    }
+
+    console.log('[MusicPlayer] Modal fechado - isModalOpen:', this.isModalOpen);
+  }
+
+  // Verificar se já existem modais abertos na inicialização
+  private checkExistingModals() {
+    const existingModal = document.querySelector('.mobile-modal-overlay, .details-modal-overlay, .auth-modal-container, app-auth-modal-new');
+    if (existingModal) {
+      console.log('[MusicPlayer] Modal já existente detectado na inicialização:', existingModal.tagName || existingModal.className);
+      this.onModalOpened();
+    } else {
+      console.log('[MusicPlayer] Nenhum modal detectado na inicialização');
+    }
   }
 }

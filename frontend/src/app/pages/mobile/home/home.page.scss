@@ -184,19 +184,15 @@
   margin-top: 4px;
 }
 
-// FABs mobile - Reposicionados para evitar sobreposição com music player
-.surprise-fab-mobile {
-  --size: 48px; // Reduzido de 56px para 48px
-  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
-  z-index: var(--z-fab); // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+// ===== ESPAÇAMENTO INFERIOR =====
+// Para visualização completa do conteúdo acima dos elementos fixos
+.content-container {
+  padding-bottom: var(--bottom-spacing-mobile);
 }
 
-.scroll-top-fab-mobile {
-  --size: 44px; // Reduzido de 48px para 44px
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  margin-bottom: 160px; // Aumentado de 80px para 160px (music player + tabs)
-  z-index: var(--z-fab); // Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000+) > Music(7000) > FAB(6000)
+// Aplicar espaçamento ao ion-content
+ion-content {
+  --padding-bottom: var(--bottom-spacing-mobile);
 }
 
 // Animações mobile
@@ -260,10 +256,7 @@
     gap: 6px;
   }
 
-  .surprise-fab-mobile,
-  .scroll-top-fab-mobile {
-    margin-bottom: 140px; // Ajustado para landscape (music player + tabs reduzido)
-  }
+  // FABs removidos temporariamente
 }
 
 // Dark theme adjustments

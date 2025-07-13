@@ -413,6 +413,19 @@ ion-fab, ion-fab-button {
   z-index: var(--z-fab) !important;
 }
 
+// MOBILE FABs - Z-INDEX CORRETO
+// Hierarquia: Auth(10000) > Sidemenu(9000) > Modal(8000) > Music(7000) > FAB(6000)
+app-mobile-fabs {
+  // Container não interfere com z-index
+  position: relative;
+  z-index: var(--z-fab); // 6000
+
+  // Garantir que FABs fiquem abaixo de modais
+  ion-fab, ion-fab-button {
+    z-index: var(--z-fab) !important; // 6000
+  }
+}
+
 // Ensure headers use correct z-index
 ion-header, ion-toolbar {
   z-index: var(--z-header) !important;
@@ -432,6 +445,177 @@ ion-modal, ion-popover, ion-toast, ion-alert {
 .auth-modal-fixed .modal-wrapper,
 app-auth-modal-new {
   z-index: var(--z-auth-modal) !important;
+}
+
+// Ensure tab bar stays below modals
+ion-tab-bar {
+  z-index: var(--z-card) !important;
+}
+
+// CORREÇÃO DE EMERGÊNCIA: Resetar elementos com z-index extremamente alto
+div[style*="2147483647"] {
+  z-index: var(--z-card) !important;
+}
+
+// Garantir que modais tenham prioridade máxima
+.details-modal-overlay,
+.mobile-modal-overlay {
+  z-index: var(--z-pokemon-modal) !important;
+  position: fixed !important;
+
+  // Forçar acima de qualquer elemento problemático
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: transparent;
+  }
+}
+
+// Resetar error notifications para não interferir
+.error-notifications-container {
+  z-index: var(--z-auth-modal) !important;
+  pointer-events: none;
+
+  .error-notification {
+    pointer-events: auto;
+  }
+}
+
+// SOLUÇÃO AGRESSIVA: Forçar z-index máximo para modais
+.mobile-modal-overlay,
+.details-modal-overlay {
+  z-index: 999999 !important;
+  position: fixed !important;
+
+  // Garantir que fique acima de qualquer elemento
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
+// Forçar elementos problemáticos para baixo
+div[style*="2147483647"],
+div[style*="999999999"],
+*[style*="z-index: 2147483647"],
+*[style*="z-index: 999999999"] {
+  z-index: 100 !important;
+}
+
+// Garantir que Ionic overlays não interfiram
+ion-backdrop,
+.backdrop-no-scroll,
+ion-loading,
+ion-toast {
+  z-index: 500 !important;
+}
+
+// PROTEÇÃO ADICIONAL CONTRA SOBREPOSIÇÃO DE MODAIS
+// Quando modal estiver presente, garantir que FABs fiquem abaixo
+.mobile-modal-overlay ~ app-mobile-fabs,
+.details-modal-overlay ~ app-mobile-fabs {
+  z-index: 100 !important;
+}
+
+.mobile-modal-overlay ~ app-mobile-fabs ion-fab,
+.mobile-modal-overlay ~ app-mobile-fabs ion-fab-button,
+.details-modal-overlay ~ app-mobile-fabs ion-fab,
+.details-modal-overlay ~ app-mobile-fabs ion-fab-button {
+  z-index: 100 !important;
+}
+
+// PROTEÇÃO ADICIONAL PARA MUSIC PLAYER
+// Quando modal estiver presente, garantir que music player fique abaixo
+.mobile-modal-overlay ~ app-music-player,
+.details-modal-overlay ~ app-music-player,
+app-auth-modal-new ~ app-music-player {
+  z-index: 100 !important;
+}
+
+.mobile-modal-overlay ~ app-music-player .music-player,
+.details-modal-overlay ~ app-music-player .music-player,
+app-auth-modal-new ~ app-music-player .music-player {
+  z-index: 100 !important;
+}
+
+// Garantir que music player sempre fique abaixo de modais
+app-music-player .music-player.modal-open {
+  z-index: 100 !important;
+}
+
+// PROTEÇÃO ESPECÍFICA PARA MODAL DE AUTENTICAÇÃO
+// Garantir que modal auth sempre fique acima do music player
+app-auth-modal-new {
+  z-index: var(--z-auth-modal) !important; // 10000
+}
+
+.auth-modal-container {
+  z-index: var(--z-auth-modal) !important; // 10000
+}
+
+// Quando modal auth estiver presente, forçar music player para baixo
+body:has(app-auth-modal-new) app-music-player .music-player {
+  z-index: 100 !important;
+}
+
+// ===== ESPAÇAMENTO INFERIOR GLOBAL =====
+// Para visualização completa do conteúdo acima dos elementos fixos
+
+// Páginas principais - Mobile
+ion-content.mobile-page {
+  --padding-bottom: var(--bottom-spacing-mobile);
+}
+
+// Páginas principais - Desktop
+ion-content.desktop-page {
+  --padding-bottom: var(--bottom-spacing-desktop);
+}
+
+// Modais de conteúdo
+.modal-content,
+.details-modal-content,
+.mobile-modal-content {
+  padding-bottom: var(--bottom-spacing-modal);
+}
+
+// Aplicação automática baseada em breakpoints
+@media (max-width: 768px) {
+  // Mobile: aplicar espaçamento maior
+  ion-content:not(.no-bottom-spacing) {
+    --padding-bottom: var(--bottom-spacing-mobile);
+  }
+
+  // Containers principais das páginas mobile
+  .page-container,
+  .content-container,
+  .main-content {
+    padding-bottom: var(--bottom-spacing-mobile);
+  }
+}
+
+@media (min-width: 769px) {
+  // Desktop: aplicar espaçamento menor
+  ion-content:not(.no-bottom-spacing) {
+    --padding-bottom: var(--bottom-spacing-desktop);
+  }
+
+  // Containers principais das páginas desktop
+  .page-container,
+  .content-container,
+  .main-content {
+    padding-bottom: var(--bottom-spacing-desktop);
+  }
 }
 
 // Specific styling for Pokemon cards

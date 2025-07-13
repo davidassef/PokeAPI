@@ -28,6 +28,9 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+
+  // Espaçamento inferior aumentado para melhor visualização
+  padding-bottom: 140px; // Aumentado de 80px para 140px
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; // Scroll suave no iOS
   touch-action: pan-y pinch-zoom; // Permite scroll vertical e zoom, mas não horizontal

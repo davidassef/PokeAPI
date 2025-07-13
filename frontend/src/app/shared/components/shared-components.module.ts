@@ -20,6 +20,8 @@ import { AccountSettingsModalComponent } from './account-settings-modal/account-
 import { AdminPokemonModalComponent } from './admin-pokemon-modal/admin-pokemon-modal.component';
 import { PokemonDetailsMobileComponent } from './pokemon-details-mobile/pokemon-details-mobile.component';
 import { CacheStatsComponent } from './cache-stats/cache-stats.component';
+// import { MusicPlayerSidemenuComponent } from './music-player-sidemenu/music-player-sidemenu.component';
+
 
 // Shared Modules
 import { SharedPipesModule } from '../pipes/shared-pipes.module';
@@ -42,6 +44,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AdminPokemonModalComponent,
     PokemonDetailsMobileComponent,
     CacheStatsComponent
+    // MusicPlayerSidemenuComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -67,6 +70,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AdminPokemonModalComponent,
     PokemonDetailsMobileComponent,
     CacheStatsComponent,
+    // MusicPlayerSidemenuComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,
