@@ -339,7 +339,7 @@
                 <div class="evolution-arrow" *ngIf="i < evolutionChain.length - 1">
                   <i class="fas fa-arrow-right"></i>
                   <span class="evolution-trigger" *ngIf="evolutionChain[i + 1].trigger">
-                    {{ evolutionChain[i + 1].trigger }}
+                    {{ getEvolutionTriggerText(evolutionChain[i + 1].trigger) }}
                   </span>
                 </div>
               </div>

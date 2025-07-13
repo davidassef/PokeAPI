@@ -603,7 +603,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     return parseInt(parts[parts.length - 2], 10);
   }
 
-  private getEvolutionTriggerText(details: any): string {
+  getEvolutionTriggerText(detailsOrTrigger: any): string {
+    // Se for uma string simples (trigger name), traduzir diretamente
+    if (typeof detailsOrTrigger === 'string') {
+      const triggerKey = detailsOrTrigger.replace(/-/g, '_');
+      return this.translate.instant(`evolution.triggers.${triggerKey}`) || detailsOrTrigger;
+    }
+
+    // Se for um objeto details, processar como antes
+    const details = detailsOrTrigger;
     if (details.min_level) {
       return `${this.translate.instant('evolution.methods.level')} ${details.min_level}`;
     }
@@ -696,6 +704,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     const translated = this.translate.instant(`evolution.methods.${methodKey}`);
     return translated !== `evolution.methods.${methodKey}` ? translated : method;
   }
+
+
   getEggGroups(): string {
     // BLOQUEIO POR ABA: só retornar dados se estivermos na aba correta
     if (this.activeTab !== 'evolution' && this.activeTab !== 'curiosities') {

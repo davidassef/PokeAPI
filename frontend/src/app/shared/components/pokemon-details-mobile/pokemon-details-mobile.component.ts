@@ -586,6 +586,12 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     return this.translate.instant(`evolution.methods.${method}`) || method;
   }
 
+  getEvolutionTriggerText(trigger: string): string {
+    // Converter trigger para formato correto (level-up -> level_up)
+    const triggerKey = trigger.replace(/-/g, '_');
+    return this.translate.instant(`evolution.triggers.${triggerKey}`) || trigger;
+  }
+
   // Métodos de curiosidades
   getCaptureRate(): string {
     if (!this.pokemonSpecies?.capture_rate) {

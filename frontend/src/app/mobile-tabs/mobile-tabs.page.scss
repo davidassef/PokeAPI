@@ -4,17 +4,17 @@ ion-tab-bar {
   --background: var(--card-bg);
   --color: var(--text-color);
   --color-selected: #fff;
-  
+
   // Mobile optimizations
   height: 60px;
   padding-bottom: env(safe-area-inset-bottom);
-  
+
   // Garantir que o tab bar fique sempre visível
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-card);
 }
 
 .dark-theme ion-tab-bar {
@@ -67,14 +67,14 @@ ion-tab-button {
   ion-tab-bar {
     height: 50px;
   }
-  
+
   ion-tab-button {
     min-height: 45px;
-    
+
     ion-icon {
       font-size: 18px;
     }
-    
+
     ion-label {
       font-size: 10px;
     }
