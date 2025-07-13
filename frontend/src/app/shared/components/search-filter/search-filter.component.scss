@@ -6,7 +6,8 @@
 
 // Container principal do filtro
 .search-filter-container {
-  background: var(--card-bg);
+  background: #232323 !important;
+  color: #fff !important;
   box-shadow: var(--card-shadow);
   border-radius: 16px;
   margin: 24px auto 16px auto;
@@ -18,20 +19,20 @@
     display: flex;
     align-items: center;
     padding: 8px 16px;
-    background: linear-gradient(135deg, var(--input-bg) 0%, var(--input-border) 100%);
+    background: #232323 !important;
 
     // Estilo do ion-searchbar
     ion-searchbar {
       flex: 1;
       margin: 0;
       padding: 0;
-      --background: var(--input-bg);
+      --background: #232323 !important;
+      --color: #fff !important;
+      --placeholder-color: #b0b0b0 !important;
+      --icon-color: #b0b0b0 !important;
+      --clear-button-color: #b0b0b0 !important;
       --border-radius: 12px;
       --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      --color: var(--text-color);
-      --placeholder-color: #6c757d;
-      --icon-color: #6c757d;
-      --clear-button-color: #6c757d;
     }
 
     // Botão de alternar filtros avançados
@@ -361,17 +362,18 @@
 // Suporte a tema escuro
 @media (prefers-color-scheme: dark) {
   .search-filter-container {
-    background: #2c2c2c;
-    color: #fff;
+    background: #232323 !important;
+    color: #fff !important;
 
     .search-bar {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+      background: linear-gradient(135deg, #0c1445 0%, #1976d2 100%); // Azul escuro para tema escuro
 
       ion-searchbar {
-        --color: #fff;
-        --placeholder-color: #ccc;
-        --icon-color: #ccc;
-        --clear-button-color: #ccc;
+        --background: #23272f !important;
+        --color: #fff !important;
+        --placeholder-color: #ccc !important;
+        --icon-color: #ccc !important;
+        --clear-button-color: #ccc !important;
       }
 
       .filter-toggle-btn {
