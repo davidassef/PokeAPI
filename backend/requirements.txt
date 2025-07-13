@@ -29,7 +29,7 @@ httpx>=0.25.0
 requests>=2.31.0
 
 # Translation Service
-googletrans==4.0.0-rc1
+# googletrans==4.0.0-rc1  # Removido devido a conflito com httpx
 
 # Testing Framework
 pytest>=7.4.0
