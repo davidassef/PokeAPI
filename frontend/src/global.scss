@@ -164,7 +164,7 @@ ion-modal {
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      z-index: 20000 !important;
+      z-index: var(--z-auth-modal) !important;
       background: rgba(0, 0, 0, 0.6) !important;
       backdrop-filter: blur(4px) !important;
     }
@@ -416,6 +416,22 @@ ion-fab, ion-fab-button {
 // Ensure headers use correct z-index
 ion-header, ion-toolbar {
   z-index: var(--z-header) !important;
+}
+
+// Ensure Ionic modals don't interfere with our hierarchy
+ion-modal, ion-popover, ion-toast, ion-alert {
+  z-index: var(--z-overlay) !important;
+}
+
+// Ensure our custom modals have higher priority
+.details-modal-overlay, .mobile-modal-overlay {
+  z-index: var(--z-pokemon-modal) !important;
+}
+
+// Ensure auth modal has highest priority
+.auth-modal-fixed .modal-wrapper,
+app-auth-modal-new {
+  z-index: var(--z-auth-modal) !important;
 }
 
 // Specific styling for Pokemon cards
