@@ -46,23 +46,27 @@ ion-content {
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
-  color: var(--text-color);
+  color: #ffffff; // Texto branco para contraste com fundo vermelho
 
   ion-icon {
     font-size: 64px;
     margin-bottom: 16px;
-    opacity: 0.6;
+    opacity: 0.8;
+    color: #ffffff;
   }
 
   h2 {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 8px;
+    color: #ffffff;
   }
 
   p {
     font-size: 16px;
     margin-bottom: 16px;
+    color: #ffffff;
+    opacity: 0.9;
   }
 
   ion-button {
@@ -183,25 +187,22 @@ ion-content {
   }
 }
 
-// Dark theme support
+// Dark theme support - usar variáveis unificadas
 @media (prefers-color-scheme: dark) {
   ion-content {
-    --background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    --background: var(--captured-bg);
   }
   .search-container {
-    background: var(--card-bg-dark, #222);
+    background: var(--card-bg);
   }
   .empty-state {
-    color: #fff;
+    color: #ffffff;
   }
   .pagination-controls {
-    background: var(--card-bg-dark, #222);
+    background: var(--card-bg);
     .page-info {
-      color: #fff !important;
+      color: #ffffff !important;
     }
-  }
-  .pagination-sides-row {
-    background: transparent;
   }
 }
 

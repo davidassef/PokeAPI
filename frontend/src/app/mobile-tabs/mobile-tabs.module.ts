@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { MobileTabsPageRoutingModule } from './mobile-tabs-routing.module';
 import { MobileTabsPage } from './mobile-tabs.page';
+import { SharedComponentsModule } from '../shared/components/shared-components.module';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { MobileTabsPage } from './mobile-tabs.page';
     FormsModule,
     IonicModule,
     TranslateModule,
-    MobileTabsPageRoutingModule
+    MobileTabsPageRoutingModule,
+    SharedComponentsModule
   ],
   declarations: [MobileTabsPage]
 })

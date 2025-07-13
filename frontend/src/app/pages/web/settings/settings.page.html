@@ -100,25 +100,7 @@
   </ion-card>
 
   <!-- Seção de Sincronização -->
-  <ion-card class="settings-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="cloud-done" color="success"></ion-icon>
-        {{ 'settings_page.sync_with_server' | translate }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item lines="none">
-        <ion-icon name="sync" slot="start" [color]="syncPending ? 'warning' : 'success'"></ion-icon>
-        <ion-label>{{ 'settings_page.sync_with_server' | translate }}</ion-label>
-        <ion-note slot="end" [color]="syncPending ? 'warning' : 'success'">
-          <span *ngIf="!syncPending">{{ 'settings_page.synced' | translate }}</span>
-          <span *ngIf="syncPending">{{ 'settings_page.pending' | translate }}</span>
-        </ion-note>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
-
+  <!-- Removido o card de sincronização, não é mais necessário -->
 
 
   <!-- Espaçador para evitar sobreposição do player de música -->

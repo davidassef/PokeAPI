@@ -57,6 +57,9 @@ export class RankingPage implements OnInit, OnDestroy {
   user: User | null = null;
   showUserMenu = false;
 
+  showSearch = false; // Controle do sistema de busca
+  currentFilterOptions: any = {};
+
   constructor(
     private pokeApiService: PokeApiService,
     private capturedService: CapturedService,
@@ -331,5 +334,19 @@ export class RankingPage implements OnInit, OnDestroy {
       color: 'danger'
     });
     await toast.present();
+  }
+
+  toggleSearch() {
+    this.showSearch = !this.showSearch;
+  }
+
+  onFiltersChanged(filters: any) {
+    this.currentFilterOptions = filters;
+    // TODO: aplicar filtro na lista de ranking
+  }
+
+  onSearchChanged(search: string) {
+    this.currentFilterOptions.search = search;
+    // TODO: aplicar busca na lista de ranking
   }
 }

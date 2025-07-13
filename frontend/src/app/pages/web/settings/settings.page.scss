@@ -27,13 +27,13 @@ ion-content {
       align-items: center;
       gap: 12px;
       font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--text-color);
+      font-weight: 700; // Bold para hierarquia
+      color: var(--settings-title-color); // Agora usa variável global para tema
       transition: color 0.3s ease;
 
       ion-icon {
         font-size: 24px;
-        color: var(--primary);
+        color: var(--settings-title-color); // Unificar cor dos ícones de destaque
         transition: color 0.3s ease;
       }
     }
@@ -151,19 +151,37 @@ ion-toggle {
   --handle-background: var(--text-color);
   --handle-background-checked: var(--text-color);
 
-  // Melhorar proporções do switch
-  --handle-width: 24px;
-  --handle-height: 24px;
-  --track-width: 48px;
-  --track-height: 28px;
+  // Melhorar proporções do switch - mais elegante e proporcional
+  --handle-width: 20px;
+  --handle-height: 20px;
+  --track-width: 44px;
+  --track-height: 24px;
   --handle-spacing: 2px;
 
   // Transições suaves
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  // Melhorar contraste
-  --border-radius: 14px;
-  --handle-border-radius: 12px;
+  // Melhorar contraste e aparência
+  --border-radius: 12px;
+  --handle-border-radius: 10px;
+  
+  // Sombra sutil para profundidade
+  --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  
+  // Melhor contraste para o track
+  --background: var(--ion-color-light-shade);
+  --background-checked: var(--primary);
+  
+  // Efeito hover
+  &:hover {
+    --handle-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+  }
+  
+  // Efeito ativo
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 // Animações de hover - using unified theme variables

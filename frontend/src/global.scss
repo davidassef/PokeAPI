@@ -1074,3 +1074,11 @@ body.dark-theme {
   --ion-card-background: #1e1e1e;
   --ion-item-background: #1e1e1e;
 }
+
+:root {
+  --settings-title-color: #1A237E; // Azul escuro para tema claro (alto contraste)
+}
+
+.dark-theme, body.dark-theme {
+  --settings-title-color: #00BFFF; // Ciano vibrante para tema escuro (contraste AA)
+}

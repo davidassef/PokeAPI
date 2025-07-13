@@ -46,7 +46,7 @@
 :root,
 .light-theme {
   // Background Colors
-  --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  --background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
   --surface-bg: #ffffff;
   --card-bg: rgba(255, 255, 255, 0.95);
   --input-bg: #f8f9fa;
@@ -64,11 +64,11 @@
   --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  // Page-specific backgrounds
-  --home-bg: linear-gradient(135deg, #0c1445 0%, #061029 100%);
-  --captured-bg: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  --ranking-bg: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-  --settings-bg: var(--background);
+  // Page-specific backgrounds - Melhorados com gradientes
+  --home-bg: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #0c1445 100%);
+  --captured-bg: linear-gradient(135deg, #e74c3c 0%, #c0392b 50%, #a93226 100%);
+  --ranking-bg: linear-gradient(135deg, #ffd700 0%, #ffb347 50%, #ff8c00 100%);
+  --settings-bg: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
 
   // Interactive Elements
   --hover-bg: rgba(0, 0, 0, 0.04);
@@ -96,11 +96,11 @@
   --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  // Page-specific backgrounds (darker versions)
-  --home-bg: linear-gradient(135deg, #0c1445 0%, #061029 100%);
-  --captured-bg: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
-  --ranking-bg: linear-gradient(135deg, #f57f17 0%, #e65100 100%);
-  --settings-bg: var(--background);
+  // Page-specific backgrounds - Melhorados com gradientes
+  --home-bg: linear-gradient(135deg, #0c1445 0%, #1e3c72 50%, #061029 100%);
+  --captured-bg: linear-gradient(135deg, #b71c1c 0%, #8e0000 50%, #6a0000 100%);
+  --ranking-bg: linear-gradient(135deg, #f57f17 0%, #e65100 50%, #bf360c 100%);
+  --settings-bg: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 
   // Interactive Elements
   --hover-bg: rgba(255, 255, 255, 0.08);
@@ -128,11 +128,11 @@
     --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-    // Page-specific backgrounds (darker versions)
-    --home-bg: linear-gradient(135deg, #0c1445 0%, #061029 100%);
-    --captured-bg: linear-gradient(135deg, #b71c1c 0%, #8e0000 100%);
-    --ranking-bg: linear-gradient(135deg, #f57f17 0%, #e65100 100%);
-    --settings-bg: var(--background);
+    // Page-specific backgrounds - Melhorados com gradientes
+    --home-bg: linear-gradient(135deg, #0c1445 0%, #1e3c72 50%, #061029 100%);
+    --captured-bg: linear-gradient(135deg, #b71c1c 0%, #8e0000 50%, #6a0000 100%);
+    --ranking-bg: linear-gradient(135deg, #f57f17 0%, #e65100 50%, #bf360c 100%);
+    --settings-bg: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 
     // Interactive Elements
     --hover-bg: rgba(255, 255, 255, 0.08);

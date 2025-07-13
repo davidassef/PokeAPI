@@ -4,7 +4,7 @@
 .page-container-mobile {
   padding: 8px;
   min-height: 100vh;
-  background: var(--ion-background-color);
+  background: var(--captured-bg);
   width: 100%;
   max-width: 100vw;
   box-sizing: border-box;
@@ -19,6 +19,7 @@
   ion-title {
     font-size: 18px;
     font-weight: 600;
+    color: #ffffff; // Texto branco para contraste
   }
 }
 
@@ -51,8 +52,9 @@
 // Search container mobile
 .search-container-mobile {
   padding: 8px;
-  background: var(--ion-color-danger-tint);
-  border-bottom: 1px solid var(--ion-color-danger-shade);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 // Auth required state
@@ -63,21 +65,26 @@
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
+  color: #ffffff; // Texto branco para contraste
 
   ion-icon {
     font-size: 64px;
     margin-bottom: 16px;
+    color: #ffffff;
+    opacity: 0.8;
   }
 
   h3 {
     margin: 0 0 8px 0;
-    color: var(--ion-color-dark);
+    color: #ffffff;
     font-size: 18px;
+    font-weight: 600;
   }
 
   p {
     margin: 0 0 24px 0;
-    color: var(--ion-color-medium);
+    color: #ffffff;
+    opacity: 0.9;
     font-size: 14px;
   }
 }
@@ -92,11 +99,12 @@
 
   ion-spinner {
     margin-bottom: 16px;
-    --color: var(--ion-color-danger);
+    --color: #ffffff;
   }
 
   p {
-    color: var(--ion-color-medium);
+    color: #ffffff;
+    opacity: 0.9;
     font-size: 14px;
     margin: 0;
   }
@@ -137,65 +145,89 @@
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
+  color: #ffffff; // Texto branco para contraste
 
   ion-icon {
     font-size: 64px;
     margin-bottom: 16px;
+    color: #ffffff;
+    opacity: 0.8;
   }
 
   h3 {
     margin: 0 0 8px 0;
-    color: var(--ion-color-dark);
+    color: #ffffff;
     font-size: 18px;
+    font-weight: 600;
   }
 
   p {
     margin: 0 0 24px 0;
-    color: var(--ion-color-medium);
+    color: #ffffff;
+    opacity: 0.9;
     font-size: 14px;
   }
 }
 
 // Paginação mobile
 .pagination-mobile {
-  padding: 16px 8px;
-  border-top: 1px solid var(--ion-color-light);
-  background: var(--ion-background-color);
+  padding: 8px 0;
+  background: rgba(10, 18, 40, 0.98);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  max-width: 98vw;
+  margin: 16px auto 8px auto;
+  display: flex;
+  justify-content: center;
 }
 
 .pagination-controls-mobile {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 8px;
+  width: 100%;
+  padding: 0 8px;
+}
 
-  ion-button {
-    min-width: 44px;
-    min-height: 44px;
-    --border-radius: 12px;
+.pagination-controls-mobile ion-button {
+  min-width: 36px;
+  min-height: 36px;
+  --background: #232b3e;
+  --color: #fff;
+  --border-radius: 8px;
+  --box-shadow: none;
+  font-size: 18px;
+  padding: 0 4px;
+  transition: background 0.2s;
+}
 
-    ion-icon {
-      font-size: 20px;
-    }
-  }
+.pagination-controls-mobile ion-button[disabled] {
+  opacity: 0.5;
+}
 
-  .page-info-mobile {
-    flex: 1;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ion-color-dark);
-    margin: 0 8px;
-    min-width: 60px;
-  }
+.pagination-controls-mobile ion-button:hover:not([disabled]),
+.pagination-controls-mobile ion-button:active:not([disabled]) {
+  --background: #31406a;
+}
+
+.page-info-mobile {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 8px;
+  min-width: 60px;
 }
 
 .pagination-info-mobile {
   text-align: center;
-  font-size: 12px;
-  color: var(--ion-color-medium);
-  margin-top: 4px;
+  font-size: 13px;
+  color: #fff;
+  opacity: 0.7;
+  margin-top: 2px;
 }
 
 // ===== ESPAÇAMENTO INFERIOR =====
@@ -276,8 +308,7 @@ ion-content {
 // Dark theme adjustments
 @media (prefers-color-scheme: dark) {
   .search-container-mobile {
-    background: var(--ion-color-danger-shade);
-    border-bottom-color: var(--ion-color-danger);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important;
   }
 
   .pagination-mobile {
