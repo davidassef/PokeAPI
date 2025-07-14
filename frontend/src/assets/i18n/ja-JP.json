@@ -4,15 +4,30 @@
     "WEIGHT": "重さ"
   },
   "modal": {
-    "combat_stats": "戦闘ステータス",
+    "overview": "概要",
+    "combat": "戦闘",
     "evolution": "進化",
     "curiosities": "豆知識",
+    "combat_stats": "戦闘ステータス",
     "descriptions": "説明",
     "capture_info": "捕獲情報",
     "total_base": "合計",
     "offensive_stats": "攻撃ステータス",
     "defensive_stats": "防御ステータス",
-    "utility_stats": "補助ステータス"
+    "utility_stats": "補助ステータス",
+    "official_artwork": "公式アートワーク",
+    "dream_world": "ドリームワールド",
+    "home": "ポケモンホーム",
+    "artwork_shiny": "公式アートワーク色違い",
+    "front_default": "正面スプライト",
+    "back_default": "背面スプライト",
+    "front_shiny": "正面色違いスプライト",
+    "back_shiny": "背面色違いスプライト",
+    "front_female": "正面♀スプライト",
+    "back_female": "背面♀スプライト",
+    "front_shiny_female": "正面色違い♀スプライト",
+    "back_shiny_female": "背面色違い♀スプライト",
+    "image_placeholder": "デフォルト画像"
   },
   "mobile": {
     "loading": "読み込み中...",
@@ -95,6 +110,8 @@
     "types": "タイプ",
     "description": "説明",
     "shiny": "色違い",
+    "captured_success": "ポケモン{{name}}を捕獲しました！",
+    "released_success": "ポケモン{{name}}を逃がしました！",
     "normal": "通常",
     "favorite": "捕獲する",
     "unfavorite": "逃がす",
@@ -429,7 +446,13 @@
     "CHAMPION": "チャンピオン"
   },
   "capture": {
-    "auth_required": "ポケモンを捕まえるにはログインが必要です。"
+    "auth_required": "ポケモンを捕まえるにはログインが必要です。",
+    "error": "ポケモンの捕獲でエラーが発生しました。もう一度お試しください。",
+    "network_error": "接続エラーです。インターネット接続を確認してもう一度お試しください。",
+    "success": "ポケモンを捕獲しました！",
+    "release_success": "ポケモンを逃がしました！",
+    "processing": "捕獲処理中...",
+    "timeout": "タイムアウトしました。もう一度お試しください。"
   },
   "captured": {
     "title": "捕獲したポケモン",
@@ -697,7 +720,7 @@
       "slide": "画像",
       "previous": "前へ",
       "next": "次へ",
-      "counter": "({currentIndex}/{total})"
+      "counter": "({{currentIndex}}/{{total}})"
     },
     "base_experience": "基礎経験値",
     "stats_names": {
@@ -736,8 +759,5 @@
       "light_weight": "そのカテゴリーでは軽い体重で、動きが機敏です。",
       "habitat": "様々な自然環境で見つけることができます。"
     }
-  },
-  "modal": {
-    "official_artwork": "公式アートワーク"
   }
 }

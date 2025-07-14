@@ -56,12 +56,6 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.capturedSub = this.capturedService.captured$.subscribe(() => {
-      this.capturedService.isCaptured(this.pokemon.id).subscribe(isCaptured => {
-        this.isCaptured = isCaptured;
-      });
-    });
-
     // Verifica permissões de administrador
     this.rbacSub = this.rbacService.canManagePokemon().subscribe(canManage => {
       this.canManagePokemon = canManage;
@@ -70,6 +64,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     this.rbacService.isAdmin().subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
+
     this.loadPokemonImage();
   }
 
@@ -107,7 +102,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     // Verifica autenticação de forma mais robusta
     const isAuthenticated = this.authService.isAuthenticated();
     const currentUser = this.authService.getCurrentUser();
-    
+
     console.log('[PokemonCard] Verificação de autenticação:', {
       isAuthenticated,
       hasUser: !!currentUser,
@@ -125,7 +120,8 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     console.log(`[PokemonCard] Iniciando ${this.isCaptured ? 'libertação' : 'captura'} do Pokémon ${this.pokemon.id}`);
 
-    this.capturedService.toggleCaptured(this.pokemon).subscribe({
+    // Passa o estado atual para evitar verificação HTTP desnecessária
+    this.capturedService.toggleCaptured(this.pokemon, this.isCaptured).subscribe({
       next: (isCaptured) => {
         console.log(`[PokemonCard] Pokémon ${this.pokemon.id} ${isCaptured ? 'capturado' : 'liberado'} com sucesso`);
         this.isCaptured = isCaptured;
@@ -149,6 +145,10 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
           status: error.status
         });
 
+        // Resetar estado de loading imediatamente em caso de erro
+        this.isLoading = false;
+        this.isProcessing = false;
+
         // Se for erro de autenticação, abrir modal de login novamente
         if (error.status === 401 || error.status === 403) {
           console.log('[PokemonCard] Erro de autenticação, abrindo modal de login');
@@ -160,6 +160,8 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
         let messageKey = 'capture.error';
         if (error.status === 0) {
           messageKey = 'capture.network_error';
+        } else if (error.status === 408 || error.message?.includes('timeout')) {
+          messageKey = 'capture.timeout';
         }
 
         await this.toastNotification.showError(messageKey);
@@ -271,18 +273,18 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
       if (result.data && result.data.success) {
         // Login bem-sucedido, verificar novamente o estado de autenticação
         console.log('[PokemonCard] Login bem-sucedido, verificando estado de autenticação');
-        
+
         // Aguardar um pouco para garantir que o estado foi atualizado
         setTimeout(() => {
           const isAuthenticated = this.authService.isAuthenticated();
           const currentUser = this.authService.getCurrentUser();
-          
+
           console.log('[PokemonCard] Estado após login:', {
             isAuthenticated,
             hasUser: !!currentUser,
             userId: currentUser?.id
           });
-          
+
           if (isAuthenticated && currentUser) {
             console.log('[PokemonCard] Usuário autenticado, tentando capturar novamente');
             this.onCaptureClick(new Event('click'));

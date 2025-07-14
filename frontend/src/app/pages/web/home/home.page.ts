@@ -274,21 +274,17 @@ export class HomePage implements OnInit, OnDestroy {
    */
   onCaptureToggled(event: { pokemon: Pokemon, isCaptured: boolean }) {
     const { pokemon, isCaptured } = event;
-    if (isCaptured) {
-      this.showToast('home.added_to_captured');
-    } else {
-      this.showToast('home.removed_from_captured');
-    }
+    // Toast específico será exibido pelo pokemon-card component
     // A sincronização é feita automaticamente pelo CapturedService
     // quando o toggle é feito via UI - não fazemos sync direto aqui
-    this.loadCaptured();
   }
 
   /**
    * Verifica se Pokémon está capturado
    */
   isCaptured(pokemonId: number): boolean {
-    return this.captured.includes(pokemonId);
+    // Usa o estado atual do serviço em vez da lista local
+    return this.capturedService.isCapturedSync(pokemonId);
   }
 
   /**
@@ -343,7 +339,8 @@ export class HomePage implements OnInit, OnDestroy {
   // Atualiza capturados sempre que a página Home for exibida
   ionViewWillEnter() {
     document.body.classList.add('home-page-active');
-    this.loadCaptured();
+    // Força sincronização completa com o backend
+    this.capturedService.forceSyncWithBackend().subscribe();
   }
 
   ionViewWillLeave() {

@@ -5,15 +5,30 @@
   },
 
   "modal": {
-    "combat_stats": "Combat Stats",
+    "overview": "Overview",
+    "combat": "Combat",
     "evolution": "Evolution",
     "curiosities": "Curiosities",
+    "combat_stats": "Combat Stats",
     "descriptions": "Descriptions",
     "capture_info": "Capture Info",
     "total_base": "Total Base",
     "offensive_stats": "Offensive Stats",
     "defensive_stats": "Defensive Stats",
-    "utility_stats": "Utility Stats"
+    "utility_stats": "Utility Stats",
+    "official_artwork": "Official Artwork",
+    "dream_world": "Dream World",
+    "home": "Pokémon Home",
+    "artwork_shiny": "Official Artwork Shiny",
+    "front_default": "Front Sprite",
+    "back_default": "Back Sprite",
+    "front_shiny": "Front Shiny Sprite",
+    "back_shiny": "Back Shiny Sprite",
+    "front_female": "Front Female Sprite",
+    "back_female": "Back Female Sprite",
+    "front_shiny_female": "Front Shiny Female Sprite",
+    "back_shiny_female": "Back Shiny Female Sprite",
+    "image_placeholder": "Default Image"
   },
   "app": {
     "name": "Pokédex",
@@ -41,6 +56,8 @@
     "types": "Types",
     "description": "Description",
     "shiny": "Shiny",
+    "captured_success": "Pokémon {{name}} captured successfully!",
+    "released_success": "Pokémon {{name}} released successfully!",
     "normal": "Normal",
     "favorite": "Capture",
     "unfavorite": "Release",
@@ -433,7 +450,13 @@
     "CHAMPION": "Champion"
   },
   "capture": {
-    "auth_required": "You must be logged in to capture a Pokémon."
+    "auth_required": "You must be logged in to capture a Pokémon.",
+    "error": "Error capturing Pokémon. Please try again.",
+    "network_error": "Connection error. Check your internet and try again.",
+    "success": "Pokémon captured successfully!",
+    "release_success": "Pokémon released successfully!",
+    "processing": "Processing capture...",
+    "timeout": "Timeout exceeded. Please try again."
   },
   "captured": {
     "title": "My Captured",
@@ -677,7 +700,7 @@
       "slide": "Image",
       "previous": "Previous",
       "next": "Next",
-      "counter": "({currentIndex}/{total})"
+      "counter": "({{currentIndex}}/{{total}})"
     },
     "base_experience": "Base Experience",
     "stats_names": {
@@ -716,8 +739,5 @@
       "light_weight": "With a weight considered light for its category, it's agile in movements.",
       "habitat": "Can be found in various natural habitats."
     }
-  },
-  "modal": {
-    "official_artwork": "Official Artwork"
   }
 }

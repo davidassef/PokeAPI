@@ -775,9 +775,10 @@ ion-toast {
     background: var(--background);
     border-left: 4px solid #2e7d32;
     position: relative;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
 
     &::before {
-      content: '⚡';
+      content: '🔴'; // Pokébola fechada
       position: absolute;
       left: 12px;
       top: 50%;
@@ -788,34 +789,37 @@ ion-toast {
   }
 
   .toast-message {
-    margin-left: 32px;
+    margin-left: 36px;
     font-weight: 600;
+    font-size: 15px;
   }
 }
 
 .pokemon-release-toast {
-  --background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+  --background: linear-gradient(135deg, #42a5f5 0%, #64b5f6 100%);
   --color: white;
 
   .toast-wrapper {
     background: var(--background);
-    border-left: 4px solid #ef6c00;
+    border-left: 4px solid #1976d2;
     position: relative;
+    box-shadow: 0 6px 20px rgba(66, 165, 245, 0.3);
 
     &::before {
-      content: '💔';
+      content: '⚪'; // Pokébola aberta
       position: absolute;
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 16px;
+      font-size: 18px;
       animation: releaseFloat 2s ease-in-out infinite;
     }
   }
 
   .toast-message {
-    margin-left: 32px;
+    margin-left: 36px;
     font-weight: 600;
+    font-size: 15px;
   }
 }
 

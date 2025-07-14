@@ -164,6 +164,8 @@
     "types": "Tipos",
     "description": "Descrição",
     "shiny": "Shiny",
+    "captured_success": "Pokémon {{name}} capturado com sucesso!",
+    "released_success": "Pokémon {{name}} liberado com sucesso!",
     "normal": "Normal",
     "favorite": "Capturar",
     "unfavorite": "Soltar",
@@ -384,7 +386,20 @@
     "trivia_title": "Curiosidades",
     "egg_groups": "Grupos de Ovos",
     "growth_rate": "Taxa de Crescimento",
-    "base_experience": "Experiência Base"
+    "base_experience": "Experiência Base",
+    "official_artwork": "Arte Oficial",
+    "dream_world": "Dream World",
+    "home": "Pokémon Home",
+    "artwork_shiny": "Arte Oficial Shiny",
+    "front_default": "Sprite Frontal",
+    "back_default": "Sprite Traseiro",
+    "front_shiny": "Sprite Frontal Shiny",
+    "back_shiny": "Sprite Traseiro Shiny",
+    "front_female": "Sprite Frontal Fêmea",
+    "back_female": "Sprite Traseiro Fêmea",
+    "front_shiny_female": "Sprite Frontal Shiny Fêmea",
+    "back_shiny_female": "Sprite Traseiro Shiny Fêmea",
+    "image_placeholder": "Imagem Padrão"
   },
   "admin": {
     "pokemon": {
@@ -530,7 +545,13 @@
     "CHAMPION": "Campeão"
   },
   "capture": {
-    "auth_required": "Você precisa estar logado para capturar um Pokémon."
+    "auth_required": "Você precisa estar logado para capturar um Pokémon.",
+    "error": "Erro ao capturar Pokémon. Tente novamente.",
+    "network_error": "Erro de conexão. Verifique sua internet e tente novamente.",
+    "success": "Pokémon capturado com sucesso!",
+    "release_success": "Pokémon liberado com sucesso!",
+    "processing": "Processando captura...",
+    "timeout": "Tempo limite excedido. Tente novamente."
   },
   "captured": {
     "title": "Meus Capturados",
@@ -751,7 +772,7 @@
       "slide": "Imagem",
       "previous": "Anterior",
       "next": "Próximo",
-      "counter": "({currentIndex}/{total})"
+      "counter": "({{currentIndex}}/{{total}})"
     },
     "base_experience": "Experiência Base",
     "stats_names": {
@@ -790,8 +811,5 @@
       "light_weight": "Com peso considerado leve para sua categoria, é ágil em movimentos.",
       "habitat": "Pode ser encontrado em diversos habitats naturais."
     }
-  },
-  "modal": {
-    "official_artwork": "Arte Oficial"
   }
 }

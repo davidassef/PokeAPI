@@ -34,12 +34,12 @@ ion-content {
 }
 
 .mobile-settings-container {
-  padding: 16px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding: 20px; // Aumentado de 16px para 20px
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)); // Aumentado padding inferior
 }
 
 .settings-card-mobile {
-  margin-bottom: 16px;
+  margin-bottom: 20px; // Aumentado de 16px para 20px
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
   background: var(--card-bg);
@@ -189,19 +189,19 @@ ion-toggle:focus-visible {
     --handle-spacing: 2px;
     --border-radius: 14px;
     --handle-border-radius: 12px;
-    
+
     // Melhor contraste para mobile
     --background: var(--ion-color-light-shade);
     --background-checked: var(--primary);
     --handle-background: var(--text-color);
     --handle-background-checked: var(--text-color);
-    
+
     // Sombra sutil para profundidade
     --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    
+
     // Transições suaves
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     // Efeito de toque
     &:active {
       transform: scale(0.95);
@@ -216,24 +216,24 @@ ion-toggle {
   --background-checked: var(--primary);
   --handle-background: var(--text-color);
   --handle-background-checked: var(--text-color);
-  
+
   // Proporções elegantes
   --handle-width: 20px;
   --handle-height: 20px;
   --track-width: 44px;
   --track-height: 24px;
   --handle-spacing: 2px;
-  
+
   // Transições suaves
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   // Melhor contraste e aparência
   --border-radius: 12px;
   --handle-border-radius: 10px;
-  
+
   // Sombra sutil para profundidade
   --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  
+
   // Efeito hover (apenas para desktop)
   @media (hover: hover) {
     &:hover {
@@ -241,7 +241,7 @@ ion-toggle {
       transform: scale(1.05);
     }
   }
-  
+
   // Efeito ativo
   &:active {
     transform: scale(0.95);

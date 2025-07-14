@@ -2,7 +2,7 @@
 
 // Container principal mobile
 .page-container-mobile {
-  padding: 8px;
+  padding: 12px; // Aumentado de 8px para 12px
   min-height: 100vh;
   background: var(--home-bg);
   width: 100%;
@@ -17,7 +17,7 @@
   text-align: center;
 
   ion-title {
-    font-size: 18px;
+    font-size: 20px; // Aumentado de 18px para 20px
     font-weight: 600;
   }
 }
@@ -93,8 +93,8 @@
 .pokemon-grid-mobile {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  padding: 8px 0;
+  gap: 12px; // Aumentado de 8px para 12px
+  padding: 12px 0; // Aumentado de 8px para 12px
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -148,22 +148,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px; // Aumentado de 16px para 20px
   background: #232323;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  padding: 12px 16px;
-  margin: 18px auto 18px auto;
+  padding: 16px 20px; // Aumentado padding
+  margin: 20px auto 20px auto; // Aumentado margin
   max-width: 99vw;
-  min-height: 54px;
+  min-height: 58px; // Aumentado altura mínima
 }
 
 .pagination-btn {
-  min-width: 44px;
-  min-height: 38px;
+  min-width: 48px; // Aumentado de 44px para 48px
+  min-height: 42px; // Aumentado de 38px para 42px
   background: #42a5f5 !important;
   color: #fff !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important; // Aumentado border-radius
   font-size: 20px;
   font-weight: 600;
   box-shadow: none;
@@ -201,7 +201,7 @@
 
 .page-info-mobile {
   color: #fff;
-  font-size: 18px;
+  font-size: 16px; // Reduzido de 18px para 16px para melhor proporção
   font-weight: 700;
   text-align: center;
   min-width: 120px;

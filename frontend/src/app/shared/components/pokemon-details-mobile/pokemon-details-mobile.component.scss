@@ -132,7 +132,7 @@
 
 .mobile-content {
   // Removido flex: 1 e overflow-y: auto pois agora o scroll é global
-  padding: 0 20px 20px;
+  padding: 0 24px 24px; // Aumentado padding lateral e inferior
   min-height: 0; // Permite que o conteúdo seja menor que o container
 }
 
@@ -341,21 +341,22 @@
     .stats-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px; // Aumentado de 12px para 16px
 
       .stat-card {
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 12px;
+        border-radius: 12px; // Aumentado de 10px para 12px
+        padding: 16px; // Aumentado de 12px para 16px
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); // Adicionada sombra sutil
 
         .stat-label {
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.85); // Aumentada opacidade
+          font-size: 0.95rem; // Ligeiramente maior
           font-weight: 500;
           display: block;
-          margin-bottom: 6px;
+          margin-bottom: 8px; // Aumentado de 6px para 8px
         }
 
         .stat-bar {
@@ -638,44 +639,50 @@
       .abilities-grid {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 16px; // Aumentado de 12px para 16px
 
         .ability-card {
           background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-          padding: 12px;
+          border-radius: 12px; // Aumentado de 10px para 12px
+          padding: 16px; // Aumentado de 12px para 16px
           backdrop-filter: blur(10px);
           border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); // Adicionada sombra sutil
 
           &.hidden {
-            border-color: rgba(255, 193, 7, 0.5);
+            border-color: rgba(255, 193, 7, 0.6); // Aumentada opacidade
+            background: rgba(255, 193, 7, 0.05); // Fundo sutil para habilidades ocultas
           }
 
           .ability-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px; // Aumentado de 8px para 12px
 
             .ability-name {
               color: white;
               font-weight: 600;
+              font-size: 1rem; // Tamanho de fonte explícito
             }
 
             .ability-badge {
-              background: rgba(255, 193, 7, 0.8);
+              background: rgba(255, 193, 7, 0.9); // Aumentada opacidade
               color: white;
-              padding: 2px 8px;
-              border-radius: 8px;
-              font-size: 0.7rem;
+              padding: 4px 10px; // Aumentado padding
+              border-radius: 10px; // Aumentado border-radius
+              font-size: 0.75rem; // Ligeiramente maior
               font-weight: bold;
+              text-transform: uppercase; // Texto em maiúsculas
+              letter-spacing: 0.5px; // Espaçamento entre letras
             }
           }
 
           .ability-description {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.85); // Aumentada opacidade
+            font-size: 0.95rem; // Ligeiramente maior
+            line-height: 1.5; // Aumentado line-height
+            margin-top: 8px; // Espaçamento adicional
           }
         }
       }

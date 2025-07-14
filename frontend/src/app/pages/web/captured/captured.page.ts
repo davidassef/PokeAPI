@@ -224,7 +224,7 @@ export class CapturedPage implements OnInit, OnDestroy {
   async removeFromCaptured(pokemon: Pokemon) {
     try {
       await this.capturedService.removeFromCaptured(pokemon.id);
-      await this.showToast('captured.removed_from_captured');
+      // Toast específico será exibido pelo pokemon-card component
       this.loadCaptured();
     } catch (error) {
       console.error('Erro ao remover dos capturados:', error);

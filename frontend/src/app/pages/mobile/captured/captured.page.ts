@@ -290,7 +290,7 @@ export class CapturedPage implements OnInit, OnDestroy {
       // Pokemon foi removido da captura
       this.capturedPokemon = this.capturedPokemon.filter(p => p.id !== pokemon.id);
       this.updatePagination();
-      this.showToast('captured.removed_from_captured');
+      // Toast específico será exibido pelo pokemon-card component
     }
   }
 

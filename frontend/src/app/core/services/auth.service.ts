@@ -336,8 +336,8 @@ export class AuthService {
     const token = this.getToken();
     if (!token) return false;
 
-    // Verifica se o token não está expirado
-    if (this.isTokenExpiringSoon(token, 0)) {
+    // Verifica se o token é válido (usa tolerância de 60 segundos)
+    if (!this.isTokenValid(token)) {
       console.warn('[AuthService] Token expirado, limpando autenticação');
       this.clearAuthState();
       return false;
@@ -346,7 +346,7 @@ export class AuthService {
     // Verifica se o estado atual está sincronizado
     const currentAuthState = this.authState.value;
     const hasValidToken = this.isTokenValid(token);
-    
+
     // Se temos um token válido mas o estado está como não autenticado, sincronizar
     if (hasValidToken && !currentAuthState) {
       console.log('[AuthService] Token válido encontrado, sincronizando estado de autenticação');
@@ -357,7 +357,7 @@ export class AuthService {
         this.setupTokenRefresh(token);
       }
     }
-    
+
     // Se não temos token válido mas o estado está como autenticado, limpar
     if (!hasValidToken && currentAuthState) {
       console.warn('[AuthService] Estado inconsistente, limpando autenticação');

@@ -5,15 +5,30 @@
   },
 
   "modal": {
-    "combat_stats": "Estadísticas de Combate",
+    "overview": "Resumen",
+    "combat": "Combate",
     "evolution": "Evolución",
     "curiosities": "Curiosidades",
+    "combat_stats": "Estadísticas de Combate",
     "descriptions": "Descripciones",
     "capture_info": "Información de Captura",
     "total_base": "Total Base",
     "offensive_stats": "Estadísticas Ofensivas",
     "defensive_stats": "Estadísticas Defensivas",
-    "utility_stats": "Estadísticas de Utilidad"
+    "utility_stats": "Estadísticas de Utilidad",
+    "official_artwork": "Arte Oficial",
+    "dream_world": "Dream World",
+    "home": "Pokémon Home",
+    "artwork_shiny": "Arte Oficial Shiny",
+    "front_default": "Sprite Frontal",
+    "back_default": "Sprite Trasero",
+    "front_shiny": "Sprite Frontal Shiny",
+    "back_shiny": "Sprite Trasero Shiny",
+    "front_female": "Sprite Frontal Hembra",
+    "back_female": "Sprite Trasero Hembra",
+    "front_shiny_female": "Sprite Frontal Shiny Hembra",
+    "back_shiny_female": "Sprite Trasero Shiny Hembra",
+    "image_placeholder": "Imagen Predeterminada"
   },
   "app": {
     "name": "Pokédex",
@@ -41,6 +56,8 @@
     "types": "Tipos",
     "description": "Descripción",
     "shiny": "Shiny",
+    "captured_success": "¡Pokémon {{name}} capturado con éxito!",
+    "released_success": "¡Pokémon {{name}} liberado con éxito!",
     "normal": "Normal",
     "favorite": "Capturar",
     "unfavorite": "Liberar",
@@ -457,7 +474,13 @@
     "goToHome": "Ir a Pokédex"
   },
   "capture": {
-    "auth_required": "Debes iniciar sesión para capturar un Pokémon."
+    "auth_required": "Debes iniciar sesión para capturar un Pokémon.",
+    "error": "Error al capturar Pokémon. Inténtalo de nuevo.",
+    "network_error": "Error de conexión. Verifica tu internet e inténtalo de nuevo.",
+    "success": "¡Pokémon capturado con éxito!",
+    "release_success": "¡Pokémon liberado con éxito!",
+    "processing": "Procesando captura...",
+    "timeout": "Tiempo límite excedido. Inténtalo de nuevo."
   },
   "captured": {
     "title": "Mis Capturados",
@@ -696,7 +719,7 @@
       "slide": "Imagen",
       "previous": "Anterior",
       "next": "Siguiente",
-      "counter": "({currentIndex}/{total})"
+      "counter": "({{currentIndex}}/{{total}})"
     },
     "base_experience": "Experiencia Base",
     "stats_names": {
@@ -735,8 +758,5 @@
       "light_weight": "Con un peso considerado ligero para su categoría, es ágil en movimientos.",
       "habitat": "Se puede encontrar en varios hábitats naturales."
     }
-  },
-  "modal": {
-    "official_artwork": "Arte Oficial"
   }
 }

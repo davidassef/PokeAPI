@@ -116,9 +116,9 @@ export class ToastNotificationService {
       messageParams: { name: pokemonName },
       message: '',
       type: 'success',
-      duration: 3000,
-      icon: 'checkmark-circle-outline',
-      cssClass: 'pokemon-capture-toast'
+      duration: 3500,
+      icon: 'radio-button-on', // Ícone de pokébola fechada
+      cssClass: 'pokemon-capture-toast success-toast'
     });
   }
 
@@ -130,10 +130,10 @@ export class ToastNotificationService {
       messageKey: 'pokemon.released_success',
       messageParams: { name: pokemonName },
       message: '',
-      type: 'warning',
-      duration: 3000,
-      icon: 'heart-dislike-outline',
-      cssClass: 'pokemon-release-toast'
+      type: 'info',
+      duration: 3500,
+      icon: 'radio-button-off', // Ícone de pokébola aberta
+      cssClass: 'pokemon-release-toast info-toast'
     });
   }
 
@@ -240,12 +240,12 @@ export class ToastNotificationService {
     if (this.activeToasts.length < this.maxConcurrentToasts) {
       this.isProcessingQueue = true;
       const nextToast = this.toastQueue.shift();
-      
+
       if (nextToast) {
         console.log(`🍞 Processando toast da fila. Restantes: ${this.toastQueue.length}`);
         await this.showToast(nextToast);
       }
-      
+
       this.isProcessingQueue = false;
     }
   }
@@ -280,15 +280,15 @@ export class ToastNotificationService {
    */
   private buildCssClass(config: ToastConfig): string {
     const classes = ['smart-toast', `toast-${config.type}`];
-    
+
     if (config.icon) {
       classes.push('toast-with-icon');
     }
-    
+
     if (config.cssClass) {
       classes.push(config.cssClass);
     }
-    
+
     return classes.join(' ');
   }
 
@@ -299,11 +299,11 @@ export class ToastNotificationService {
     this.stats.totalShown++;
     this.stats.byType[type] = (this.stats.byType[type] || 0) + 1;
     this.stats.lastShown = new Date();
-    
+
     // Calcular duração média
     const totalDuration = (this.stats.averageDuration * (this.stats.totalShown - 1)) + duration;
     this.stats.averageDuration = Math.round(totalDuration / this.stats.totalShown);
-    
+
     this.statsSubject.next({ ...this.stats });
   }
 
@@ -312,10 +312,10 @@ export class ToastNotificationService {
    */
   async dismissAll(): Promise<void> {
     console.log(`🍞 Fechando ${this.activeToasts.length} toasts ativos`);
-    
+
     const dismissPromises = this.activeToasts.map(toast => toast.dismiss());
     await Promise.all(dismissPromises);
-    
+
     this.activeToasts = [];
     this.toastQueue = [];
   }

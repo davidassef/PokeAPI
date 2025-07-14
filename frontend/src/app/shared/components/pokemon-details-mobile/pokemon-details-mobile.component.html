@@ -258,7 +258,6 @@
                     <div class="ability-header">
                       <span class="ability-name">{{ ability.ability.name | titlecase }}</span>
                       <span class="ability-badge" *ngIf="ability.is_hidden">{{ 'mobile.hidden_ability' | translate }}</span>
-                      <span class="ability-badge" *ngIf="ability.is_hidden">{{ 'pokemon.hidden_ability' | translate }}</span>
                     </div>
                     <div class="ability-description">
                       {{ getAbilityDescription(ability.ability.name) }}

@@ -265,19 +265,16 @@ export class HomePage implements OnInit, OnDestroy {
    */
   onCaptureToggled(event: any) {
     const { pokemon, isCaptured } = event;
-    if (isCaptured) {
-      this.showToast('home.added_to_captured');
-    } else {
-      this.showToast('home.removed_from_captured');
-    }
-    this.loadCaptured();
+    // Toast específico será exibido pelo pokemon-card component
+    // A sincronização é feita automaticamente pelo CapturedService
   }
 
   /**
    * Verifica se Pokémon está capturado
    */
   isCaptured(pokemonId: number): boolean {
-    return this.captured.includes(pokemonId);
+    // Usa o estado atual do serviço em vez da lista local
+    return this.capturedService.isCapturedSync(pokemonId);
   }
 
   /**
@@ -318,7 +315,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     document.body.classList.add('mobile-home-page-active');
-    this.loadCaptured();
+    // Força sincronização completa com o backend
+    this.capturedService.forceSyncWithBackend().subscribe();
   }
 
   ionViewWillLeave() {
