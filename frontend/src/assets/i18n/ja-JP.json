@@ -680,6 +680,9 @@
     "light": "軽い"
   },
   "details": {
+    "evolution": "進化",
+    "curiosities": "豆知識",
+    "level": "レベル",
     "trivia": {
       "generic": "このポケモンは種族の中で特別な特徴を持っています。",
       "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。"
@@ -719,7 +722,20 @@
     "overview_short": "概要",
     "stats_short": "能力値",
     "evolution_short": "進化",
-    "curiosities_short": "豆知識"
+    "curiosities_short": "豆知識",
+    "total": "合計",
+    "offensive_stats": "攻撃能力値",
+    "defensive_stats": "防御能力値",
+    "abilities": "特性",
+    "hidden_ability": "隠れ特性",
+    "evolution_methods": {
+      "level_up": "レベルアップ"
+    },
+    "trivia": {
+      "dual_type": "このポケモンは2つのタイプを持ち、戦闘で多様性を提供します。",
+      "light_weight": "そのカテゴリーでは軽い体重で、動きが機敏です。",
+      "habitat": "様々な自然環境で見つけることができます。"
+    }
   },
   "modal": {
     "official_artwork": "公式アートワーク"

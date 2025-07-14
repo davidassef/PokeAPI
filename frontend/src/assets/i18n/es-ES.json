@@ -679,6 +679,9 @@
     "light": "Ligero"
   },
   "details": {
+    "evolution": "Evolución",
+    "curiosities": "Curiosidades",
+    "level": "Nivel",
     "trivia": {
       "generic": "Este Pokémon tiene características únicas que lo hacen especial en su especie.",
       "dual_type": "Este Pokémon tiene dos tipos, ofreciendo una combinación única de habilidades y resistencias."
@@ -718,7 +721,20 @@
     "overview_short": "Resumen",
     "stats_short": "Stats",
     "evolution_short": "Evolución",
-    "curiosities_short": "Trivia"
+    "curiosities_short": "Trivia",
+    "total": "Total",
+    "offensive_stats": "Estadísticas Ofensivas",
+    "defensive_stats": "Estadísticas Defensivas",
+    "abilities": "Habilidades",
+    "hidden_ability": "Habilidad Oculta",
+    "evolution_methods": {
+      "level_up": "Subir de nivel"
+    },
+    "trivia": {
+      "dual_type": "Este Pokémon tiene dos tipos, ofreciendo versatilidad en combate.",
+      "light_weight": "Con un peso considerado ligero para su categoría, es ágil en movimientos.",
+      "habitat": "Se puede encontrar en varios hábitats naturales."
+    }
   },
   "modal": {
     "official_artwork": "Arte Oficial"
