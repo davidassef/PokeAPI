@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Storage } from '@ionic/storage-angular';
+import { Router, NavigationEnd } from '@angular/router';
 import { SettingsService } from './core/services/settings.service';
 import { User } from 'src/app/models/user.model';
 import { AuthService } from './core/services/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +17,7 @@ import { AuthService } from './core/services/auth.service';
 export class AppComponent implements OnInit {
   mostrarPerfilModal = false;
   user: User | null = null;
+  isMobileRoute = false;
 
   abrirPerfil = () => {
     this.mostrarPerfilModal = true;
@@ -32,10 +35,12 @@ export class AppComponent implements OnInit {
     private platform: Platform,
     private translate: TranslateService,
     private storage: Storage,
+    private router: Router,
     private settingsService: SettingsService, // injetar serviço de configurações
     private authService: AuthService // injetar serviço de autenticação
   ) {
     this.initializeApp();
+    this.setupRouteListener();
   }
 
   async ngOnInit() {
@@ -110,8 +115,23 @@ export class AppComponent implements OnInit {
     }
   }
 
+  private setupRouteListener(): void {
+    // Detectar mudanças de rota para identificar se estamos em rotas mobile
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.isMobileRoute = event.url.startsWith('/mobile');
+        }
+      });
+
+    // Verificar rota inicial
+    this.isMobileRoute = this.router.url.startsWith('/mobile');
+  }
+
   isMobile(): boolean {
-    return this.platform.is('mobile') || this.platform.is('tablet') || this.platform.is('iphone');
+    // Retorna true se estamos em rotas mobile OU em dispositivos móveis reais
+    return this.isMobileRoute || this.platform.is('mobile') || this.platform.is('tablet') || this.platform.is('iphone');
   }
 }
 

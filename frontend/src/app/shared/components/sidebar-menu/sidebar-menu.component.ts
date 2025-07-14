@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../../core/services/settings.service';
 import { CapturedService } from '../../../core/services/captured.service';
@@ -75,6 +75,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   user: User | null = null;
   isMobile = false;
+  isMobileRoute = false;
   // ✅ CORREÇÃO: showUserMenu removido (dropdown de perfil não está mais no sidemenu)
 
   constructor(
@@ -95,6 +96,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     this.setupViewedPokemonSubscription();
     this.loadUserStats();
     this.detectMobile();
+    this.setupRouteListener();
   }
 
   ngOnDestroy() {
@@ -235,10 +237,27 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   private detectMobile() {
     // Detectar se é dispositivo móvel
     this.isMobile = window.innerWidth <= 768;
-    
+
     // Listener para mudanças de tamanho da tela
     window.addEventListener('resize', () => {
       this.isMobile = window.innerWidth <= 768;
     });
+  }
+
+  private setupRouteListener(): void {
+    // Detectar mudanças de rota para identificar se estamos em rotas mobile
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.isMobileRoute = event.url.startsWith('/mobile');
+        }
+      });
+
+    // Verificar rota inicial
+    this.isMobileRoute = this.router.url.startsWith('/mobile');
   }
 }
