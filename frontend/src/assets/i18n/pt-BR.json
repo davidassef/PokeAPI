@@ -769,7 +769,11 @@
     "overview": "Visão Geral",
     "stats": "Estatísticas de Combate",
     "evolution": "Evolução",
-    "curiosities": "Curiosidades"
+    "curiosities": "Curiosidades",
+    "overview_short": "Geral",
+    "stats_short": "Stats",
+    "evolution_short": "Evolução",
+    "curiosities_short": "Trivia"
   },
   "modal": {
     "official_artwork": "Arte Oficial"

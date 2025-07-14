@@ -715,7 +715,11 @@
     "overview": "概要",
     "stats": "戦闘能力値",
     "evolution": "進化",
-    "curiosities": "豆知識"
+    "curiosities": "豆知識",
+    "overview_short": "概要",
+    "stats_short": "能力値",
+    "evolution_short": "進化",
+    "curiosities_short": "豆知識"
   },
   "modal": {
     "official_artwork": "公式アートワーク"

@@ -695,7 +695,11 @@
     "overview": "Overview",
     "stats": "Combat Stats",
     "evolution": "Evolution",
-    "curiosities": "Trivia"
+    "curiosities": "Trivia",
+    "overview_short": "Overview",
+    "stats_short": "Stats",
+    "evolution_short": "Evolution",
+    "curiosities_short": "Trivia"
   },
   "modal": {
     "official_artwork": "Official Artwork"
