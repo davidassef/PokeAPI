@@ -253,7 +253,7 @@ export class CapturedPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }

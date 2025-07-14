@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
@@ -12,7 +12,7 @@ import { PokemonCacheService } from '../../../core/services/pokemon-cache.servic
   templateUrl: './pokemon-details-mobile.component.html',
   styleUrls: ['./pokemon-details-mobile.component.scss']
 })
-export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
+export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pokemonId: number = 0;
   @Input() isOpen: boolean = false;
   @Output() modalClosed = new EventEmitter<void>();
@@ -23,11 +23,62 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
 
   // Carrossel de imagens aprimorado
   carouselImages: any[] = [];
-  currentCarouselIndex: number = 0;
+  public currentCarouselIndex: number = 0;
   currentCarouselImage: string = '';
   carouselTransitioning: boolean = false;
   imageLoading: boolean = false;
-  imageZoomed: boolean = false;
+  public isImageZoomed: boolean = false;
+
+  /**
+   * Obtém a taxa de captura do Pokémon
+   * @returns A taxa de captura formatada ou 'N/A' se não disponível
+   */
+  getCaptureRate(): string {
+    if (!this.pokemonSpecies || this.pokemonSpecies.capture_rate === undefined) {
+      return 'N/A';
+    }
+    // A taxa de captura é um valor entre 0-255, onde 255 é o mais fácil de capturar
+    const captureRate = this.pokemonSpecies.capture_rate;
+    const capturePercentage = ((captureRate / 255) * 100).toFixed(1);
+    return `${captureRate} (${capturePercentage}%)`;
+  }
+
+  /**
+   * Obtém a cor predominante do Pokémon
+   * @returns O nome da cor em português ou 'N/A' se não disponível
+   */
+  getPokemonColor(): string {
+    if (!this.pokemonSpecies || !this.pokemonSpecies.color) {
+      return 'N/A';
+    }
+    
+    // Mapeamento de cores para português
+    const colorMap: {[key: string]: string} = {
+      'black': 'Preto',
+      'blue': 'Azul',
+      'brown': 'Marrom',
+      'gray': 'Cinza',
+      'green': 'Verde',
+      'pink': 'Rosa',
+      'purple': 'Roxo',
+      'red': 'Vermelho',
+      'white': 'Branco',
+      'yellow': 'Amarelo'
+    };
+    
+    const colorName = this.pokemonSpecies.color.name;
+    return colorMap[colorName] || this.capitalizeFirstLetter(colorName) || 'N/A';
+  }
+  
+  /**
+   * Capitaliza a primeira letra de uma string
+   * @param str String para capitalizar
+   * @returns String com a primeira letra maiúscula
+   */
+  private capitalizeFirstLetter(str: string): string {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
   // Controle de gestos
   private touchStartX: number = 0;
@@ -46,19 +97,23 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
   flavorTexts: string[] = []; // Mudança: array de strings como no modal web
   currentFlavorIndex: number = 0; // Índice do flavor atual
   isLoadingFlavor: boolean = false; // Estado de carregamento dos flavors
+  private currentLang: string = ''; // Rastrear o idioma atual
 
   // Estados de carregamento
   speciesLoading: boolean = false;
   evolutionLoading: boolean = false;
 
   private destroy$ = new Subject<void>();
+  private langChangeSubscription: any; // Adicionar esta linha
+  private modalRef: HTMLIonModalElement | null = null;
 
   constructor(
     private modalController: ModalController,
     private translate: TranslateService,
     private http: HttpClient,
     private viewedPokemonService: ViewedPokemonService,
-    private cacheService: PokemonCacheService
+    private cacheService: PokemonCacheService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -81,6 +136,33 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     } else {
       console.warn('⚠️ PokemonDetailsMobileComponent - pokemonId inválido:', this.pokemonId);
     }
+
+    // Subscrever a mudanças de idioma
+    this.langChangeSubscription = this.translate.onLangChange.subscribe((event: any) => {
+      if (this.pokemonSpecies) {
+        this.loadFlavorTexts(); // Recarregar os flavor texts quando o idioma mudar
+        this.updateStaticTranslations(); // Atualizar também as traduções estáticas
+      }
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('PokemonDetailsMobileComponent - ngOnChanges', changes);
+    
+    if (changes['pokemonId'] && changes['pokemonId'].currentValue !== changes['pokemonId'].previousValue) {
+      if (changes['pokemonId'].currentValue && changes['pokemonId'].currentValue > 0) {
+        this.loadPokemonData();
+      }
+    }
+    
+    // Add this block to handle modal reopen events
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true && 
+        changes['isOpen'].previousValue === false) {
+      console.log('Modal reopened - reloading data');
+      if (this.pokemonId && this.pokemonId > 0) {
+        this.loadPokemonData();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -89,6 +171,10 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
 
     this.destroy$.next();
     this.destroy$.complete();
+
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe(); // Cancelar a subscription
+    }
   }
 
   private loadPokemonData() {
@@ -100,6 +186,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     const startTime = Date.now();
 
     // Usar cache service em vez de HTTP direto
+    console.log('📦 Buscando dados do Pokémon no cache service...');
     this.cacheService.getPokemon(this.pokemonId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -122,6 +209,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
           this.pokemon = this.createPlaceholderPokemon();
           this.loading = false;
           this.isDataCached = false;
+          console.log('🔄 Placeholder Pokémon criado devido ao erro');
         }
       });
   }
@@ -167,7 +255,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     if (!sprites) {
       this.carouselImages = [{
         url: fallbackImage,
-        label: 'modal.image_placeholder'
+        label: 'modal.official_artwork'
       }];
       this.currentCarouselIndex = 0;
       this.currentCarouselImage = this.carouselImages[0].url;
@@ -250,18 +338,72 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     this.currentCarouselImage = this.carouselImages[0]?.url || '';
   }
 
+  public isValidImageUrl(url: string): boolean {
+    return !!url && url.startsWith('http');
+  }
 
+  // Métodos de Estatísticas e Utilidades
+  getTotalStats(): number {
+    if (!this.pokemon?.stats?.length) return 0;
+    return this.pokemon.stats.reduce((sum: number, stat: any) => sum + stat.base_stat, 0);
+  }
+
+  getOffensiveStats(): any[] {
+    if (!this.pokemon?.stats) return [];
+    const offensiveStats = ['attack', 'special-attack', 'speed'];
+    return this.pokemon.stats.filter((stat: any) => 
+      offensiveStats.includes(stat.stat.name)
+    );
+  }
+
+  getDefensiveStats(): any[] {
+    if (!this.pokemon?.stats) return [];
+    const defensiveStats = ['defense', 'special-defense', 'hp'];
+    return this.pokemon.stats.filter((stat: any) => 
+      defensiveStats.includes(stat.stat.name)
+    );
+  }
+
+  getUtilityStats(): any[] {
+    if (!this.pokemon?.stats) return [];
+    const utilityStats = ['speed', 'hp'];
+    return this.pokemon.stats.filter((stat: any) => 
+      utilityStats.includes(stat.stat.name)
+    );
+  }
+
+  getStatPercentage(stat: number): number {
+    return Math.min(100, (stat / 255) * 100);
+  }
+
+  getStatColor(stat: number): string {
+    const percentage = stat / 255;
+    
+    if (percentage >= 0.7) return '#4caf50'; // Verde
+    if (percentage >= 0.4) return '#ffc107'; // Amarelo
+    return '#f44336'; // Vermelho
+  }
 
   private loadSpeciesData() {
+    // Atualizar o idioma atual antes de carregar os dados
+    this.currentLang = this.translate.currentLang || 'pt-BR';
+    console.log(`🌐 Idioma atual: ${this.currentLang}`);
+    
     // Usar cache service para dados da espécie
     this.isLoadingFlavor = true;
+    this.flavorTexts = []; // Limpar flavor texts antigos
+    this.currentFlavorIndex = 0; // Resetar índice do flavor
+    
     this.cacheService.getPokemonSpecies(this.pokemonId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (species: any) => {
           this.pokemonSpecies = species;
-          this.loadFlavorTexts(species);
-          this.loadEvolutionChain(species.evolution_chain?.url);
+          // Carregar flavor texts com base no idioma atual
+          this.loadFlavorTexts();
+          if (species.evolution_chain?.url) {
+            this.loadEvolutionChain(species.evolution_chain.url);
+          }
         },
         error: (error) => {
           console.error('❌ Erro ao carregar dados da espécie:', error);
@@ -270,98 +412,64 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
       });
   }
 
-  private async loadFlavorTexts(species: any) {
-    const currentLang = this.translate.currentLang || 'pt-BR';
-    console.log(`🔍 Carregando flavor texts para idioma: ${currentLang}`);
-
-    // Tentar usar cache inteligente primeiro
-    this.cacheService.getFlavorTexts(this.pokemonId, currentLang)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (cachedFlavors: string[]) => {
-          if (cachedFlavors && cachedFlavors.length > 0) {
-            console.log(`✅ Flavor texts obtidos do cache: ${cachedFlavors.length} textos`);
-            this.flavorTexts = cachedFlavors;
-            this.currentFlavorIndex = 0;
-            this.isLoadingFlavor = false;
-
-            // Pré-carregar flavor texts dos Pokémon adjacentes
-            this.cacheService.preloadAdjacentPokemon(this.pokemonId, currentLang);
-            return;
-          }
-
-          // Fallback para método anterior se cache não retornar dados
-          this.loadFlavorTextsFallback(species, currentLang);
-        },
-        error: (error) => {
-          console.error('❌ Erro ao buscar flavor texts do cache:', error);
-          this.loadFlavorTextsFallback(species, currentLang);
-        }
-      });
-  }
-
-  private async loadFlavorTextsFallback(species: any, currentLang: string) {
-    // Para pt-BR, sempre usar tradução local primeiro
-    if (currentLang === 'pt-BR' || currentLang === 'pt') {
-      console.log('🇧🇷 Idioma português detectado, priorizando traduções locais');
-      await this.loadFlavorTextFromLocalThenAPI(species);
+  private async loadFlavorTexts() { // Remover o parâmetro species
+    if (!this.pokemonSpecies) {
       return;
     }
+    // Atualizar o idioma atual
+    const newLang = this.translate.currentLang || 'pt-BR';
+    const langChanged = this.currentLang !== newLang;
+    this.currentLang = newLang;
+    
+    // Limpar os textos existentes se o idioma mudou
+    if (langChanged) {
+      this.flavorTexts = [];
+    }
+    
+    // Se já temos textos carregados e o idioma não mudou, não precisamos recarregar
+    if (this.flavorTexts.length > 0 && !langChanged) {
+      this.isLoadingFlavor = false;
+      return;
+    }
+    
+    this.isLoadingFlavor = true;
+    console.log(`🔍 Carregando flavor texts para idioma: ${this.currentLang}`);
 
-    // Para outros idiomas, usar dados da espécie diretamente
-    this.extractFlavorTexts(species);
-    this.isLoadingFlavor = false;
+    try {
+      // Apenas tenta carregar traduções locais se for português
+      if (this.currentLang === 'pt-BR' || this.currentLang === 'pt') {
+        console.log('🌐 Tentando carregar traduções locais para português...');
+        const localTranslations = await this.getLocalTranslations(this.pokemonId);
+        
+        if (localTranslations && localTranslations.length > 0) {
+          console.log('✅ Usando traduções locais do arquivo JSON');
+          this.flavorTexts = localTranslations;
+          this.currentFlavorIndex = 0;
+          this.isLoadingFlavor = false;
+          return;
+        }
+      }
+      
+      // Para outros idiomas ou se não encontrar traduções locais, extrair da API
+      console.log(`ℹ️ Extraindo flavor texts da API para idioma: ${this.currentLang}`);
+      this.extractFlavorTexts(this.pokemonSpecies);
+      
+    } catch (error) {
+      console.error('❌ Erro ao carregar traduções:', error);
+      // Em caso de erro, tentar extrair dos dados da espécie como fallback
+      this.extractFlavorTexts(this.pokemonSpecies);
+    }
   }
 
-  private async loadFlavorTextFromLocalThenAPI(species: any): Promise<void> {
-    console.log('🔍 Iniciando busca com prioridade para traduções locais...');
-
-    // Primeiro tentar buscar localmente (somente para português)
-    const localTranslations = await this.getLocalTranslations(this.pokemonId);
-
-    if (localTranslations && localTranslations.length > 0) {
-      console.log('✅ Usando traduções locais encontradas');
-      this.flavorTexts = localTranslations;
+  private extractFlavorTexts(species: any) {
+    if (!species?.flavor_text_entries) {
+      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
       this.currentFlavorIndex = 0;
       this.isLoadingFlavor = false;
       return;
     }
 
-    // Se não encontrar localmente, usar dados da espécie
-    console.log('🔄 Traduções locais não encontradas, usando dados da espécie...');
-    this.extractFlavorTexts(species);
-    this.isLoadingFlavor = false;
-  }
-
-  private async getLocalTranslations(pokemonId: number): Promise<string[] | null> {
-    try {
-      console.log('🔍 Buscando traduções locais para Pokémon ID:', pokemonId);
-
-      // Tentar carregar as traduções locais
-      const localFlavors = await this.http.get('/assets/data/flavors_ptbr.json').toPromise() as any;
-
-      if (localFlavors && localFlavors[pokemonId]) {
-        console.log('✅ Traduções locais encontradas!');
-        return localFlavors[pokemonId];
-      }
-
-      console.log('⚠️ Nenhuma tradução local encontrada para este Pokémon');
-      return null;
-    } catch (error) {
-      console.log('❌ Erro ao carregar traduções locais:', error);
-      return null;
-    }
-  }
-
-  private extractFlavorTexts(species: any) {
-    if (!species.flavor_text_entries) {
-      this.flavorTexts = [];
-      this.currentFlavorIndex = 0;
-      return;
-    }
-
-    const currentLang = this.translate.currentLang || 'pt-BR';
-    console.log(`🔍 Extraindo flavor texts para idioma: ${currentLang}`);
+    console.log(`🔍 Extraindo flavor texts para idioma: ${this.currentLang}`);
 
     // Mapear idioma do translate para formato da PokeAPI
     const apiLangMap: { [key: string]: string[] } = {
@@ -375,7 +483,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
       'ja': ['ja']
     };
 
-    const targetLanguages = apiLangMap[currentLang] || ['en'];
+    const targetLanguages = apiLangMap[this.currentLang] || ['en'];
 
     // Buscar entradas no idioma específico
     let targetEntries = species.flavor_text_entries.filter((entry: any) =>
@@ -394,7 +502,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     } else {
       // Converter para array de strings e remover duplicatas
       const flavorStrings = targetEntries.map((entry: any) =>
-        entry.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ')
+        entry.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ').trim()
       );
 
       // Remover duplicatas baseado no conteúdo
@@ -407,16 +515,34 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     }
 
     this.currentFlavorIndex = 0;
+    this.isLoadingFlavor = false;
   }
 
-  // Métodos de navegação de flavors (seguindo padrão do modal web)
-  getCurrentFlavorText(): string {
-    if (!this.flavorTexts || this.flavorTexts.length === 0) {
-      return this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-    }
-    return this.flavorTexts[this.currentFlavorIndex] || this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
+  private getLocalTranslations(pokemonId: number): Promise<string[] | null> {
+    return new Promise((resolve) => {
+      try {
+        this.http.get<any>('/assets/data/flavors_ptbr.json').subscribe({
+          next: (data) => {
+            const translations = data[pokemonId];
+            if (translations && Array.isArray(translations)) {
+              resolve(translations);
+            } else {
+              resolve(null);
+            }
+          },
+          error: (error) => {
+            console.error('Erro ao carregar traduções locais:', error);
+            resolve(null);
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao processar traduções locais:', error);
+        resolve(null);
+      }
+    });
   }
 
+  // Métodos de navegação de flavors
   previousFlavor(): void {
     if (this.currentFlavorIndex > 0) {
       this.currentFlavorIndex--;
@@ -429,11 +555,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadEvolutionChain(url: string) {
+  // Método para carregar a cadeia de evolução
+  private loadEvolutionChain(url: string): void {
     if (!url) return;
 
     this.evolutionLoading = true;
-    // Usar cache service para cadeia de evolução
     this.cacheService.getEvolutionChain(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -448,7 +574,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
       });
   }
 
-  private processEvolutionChain(chain: any) {
+  private processEvolutionChain(chain: any): void {
     const evolutionArray: any[] = [];
 
     const processChainNode = (node: any) => {
@@ -472,232 +598,58 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
   }
 
   private extractPokemonIdFromUrl(url: string): number {
-    const matches = url.match(/\/(\d+)\/$/);
+    const matches = url.match(/\/(\d+)\//);
     return matches ? parseInt(matches[1], 10) : 0;
   }
 
-  // Métodos do carrossel aprimorados
-  nextCarouselImage() {
-    if (this.carouselImages.length > 1 && !this.carouselTransitioning) {
-      this.carouselTransitioning = true;
-      this.imageLoading = true;
-
-      setTimeout(() => {
-        this.currentCarouselIndex = (this.currentCarouselIndex + 1) % this.carouselImages.length;
-        this.currentCarouselImage = this.carouselImages[this.currentCarouselIndex].url;
-      }, 150);
-    }
-  }
-
-  previousCarouselImage() {
-    if (this.carouselImages.length > 1 && !this.carouselTransitioning) {
-      this.carouselTransitioning = true;
-      this.imageLoading = true;
-
-      setTimeout(() => {
-        this.currentCarouselIndex = this.currentCarouselIndex === 0
-          ? this.carouselImages.length - 1
-          : this.currentCarouselIndex - 1;
-        this.currentCarouselImage = this.carouselImages[this.currentCarouselIndex].url;
-      }, 150);
-    }
-  }
-
-  selectCarouselImage(index: number) {
-    if (!this.carouselTransitioning && index !== this.currentCarouselIndex) {
-      this.carouselTransitioning = true;
-      this.imageLoading = true;
-
-      setTimeout(() => {
-        this.currentCarouselIndex = index;
-        this.currentCarouselImage = this.carouselImages[index].url;
-      }, 150);
-    }
-  }
-
-  // Métodos das abas - estáticas
-  setActiveTab(tab: string) {
-    this.activeTab = tab;
-  }
-
-  // Métodos de utilidade
-  getTranslatedTypeName(typeName: string): string {
-    return this.translate.instant(`types.${typeName}`) || typeName;
-  }
-
-  getTranslatedStatName(statName: string): string {
-    return this.translate.instant(`stats.${statName}`) || statName;
-  }
-
-  getStatPercentage(baseStat: number): number {
-    return Math.min((baseStat / 255) * 100, 100);
-  }
-
-  isValidImageUrl(url: string): boolean {
-    return !!(url && url.trim() !== '' && !url.includes('null'));
-  }
-
-  getTotalStats(): number {
-    if (!this.pokemon?.stats) return 0;
-    return this.pokemon.stats.reduce((sum: number, stat: any) => sum + stat.base_stat, 0);
-  }
-
-  // Métodos de stats categorizados (compatibilidade com modal web)
-  getOffensiveStats(): any[] {
-    if (!this.pokemon?.stats) return [];
-    return this.pokemon.stats.filter((stat: any) =>
-      ['attack', 'special-attack'].includes(stat.stat.name)
-    );
-  }
-
-  getDefensiveStats(): any[] {
-    if (!this.pokemon?.stats) return [];
-    return this.pokemon.stats.filter((stat: any) =>
-      ['defense', 'special-defense', 'hp'].includes(stat.stat.name)
-    );
-  }
-
-  getUtilityStats(): any[] {
-    if (!this.pokemon?.stats) return [];
-    return this.pokemon.stats.filter((stat: any) =>
-      ['speed'].includes(stat.stat.name)
-    );
-  }
-
-  onImageError(event: any) {
-    console.warn('Erro ao carregar imagem:', event.target.src);
-  }
-
-  // Métodos para as novas abas
-  getStatColor(baseStat: number): string {
-    if (baseStat >= 100) return '#4ade80'; // Verde
-    if (baseStat >= 70) return '#fbbf24';  // Amarelo
-    if (baseStat >= 40) return '#fb923c';  // Laranja
-    return '#ef4444'; // Vermelho
-  }
-
-  getAbilityDescription(abilityName: string): string {
-    const description = this.translate.instant(`abilities.${abilityName}`);
-    return description !== `abilities.${abilityName}` ? description : this.translate.instant('modal.NO_ABILITY_DESCRIPTION_AVAILABLE');
-  }
-
-  // Métodos de evolução
-  isEvolutionChainReady(): boolean {
-    return this.evolutionChain && this.evolutionChain.length > 0;
-  }
-
-  ensureValidImage(): string {
-    return 'assets/img/pokemon-placeholder.png';
-  }
-
-  getEvolutionMethodText(method: string): string {
-    return this.translate.instant(`evolution.methods.${method}`) || method;
-  }
-
-  getEvolutionTriggerText(trigger: string): string {
-    // Converter trigger para formato correto (level-up -> level_up)
-    const triggerKey = trigger.replace(/-/g, '_');
-    return this.translate.instant(`evolution.triggers.${triggerKey}`) || trigger;
-  }
-
-  // Métodos de curiosidades
-  getCaptureRate(): string {
-    if (!this.pokemonSpecies?.capture_rate) {
-      return this.translate.instant('app.not_available');
-    }
-    return this.pokemonSpecies.capture_rate.toString();
-  }
-
-  getPokemonColor(): string {
-    const colorName = this.pokemonSpecies?.color?.name;
-    if (!colorName) return this.translate.instant('app.not_available');
-
-    const translated = this.translate.instant(`colors.${colorName}`);
-    return translated !== `colors.${colorName}` ? translated : colorName;
-  }
-
-  // Métodos do carrossel aprimorado
-  getImageTypeName(index: number): string {
-    if (!this.carouselImages[index]) return '';
-
-    // Usar o label da imagem que já está traduzido
-    const label = this.carouselImages[index].label;
-    return this.translate.instant(label) || label;
-  }
-
-  onImageLoad(): void {
-    this.imageLoading = false;
-    this.carouselTransitioning = false;
-  }
-
-  toggleImageZoom(): void {
-    this.imageZoomed = !this.imageZoomed;
-  }
-
-  // Métodos de gestos para carrossel
-  onTouchStart(event: TouchEvent): void {
-    this.touchStartX = event.touches[0].clientX;
-    this.touchStartY = event.touches[0].clientY;
-    this.touchStartTime = Date.now();
-  }
-
-  onTouchMove(event: TouchEvent): void {
-    // Prevenir scroll durante swipe horizontal no carrossel
-    const deltaX = Math.abs(event.touches[0].clientX - this.touchStartX);
-    const deltaY = Math.abs(event.touches[0].clientY - this.touchStartY);
-
-    // Só prevenir scroll se movimento horizontal for significativamente maior que vertical
-    if (deltaX > deltaY && deltaX > 15) {
-      event.preventDefault();
-    }
-  }
-
-  onTouchEnd(event: TouchEvent): void {
-    const touchEndX = event.changedTouches[0].clientX;
-    const touchEndTime = Date.now();
-    const deltaX = touchEndX - this.touchStartX;
-    const deltaTime = touchEndTime - this.touchStartTime;
-
-    if (Math.abs(deltaX) > this.SWIPE_THRESHOLD && deltaTime < this.SWIPE_TIME_THRESHOLD) {
-      if (deltaX > 0) {
-        this.previousCarouselImage();
-      } else {
-        this.nextCarouselImage();
-      }
-    }
-  }
-
-  onPan(event: any): void {
-    // Implementar feedback visual durante pan
-    if (Math.abs(event.deltaX) > 10) {
-      // Adicionar classe de transição
-    }
-  }
-
-  onPanEnd(event: any): void {
-    if (Math.abs(event.deltaX) > this.SWIPE_THRESHOLD) {
-      if (event.deltaX > 0) {
-        this.previousCarouselImage();
-      } else {
-        this.nextCarouselImage();
-      }
-    }
-  }
-
-  // Navegação entre abas - apenas clique (sem gestos)
-  private tabs = ['overview', 'combat', 'evolution', 'curiosities'];
-
-  // Fechar modal
-  closeModal() {
+  // Métodos do modal
+  closeModal(): void {
     // Remover classe modal-open do body
     document.body.classList.remove('modal-open');
+    // Limpar dados para garantir que sejam recarregados ao reabrir
+    this.flavorTexts = [];
+    this.currentFlavorIndex = 0;
+    this.pokemonSpecies = null;
+    this.evolutionChain = [];
+    this.isLoadingFlavor = false;
     this.modalClosed.emit();
   }
 
-  onBackdropClick(event: Event) {
+  onBackdropClick(event: Event): void {
     if (event.target === event.currentTarget) {
       this.closeModal();
     }
+  }
+
+  getEvolutionTriggerText(trigger: any): string {
+    if (!trigger || !trigger.trigger) return '';
+
+    const triggerName = trigger.trigger.name;
+    const key = `mobile.evolution_triggers.${triggerName}`;
+
+    const params: any = {};
+    if (triggerName === 'level-up' && trigger.min_level) {
+      params.level = trigger.min_level;
+    } else if (trigger.min_happiness) {
+      params.happiness = trigger.min_happiness;
+    } else if (trigger.item) {
+      params.item = trigger.item.name.replace('-', ' ') || 'Unknown Item';
+    } else if (trigger.held_item) {
+      params.item = trigger.held_item.name.replace('-', ' ') || 'Unknown Item';
+    }
+
+    return this.translate.instant(key, params);
+  }
+
+  getEvolutionMethodText(method: string): string {
+    if (!method) return '';
+    const key = `mobile.evolution_methods.${method.replace('-', '_')}`;
+    return this.translate.instant(key);
+  }
+
+  getTranslatedStatName(statName: string): string {
+    const key = `mobile.stats_names.${statName.replace('-', '_')}`;
+    return this.translate.instant(key);
   }
 
   // Métodos adicionais para compatibilidade com modal web
@@ -717,8 +669,8 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
       return this.translate.instant('app.not_available');
     }
 
-    const heightInMeters = this.pokemon.height / 10;
-    const weightInKg = this.pokemon.weight / 10;
+    const heightInMeters = this.pokemon.height / 10; // Converte para metros
+    const weightInKg = this.pokemon.weight / 10; // Converte para kg
     const bmi = weightInKg / (heightInMeters * heightInMeters);
     const bmiValue = bmi.toFixed(1);
 
@@ -728,80 +680,153 @@ export class PokemonDetailsMobileComponent implements OnInit, OnDestroy {
     return `${bmiValue} (${this.translate.instant('bmi_categories.very_heavy')})`;
   }
 
-  getPokemonTrivia(): string[] {
+  public onTouchStart(event: TouchEvent): void {}
+  public onTouchMove(event: TouchEvent): void {}
+  public onTouchEnd(event: TouchEvent): void {}
+
+  public previousCarouselImage(): void {
+    this.currentCarouselIndex = 
+      (this.currentCarouselIndex - 1 + this.carouselImages.length) % 
+      this.carouselImages.length;
+  }
+
+  public nextCarouselImage(): void {
+    this.currentCarouselIndex = 
+      (this.currentCarouselIndex + 1) % this.carouselImages.length;
+  }
+
+  public selectCarouselImage(index: number): void {
+    this.currentCarouselIndex = index;
+  }
+
+  public getImageTypeName(index: number): string {
+    return this.translate.instant(this.carouselImages[index]?.label || '');
+  }
+
+  public onImageLoad(): void {}
+  public onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/pokemon/default.png';
+  }
+
+  public toggleImageZoom(): void {
+    this.isImageZoomed = !this.isImageZoomed;
+  }
+
+  public setActiveTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  public getTranslatedTypeName(typeName: string): string {
+    return this.translate.instant(`types.${typeName}`);
+  }
+
+  public getAbilityDescription(abilityName: string): string {
+    return this.translate.instant(`abilities.${abilityName}`);
+  }
+
+  public getCurrentFlavorText(): string {
+    return this.flavorTexts[this.currentFlavorIndex] || '';
+  }
+
+  public getPokemonTrivia(): string[] {
     const trivia: string[] = [];
+    
+    if (!this.pokemon) return [];
 
-    if (this.pokemon) {
-      // Trivia baseada em stats
-      const totalStats = this.getTotalStats();
-      if (totalStats > 600) {
-        trivia.push(this.translate.instant('details.trivia.legendary_stats'));
-      } else if (totalStats > 500) {
-        trivia.push(this.translate.instant('details.trivia.exceptional_stats'));
-      }
-
-      // Trivia baseada em peso e altura
-      const weight = this.pokemon.weight / 10;
-      const height = this.pokemon.height / 10;
-
-      if (weight > 100) {
-        trivia.push(this.translate.instant('details.trivia.very_heavy', { weight }));
-      }
-
-      if (height > 2) {
-        trivia.push(this.translate.instant('details.trivia.very_tall', { height }));
-      }
-
-      // Trivia baseada em tipos
-      if (this.pokemon.types) {
-        const typeNames = this.pokemon.types.map((t: any) => t.type.name);
-
-        if (typeNames.includes('dragon')) {
-          trivia.push(this.translate.instant('details.trivia.dragon_type'));
-        }
-
-        if (typeNames.includes('psychic')) {
-          trivia.push(this.translate.instant('details.trivia.psychic_type'));
-        }
-
-        if (typeNames.includes('ghost')) {
-          trivia.push(this.translate.instant('details.trivia.ghost_type'));
-        }
-
-        if (typeNames.length === 2) {
-          const translatedTypes = typeNames.map((t: any) => this.getTranslatedTypeName(t)).join(' e ');
-          trivia.push(this.translate.instant('details.trivia.dual_type', { types: translatedTypes }));
-        }
-      }
-
-      // Trivia baseada em experiência
-      if (this.pokemon.base_experience && this.pokemon.base_experience > 250) {
-        trivia.push(this.translate.instant('details.trivia.high_experience'));
-      }
-
-      // Easter eggs específicos
-      if (this.pokemon.id === 1) {
-        trivia.push(this.translate.instant('details.trivia.bulbasaur_first'));
-      }
-
-      if (this.pokemon.id === 150) {
-        trivia.push(this.translate.instant('details.trivia.mewtwo_origin'));
-      }
-
-      if (this.pokemon.id === 151) {
-        trivia.push(this.translate.instant('details.trivia.mew_original'));
-      }
-
-      if (this.pokemon.id === 25) {
-        trivia.push(this.translate.instant('details.trivia.pikachu_mascot'));
+    // 1. Trivia sobre tipos
+    if (this.pokemon.types && this.pokemon.types.length > 0) {
+      const types = this.pokemon.types.map((t: any) => this.getTranslatedTypeName(t.type.name));
+      
+      if (types.length === 1) {
+        trivia.push(this.translate.instant('mobile.trivia.single_type', { type: types[0] }));
+      } else if (types.length > 1) {
+        trivia.push(this.translate.instant('mobile.trivia.dual_type', { 
+          type1: types[0], 
+          type2: types[1] 
+        }));
       }
     }
 
-    // Se não houver trivia específica, adicionar uma genérica
+    // 2. Trivia sobre peso e altura
+    if (this.pokemon.weight && this.pokemon.height) {
+      const weight = this.pokemon.weight / 10; // Converte para kg
+      const height = this.pokemon.height / 10; // Converte para metros
+      
+      if (weight > 200) {
+        trivia.push(this.translate.instant('mobile.trivia.heavy_weight'));
+      } else if (weight < 10) {
+        trivia.push(this.translate.instant('mobile.trivia.light_weight'));
+      }
+      
+      if (height > 2) {
+        trivia.push(this.translate.instant('mobile.trivia.tall_height'));
+      } else if (height < 0.5) {
+        trivia.push(this.translate.instant('mobile.trivia.small_height'));
+      }
+    }
+
+    // 3. Trivia sobre estatísticas
+    if (this.pokemon.stats) {
+      const stats = this.pokemon.stats.reduce((acc: any, stat: any) => {
+        acc[stat.stat.name] = stat.base_stat;
+        return acc;
+      }, {});
+
+      // Verifica se tem alguma estatística muito alta ou muito baixa
+      if (stats.hp > 150) {
+        trivia.push(this.translate.instant('mobile.trivia.high_hp'));
+      }
+      
+      if (stats.attack > 120) {
+        trivia.push(this.translate.instant('mobile.trivia.high_attack'));
+      }
+      
+      if (stats.speed > 120) {
+        trivia.push(this.translate.instant('mobile.trivia.high_speed'));
+      }
+    }
+
+    // 4. Trivia sobre espécie (se disponível)
+    if (this.pokemonSpecies) {
+      if (this.pokemonSpecies.is_legendary) {
+        trivia.push(this.translate.instant('mobile.trivia.legendary'));
+      }
+      
+      if (this.pokemonSpecies.is_mythical) {
+        trivia.push(this.translate.instant('mobile.trivia.mythical'));
+      }
+      
+      if (this.pokemonSpecies.habitat) {
+        trivia.push(this.translate.instant('mobile.trivia.habitat', {
+          habitat: this.translate.instant(`habitats.${this.pokemonSpecies.habitat.name}`)
+        }));
+      }
+    }
+
+    // 5. Garante que temos pelo menos uma curiosidade
     if (trivia.length === 0) {
-      trivia.push(this.translate.instant('details.trivia.generic'));
+      trivia.push(this.translate.instant('mobile.trivia.default'));
     }
 
     return trivia;
+  }
+
+  public isEvolutionChainReady(): boolean {
+    return !this.evolutionLoading && this.evolutionChain.length > 0;
+  }
+
+  public ensureValidImage(): string {
+    return 'assets/images/pokemon/default.png';
+  }
+
+  private updateStaticTranslations() {
+    // Forçar atualização das traduções estáticas
+    this.changeDetectorRef.detectChanges();
+  }
+
+  public refreshData() {
+    this.closeModal();
+    this.loadPokemonData();
   }
 }

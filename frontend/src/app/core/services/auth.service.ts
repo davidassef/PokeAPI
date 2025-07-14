@@ -343,7 +343,29 @@ export class AuthService {
       return false;
     }
 
-    return true;
+    // Verifica se o estado atual está sincronizado
+    const currentAuthState = this.authState.value;
+    const hasValidToken = this.isTokenValid(token);
+    
+    // Se temos um token válido mas o estado está como não autenticado, sincronizar
+    if (hasValidToken && !currentAuthState) {
+      console.log('[AuthService] Token válido encontrado, sincronizando estado de autenticação');
+      const user = this.decodeToken(token);
+      if (user) {
+        this.currentUserSubject.next(user);
+        this.authState.next(true);
+        this.setupTokenRefresh(token);
+      }
+    }
+    
+    // Se não temos token válido mas o estado está como autenticado, limpar
+    if (!hasValidToken && currentAuthState) {
+      console.warn('[AuthService] Estado inconsistente, limpando autenticação');
+      this.clearAuthState();
+      return false;
+    }
+
+    return hasValidToken;
   }
 
   /**

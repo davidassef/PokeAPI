@@ -1,7 +1,37 @@
+#!/usr/bin/env python3
+"""
+Script para verificar a estrutura da tabela de usuários no banco de dados.
+
+Este script conecta ao banco de dados SQLite e verifica:
+- Se a tabela 'users' existe
+- A estrutura completa da tabela (colunas, tipos, constraints)
+- Quantidade de usuários cadastrados
+- Amostra dos primeiros usuários (se houver)
+
+Útil para debugging e verificação de integridade do banco de dados.
+"""
+
 import sqlite3
 import sys
 
+
 def check_table_structure():
+    """
+    Verifica a estrutura da tabela de usuários no banco de dados.
+    
+    Esta função:
+    1. Conecta ao banco de dados SQLite
+    2. Verifica se a tabela 'users' existe
+    3. Exibe a estrutura completa da tabela
+    4. Mostra estatísticas de usuários cadastrados
+    5. Exibe amostra dos dados (primeiros 3 usuários)
+    
+    Returns:
+        None
+        
+    Raises:
+        Exception: Se houver erro na conexão ou consulta ao banco
+    """
     try:
         conn = sqlite3.connect('pokemon_app.db')
         cursor = conn.cursor()
@@ -41,6 +71,7 @@ def check_table_structure():
     except Exception as e:
         print(f"❌ Erro: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     check_table_structure()

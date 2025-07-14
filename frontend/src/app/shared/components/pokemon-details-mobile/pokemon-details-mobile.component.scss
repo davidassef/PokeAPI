@@ -179,6 +179,7 @@
     }
 
     .main-image-container {
+      position: relative; // Necessário para o posicionamento absoluto do botão de zoom
       width: 200px;
       height: 200px;
       display: flex;
@@ -236,8 +237,8 @@
       border-radius: 20px;
       color: white;
       font-size: 0.9rem;
-      font-weight: 500;
-      text-transform: capitalize;
+      font-weight: bold;
+      text-transform: uppercase;
     }
   }
 
@@ -481,6 +482,7 @@
           padding: 2px 8px;
           border-radius: 12px;
           font-size: 0.7rem;
+          font-weight: bold;
         }
       }
 
@@ -666,6 +668,7 @@
               padding: 2px 8px;
               border-radius: 8px;
               font-size: 0.7rem;
+              font-weight: bold;
             }
           }
 
@@ -1146,8 +1149,8 @@
 // Controles de zoom
 .zoom-controls {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  bottom: 10px;
+  right: 10px;
   z-index: 10;
 
   .zoom-btn {

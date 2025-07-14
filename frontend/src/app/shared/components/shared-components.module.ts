@@ -9,6 +9,7 @@ import { PokemonCardComponent } from './pokemon-card/pokemon-card.component';
 import { PokemonRankCardComponent } from './pokemon-rank-card/pokemon-rank-card.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { MusicPlayerComponent } from './music-player/music-player.component';
+import { MusicPlayerSidemenuComponent } from './music-player-sidemenu/music-player-sidemenu.component';
 import { SearchFilterComponent } from './search-filter/search-filter.component';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
 import { ErrorNotificationComponent } from './error-notification/error-notification.component';
@@ -20,7 +21,6 @@ import { AccountSettingsModalComponent } from './account-settings-modal/account-
 import { AdminPokemonModalComponent } from './admin-pokemon-modal/admin-pokemon-modal.component';
 import { PokemonDetailsMobileComponent } from './pokemon-details-mobile/pokemon-details-mobile.component';
 import { CacheStatsComponent } from './cache-stats/cache-stats.component';
-// import { MusicPlayerSidemenuComponent } from './music-player-sidemenu/music-player-sidemenu.component';
 
 
 // Shared Modules
@@ -33,6 +33,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     PokemonRankCardComponent,
     LoadingSpinnerComponent,
     MusicPlayerComponent,
+    MusicPlayerSidemenuComponent,
     SearchFilterComponent,
     SidebarMenuComponent,
     ErrorNotificationComponent,
@@ -44,7 +45,6 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AdminPokemonModalComponent,
     PokemonDetailsMobileComponent,
     CacheStatsComponent
-    // MusicPlayerSidemenuComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -59,6 +59,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     PokemonRankCardComponent,
     LoadingSpinnerComponent,
     MusicPlayerComponent,
+    MusicPlayerSidemenuComponent,
     SearchFilterComponent,
     SidebarMenuComponent,
     ErrorNotificationComponent,
@@ -70,7 +71,6 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AdminPokemonModalComponent,
     PokemonDetailsMobileComponent,
     CacheStatsComponent,
-    // MusicPlayerSidemenuComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,

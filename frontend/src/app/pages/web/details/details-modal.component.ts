@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
@@ -14,9 +14,10 @@ import { PokemonCacheService } from '../../../core/services/pokemon-cache.servic
   styleUrls: ['./details-modal.component.scss'],
   animations: modalAnimations
 })
-export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @Input() pokemon: any;
   @Input() pokemonId: number = 0; // Adicionar suporte para pokemonId
+  @Input() isOpen: boolean = false; // Adicionar input para detectar reopen
   @Output() close = new EventEmitter<void>();
   @ViewChild('flavorTextWrapper', { static: false }) flavorTextWrapper?: ElementRef;
 
@@ -59,6 +60,42 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
   speciesData: any = null;
   evolutionChain: any[] = [];
   abilityDescriptions: { [key: string]: string } = {};
+
+  // Add the missing property
+  isSpeciesDataReady = false;
+
+  // Métodos de verificação de dados para as abas
+  isOverviewDataReady(): boolean {
+    return !!this.pokemon;
+  }
+
+  isCombatDataReady(): boolean {
+    return !!this.pokemon && this.tabDataLoaded['combat'];
+  }
+
+  isEvolutionDataReady(): boolean {
+    return !!this.pokemon && this.tabDataLoaded['evolution'];
+  }
+
+  isCuriositiesDataReady(): boolean {
+    return !!this.pokemon && this.tabDataLoaded['curiosities'];
+  }
+
+  shouldShowCombatData(): boolean {
+    return this.isCombatDataReady();
+  }
+
+  shouldShowSpeciesDataInEvolution(): boolean {
+    return this.isSpeciesDataReady && !!this.speciesData;
+  }
+
+  shouldShowSpeciesDataInCuriosities(): boolean {
+    return this.isSpeciesDataReady && !!this.speciesData;
+  }
+
+  isEvolutionChainReady(): boolean {
+    return this.evolutionChain.length > 0;
+  }
 
   constructor(
     private modalController: ModalController,
@@ -144,8 +181,17 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.abilityDescriptions = {};
     this.flavorTexts = [];
     this.flavorText = '';
+    this.currentFlavorIndex = 0;
+    this.isLoadingFlavor = false;
     this.evolutionChain = [];
     this.speciesData = null;
+    this.isSpeciesDataReady = false; // Resetar flag de dados da espécie
+
+    // Resetar estado das abas
+    this.activeTab = 'overview';
+    this.isTabTransitioning = false;
+    this.isOverviewCombatTransition = false;
+    this.disableTabAnimation = false;
 
     // Gerar tema baseado nos tipos do Pokémon primeiro
     this.generatePokemonTheme();
@@ -519,6 +565,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     this.http.get(this.pokemon.species.url).subscribe({
       next: (data) => {
         this.speciesData = data;
+        this.isSpeciesDataReady = true;
       },
       error: (error) => {
         console.error('Erro ao buscar dados da espécie:', error);
@@ -712,10 +759,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return ''; // Retorna vazio para não exibir nada no template
     }
 
-    if (!this.isSpeciesDataReady()) {
+    if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
-
     if (!this.speciesData?.egg_groups) return this.translate.instant('app.not_available');
 
     return this.speciesData.egg_groups
@@ -732,7 +778,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return ''; // Retorna vazio para não exibir nada no template
     }
 
-    if (!this.isSpeciesDataReady()) {
+    if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
 
@@ -873,7 +919,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return ''; // Retorna vazio para não exibir nada no template
     }
 
-    if (!this.isSpeciesDataReady()) {
+    if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
     return this.speciesData?.capture_rate?.toString() || this.translate.instant('app.not_available');
@@ -885,7 +931,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return ''; // Retorna vazio para não exibir nada no template
     }
 
-    if (!this.isSpeciesDataReady()) {
+    if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
     return this.speciesData?.base_happiness?.toString() || this.translate.instant('app.not_available');
@@ -896,7 +942,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       return ''; // Retorna vazio para não exibir nada no template
     }
 
-    if (!this.isSpeciesDataReady()) {
+    if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
 
@@ -1200,79 +1246,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
     // Limpar apenas dados que NÃO pertencem à nova aba
     switch (toTab) {
       case 'overview':
-        // Indo para overview: limpar dados específicos de outras abas
-        this.evolutionChain = [];
-        this.flavorTexts = [];
-        this.flavorText = '';
-        this.isLoadingFlavor = false;
-        break;
-
-      case 'combat':
-        // Indo para combat: limpar dados não relacionados
-        this.evolutionChain = [];
-        this.flavorTexts = [];
-        this.flavorText = '';
-        this.isLoadingFlavor = false;
-        break;
-
-      case 'evolution':
-        // Indo para evolution: limpar flavor texts mas manter species
-        this.flavorTexts = [];
-        this.flavorText = '';
-        this.isLoadingFlavor = false;
-        break;
-
-      case 'curiosities':
-        // Indo para curiosities: limpar evolution mas manter species
-        this.evolutionChain = [];
-        break;
-    }
-  }
-
-  private resetPreviousTabData(previousTab: string, newTab: string): void {
-    // Evitar vazamentos de dados entre abas - LIMPEZA AGRESSIVA
-    if (previousTab !== newTab) {
-      console.log(`🧹 Limpeza agressiva dos dados da aba anterior: ${previousTab} -> ${newTab}`);
-
-      switch (previousTab) {
-        case 'combat':
-          // Limpar descrições de habilidades se saindo da aba combat
-          if (newTab !== 'combat') {
-            console.log('🧹 Limpando dados de combate...');
-            // Não limpar completamente para permitir cache, mas marcar como não carregado
-            this.tabDataLoaded['combat'] = false;
-          }
-          break;
-        case 'evolution':
-          // Limpar dados de evolução se saindo da aba evolution
-          if (newTab !== 'evolution' && newTab !== 'curiosities') {
-            console.log('🧹 Limpando dados de evolução...');
-            this.evolutionChain = [];
-            this.tabDataLoaded['evolution'] = false;
-          }
-          break;
-        case 'curiosities':
-          // Limpar flavor texts se saindo da aba curiosidades
-          if (newTab !== 'curiosities' && newTab !== 'evolution') {
-            console.log('🧹 Limpando dados de curiosidades...');
-            this.flavorTexts = [];
-            this.flavorText = '';
-            this.isLoadingFlavor = false;
-            this.tabDataLoaded['curiosities'] = false;
-          }
-          break;
-      }
-    }
-  }
-
-  private loadTabData(tab: string): void {
-    console.log(`🔄 Carregando dados para aba: ${tab}`);
-
-    // Limpar dados que não pertencem à aba atual
-    this.clearNonTabData(tab);
-
-    switch (tab) {
-      case 'overview':
         // Dados básicos já carregados no initializePokemonData
         // Apenas marcar como carregado se o pokemon existe
         if (this.pokemon) {
@@ -1283,8 +1256,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'combat':
         // Carregar APENAS descrições das habilidades para esta aba
         if (!this.tabDataLoaded['combat'] && this.pokemon?.abilities) {
+          this.isTabTransitioning = true;
           this.fetchAbilityDescriptions();
           this.tabDataLoaded['combat'] = true;
+          setTimeout(() => {
+            this.isTabTransitioning = false;
+          }, 100);
         }
         break;
 
@@ -1292,40 +1269,87 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
         // CORREÇÃO: Sempre verificar se a cadeia de evolução precisa ser recarregada
         // Se os dados já foram carregados E a cadeia não foi limpa, não carregar novamente
         if (this.tabDataLoaded['evolution'] && this.evolutionChain.length > 0) {
-          console.log(`✅ Dados da aba ${tab} já carregados e cadeia válida`);
+          console.log(`✅ Dados da aba ${toTab} já carregados e cadeia válida`);
           return;
         }
 
         // Carregar dados de evolução e espécie para esta aba
         console.log(`🧬 Carregando/recarregando cadeia de evolução`);
+        this.isTabTransitioning = true;
         this.fetchEvolutionChain();
         // fetchSpeciesData apenas se não foi carregado por outra aba
         if (!this.speciesData) {
           this.fetchSpeciesData();
         }
         this.tabDataLoaded['evolution'] = true;
+        setTimeout(() => {
+          this.isTabTransitioning = false;
+        }, 100);
         break;
 
       case 'curiosities':
         // CORREÇÃO: Sempre verificar se os flavor texts precisam ser recarregados
         // Se os dados já foram carregados E os flavors não foram limpos E não houve mudança de idioma, não carregar novamente
         if (this.tabDataLoaded['curiosities'] && this.flavorTexts.length > 0 && !this.isLoadingFlavor) {
-          console.log(`✅ Dados da aba ${tab} já carregados e flavors válidos`);
+          console.log(`✅ Dados da aba ${toTab} já carregados e flavors válidos`);
           return;
         }
 
-        // Carregar APENAS flavor texts e dados da espécie para esta aba
+        // Carregar flavor texts para esta aba
         console.log(`🍃 Carregando/recarregando flavor texts`);
-        const currentLang = this.translate.currentLang || 'pt-BR';
-        this.fetchFlavorText(currentLang, this.pokemon.id);
-        // fetchSpeciesData apenas se não foi carregado por outra aba
-        if (!this.speciesData) {
-          this.fetchSpeciesData();
-        }
+        this.isTabTransitioning = true;
+        this.fetchFlavorTextFromPokeAPI();
         this.tabDataLoaded['curiosities'] = true;
+        setTimeout(() => {
+          this.isTabTransitioning = false;
+        }, 100);
         break;
     }
   }
+
+  loadTabData(tab: string): void {
+    console.log(`Loading tab data for ${tab}`);
+
+    if (!this.pokemon) return;
+
+    switch (tab) {
+      case 'overview':
+        // Dados básicos já estão disponíveis no pokemon
+        this.tabDataLoaded['overview'] = true;
+        break;
+
+      case 'combat':
+        // Carregar descrições das habilidades se ainda não foram carregadas
+        if (!this.tabDataLoaded['combat'] && this.pokemon.abilities) {
+          this.fetchAbilityDescriptions();
+          this.tabDataLoaded['combat'] = true;
+        }
+        break;
+
+      case 'evolution':
+        // Carregar dados de evolução e espécie
+        if (!this.tabDataLoaded['evolution']) {
+          this.fetchEvolutionChain();
+          if (!this.speciesData) {
+            this.fetchSpeciesData();
+          }
+          this.tabDataLoaded['evolution'] = true;
+        }
+        break;
+
+      case 'curiosities':
+        // Carregar dados da espécie e flavor texts
+        if (!this.tabDataLoaded['curiosities']) {
+          if (!this.speciesData) {
+            this.fetchSpeciesData();
+          }
+          this.fetchFlavorText(this.translate.currentLang || 'pt-BR', this.pokemon.id);
+          this.tabDataLoaded['curiosities'] = true;
+        }
+        break;
+    }
+  }
+
   private clearNonTabData(currentTab: string): void {
     // Limpar dados que não pertencem à aba atual para evitar vazamentos - LIMPEZA INTELIGENTE
     console.log(`🧹 Limpeza inteligente de dados não relacionados à aba: ${currentTab}`);
@@ -1500,122 +1524,36 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy {
       'assets/img/placeholder.png',
       'assets/img/pokeball.png',
       // Data URL como fallback absoluto
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTAwTTEwMCA2MEM3Ny45MDg2IDYwIDYwIDc3LjkwODYgNjAgMTAwQzYwIDEyMi4wOTEgNzcuOTA4NiAxNDAgMTAwIDE0MEM1MS44NjI5IDE0MCAxNDAgMTIyLjA9MSAxNDAgMTAwQzE0MCA3Ny45MDg2IDEyMi4wOTEgNjAgMTAwIDYwWiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K'
+      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTAwTTEwMCA2MEM3Ny45MDg2IDYwIDYwIDc3LjkwODYgNjAgMTAwQzYwIDEyMi4wOTEgNzcuOTA4NiAxNDAgMTAwIDE0MEM1MS44NjI5IDE0MCAxNDAgMTIyLjA5MSAxNDAgMTAwQzE0MCA3Ny45MDg2IDEyMi4wOTEgNjAgMTAwIDYwWiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K'
     ];
 
     // Retorna o primeiro fallback (assumindo que existe)
     return fallbacks[0];
   }
 
-  private onLanguageChange(): void {
-    console.log('🌐 Idioma alterado, recarregando traduções...');
+  // Add the missing method for language change
+  onLanguageChange(): void {
+    if (this.pokemonId) {
+      this.loadPokemonById(this.pokemonId);
+    }
+  }
 
-    const newLang = this.translate.currentLang || 'pt-BR';
-    console.log(`🌐 Novo idioma detectado: ${newLang}`);
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('DetailsModalComponent - ngOnChanges', changes);
 
-    // Resetar dados que dependem de idioma
-    this.abilityDescriptions = {};
-    this.flavorTexts = [];
-    this.flavorText = '';
-    this.currentFlavorIndex = 0;
-    this.isLoadingFlavor = true;
-
-    // Resetar flags de carregamento para dados dependentes de idioma
-    this.tabDataLoaded['combat'] = false;
-    this.tabDataLoaded['curiosities'] = false;
-
-    // Se estivermos na aba curiosities, recarregar imediatamente os flavors
-    if (this.activeTab === 'curiosities') {
-      console.log(`🔄 Aba curiosities ativa, recarregando flavors em ${newLang}`);
-      this.fetchFlavorText(newLang, this.pokemon.id);
+    if (changes['pokemonId'] && changes['pokemonId'].currentValue !== changes['pokemonId'].previousValue) {
+      if (changes['pokemonId'].currentValue && changes['pokemonId'].currentValue > 0) {
+        this.loadPokemonById(changes['pokemonId'].currentValue);
+      }
     }
 
-    // Recarregar dados da aba ativa
-    this.loadTabData(this.activeTab);
-
-    // Forçar atualização do template para reprocessar traduções
-    // Isso é necessário porque métodos como getPokemonTrivia(), getEggGroups(), etc.
-    // usam translate.instant() que não reage automaticamente à mudança de idioma
-    setTimeout(() => {
-      // Trigger change detection para forçar re-renderização
-      this.headerState = this.headerState === 'idle' ? 'pulse' : 'idle';
-    }, 100);
-  }
-
-  // Métodos de verificação de dados por aba
-  isOverviewDataReady(): boolean {
-    return this.tabDataLoaded['overview'] && !!this.pokemon;
-  }
-
-  isCombatDataReady(): boolean {
-    return this.tabDataLoaded['combat'] && !!this.pokemon && !!this.pokemon.stats;
-  }
-
-  isEvolutionDataReady(): boolean {
-    // A aba de evolução está pronta quando:
-    // 1. Os dados foram marcados como carregados
-    // 2. Há um pokémon válido
-    // 3. OU a cadeia de evolução foi carregada OU está em processo de carregamento (evitar loop)
-    return this.tabDataLoaded['evolution'] && !!this.pokemon && (this.evolutionChain.length > 0 || this.isEvolutionLoading());
-  }
-
-  private isEvolutionLoading(): boolean {
-    // Considera que está carregando se os dados foram marcados como carregados recentemente
-    // mas a cadeia ainda não foi processada
-    return this.tabDataLoaded['evolution'] && this.evolutionChain.length === 0;
-  }
-
-  isCuriositiesDataReady(): boolean {
-    return this.tabDataLoaded['curiosities'] && !!this.pokemon && !this.isLoadingFlavor;
-  }
-
-  // Verificações específicas para dados condicionais
-  isSpeciesDataReady(): boolean {
-    return !!this.speciesData;
-  }
-
-  isAbilityDataReady(): boolean {
-    return Object.keys(this.abilityDescriptions).length > 0;
-  }
-
-  isEvolutionChainReady(): boolean {
-    return this.evolutionChain.length > 0;
-  }
-
-  isFlavorTextReady(): boolean {
-    return !this.isLoadingFlavor && this.flavorTexts.length > 0;
-  }
-
-  // Métodos para verificar se devemos exibir dados específicos na aba atual
-  shouldShowEvolutionData(): boolean {
-    return this.activeTab === 'evolution' && this.isEvolutionDataReady();
-  }
-
-  shouldShowCombatData(): boolean {
-    return this.activeTab === 'combat' && this.isCombatDataReady();
-  }
-
-  shouldShowCuriositiesData(): boolean {
-    return this.activeTab === 'curiosities' && this.isCuriositiesDataReady();
-  }
-
-  shouldShowSpeciesDataInEvolution(): boolean {
-    return this.activeTab === 'evolution' && this.isSpeciesDataReady();
-  }
-
-  shouldShowSpeciesDataInCuriosities(): boolean {
-    return this.activeTab === 'curiosities' && this.isSpeciesDataReady();
-  }
-
-  // Método auxiliar para verificar se dados sensíveis ao idioma estão prontos
-  private isLanguageSensitiveDataReady(tabName: string): boolean {
-    switch (tabName) {
-      case 'combat':
-        return this.isAbilityDataReady();
-      case 'curiosities':
-        return this.isFlavorTextReady();
-      default:
-        return true;
+    // Add this block to handle modal reopen events
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true &&
+        changes['isOpen'].previousValue === false) {
+      console.log('Modal reopened - reloading data');
+      if (this.pokemonId && this.pokemonId > 0) {
+        this.loadPokemonById(this.pokemonId);
+      }
     }
   }
 

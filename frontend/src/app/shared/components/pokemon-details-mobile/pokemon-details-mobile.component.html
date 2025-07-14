@@ -8,7 +8,7 @@
 
       <!-- Header com botão fechar -->
       <div class="mobile-header">
-        <button class="close-btn" (click)="closeModal()">
+                <button class="close-btn" (click)="closeModal()" [attr.aria-label]="'mobile.close' | translate">
           <ion-icon name="close-outline"></ion-icon>
         </button>
         <h2 *ngIf="pokemon">{{ pokemon.name | titlecase }}</h2>
@@ -18,7 +18,7 @@
           <!-- Indicador de cache (apenas em desenvolvimento) -->
           <div class="cache-indicator" *ngIf="showCacheStats">
             <ion-icon name="flash-outline" [class.cached]="isDataCached"></ion-icon>
-            <small>{{ isDataCached ? 'Cache' : 'API' }}</small>
+                        <small>{{ (isDataCached ? 'mobile.cache_indicator.cached' : 'mobile.cache_indicator.api') | translate }}</small>
           </div>
         </div>
       </div>
@@ -26,7 +26,7 @@
       <!-- Loading State -->
       <div class="loading-container" *ngIf="loading">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
-        <p>{{ 'app.loading' | translate }}</p>
+                <p>{{ 'mobile.loading' | translate }}</p>
       </div>
 
       <!-- Conteúdo Principal -->
@@ -37,21 +37,20 @@
         <div class="image-carousel"
              (touchstart)="onTouchStart($event)"
              (touchmove)="onTouchMove($event)"
-             (touchend)="onTouchEnd($event)"
-             (pan)="onPan($event)"
-             (panend)="onPanEnd($event)">
+             (touchend)="onTouchEnd($event)">
           <!-- Botão anterior -->
-          <button class="carousel-nav prev"
+                    <button class="carousel-nav prev"
                   (click)="previousCarouselImage()"
                   *ngIf="carouselImages.length > 1"
-                  [disabled]="carouselTransitioning">
+                  [disabled]="carouselTransitioning"
+                  [attr.aria-label]="'mobile.carousel.previous' | translate">
             <ion-icon name="chevron-back-outline"></ion-icon>
           </button>
 
           <!-- Container da imagem com transição -->
           <div class="main-image-container"
                [class.transitioning]="carouselTransitioning"
-               [class.zoomed]="imageZoomed">
+               [class.zoomed]="isImageZoomed">
             <img *ngIf="currentCarouselImage && isValidImageUrl(currentCarouselImage)"
                  [src]="currentCarouselImage"
                  [alt]="pokemon.name + ' - ' + getImageTypeName(currentCarouselIndex)"
@@ -61,20 +60,30 @@
             <div *ngIf="!currentCarouselImage || !isValidImageUrl(currentCarouselImage)"
                  class="image-placeholder">
               <ion-icon name="help-outline"></ion-icon>
-              <p>{{ 'details.error_message' | translate }}</p>
+                            <p>{{ 'mobile.error_message' | translate }}</p>
             </div>
 
             <!-- Loading spinner para imagens -->
             <div class="image-loading" *ngIf="imageLoading">
               <ion-spinner name="crescent"></ion-spinner>
             </div>
+
+            <!-- Controles de zoom (movido para cá) -->
+            <div class="zoom-controls" *ngIf="currentCarouselImage">
+                            <button class="zoom-btn" (click)="toggleImageZoom()"
+                      [attr.aria-label]="(isImageZoomed ? 'mobile.actions.zoom_out' : 'mobile.actions.zoom_in') | translate"
+                      [class.zoomed]="isImageZoomed">
+                <ion-icon [name]="isImageZoomed ? 'contract-outline' : 'expand-outline'"></ion-icon>
+              </button>
+            </div>
           </div>
 
           <!-- Botão próximo -->
-          <button class="carousel-nav next"
+                    <button class="carousel-nav next"
                   (click)="nextCarouselImage()"
                   *ngIf="carouselImages.length > 1"
-                  [disabled]="carouselTransitioning">
+                  [disabled]="carouselTransitioning"
+                  [attr.aria-label]="'mobile.carousel.next' | translate">
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </button>
         </div>
@@ -82,29 +91,26 @@
         <!-- Indicadores do carrossel aprimorados -->
         <div class="carousel-indicators" *ngIf="carouselImages.length > 1">
           <div class="indicators-container">
-            <button *ngFor="let image of carouselImages; let i = index"
+                        <button *ngFor="let image of carouselImages; let i = index"
                     class="indicator"
-                    [class.active]="i === currentCarouselIndex"
+                    role="tab"
+                    [attr.aria-selected]="i === currentCarouselIndex"
+                    [ngClass]="{'active': i === currentCarouselIndex}"
                     (click)="selectCarouselImage(i)"
-                    [attr.aria-label]="getImageTypeName(i)">
-              <span class="indicator-dot"></span>
+                    [attr.aria-label]="'mobile.carousel.slide' | translate: { current: i + 1, total: carouselImages.length, type: getImageTypeName(i) }"
+                    [attr.aria-controls]="'carousel-item-' + i">
+                    <span class="indicator-dot"></span>
             </button>
           </div>
 
           <!-- Labels dos tipos de imagem -->
           <div class="image-type-label">
             <span>{{ getImageTypeName(currentCarouselIndex) }}</span>
-            <small>({{ currentCarouselIndex + 1 }}/{{ carouselImages.length }})</small>
+                        <small>{{ 'mobile.carousel.counter' | translate: { currentIndex: currentCarouselIndex + 1, total: carouselImages.length } }}</small>
           </div>
         </div>
 
-        <!-- Controles de zoom -->
-        <div class="zoom-controls" *ngIf="currentCarouselImage">
-          <button class="zoom-btn" (click)="toggleImageZoom()"
-                  [class.zoomed]="imageZoomed">
-            <ion-icon [name]="imageZoomed ? 'contract-outline' : 'expand-outline'"></ion-icon>
-          </button>
-        </div>
+
       </div>
 
       <!-- Informações Básicas -->
@@ -119,15 +125,15 @@
 
         <div class="physical-stats">
           <div class="stat-item">
-            <span class="label">{{ 'pokemon.height' | translate }}</span>
+                        <span class="label">{{ 'mobile.height' | translate }}</span>
             <span class="value">{{ (pokemon.height / 10).toFixed(1) }}m</span>
           </div>
           <div class="stat-item">
-            <span class="label">{{ 'pokemon.weight' | translate }}</span>
+                        <span class="label">{{ 'mobile.weight' | translate }}</span>
             <span class="value">{{ (pokemon.weight / 10).toFixed(1) }}kg</span>
           </div>
           <div class="stat-item">
-            <span class="label">{{ 'pokemon.base_experience' | translate }}</span>
+                        <span class="label">{{ 'mobile.base_experience' | translate }}</span>
             <span class="value">{{ getBaseExperience() }}</span>
           </div>
         </div>
@@ -141,31 +147,31 @@
                 [class.active]="activeTab === 'overview'"
                 (click)="setActiveTab('overview')">
           <ion-icon name="eye-outline"></ion-icon>
-          {{ 'details.basic_info' | translate }}
+                    {{ 'mobile.overview' | translate }}
         </button>
         <button class="tab-btn"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'combat'"
                 [class.active]="activeTab === 'combat'"
                 (click)="setActiveTab('combat')">
-          <ion-icon name="flash-outline"></ion-icon>
-          {{ 'details.stats' | translate }}
+          <ion-icon name="flame-outline"></ion-icon>
+          {{ 'mobile.stats' | translate }}
         </button>
         <button class="tab-btn"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'evolution'"
                 [class.active]="activeTab === 'evolution'"
                 (click)="setActiveTab('evolution')">
-          <ion-icon name="arrow-up-outline"></ion-icon>
-          {{ 'details.evolution' | translate }}
+          <ion-icon name="leaf-outline"></ion-icon>
+          {{ 'mobile.evolution' | translate }}
         </button>
         <button class="tab-btn"
                 role="tab"
                 [attr.aria-selected]="activeTab === 'curiosities'"
                 [class.active]="activeTab === 'curiosities'"
                 (click)="setActiveTab('curiosities')">
-          <ion-icon name="star-outline"></ion-icon>
-          {{ 'details.curiosities' | translate }}
+          <ion-icon name="sparkles-outline"></ion-icon>
+          {{ 'mobile.curiosities' | translate }}
         </button>
       </div>
 
@@ -193,12 +199,12 @@
         <div class="tab-panel" *ngIf="activeTab === 'combat'">
           <div class="combat-content">
             <div class="combat-stats-detailed">
-              <h3><ion-icon name="flash-outline"></ion-icon> {{ 'details.stats' | translate }}</h3>
+              <h3><ion-icon name="flash-outline"></ion-icon> {{ 'mobile.stats' | translate }}</h3>
 
               <!-- Total de status -->
               <div class="total-stats-card">
                 <div class="stat-total">
-                  <span class="total-label">{{ 'details.total' | translate }}</span>
+                  <span class="total-label">{{ 'mobile.total' | translate }}</span>
                   <span class="total-value">{{ getTotalStats() }}</span>
                 </div>
               </div>
@@ -207,7 +213,7 @@
               <div class="stats-categories">
                 <!-- Stats Ofensivos -->
                 <div class="category offensive">
-                  <h4><ion-icon name="flash-outline"></ion-icon> Stats Ofensivos</h4>
+                  <h4><ion-icon name="flash-outline"></ion-icon> {{ 'mobile.offensive_stats' | translate }}</h4>
                   <div class="stat-row" *ngFor="let stat of getOffensiveStats()">
                     <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                     <span class="stat-value">{{ stat.base_stat }}</span>
@@ -219,7 +225,7 @@
 
                 <!-- Stats Defensivos -->
                 <div class="category defensive">
-                  <h4><ion-icon name="shield-outline"></ion-icon> Stats Defensivos</h4>
+                  <h4><ion-icon name="shield-outline"></ion-icon> {{ 'mobile.defensive_stats' | translate }}</h4>
                   <div class="stat-row" *ngFor="let stat of getDefensiveStats()">
                     <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                     <span class="stat-value">{{ stat.base_stat }}</span>
@@ -231,7 +237,7 @@
 
                 <!-- Stats Utilitários -->
                 <div class="category utility">
-                  <h4><ion-icon name="speedometer-outline"></ion-icon> Stats Utilitários</h4>
+                  <h4><ion-icon name="speedometer-outline"></ion-icon> {{ 'mobile.utility_stats' | translate }}</h4>
                   <div class="stat-row" *ngFor="let stat of getUtilityStats()">
                     <span class="stat-name">{{ getTranslatedStatName(stat.stat.name) }}</span>
                     <span class="stat-value">{{ stat.base_stat }}</span>
@@ -244,13 +250,14 @@
 
               <!-- Habilidades -->
               <div class="abilities-section" *ngIf="pokemon?.abilities?.length">
-                <h4><ion-icon name="flash-outline"></ion-icon> {{ 'pokemon.abilities' | translate }}</h4>
+                <h4><ion-icon name="flash-outline"></ion-icon> {{ 'mobile.abilities' | translate }}</h4>
                 <div class="abilities-grid">
                   <div class="ability-card"
                        *ngFor="let ability of pokemon?.abilities"
                        [ngClass]="{ 'hidden': ability.is_hidden }">
                     <div class="ability-header">
                       <span class="ability-name">{{ ability.ability.name | titlecase }}</span>
+                      <span class="ability-badge" *ngIf="ability.is_hidden">{{ 'mobile.hidden_ability' | translate }}</span>
                       <span class="ability-badge" *ngIf="ability.is_hidden">{{ 'pokemon.hidden_ability' | translate }}</span>
                     </div>
                     <div class="ability-description">
@@ -291,7 +298,7 @@
                     <div class="evolution-info-text">
                       <h4>{{ stage.name | titlecase }}</h4>
                       <span class="evolution-level" *ngIf="stage.level">
-                        Nível {{ stage.level }}
+                        {{ 'details.level' | translate }} {{ stage.level }}
                       </span>
                       <span class="evolution-method" *ngIf="stage.method && stage.method !== 'level'">
                         {{ getEvolutionMethodText(stage.method) }}

@@ -290,7 +290,7 @@ export class DetailsPage implements OnInit, OnDestroy {
       message: this.translate.instant('details.error_loading'),
       duration: 3000,
       color: 'danger',
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }
@@ -302,7 +302,7 @@ export class DetailsPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }

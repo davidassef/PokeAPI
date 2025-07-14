@@ -63,6 +63,10 @@ ion-menu {
     --background: var(--background);
     padding: 0;
 
+    &::part(scroll) {
+      padding-bottom: 0;
+    }
+
     .user-stats-section {
       background: var(--card-bg);
       padding: 20px 16px;

@@ -701,7 +701,7 @@ export class RankingPage implements OnInit, OnDestroy {
       const toast = await this.toastController.create({
         message: translatedMessage,
         duration: 3000,
-        position: 'bottom',
+        position: 'top',
         color: 'success',
         buttons: [{
           icon: 'close',
@@ -721,7 +721,7 @@ export class RankingPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message: await this.translate.get(message, params).toPromise(),
       duration: 3000,
-      position: 'bottom',
+      position: 'top',
       color: 'danger'
     });
     await toast.present();

@@ -132,7 +132,6 @@ export class SettingsPage implements OnInit, OnDestroy {
       // Animação de transição suave
       document.body.classList.add('theme-transition');
       setTimeout(() => document.body.classList.remove('theme-transition'), 400);
-      this.showToast('settings_page.theme_update');
     } catch (error) {
       console.error('Erro ao alterar tema:', error);
     }
@@ -164,7 +163,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom',
+      position: 'top',
       color: 'success'
     });
     await toast.present();

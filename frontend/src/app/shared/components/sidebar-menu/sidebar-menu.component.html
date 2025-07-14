@@ -127,9 +127,6 @@
       </ion-list>
     </div>
 
-    <!-- Music Player Section - Temporariamente removido para correção -->
-    <!-- TODO: Implementar music player sidemenu após correção dos erros de compilação -->
-
     <!-- Language Selector -->
     <div class="language-section">
       <h3>{{ 'menu.language' | translate }}</h3>
@@ -155,6 +152,11 @@
           </ion-icon>
         </ion-item>
       </ion-list>
+    </div>
+
+    <!-- Music Player Section - Mobile Only -->
+    <div class="music-section" *ngIf="isMobile">
+      <app-music-player-sidemenu></app-music-player-sidemenu>
     </div>
   </ion-content>
 </ion-menu>

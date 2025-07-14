@@ -109,6 +109,10 @@ export class AppComponent implements OnInit {
       console.log('☀️ Light theme applied');
     }
   }
+
+  isMobile(): boolean {
+    return this.platform.is('mobile') || this.platform.is('tablet') || this.platform.is('iphone');
+  }
 }
 
 const usuarioTeste: User = {

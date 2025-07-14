@@ -74,6 +74,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   isAuthenticated = false;
   user: User | null = null;
+  isMobile = false;
   // ✅ CORREÇÃO: showUserMenu removido (dropdown de perfil não está mais no sidemenu)
 
   constructor(
@@ -93,6 +94,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     this.setupAuthStateSubscription();
     this.setupViewedPokemonSubscription();
     this.loadUserStats();
+    this.detectMobile();
   }
 
   ngOnDestroy() {
@@ -229,4 +231,14 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
 
   // ✅ CORREÇÃO: toggleUserMenu removido (dropdown de perfil não está mais no sidemenu)
+
+  private detectMobile() {
+    // Detectar se é dispositivo móvel
+    this.isMobile = window.innerWidth <= 768;
+    
+    // Listener para mudanças de tamanho da tela
+    window.addEventListener('resize', () => {
+      this.isMobile = window.innerWidth <= 768;
+    });
+  }
 }

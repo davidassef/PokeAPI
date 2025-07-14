@@ -54,7 +54,7 @@
       <ion-button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </ion-button>
-      <span class="page-info-mobile">Página {{ currentPage }} de {{ totalPages }}</span>
+      <span class="page-info-mobile">{{ 'home.pagination' | translate: { currentPage: currentPage, totalPages: totalPages } }}</span>
       <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </ion-button>

@@ -104,8 +104,17 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Verifica autenticação
-    if (!this.authService.isAuthenticated()) {
+    // Verifica autenticação de forma mais robusta
+    const isAuthenticated = this.authService.isAuthenticated();
+    const currentUser = this.authService.getCurrentUser();
+    
+    console.log('[PokemonCard] Verificação de autenticação:', {
+      isAuthenticated,
+      hasUser: !!currentUser,
+      userId: currentUser?.id
+    });
+
+    if (!isAuthenticated || !currentUser) {
       console.log('[PokemonCard] Usuário não autenticado, abrindo modal de login');
       await this.openAuthModal();
       return;
@@ -140,11 +149,16 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
           status: error.status
         });
 
+        // Se for erro de autenticação, abrir modal de login novamente
+        if (error.status === 401 || error.status === 403) {
+          console.log('[PokemonCard] Erro de autenticação, abrindo modal de login');
+          await this.openAuthModal();
+          return;
+        }
+
         // Mensagem de erro adequada com base no status HTTP
         let messageKey = 'capture.error';
-        if (error.status === 401 || error.status === 403) {
-          messageKey = 'capture.auth_error';
-        } else if (error.status === 0) {
+        if (error.status === 0) {
           messageKey = 'capture.network_error';
         }
 
@@ -255,11 +269,29 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
 
     modal.onDidDismiss().then((result) => {
       if (result.data && result.data.success) {
-        // Login bem-sucedido, tentar capturar novamente
-        console.log('[PokemonCard] Login bem-sucedido, tentando capturar novamente');
+        // Login bem-sucedido, verificar novamente o estado de autenticação
+        console.log('[PokemonCard] Login bem-sucedido, verificando estado de autenticação');
+        
+        // Aguardar um pouco para garantir que o estado foi atualizado
         setTimeout(() => {
-          this.onCaptureClick(new Event('click'));
-        }, 500);
+          const isAuthenticated = this.authService.isAuthenticated();
+          const currentUser = this.authService.getCurrentUser();
+          
+          console.log('[PokemonCard] Estado após login:', {
+            isAuthenticated,
+            hasUser: !!currentUser,
+            userId: currentUser?.id
+          });
+          
+          if (isAuthenticated && currentUser) {
+            console.log('[PokemonCard] Usuário autenticado, tentando capturar novamente');
+            this.onCaptureClick(new Event('click'));
+          } else {
+            console.log('[PokemonCard] Usuário ainda não autenticado após login');
+          }
+        }, 1000); // Aumentado para 1 segundo para garantir sincronização
+      } else {
+        console.log('[PokemonCard] Login cancelado ou falhou');
       }
     });
 

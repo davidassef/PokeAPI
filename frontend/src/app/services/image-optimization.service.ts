@@ -4,6 +4,17 @@ import { Observable, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { Storage } from '@ionic/storage-angular';
 
+/**
+ * Serviço para otimização e cache de imagens de Pokémon.
+ * 
+ * Este serviço implementa:
+ * - Carregamento otimizado de imagens com diferentes tamanhos
+ * - Cache em memória e persistente
+ * - Detecção de conexão lenta para ajuste de qualidade
+ * - Placeholders personalizados baseados no ID do Pokémon
+ * - Suporte a formatos modernos (WebP)
+ * - Gerenciamento automático de cache
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -21,15 +32,26 @@ export class ImageOptimizationService {
     this.initStorage();
   }
 
+  /**
+   * Inicializa o sistema de cache persistente
+   */
   async initStorage() {
     this.localCache = await this.storage.create();
     this.loadCachedImages();
   }
 
   /**
-   * Carrega imagens otimizadas com cache, lazy loading e fallback
-   * @param url URL da imagem original
-   * @param size Tamanho desejado (small, medium, large)
+   * Carrega imagens otimizadas com cache, lazy loading e fallback.
+   * 
+   * Este método implementa uma estratégia completa de otimização:
+   * 1. Verifica cache em memória primeiro
+   * 2. Detecta qualidade de conexão
+   * 3. Gera URL otimizada baseada no tamanho e dispositivo
+   * 4. Armazena no cache após carregamento
+   * 5. Fallback para URL original em caso de erro
+   * 
+   * @param url URL da imagem original da PokeAPI
+   * @param size Tamanho desejado: 'small' (150px), 'medium' (300px), 'large' (600px)
    * @returns Observable com a URL da imagem otimizada ou em cache
    */
   getOptimizedImage(url: string, size: 'small' | 'medium' | 'large'): Observable<string> {
@@ -69,9 +91,13 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Cria um placeholder para usar antes da imagem carregar
-   * @param pokemonId ID do Pokemon para criar placeholder colorido
-   * @returns URL de data URI com SVG placeholder
+   * Cria um placeholder personalizado baseado no ID do Pokémon.
+   * 
+   * Gera um SVG colorido que serve como placeholder enquanto a imagem
+   * real carrega, mantendo consistência visual baseada no ID do Pokémon.
+   * 
+   * @param pokemonId ID do Pokémon para gerar cor consistente
+   * @returns URL de data URI com SVG placeholder colorido
    */
   createPlaceholder(pokemonId: number): string {
     // Gera cor baseada no ID do Pokemon para consistência visual
@@ -93,7 +119,11 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Pré-carrega imagens para Pokemons importantes (favoritos, recentemente visualizados)
+   * Pré-carrega imagens para Pokémons importantes.
+   * 
+   * Útil para carregar imagens de favoritos ou Pokémons
+   * recentemente visualizados em background.
+   * 
    * @param urls Lista de URLs para pré-carregar
    */
   preloadImages(urls: string[]): void {
@@ -103,8 +133,12 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Verifica se o dispositivo está em conexão lenta
-   * @returns true se conexão for lenta
+   * Verifica se o dispositivo está em conexão lenta.
+   * 
+   * Usa a Network Information API para detectar qualidade
+   * da conexão e ajustar estratégia de carregamento.
+   * 
+   * @returns true se conexão for lenta (3G, 2G ou < 1.5Mbps)
    */
   private detectSlowConnection(): boolean {
     // Na prática, usar Network Information API
@@ -120,7 +154,10 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Determina qualidade ideal baseada no tamanho e dispositivo
+   * Determina qualidade ideal baseada no tamanho e dispositivo.
+   * 
+   * @param size Tamanho da imagem
+   * @returns Qualidade em porcentagem (65-90%)
    */
   private getQualityForSize(size: string): number {
     switch (size) {
@@ -132,7 +169,16 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Gera URL otimizada para a imagem
+   * Gera URL otimizada para a imagem.
+   * 
+   * Em produção, integraria com serviço real de otimização
+   * como Cloudinary, Imgix, ou similar.
+   * 
+   * @param url URL original da imagem
+   * @param size Tamanho desejado
+   * @param quality Qualidade da imagem
+   * @param isSlowConnection Se a conexão é lenta
+   * @returns URL otimizada
    */
   private getOptimizedUrl(url: string, size: string, quality: number, isSlowConnection: boolean): string {
     // Em produção: integrar com serviço real de otimização de imagens
@@ -148,7 +194,9 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Verifica suporte a WebP no navegador
+   * Verifica suporte a WebP no navegador.
+   * 
+   * @returns true se o navegador suporta WebP
    */
   private supportsWebP(): boolean {
     const canvas = document.createElement('canvas');
@@ -159,7 +207,11 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Converte tamanho em pixels baseado no dispositivo e conexão
+   * Converte tamanho em pixels baseado no dispositivo e conexão.
+   * 
+   * @param size Tamanho desejado
+   * @param isSlowConnection Se a conexão é lenta
+   * @returns Largura em pixels
    */
   private getSizeInPixels(size: string, isSlowConnection: boolean): number {
     // Reduz tamanho para conexões lentas
@@ -174,7 +226,13 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Armazena URL de blob no cache persistente
+   * Armazena URL de blob no cache persistente.
+   * 
+   * Converte blob para base64 e armazena com timestamp
+   * para controle de expiração.
+   * 
+   * @param key Chave do cache
+   * @param blobUrl URL do blob a ser armazenado
    */
   private async cacheBlobUrl(key: string, blobUrl: string): Promise<void> {
     if (!this.localCache) return;
@@ -200,7 +258,9 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Carrega imagens do cache persistente para o cache de memória
+   * Carrega imagens do cache persistente para o cache de memória.
+   * 
+   * Remove itens expirados automaticamente durante o carregamento.
    */
   private async loadCachedImages(): Promise<void> {
     if (!this.localCache) return;
@@ -233,7 +293,10 @@ export class ImageOptimizationService {
   }
 
   /**
-   * Gerencia tamanho do cache, remove itens mais antigos se necessário
+   * Gerencia tamanho do cache, remove itens mais antigos se necessário.
+   * 
+   * Mantém o cache dentro do limite máximo removendo 20% dos
+   * itens mais antigos quando necessário.
    */
   private async manageCacheSize(): Promise<void> {
     if (!this.localCache) return;

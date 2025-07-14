@@ -1,7 +1,8 @@
 <ion-app>
   <app-sidebar-menu></app-sidebar-menu>
   <ion-router-outlet id="main-content"></ion-router-outlet>
-  <app-music-player></app-music-player>
+  
+  <app-music-player *ngIf="!isMobile()"></app-music-player>
   <app-error-notification></app-error-notification>
 
 

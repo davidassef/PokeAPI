@@ -302,7 +302,7 @@ export class HomePage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }
@@ -410,7 +410,7 @@ export class HomePage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message,
       duration: 3000,
-      position: 'bottom',
+      position: 'top',
       color: 'success'
     });
     await toast.present();

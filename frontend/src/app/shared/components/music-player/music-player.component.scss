@@ -25,7 +25,7 @@
   margin-right: auto;
 
   /* Estado padrão: expandido */
-  min-height: 400px;
+  min-height: unset;
   height: auto;
 
   &.minimized {
@@ -648,5 +648,50 @@
   100% {
     transform: scale(0.98);
     opacity: 1;
+  }
+}
+
+.music-player {
+  min-height: unset;
+  .player-minimized .track-image img {
+    box-shadow: none !important;
+    border: none !important;
+    background: none !important;
+  }
+  .mini-controls ion-button,
+  .main-controls ion-button,
+  .volume-control ion-button {
+    --color: #fff !important;
+    --background: transparent;
+    --background-hover: #FFD600;
+  }
+  .mini-controls ion-button:active,
+  .main-controls ion-button:active,
+  .volume-control ion-button:active {
+    --background: #FFD600;
+  }
+  ::ng-deep .music-player .mini-controls ion-icon,
+  ::ng-deep .music-player .main-controls ion-icon,
+  ::ng-deep .music-player .volume-control ion-icon {
+    color: #fff !important;
+  }
+  ::ng-deep .music-player .mini-controls ion-button:hover ion-icon,
+  ::ng-deep .music-player .main-controls ion-button:hover ion-icon {
+    color: #FFD600 !important;
+  }
+  ::ng-deep .music-player .volume-control ion-icon {
+    color: #FFD600 !important;
+  }
+  ::ng-deep .music-player .volume-control.muted ion-icon {
+    color: #bbb !important;
+  }
+  ::ng-deep .music-player .player-minimized .track-image,
+  ::ng-deep .music-player .player-minimized .track-image img {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .playlist-section .playlist {
+    max-height: 350px;
   }
 }

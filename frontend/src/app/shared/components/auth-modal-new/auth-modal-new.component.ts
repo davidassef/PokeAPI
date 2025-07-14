@@ -367,7 +367,7 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
       message: mensagem,
       duration: 3000,
       color: cor,
-      position: 'bottom'
+      position: 'top'
     });
     await toast.present();
   }

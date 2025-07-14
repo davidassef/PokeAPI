@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """
-Script para debugar o banco de dados local.
+Script para debugar e verificar o estado do banco de dados local.
+
+Este script realiza uma análise completa do banco de dados SQLite:
+- Verifica a existência e estrutura das tabelas
+- Conta e exibe dados de usuários, favoritos e rankings
+- Cria dados de seed se o banco estiver vazio
+- Fornece informações detalhadas para debugging
+
+Útil para desenvolvimento e manutenção do sistema.
 """
 import os
 import sys
@@ -14,7 +22,22 @@ sys.path.append(os.path.join(os.path.dirname(__file__)))
 
 
 def debug_database():
-    """Debugar o banco de dados local."""
+    """
+    Executa debug completo do banco de dados local.
+    
+    Esta função:
+    1. Verifica a configuração do banco de dados
+    2. Cria tabelas se não existirem
+    3. Analisa dados de usuários, favoritos e rankings
+    4. Cria dados de seed se necessário
+    5. Exibe estatísticas detalhadas
+    
+    Returns:
+        None
+        
+    Raises:
+        Exception: Se houver erro na conexão ou operações do banco
+    """
     print("🔍 Debugando banco de dados local...")
 
     # Configurações
