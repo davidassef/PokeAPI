@@ -578,7 +578,7 @@
     "removed_from_captured": "¡Pokémon eliminado de capturados!",
     "error_loading": "Error al cargar Pokémon",
     "surpreenda_me": "¡Sorpréndeme!",
-    "pagination": "Página {currentPage} de {totalPages}",
+    "pagination": "Página {{currentPage}} de {{totalPages}}",
     "loading": "Cargando Pokémon..."
   },
   "info": "Información",

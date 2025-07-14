@@ -535,7 +535,7 @@
     "clear_filters": "Clear filters",
     "loading_more": "Loading more...",
     "placeholder": "Enter Pokémon name or ID...",
-    "pagination": "Page {currentPage} of {totalPages}",
+    "pagination": "Page {{currentPage}} of {{totalPages}}",
     "added_to_captured": "Pokémon added to captured!",
     "removed_from_captured": "Pokémon removed from captured!",
     "error_loading": "Error loading Pokémon",

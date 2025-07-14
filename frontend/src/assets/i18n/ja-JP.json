@@ -531,7 +531,7 @@
     "clear_filters": "フィルターをクリア",
     "loading_more": "さらに読み込み中...",
     "placeholder": "ポケモンの名前またはIDを入力...",
-    "pagination": "ページ {currentPage} / {totalPages}",
+    "pagination": "ページ {{currentPage}} / {{totalPages}}",
     "added_to_captured": "ポケモンを捕獲しました！",
     "removed_from_captured": "ポケモンを逃がしました！",
     "error_loading": "ポケモンの読み込みエラー",
