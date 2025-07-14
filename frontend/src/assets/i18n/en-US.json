@@ -539,7 +539,8 @@
     "added_to_captured": "Pokémon added to captured!",
     "removed_from_captured": "Pokémon removed from captured!",
     "error_loading": "Error loading Pokémon",
-    "surpreenda_me": "Surprise me!"
+    "surpreenda_me": "Surprise me!",
+    "loading": "Loading Pokémon..."
   },
   "languages": {
     "pt-BR": "Portuguese",
@@ -663,5 +664,40 @@
       "generic": "This Pokémon has unique characteristics that make it special in its species.",
       "dual_type": "This Pokémon has two types, offering a unique combination of abilities and resistances."
     }
+  },
+  "mobile": {
+    "cache_indicator": {
+      "api": "API",
+      "cached": "Cached"
+    },
+    "carousel": {
+      "slide": "Image",
+      "previous": "Previous",
+      "next": "Next",
+      "counter": "({currentIndex}/{total})"
+    },
+    "base_experience": "Base Experience",
+    "stats_names": {
+      "hp": "HP",
+      "attack": "Attack",
+      "defense": "Defense",
+      "special_attack": "Special Attack",
+      "special_defense": "Special Defense",
+      "speed": "Speed"
+    },
+    "utility_stats": "Utility Stats",
+    "close": "Close",
+    "actions": {
+      "zoom_in": "Zoom In"
+    },
+    "height": "Height",
+    "weight": "Weight",
+    "overview": "Overview",
+    "stats": "Combat Stats",
+    "evolution": "Evolution",
+    "curiosities": "Trivia"
+  },
+  "modal": {
+    "official_artwork": "Official Artwork"
   }
 }

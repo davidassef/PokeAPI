@@ -535,7 +535,8 @@
     "added_to_captured": "ポケモンを捕獲しました！",
     "removed_from_captured": "ポケモンを逃がしました！",
     "error_loading": "ポケモンの読み込みエラー",
-    "surpreenda_me": "サプライズ！"
+    "surpreenda_me": "サプライズ！",
+    "loading": "ポケモンを読み込み中..."
   },
   "languages": {
     "pt-BR": "Português",
@@ -683,5 +684,40 @@
       "generic": "このポケモンは種族の中で特別な特徴を持っています。",
       "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。"
     }
+  },
+  "mobile": {
+    "cache_indicator": {
+      "api": "API",
+      "cached": "キャッシュ済み"
+    },
+    "carousel": {
+      "slide": "画像",
+      "previous": "前へ",
+      "next": "次へ",
+      "counter": "({currentIndex}/{total})"
+    },
+    "base_experience": "基礎経験値",
+    "stats_names": {
+      "hp": "HP",
+      "attack": "こうげき",
+      "defense": "ぼうぎょ",
+      "special_attack": "とくこう",
+      "special_defense": "とくぼう",
+      "speed": "すばやさ"
+    },
+    "utility_stats": "ユーティリティ能力値",
+    "close": "閉じる",
+    "actions": {
+      "zoom_in": "拡大"
+    },
+    "height": "高さ",
+    "weight": "重さ",
+    "overview": "概要",
+    "stats": "戦闘能力値",
+    "evolution": "進化",
+    "curiosities": "豆知識"
+  },
+  "modal": {
+    "official_artwork": "公式アートワーク"
   }
 }
