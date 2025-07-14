@@ -647,18 +647,21 @@
       "Nível 16": "Level 16",
       "Nível 36": "Level 36",
       "evolution.methods.level 16": "Level 16",
-      "evolution.methods.level 36": "Level 36"
+      "evolution.methods.level 36": "Level 36",
+      "evolution.methods.level": "Level"
     },
     "methods": {
       "base_form": "Base Form"
     }
   },
   "bmi_categories": {
-    "normal": "Normal"
+    "normal": "Normal",
+    "light": "Light"
   },
   "details": {
     "trivia": {
-      "generic": "This Pokémon has unique characteristics that make it special in its species."
+      "generic": "This Pokémon has unique characteristics that make it special in its species.",
+      "dual_type": "This Pokémon has two types, offering a unique combination of abilities and resistances."
     }
   }
 }

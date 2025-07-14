@@ -667,18 +667,21 @@
       "Nível 16": "レベル16",
       "Nível 36": "レベル36",
       "evolution.methods.level 16": "レベル16",
-      "evolution.methods.level 36": "レベル36"
+      "evolution.methods.level 36": "レベル36",
+      "evolution.methods.level": "レベル"
     },
     "methods": {
       "base_form": "基本形態"
     }
   },
   "bmi_categories": {
-    "normal": "普通"
+    "normal": "普通",
+    "light": "軽い"
   },
   "details": {
     "trivia": {
-      "generic": "このポケモンは種族の中で特別な特徴を持っています。"
+      "generic": "このポケモンは種族の中で特別な特徴を持っています。",
+      "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。"
     }
   }
 }

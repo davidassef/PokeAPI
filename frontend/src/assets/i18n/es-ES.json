@@ -666,18 +666,21 @@
       "Nível 16": "Nivel 16",
       "Nível 36": "Nivel 36",
       "evolution.methods.level 16": "Nivel 16",
-      "evolution.methods.level 36": "Nivel 36"
+      "evolution.methods.level 36": "Nivel 36",
+      "evolution.methods.level": "Nivel"
     },
     "methods": {
       "base_form": "Forma Base"
     }
   },
   "bmi_categories": {
-    "normal": "Normal"
+    "normal": "Normal",
+    "light": "Ligero"
   },
   "details": {
     "trivia": {
-      "generic": "Este Pokémon tiene características únicas que lo hacen especial en su especie."
+      "generic": "Este Pokémon tiene características únicas que lo hacen especial en su especie.",
+      "dual_type": "Este Pokémon tiene dos tipos, ofreciendo una combinación única de habilidades y resistencias."
     }
   }
 }
