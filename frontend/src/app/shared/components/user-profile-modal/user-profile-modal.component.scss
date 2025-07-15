@@ -1,33 +1,225 @@
-.profile-modal-backdrop {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
+// User Profile Modal Styles
+.user-profile-content {
+  --background: var(--ion-color-light);
+
+  .user-header {
+    display: flex;
+    align-items: center;
+    padding: 24px 16px;
+    background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+    color: white;
+    margin-bottom: 16px;
+
+    .user-avatar {
+      margin-right: 16px;
+
+      ion-icon {
+        font-size: 64px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    .user-basic-info {
+      flex: 1;
+
+      h2 {
+        margin: 0 0 4px 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: white;
+      }
+
+      p {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      ion-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 12px;
+      }
+    }
+  }
+
+  .profile-form-section {
+    padding: 0 16px;
+
+    ion-list {
+      background: transparent;
+      padding: 0;
+
+      ion-item {
+        --background: var(--ion-color-light);
+        --border-color: rgba(var(--ion-color-medium-rgb), 0.3);
+        --padding-start: 16px;
+        --padding-end: 16px;
+        margin-bottom: 16px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+
+        &.ion-invalid.ion-touched {
+          --border-color: var(--ion-color-danger);
+        }
+
+        ion-label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        ion-input {
+          --color: var(--text-color);
+          --placeholder-color: var(--text-color-secondary);
+        }
+
+        ion-note {
+          font-size: 12px;
+          margin-top: 4px;
+        }
+      }
+    }
+
+    .form-actions {
+      margin-top: 24px;
+      padding-bottom: 16px;
+
+      ion-button {
+        margin-bottom: 12px;
+        height: 48px;
+        font-weight: 600;
+
+        &[color="primary"] {
+          --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+          --color: white;
+        }
+
+        ion-spinner {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  .password-confirmation-section {
+    padding: 16px;
+
+    .confirmation-header {
+      text-align: center;
+      margin-bottom: 24px;
+
+      ion-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+      }
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-color-secondary);
+        line-height: 1.4;
+      }
+    }
+
+    ion-list {
+      background: transparent;
+      padding: 0;
+
+      ion-item {
+        --background: var(--ion-color-light);
+        --border-color: rgba(var(--ion-color-medium-rgb), 0.3);
+        --padding-start: 16px;
+        --padding-end: 16px;
+        margin-bottom: 16px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+
+        &.ion-invalid.ion-touched {
+          --border-color: var(--ion-color-danger);
+        }
+
+        ion-label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        ion-input {
+          --color: var(--text-color);
+          --placeholder-color: var(--text-color-secondary);
+        }
+
+        ion-note {
+          font-size: 12px;
+          margin-top: 4px;
+        }
+      }
+    }
+
+    .form-actions {
+      margin-top: 24px;
+
+      ion-button {
+        margin-bottom: 12px;
+        height: 48px;
+        font-weight: 600;
+
+        &[color="primary"] {
+          --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+          --color: white;
+        }
+
+        ion-spinner {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
 }
-.profile-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1001;
-  min-width: 320px;
-  max-width: 95vw;
-  width: 350px;
-  background: transparent;
+
+// Header customization
+ion-header {
+  ion-toolbar {
+    --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+    --color: white;
+
+    ion-title {
+      font-weight: 600;
+      color: white;
+    }
+
+    ion-button {
+      --color: white;
+      --color-hover: rgba(255, 255, 255, 0.8);
+    }
+  }
 }
-ion-card {
-  margin: 0;
+
+// Responsive design
+@media (max-width: 768px) {
+  .user-profile-content {
+    .user-header {
+      padding: 16px;
+
+      .user-avatar ion-icon {
+        font-size: 48px;
+      }
+
+      .user-basic-info h2 {
+        font-size: 20px;
+      }
+    }
+
+    .profile-form-section,
+    .password-confirmation-section {
+      padding: 0 12px;
+    }
+  }
 }
-.close-btn {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: #888;
-  cursor: pointer;
-}
-.profile-info {
-  margin-bottom: 1rem;
-} 

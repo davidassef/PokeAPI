@@ -121,20 +121,24 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   private loadPokemonById(id: number) {
-    console.log(`Carregando dados do Pokémon ID: ${id}`);
-    this.http.get(`https://pokeapi.co/api/v2/pokemon/${id}`).subscribe({
-      next: (pokemon: any) => {
-        console.log('✅ Dados do Pokémon carregados:', pokemon.name);
-        this.pokemon = pokemon;
-        this.initializePokemonData();
-      },
-      error: (error) => {
-        console.error('❌ Erro ao carregar Pokémon:', error);
-        // Criar um Pokémon placeholder para evitar erros
-        this.pokemon = this.createPlaceholderPokemon(id);
-        this.initializePokemonData();
-      }
-    });
+    console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
+
+    // Usar cache service como a versão mobile para consistência
+    this.cacheService.getPokemon(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (pokemon: any) => {
+          console.log('✅ Dados do Pokémon carregados:', pokemon.name);
+          this.pokemon = pokemon;
+          this.initializePokemonData();
+        },
+        error: (error) => {
+          console.error('❌ Erro ao carregar Pokémon:', error);
+          // Criar um Pokémon placeholder para evitar erros
+          this.pokemon = this.createPlaceholderPokemon(id);
+          this.initializePokemonData();
+        }
+      });
   }
 
   private createPlaceholderPokemon(id: number) {
@@ -294,8 +298,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.updateCurrentCarouselImage();
   }
 
-  fetchFlavorText(lang: string, pokemonId: number) {
-    console.log(`Buscando flavors para idioma: ${lang} Pokemon ID: ${pokemonId}`);
+  private fetchFlavorText(lang: string, pokemonId: number): void {
+    console.log(`🔍 Iniciando busca de flavor text para: ${lang}, Pokémon ID: ${pokemonId}`);
     this.isLoadingFlavor = true;
 
     // Tentar usar cache inteligente primeiro
@@ -1343,6 +1347,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           if (!this.speciesData) {
             this.fetchSpeciesData();
           }
+          // Sempre carregar flavor texts quando a aba é acessada
+          this.isLoadingFlavor = true;
           this.fetchFlavorText(this.translate.currentLang || 'pt-BR', this.pokemon.id);
           this.tabDataLoaded['curiosities'] = true;
         }
@@ -1547,13 +1553,29 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       }
     }
 
-    // Add this block to handle modal reopen events
+    // Melhorar o tratamento de reabertura do modal
     if (changes['isOpen'] && changes['isOpen'].currentValue === true &&
         changes['isOpen'].previousValue === false) {
-      console.log('Modal reopened - reloading data');
+      console.log('🔄 Modal reaberto - reinicializando dados');
+
+      // Resetar o subject destroy$ para evitar problemas de subscription
+      this.destroy$.next();
+      this.destroy$ = new Subject<void>();
+
+      // Recarregar dados se temos pokemonId
       if (this.pokemonId && this.pokemonId > 0) {
         this.loadPokemonById(this.pokemonId);
+      } else if (this.pokemon) {
+        // Se já temos dados do pokemon, apenas reinicializar
+        this.initializePokemonData();
       }
+
+      // Reconfigurar listener de mudança de idioma
+      this.translate.onLangChange
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.onLanguageChange();
+        });
     }
   }
 

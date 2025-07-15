@@ -91,6 +91,53 @@
       </ion-button>
     </div>
 
+    <!-- User Profile Section - Authenticated Users -->
+    <div class="user-profile-section" *ngIf="isAuthenticated && user">
+      <div class="user-greeting">
+        <div class="user-avatar">
+          <ion-icon name="person-circle" color="primary"></ion-icon>
+        </div>
+        <div class="user-info">
+          <h3>{{ 'auth.hello' | translate }}, {{ user.name }}!</h3>
+          <p class="user-email">{{ user.email }}</p>
+          <ion-badge *ngIf="user.role === 'administrator'" color="warning" class="admin-badge">
+            {{ 'auth.administrator' | translate }}
+          </ion-badge>
+        </div>
+      </div>
+
+      <!-- User Profile Dropdown -->
+      <div class="profile-dropdown" [class.expanded]="showUserProfileMenu">
+        <ion-button
+          fill="clear"
+          expand="block"
+          (click)="toggleUserProfileMenu()"
+          class="dropdown-toggle">
+          <ion-icon name="chevron-down-outline" [class.rotated]="showUserProfileMenu"></ion-icon>
+          {{ 'auth.profile_options' | translate }}
+        </ion-button>
+
+        <div class="dropdown-content" *ngIf="showUserProfileMenu">
+          <ion-list lines="none">
+            <ion-item button (click)="openUserProfile()">
+              <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+              <ion-label>{{ 'auth.view_profile' | translate }}</ion-label>
+            </ion-item>
+
+            <ion-item button (click)="openAccountSettings()">
+              <ion-icon name="settings-outline" slot="start" color="medium"></ion-icon>
+              <ion-label>{{ 'auth.account_settings' | translate }}</ion-label>
+            </ion-item>
+
+            <ion-item button (click)="confirmLogout()">
+              <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+              <ion-label color="danger">{{ 'auth.logout' | translate }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Navigation -->
     <div class="navigation-section">
       <h3>{{ 'menu.navigation' | translate }}</h3>

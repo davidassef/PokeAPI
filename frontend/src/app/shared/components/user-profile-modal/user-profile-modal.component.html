@@ -1,32 +1,137 @@
-<div class="profile-modal-backdrop" (click)="fechar()"></div>
-<div class="profile-modal">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Perfil do Usuário</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <form *ngIf="editando; else visualizar" (ngSubmit)="salvar()">
+<!-- Modal Principal -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'auth.user_profile' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()" fill="clear">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="user-profile-content">
+  <!-- Seção de Informações do Usuário -->
+  <div class="user-header" *ngIf="user">
+    <div class="user-avatar">
+      <ion-icon name="person-circle" color="primary"></ion-icon>
+    </div>
+    <div class="user-basic-info">
+      <h2>{{ user.name }}</h2>
+      <p>{{ user.email }}</p>
+      <ion-badge *ngIf="user.role === 'administrator'" color="warning">
+        {{ 'auth.administrator' | translate }}
+      </ion-badge>
+    </div>
+  </div>
+
+  <!-- Formulário de Edição de Perfil -->
+  <div class="profile-form-section" *ngIf="!showPasswordConfirmation">
+    <form [formGroup]="profileForm" (ngSubmit)="onSaveChanges()">
+      <ion-list>
         <ion-item>
-          <ion-label position="floating">Nome</ion-label>
-          <ion-input [(ngModel)]="nome" name="nome" required></ion-input>
+          <ion-label position="floating">{{ 'auth.name' | translate }}</ion-label>
+          <ion-input
+            formControlName="name"
+            type="text"
+            [class.ion-invalid]="isFieldInvalid('name')"
+            [class.ion-touched]="nameControl?.touched">
+          </ion-input>
+          <ion-note slot="error" *ngIf="isFieldInvalid('name')">
+            {{ getFieldError('name') }}
+          </ion-note>
         </ion-item>
+
         <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input [(ngModel)]="email" name="email" type="email" required></ion-input>
+          <ion-label position="floating">{{ 'auth.email' | translate }}</ion-label>
+          <ion-input
+            formControlName="email"
+            type="email"
+            [class.ion-invalid]="isFieldInvalid('email')"
+            [class.ion-touched]="emailControl?.touched">
+          </ion-input>
+          <ion-note slot="error" *ngIf="isFieldInvalid('email')">
+            {{ getFieldError('email') }}
+          </ion-note>
         </ion-item>
-        <ion-button expand="block" type="submit" [disabled]="loading">Salvar</ion-button>
-        <ion-button expand="block" fill="outline" type="button" (click)="editando = false">Cancelar</ion-button>
-        <ion-text color="danger" *ngIf="erro">{{ erro }}</ion-text>
-      </form>
-      <ng-template #visualizar>
-        <div class="profile-info">
-          <div><strong>Nome:</strong> {{ nome }}</div>
-          <div><strong>Email:</strong> {{ email }}</div>
-        </div>
-        <ion-button expand="block" (click)="editar()">Editar Perfil</ion-button>
-        <ion-button expand="block" fill="outline" color="danger" (click)="sair()">Sair</ion-button>
-      </ng-template>
-    </ion-card-content>
-  </ion-card>
-  <button class="close-btn" (click)="fechar()">&times;</button>
-</div> 
+
+        <ion-item>
+          <ion-label position="floating">{{ 'auth.security_question' | translate }}</ion-label>
+          <ion-input
+            formControlName="security_question"
+            type="text"
+            [class.ion-invalid]="isFieldInvalid('security_question')"
+            [class.ion-touched]="securityQuestionControl?.touched">
+          </ion-input>
+          <ion-note slot="error" *ngIf="isFieldInvalid('security_question')">
+            {{ getFieldError('security_question') }}
+          </ion-note>
+        </ion-item>
+      </ion-list>
+
+      <div class="form-actions">
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="!profileForm.valid || isLoading"
+          color="primary">
+          <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+          <span *ngIf="!isLoading">{{ 'auth.save_changes' | translate }}</span>
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          (click)="closeModal()"
+          [disabled]="isLoading">
+          {{ 'auth.cancel' | translate }}
+        </ion-button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Confirmação de Senha -->
+  <div class="password-confirmation-section" *ngIf="showPasswordConfirmation">
+    <div class="confirmation-header">
+      <ion-icon name="shield-checkmark-outline" color="warning"></ion-icon>
+      <h3>{{ 'auth.confirm_password' | translate }}</h3>
+      <p>{{ 'auth.confirm_password_desc' | translate }}</p>
+    </div>
+
+    <form [formGroup]="passwordConfirmationForm" (ngSubmit)="confirmSaveChanges()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating">{{ 'auth.current_password' | translate }}</ion-label>
+          <ion-input
+            formControlName="currentPassword"
+            type="password"
+            [class.ion-invalid]="currentPasswordControl?.invalid && currentPasswordControl?.touched"
+            [class.ion-touched]="currentPasswordControl?.touched">
+          </ion-input>
+          <ion-note slot="error" *ngIf="currentPasswordControl?.invalid && currentPasswordControl?.touched">
+            {{ 'auth.field_required' | translate }}
+          </ion-note>
+        </ion-item>
+      </ion-list>
+
+      <div class="form-actions">
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="!passwordConfirmationForm.valid || isLoading"
+          color="primary">
+          <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+          <span *ngIf="!isLoading">{{ 'auth.confirm_save' | translate }}</span>
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          (click)="cancelPasswordConfirmation()"
+          [disabled]="isLoading">
+          {{ 'auth.cancel' | translate }}
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

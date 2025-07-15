@@ -10,6 +10,7 @@ import { AudioService } from '../../../core/services/audio.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
 import { AuthModalNewComponent } from '../auth-modal-new/auth-modal-new.component';
+import { UserProfileModalComponent } from '../user-profile-modal/user-profile-modal.component';
 import { User } from 'src/app/models/user.model';
 
 export interface MenuItem {
@@ -76,7 +77,7 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   user: User | null = null;
   isMobile = false;
   isMobileRoute = false;
-  // ✅ CORREÇÃO: showUserMenu removido (dropdown de perfil não está mais no sidemenu)
+  showUserProfileMenu = false;
 
   constructor(
     private router: Router,
@@ -223,13 +224,45 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     // TODO: Open login modal
   }
 
+  toggleUserProfileMenu() {
+    this.showUserProfileMenu = !this.showUserProfileMenu;
+  }
+
+  async openUserProfile() {
+    this.showUserProfileMenu = false;
+    await this.menuController.close();
+
+    const modal = await this.modalController.create({
+      component: UserProfileModalComponent,
+      cssClass: 'user-profile-modal',
+      backdropDismiss: true
+    });
+
+    await modal.present();
+  }
+
+  async openAccountSettings() {
+    // TODO: Implementar modal de configurações da conta
+    console.log('Abrindo configurações da conta');
+    this.showUserProfileMenu = false;
+    await this.menuController.close();
+  }
+
+  async confirmLogout() {
+    // TODO: Implementar confirmação de logout
+    console.log('Confirmando logout');
+    this.showUserProfileMenu = false;
+    this.authService.logout();
+    await this.menuController.close();
+    window.location.reload();
+  }
+
   abrirPerfil() {
-    // TODO: Open user profile modal
+    this.openUserProfile();
   }
 
   logout() {
-    this.authService.logout();
-    window.location.reload();
+    this.confirmLogout();
   }
 
   // ✅ CORREÇÃO: toggleUserMenu removido (dropdown de perfil não está mais no sidemenu)
