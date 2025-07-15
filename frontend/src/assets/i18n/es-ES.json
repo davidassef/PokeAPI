@@ -623,6 +623,19 @@
     "es-ES": "Español",
     "ja-JP": "日本語"
   },
+  "colors": {
+    "black": "Negro",
+    "blue": "Azul",
+    "brown": "Marrón",
+    "gray": "Gris",
+    "grey": "Gris",
+    "green": "Verde",
+    "pink": "Rosa",
+    "purple": "Púrpura",
+    "red": "Rojo",
+    "white": "Blanco",
+    "yellow": "Amarillo"
+  },
   "menu": {
     "home": "Pokédex",
     "captured": "Capturados",
@@ -706,12 +719,18 @@
       "evolution.methods.level": "Nivel"
     },
     "methods": {
-      "base_form": "Forma Base"
+      "base_form": "Forma Base",
+      "level": "Nivel",
+      "happiness": "Felicidad",
+      "trade": "Intercambio",
+      "special": "Especial"
     }
   },
   "bmi_categories": {
     "normal": "Normal",
-    "light": "Ligero"
+    "light": "Ligero",
+    "heavy": "Pesado",
+    "very_heavy": "Muy Pesado"
   },
   "details": {
     "evolution": "Evolución",
@@ -719,7 +738,19 @@
     "level": "Nivel",
     "trivia": {
       "generic": "Este Pokémon tiene características únicas que lo hacen especial en su especie.",
-      "dual_type": "Este Pokémon tiene dos tipos, ofreciendo una combinación única de habilidades y resistencias."
+      "dual_type": "Este Pokémon tiene dos tipos, ofreciendo una combinación única de habilidades y resistencias.",
+      "exceptional_stats": "¡Este Pokémon tiene estadísticas excepcionales!",
+      "legendary_stats": "¡Este Pokémon tiene estadísticas legendarias!",
+      "very_heavy": "¡Este Pokémon es muy pesado con {{weight}} kg!",
+      "very_tall": "¡Este Pokémon es muy alto con {{height}} m!",
+      "high_experience": "¡Este Pokémon da mucha experiencia cuando es derrotado!",
+      "bulbasaur_first": "¡Bulbasaur es el primer Pokémon en la Pokédex Nacional!",
+      "pikachu_mascot": "¡Pikachu es la mascota oficial de la franquicia Pokémon!",
+      "mew_original": "¡Mew es considerado el ancestro de todos los Pokémon!",
+      "mewtwo_origin": "¡Mewtwo fue creado genéticamente a partir del ADN de Mew!",
+      "psychic_type": "¡Los Pokémon de tipo Psíquico son conocidos por sus poderes mentales!",
+      "ghost_type": "¡Los Pokémon de tipo Fantasma pueden atravesar paredes!",
+      "dragon_type": "¡Los Pokémon de tipo Dragón son raros y poderosos!"
     }
   },
   "mobile": {

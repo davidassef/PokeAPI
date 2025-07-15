@@ -707,12 +707,18 @@
       "evolution.methods.level": "レベル"
     },
     "methods": {
-      "base_form": "基本形態"
+      "base_form": "基本形態",
+      "level": "レベル",
+      "happiness": "なつき度",
+      "trade": "通信交換",
+      "special": "特殊"
     }
   },
   "bmi_categories": {
     "normal": "普通",
-    "light": "軽い"
+    "light": "軽い",
+    "heavy": "重い",
+    "very_heavy": "とても重い"
   },
   "details": {
     "evolution": "進化",
@@ -720,7 +726,19 @@
     "level": "レベル",
     "trivia": {
       "generic": "このポケモンは種族の中で特別な特徴を持っています。",
-      "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。"
+      "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。",
+      "exceptional_stats": "このポケモンは優秀な能力値を持っています！",
+      "legendary_stats": "このポケモンは伝説級の能力値を持っています！",
+      "very_heavy": "このポケモンは{{weight}}kgととても重いです！",
+      "very_tall": "このポケモンは{{height}}mととても高いです！",
+      "high_experience": "このポケモンは倒すと多くの経験値をくれます！",
+      "bulbasaur_first": "フシギダネは全国図鑑で最初のポケモンです！",
+      "pikachu_mascot": "ピカチュウはポケモンフランチャイズの公式マスコットです！",
+      "mew_original": "ミュウは全てのポケモンの祖先とされています！",
+      "mewtwo_origin": "ミュウツーはミュウのDNAから遺伝子操作で作られました！",
+      "psychic_type": "エスパータイプのポケモンは精神的な力で知られています！",
+      "ghost_type": "ゴーストタイプのポケモンは壁を通り抜けることができます！",
+      "dragon_type": "ドラゴンタイプのポケモンは珍しく強力です！"
     }
   },
   "mobile": {

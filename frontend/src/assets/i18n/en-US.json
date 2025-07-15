@@ -583,6 +583,19 @@
     "es-ES": "Spanish",
     "ja-JP": "Japanese"
   },
+  "colors": {
+    "black": "Black",
+    "blue": "Blue",
+    "brown": "Brown",
+    "gray": "Gray",
+    "grey": "Gray",
+    "green": "Green",
+    "pink": "Pink",
+    "purple": "Purple",
+    "red": "Red",
+    "white": "White",
+    "yellow": "Yellow"
+  },
   "menu": {
     "home": "Pokédex",
     "captured": "Captured",
@@ -687,12 +700,18 @@
       "evolution.methods.level": "Level"
     },
     "methods": {
-      "base_form": "Base Form"
+      "base_form": "Base Form",
+      "level": "Level",
+      "happiness": "Happiness",
+      "trade": "Trade",
+      "special": "Special"
     }
   },
   "bmi_categories": {
     "normal": "Normal",
-    "light": "Light"
+    "light": "Light",
+    "heavy": "Heavy",
+    "very_heavy": "Very Heavy"
   },
   "details": {
     "evolution": "Evolution",
@@ -700,7 +719,19 @@
     "level": "Level",
     "trivia": {
       "generic": "This Pokémon has unique characteristics that make it special in its species.",
-      "dual_type": "This Pokémon has two types, offering a unique combination of abilities and resistances."
+      "dual_type": "This Pokémon has two types, offering a unique combination of abilities and resistances.",
+      "exceptional_stats": "This Pokémon has exceptional stats!",
+      "legendary_stats": "This Pokémon has legendary stats!",
+      "very_heavy": "This Pokémon is very heavy at {{weight}} kg!",
+      "very_tall": "This Pokémon is very tall at {{height}} m!",
+      "high_experience": "This Pokémon gives a lot of experience when defeated!",
+      "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex!",
+      "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
+      "mew_original": "Mew is considered the ancestor of all Pokémon!",
+      "mewtwo_origin": "Mewtwo was genetically created from Mew's DNA!",
+      "psychic_type": "Psychic-type Pokémon are known for their mental powers!",
+      "ghost_type": "Ghost-type Pokémon can phase through walls!",
+      "dragon_type": "Dragon-type Pokémon are rare and powerful!"
     }
   },
   "mobile": {

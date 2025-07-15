@@ -113,7 +113,9 @@ async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     token_data = {
         "sub": str(user.id),  # JWT subject deve ser string
         "email": user.email,
-        "role": user.role  # Incluir role no token
+        "name": user.name,  # Incluir nome no token
+        "role": user.role,  # Incluir role no token
+        "security_question": user.security_question  # Incluir pergunta de segurança no token
     }
     access_token = auth_service.create_access_token(
         data=token_data,
@@ -223,7 +225,10 @@ async def refresh_token(
     token_expires = timedelta(minutes=expires_minutes)
     token_data = {
         "sub": str(user.id),  # JWT subject deve ser string
-        "email": user.email
+        "email": user.email,
+        "name": user.name,  # Incluir nome no token
+        "role": user.role,  # Incluir role no token
+        "security_question": user.security_question  # Incluir pergunta de segurança no token
     }
     access_token = auth_service.create_access_token(
         data=token_data,
