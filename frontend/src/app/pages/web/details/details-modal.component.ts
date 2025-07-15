@@ -803,15 +803,34 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   previousFlavor(): void {
     if (this.currentFlavorIndex > 0) {
-      this.currentFlavorIndex--;
-      this.resetScrollAndCheckIndicator();
+      this.animateFlavorTransition(() => {
+        this.currentFlavorIndex--;
+        this.resetScrollAndCheckIndicator();
+      });
     }
   }
 
   nextFlavor(): void {
     if (this.currentFlavorIndex < this.flavorTexts.length - 1) {
-      this.currentFlavorIndex++;
-      this.resetScrollAndCheckIndicator();
+      this.animateFlavorTransition(() => {
+        this.currentFlavorIndex++;
+        this.resetScrollAndCheckIndicator();
+      });
+    }
+  }
+
+  private animateFlavorTransition(callback: () => void): void {
+    const flavorWrapper = document.querySelector('.flavor-text-wrapper');
+    if (flavorWrapper) {
+      flavorWrapper.classList.add('flavor-transition');
+      setTimeout(() => {
+        callback();
+        setTimeout(() => {
+          flavorWrapper.classList.remove('flavor-transition');
+        }, 150);
+      }, 150);
+    } else {
+      callback();
     }
   }
 

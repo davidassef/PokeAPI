@@ -115,36 +115,159 @@
 
     .capture-btn {
       position: absolute;
-      top: 8px;
+      bottom: 8px;
       right: 8px;
-      background: transparent;
-      border: none;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
       cursor: pointer;
-      z-index: 2;
-      padding: 4px 8px;
-      border-radius: 16px;
-      transition: background 0.2s;
-      font-family: inherit;
-      font-size: 1rem;
+      z-index: 3;
+      overflow: hidden;
+      position: relative;
 
-      &.captured {
-        background: #ef5350;
-        color: #fff;
+      // Loading State
+      .loading-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        ion-spinner {
+          --color: var(--ion-color-primary);
+          width: 24px;
+          height: 24px;
+        }
       }
 
+      // Capture State (Not Captured)
+      .capture-state {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .pokeball-icon {
+          width: 28px;
+          height: 28px;
+          transition: all 0.3s ease;
+          z-index: 1;
+        }
+
+        .capture-hint {
+          position: absolute;
+          top: -2px;
+          right: -2px;
+          background: var(--ion-color-primary);
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transform: scale(0);
+          transition: all 0.3s ease;
+
+          ion-icon {
+            font-size: 10px;
+            color: white;
+          }
+        }
+      }
+
+      // Captured State
+      .captured-state {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .pokeball-icon {
+          width: 28px;
+          height: 28px;
+          transition: all 0.3s ease;
+          z-index: 1;
+        }
+
+        .captured-indicator {
+          position: absolute;
+          top: -2px;
+          right: -2px;
+          background: var(--ion-color-success);
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: captureSuccess 0.6s ease-out;
+
+          ion-icon {
+            font-size: 10px;
+            color: white;
+          }
+        }
+      }
+
+      // Hover Effects
+      &:hover:not(:disabled) {
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 1);
+        border-color: var(--ion-color-primary);
+        box-shadow: 0 6px 20px rgba(var(--ion-color-primary-rgb), 0.3);
+
+        .capture-state .capture-hint {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        .pokeball-icon {
+          transform: rotate(10deg);
+        }
+      }
+
+      // Captured State Styling
+      &.captured {
+        background: rgba(var(--ion-color-success-rgb), 0.1);
+        border-color: var(--ion-color-success);
+
+        &:hover {
+          background: rgba(var(--ion-color-success-rgb), 0.2);
+          border-color: var(--ion-color-success-shade);
+          box-shadow: 0 6px 20px rgba(var(--ion-color-success-rgb), 0.3);
+        }
+      }
+
+      // Capturing Animation
+      &.capturing {
+        animation: captureAnimation 1s infinite;
+        border-color: var(--ion-color-warning);
+        background: rgba(var(--ion-color-warning-rgb), 0.1);
+      }
+
+      // Disabled State
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-      }
-    }
+        transform: none;
 
-    .pokeball-icon {
-      width: 32px;
-      height: 32px;
-      display: inline-block;
+        &:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      }
     }
   }
 
@@ -333,6 +456,44 @@
   }
   25%, 75% {
     transform: scale(1.2);
+  }
+}
+
+@keyframes captureSuccess {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes captureAnimation {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+  }
+  25% {
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.5);
+  }
+  50% {
+    transform: scale(1.1) rotate(0deg);
+    box-shadow: 0 6px 16px rgba(255, 193, 7, 0.7);
+  }
+  75% {
+    transform: scale(1.05) rotate(-5deg);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.5);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
   }
 }
 

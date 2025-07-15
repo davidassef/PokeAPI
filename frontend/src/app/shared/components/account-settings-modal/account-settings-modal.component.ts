@@ -44,8 +44,13 @@ export class AccountSettingsModalComponent implements OnInit {
   }
 
   private loadUserSecurityQuestion() {
-    // TODO: Load user's security question from backend
-    this.userSecurityQuestion = 'Qual é o nome do seu primeiro animal de estimação?';
+    const user = this.authService.getCurrentUser();
+    if (user?.security_question) {
+      const questionKey = `auth.security_question_${user.security_question}`;
+      this.translate.get(questionKey).subscribe(translatedText => {
+        this.userSecurityQuestion = translatedText;
+      });
+    }
   }
 
   // Navigation methods

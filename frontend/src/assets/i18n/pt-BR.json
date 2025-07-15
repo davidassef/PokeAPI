@@ -298,6 +298,8 @@
     "profile_updated": "Perfil atualizado com sucesso",
     "update_error": "Erro ao atualizar perfil",
     "validation_errors": "Por favor, corrija os erros no formulário",
+    "field_required": "Este campo é obrigatório",
+    "min_length_error": "Este campo deve ter pelo menos 2 caracteres",
     "login_subtitle": "Entre na sua conta para continuar",
     "create_account": "Criar Conta",
     "register_subtitle": "Junte-se à comunidade Pokémon",
@@ -371,6 +373,9 @@
       "password_reset": "Senha redefinida com sucesso!"
     }
   },
+  "trainer": {
+    "level": "Nível"
+  },
   "modal": {
     "overview": "Visão Geral",
     "combat": "Combate",
@@ -409,7 +414,11 @@
     "back_female": "Sprite Traseiro Fêmea",
     "front_shiny_female": "Sprite Frontal Shiny Fêmea",
     "back_shiny_female": "Sprite Traseiro Shiny Fêmea",
-    "image_placeholder": "Imagem Padrão"
+    "image_placeholder": "Imagem Padrão",
+    "capture": "Capturar",
+    "release": "Liberar",
+    "captured": "Capturado",
+    "not_captured": "Não Capturado"
   },
   "admin": {
     "pokemon": {

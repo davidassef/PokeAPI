@@ -21,6 +21,7 @@ export class UserProfileModalComponent implements OnInit, OnDestroy {
   isLoading = false;
   showPasswordConfirmation = false;
   passwordConfirmationForm: FormGroup;
+  securityQuestionText = '';
 
   constructor(
     private modalController: ModalController,
@@ -33,7 +34,7 @@ export class UserProfileModalComponent implements OnInit, OnDestroy {
     this.profileForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      security_question: ['', [Validators.required]]
+      security_answer: ['', [Validators.required, Validators.minLength(2)]]
     });
 
     this.passwordConfirmationForm = this.formBuilder.group({
@@ -56,7 +57,19 @@ export class UserProfileModalComponent implements OnInit, OnDestroy {
       this.profileForm.patchValue({
         name: this.user.name,
         email: this.user.email,
-        security_question: this.user.security_question || ''
+        security_answer: '' // Campo para nova resposta de segurança
+      });
+
+      // Carregar pergunta de segurança traduzida
+      this.loadSecurityQuestionText();
+    }
+  }
+
+  private loadSecurityQuestionText() {
+    if (this.user?.security_question) {
+      const questionKey = `auth.security_question_${this.user.security_question}`;
+      this.translate.get(questionKey).subscribe(translatedText => {
+        this.securityQuestionText = translatedText;
       });
     }
   }
@@ -141,7 +154,7 @@ export class UserProfileModalComponent implements OnInit, OnDestroy {
   // Getters para facilitar acesso aos controles do formulário
   get nameControl() { return this.profileForm.get('name'); }
   get emailControl() { return this.profileForm.get('email'); }
-  get securityQuestionControl() { return this.profileForm.get('security_question'); }
+  get securityAnswerControl() { return this.profileForm.get('security_answer'); }
   get currentPasswordControl() { return this.passwordConfirmationForm.get('currentPassword'); }
 
   // Métodos de validação

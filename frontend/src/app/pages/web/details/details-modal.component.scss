@@ -729,10 +729,14 @@
       .flavor-text-display {
         .flavor-text-wrapper {
           position: relative;
-          height: 120px; // Altura fixa para evitar reposicionamento dos controles
+          min-height: 120px; // Altura mínima mais flexível
+          max-height: 200px; // Altura máxima para textos longos
           overflow-y: auto;
           padding-right: 8px;
           margin-bottom: 15px;
+          border-radius: 8px;
+          background: var(--surface-bg);
+          padding: 16px;
 
           // Customizar scrollbar
           &::-webkit-scrollbar {
@@ -754,13 +758,23 @@
           }
 
           .flavor-text {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: var(--text-color-secondary);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-color);
             margin: 0;
             font-style: italic;
+            text-align: justify;
+            word-spacing: 0.1em;
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
             text-align: center;
             padding: 0 8px;
+          }
+
+          &.flavor-transition {
+            opacity: 0.3;
+            transform: translateX(10px);
+            transition: all 0.15s ease;
           }
 
           .scroll-indicator {
@@ -800,29 +814,44 @@
           margin-top: 10px; // Espaçamento consistente independente do tamanho do texto
 
           .flavor-nav-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--ion-color-primary);
             border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
-            color: var(--success);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: white;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.3);
 
             &:hover:not(:disabled) {
-              background: rgba(74, 222, 128, 0.2);
+              background: var(--ion-color-primary-shade);
+              transform: translateY(-1px);
+              box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
             }
 
             &:disabled {
-              opacity: 0.5;
+              opacity: 0.4;
               cursor: not-allowed;
+              transform: none;
+              box-shadow: none;
+            }
+
+            i {
+              font-size: 14px;
             }
           }
 
           .flavor-counter {
-            color: var(--text-color-secondary);
-            font-size: 0.9rem;
-            min-width: 60px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            font-weight: 600;
+            min-width: 80px;
             text-align: center;
+            background: var(--surface-bg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
           }
         }
       }

@@ -1,16 +1,15 @@
-<!-- Modal Principal -->
-<ion-header>
-  <ion-toolbar>
-    <ion-title>{{ 'auth.user_profile' | translate }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="closeModal()" fill="clear">
-        <ion-icon name="close" slot="icon-only"></ion-icon>
+<div class="modal-wrapper">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>{{ 'auth.user_profile' | translate }}</h2>
+      <ion-button fill="clear" (click)="closeModal()" class="close-btn">
+        <ion-icon name="close-outline"></ion-icon>
       </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+    </div>
 
-<ion-content class="user-profile-content">
+    <!-- Content -->
+    <div class="modal-content user-profile-content">
   <!-- Seção de Informações do Usuário -->
   <div class="user-header" *ngIf="user">
     <div class="user-avatar">
@@ -55,16 +54,26 @@
           </ion-note>
         </ion-item>
 
+        <!-- Pergunta de Segurança (somente leitura) -->
         <ion-item>
-          <ion-label position="floating">{{ 'auth.security_question' | translate }}</ion-label>
+          <ion-label>
+            <h3>{{ 'auth.security_question' | translate }}</h3>
+            <p>{{ securityQuestionText }}</p>
+          </ion-label>
+        </ion-item>
+
+        <!-- Resposta de Segurança (editável) -->
+        <ion-item>
+          <ion-label position="floating">{{ 'auth.security_answer' | translate }}</ion-label>
           <ion-input
-            formControlName="security_question"
+            formControlName="security_answer"
             type="text"
-            [class.ion-invalid]="isFieldInvalid('security_question')"
-            [class.ion-touched]="securityQuestionControl?.touched">
+            placeholder="{{ 'auth.security_answer_placeholder' | translate }}"
+            [class.ion-invalid]="isFieldInvalid('security_answer')"
+            [class.ion-touched]="securityAnswerControl?.touched">
           </ion-input>
-          <ion-note slot="error" *ngIf="isFieldInvalid('security_question')">
-            {{ getFieldError('security_question') }}
+          <ion-note slot="error" *ngIf="isFieldInvalid('security_answer')">
+            {{ getFieldError('security_answer') }}
           </ion-note>
         </ion-item>
       </ion-list>
@@ -134,4 +143,7 @@
       </div>
     </form>
   </div>
-</ion-content>
+
+    </div>
+  </div>
+</div>

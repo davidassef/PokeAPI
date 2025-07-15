@@ -329,6 +329,8 @@
     "profile_updated": "Profile updated successfully",
     "update_error": "Error updating profile",
     "validation_errors": "Please fix the errors in the form",
+    "field_required": "This field is required",
+    "min_length_error": "This field must be at least 2 characters long",
     "delete_account_warning": "This action cannot be undone",
     "first_name": "First Name",
     "first_name_placeholder": "Enter your first name",

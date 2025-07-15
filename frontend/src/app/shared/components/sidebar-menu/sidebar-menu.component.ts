@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { MenuController, ModalController } from '@ionic/angular';
+import { MenuController, ModalController, PopoverController } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -9,8 +9,10 @@ import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
+import { TrainerLevelService, TrainerStats } from '../../../core/services/trainer-level.service';
 import { AuthModalNewComponent } from '../auth-modal-new/auth-modal-new.component';
 import { UserProfileModalComponent } from '../user-profile-modal/user-profile-modal.component';
+import { AccountSettingsModalComponent } from '../account-settings-modal/account-settings-modal.component';
 import { User } from 'src/app/models/user.model';
 
 export interface MenuItem {
@@ -64,6 +66,20 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     completionPercentage: 0
   };
 
+  trainerStats: TrainerStats = {
+    viewedCount: 0,
+    capturedCount: 0,
+    totalXP: 0,
+    level: {
+      level: 1,
+      title: 'Novato',
+      currentXP: 0,
+      requiredXP: 100,
+      progressPercentage: 0,
+      nextLevelXP: 100
+    }
+  };
+
   currentLanguage = 'pt-BR';
   availableLanguages = [
     { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
@@ -83,18 +99,21 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     private router: Router,
     private menuController: MenuController,
     private modalController: ModalController,
+    private popoverController: PopoverController,
     private translate: TranslateService,
     private settingsService: SettingsService,
     private capturedService: CapturedService,
     private audioService: AudioService,
     private authService: AuthService,
-    private viewedPokemonService: ViewedPokemonService
+    private viewedPokemonService: ViewedPokemonService,
+    private trainerLevelService: TrainerLevelService
   ) {}
 
   ngOnInit() {
     this.loadSettings();
     this.setupAuthStateSubscription();
     this.setupViewedPokemonSubscription();
+    this.setupTrainerStatsSubscription();
     this.loadUserStats();
     this.detectMobile();
     this.setupRouteListener();
@@ -124,6 +143,14 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
       .subscribe(viewedData => {
         this.userStats.viewedCount = viewedData.viewedPokemonIds.size;
         this.userStats.completionPercentage = this.viewedPokemonService.getCompletionPercentage();
+      });
+  }
+
+  private setupTrainerStatsSubscription() {
+    this.trainerLevelService.trainerStats$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(stats => {
+        this.trainerStats = stats;
       });
   }
 
@@ -242,10 +269,16 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
 
   async openAccountSettings() {
-    // TODO: Implementar modal de configurações da conta
-    console.log('Abrindo configurações da conta');
     this.showUserProfileMenu = false;
     await this.menuController.close();
+
+    const modal = await this.modalController.create({
+      component: AccountSettingsModalComponent,
+      cssClass: 'account-settings-modal',
+      backdropDismiss: true
+    });
+
+    await modal.present();
   }
 
   async confirmLogout() {
@@ -292,5 +325,27 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
 
     // Verificar rota inicial
     this.isMobileRoute = this.router.url.startsWith('/mobile');
+  }
+
+  async showTrainerLevelInfo(event: Event) {
+    event.stopPropagation(); // Previne que o clique abra/feche o dropdown
+
+    const progressionInfo = this.trainerLevelService.getProgressionInfo();
+    const pokemonNeeded = this.trainerLevelService.getPokemonNeededForNextLevel();
+
+    // Por enquanto, vamos usar um alert simples até criarmos o componente de popover
+    const message = `
+${this.trainerStats.level.title} - Nível ${this.trainerStats.level.level}
+XP: ${this.trainerStats.level.currentXP}/${this.trainerStats.level.requiredXP}
+Progresso: ${this.trainerStats.level.progressPercentage}%
+
+${progressionInfo}
+
+Para o próximo nível você precisa de:
+• ${pokemonNeeded.captured} Pokémon capturados OU
+• ${pokemonNeeded.viewed} Pokémon visualizados
+    `;
+
+    alert(message);
   }
 }

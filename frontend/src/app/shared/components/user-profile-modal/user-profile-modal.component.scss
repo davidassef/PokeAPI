@@ -1,4 +1,53 @@
 // User Profile Modal Styles
+.modal-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--overlay-bg);
+}
+
+.modal-container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow-hover);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--border-color);
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .close-btn {
+    --color: var(--text-color-secondary);
+    --background: transparent;
+    --background-hover: var(--surface-bg);
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.modal-content {
+  padding: 24px;
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
+}
+
 .user-profile-content {
   --background: var(--ion-color-light);
 
@@ -184,21 +233,18 @@
   }
 }
 
-// Header customization
-ion-header {
-  ion-toolbar {
-    --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-    --color: white;
+// Theme-specific adjustments
+:host-context(.dark-theme) {
+  .modal-container {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+  }
+}
 
-    ion-title {
-      font-weight: 600;
-      color: white;
-    }
-
-    ion-button {
-      --color: white;
-      --color-hover: rgba(255, 255, 255, 0.8);
-    }
+:host-context(.light-theme) {
+  .modal-container {
+    background: var(--card-bg);
+    border-color: var(--border-color);
   }
 }
 

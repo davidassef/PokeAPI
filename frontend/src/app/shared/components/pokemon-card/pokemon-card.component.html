@@ -24,25 +24,40 @@
          (imageError)="onImageError($event)"
          (imageStartLoading)="onImageStartLoading()">
 
-    <!-- Capture Button -->
+    <!-- Capture Button with Enhanced Visual Feedback -->
     <button *ngIf="showCaptureButton"
             class="capture-btn"
             [class.captured]="isCaptured"
+            [class.capturing]="isLoading"
             [disabled]="isLoading"
             type="button"
-            (click)="onCaptureClick($event)">
-      <img *ngIf="!isCaptured && !isLoading"
-           src="assets/img/opened_pokeball.png"
-           alt="Pokébola aberta"
-           class="pokeball-icon">
-      <!-- <img *ngIf="isLoading"
-           src="assets/img/pokeball-capture.gif"
-           alt="Capturando..."
-           class="pokeball-icon"> -->
-      <img *ngIf="isCaptured && !isLoading"
-           src="assets/img/closed_pokeball.png"
-           alt="Pokébola fechada"
-           class="pokeball-icon">
+            (click)="onCaptureClick($event)"
+            [attr.aria-label]="isCaptured ? ('pokemon.release' | translate) : ('pokemon.capture' | translate)">
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <ion-spinner name="crescent" color="light"></ion-spinner>
+      </div>
+
+      <!-- Not Captured State -->
+      <div *ngIf="!isCaptured && !isLoading" class="capture-state">
+        <img src="assets/img/opened_pokeball.png"
+             alt="Pokébola aberta"
+             class="pokeball-icon">
+        <div class="capture-hint">
+          <ion-icon name="add-circle-outline"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Captured State -->
+      <div *ngIf="isCaptured && !isLoading" class="captured-state">
+        <img src="assets/img/closed_pokeball.png"
+             alt="Pokébola fechada"
+             class="pokeball-icon">
+        <div class="captured-indicator">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        </div>
+      </div>
     </button>
 
     <!-- Admin Controls -->

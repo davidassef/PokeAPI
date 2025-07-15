@@ -325,6 +325,8 @@
     "profile_updated": "プロフィールが正常に更新されました",
     "update_error": "プロフィール更新エラー",
     "validation_errors": "フォームのエラーを修正してください",
+    "field_required": "この項目は必須です",
+    "min_length_error": "この項目は最低2文字必要です",
     "delete_account_warning": "この操作は元に戻せません",
     "first_name": "名",
     "first_name_placeholder": "名を入力",

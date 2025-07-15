@@ -1,0 +1,125 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="danger">
+    <ion-title>
+      <ion-icon name="heart" slot="start"></ion-icon>
+      {{ 'favorites.title' | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="refreshFavorites()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="favorites-content">
+  <ion-header collapse="condense">
+    <ion-toolbar color="danger">
+      <ion-title size="large">{{ 'favorites.title' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Search and Filter Section -->
+  <div class="search-section">
+    <app-search-filter
+      [placeholder]="'favorites.search_placeholder'"
+      [showAdvancedFilters]="true"
+      (searchChange)="onSearchChange($event)"
+      (filtersChange)="onFiltersChange($event)">
+    </app-search-filter>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section" *ngIf="!loading">
+    <div class="stats-container">
+      <div class="stat-card">
+        <ion-icon name="heart" color="danger"></ion-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ totalFavorites }}</span>
+          <span class="stat-label">{{ 'favorites.total' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <ion-icon name="trophy" color="warning"></ion-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ uniqueTypes.length }}</span>
+          <span class="stat-label">{{ 'favorites.types' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <ion-icon name="star" color="success"></ion-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ averageRating.toFixed(1) }}</span>
+          <span class="stat-label">{{ 'favorites.avg_rating' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorites Grid -->
+  <div class="favorites-grid" *ngIf="!loading && filteredFavorites.length > 0">
+    <div class="grid-container">
+      <app-pokemon-card
+        *ngFor="let favorite of paginatedFavorites; trackBy: trackByPokemonId"
+        [pokemon]="favorite.pokemon"
+        [isCaptured]="true"
+        [showCaptureButton]="true"
+        [animationDelay]="favorite.animationDelay"
+        (cardClick)="openDetailsModal($event)"
+        (captureToggle)="onCaptureToggle($event)"
+        class="favorite-card">
+      </app-pokemon-card>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-section" *ngIf="!loading && filteredFavorites.length > itemsPerPage">
+    <ion-button
+      fill="outline"
+      [disabled]="currentPage === 1"
+      (click)="previousPage()">
+      <ion-icon name="chevron-back-outline" slot="start"></ion-icon>
+      {{ 'common.previous' | translate }}
+    </ion-button>
+
+    <span class="page-info">
+      {{ currentPage }} / {{ totalPages }}
+    </span>
+
+    <ion-button
+      fill="outline"
+      [disabled]="currentPage === totalPages"
+      (click)="nextPage()">
+      {{ 'common.next' | translate }}
+      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <ion-spinner name="dots" color="danger"></ion-spinner>
+    <p>{{ 'favorites.loading' | translate }}</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && filteredFavorites.length === 0">
+    <div class="empty-content">
+      <ion-icon name="heart-outline" size="large" color="medium"></ion-icon>
+      <h2>{{ 'favorites.empty_title' | translate }}</h2>
+      <p>{{ 'favorites.empty_message' | translate }}</p>
+      <ion-button fill="outline" routerLink="/tabs/home">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        {{ 'favorites.explore_pokemon' | translate }}
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="danger" (click)="scrollToTop()">
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
