@@ -80,10 +80,12 @@ def get_current_user(
                 )
 
                 if 'exp' in payload:
-                    exp_time = datetime.fromtimestamp(payload['exp'])
+                    exp_time = datetime.utcfromtimestamp(payload['exp'])
+                    current_time = datetime.utcnow()
                     logger.warning(
-                        "Token expirou em: %s",
-                        exp_time.isoformat()
+                        "Token expirou em: %s (UTC), tempo atual: %s (UTC)",
+                        exp_time.isoformat(),
+                        current_time.isoformat()
                     )
 
             except Exception as decode_error:

@@ -1,7 +1,7 @@
 """
 Rotas da API para favoritos.
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
 from core.database import get_db
@@ -24,16 +24,33 @@ def add_favorite(favorite: FavoritePokemonCreate,
     return FavoriteService.add_favorite(db, favorite)
 
 
+@router.delete("/clear-all", response_model=Message)
+def clear_all_favorites(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """🚨 EMERGÊNCIA: Remove TODOS os favoritos do usuário atual"""
+    import logging
+    logger = logging.getLogger(__name__)
+
+    logger.warning(f"🚨 LIMPEZA EMERGENCIAL: Removendo TODOS os favoritos do usuário {current_user.email}")
+
+    # Remove todos os favoritos do usuário
+    deleted_count = FavoriteService.clear_all_favorites(db, current_user.id)
+
+    logger.info(f"✅ Limpeza concluída: {deleted_count} favoritos removidos para o usuário {current_user.email}")
+
+    return Message(message=f"Todos os favoritos foram removidos com sucesso ({deleted_count} itens)")
+
+
 @router.delete("/{pokemon_id}", response_model=Message)
 def remove_favorite(pokemon_id: int,
                     db: Session = Depends(get_db),
                     current_user: User = Depends(get_current_active_user)):
     """Remove Pokémon dos favoritos do usuário atual."""
-    if not FavoriteService.remove_favorite(db, current_user.id, pokemon_id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Favorito não encontrado"
-        )
+    # Sempre retorna sucesso, mesmo se o Pokémon não estava nos favoritos
+    # Isso é idempotente - o resultado final é o mesmo
+    FavoriteService.remove_favorite(db, current_user.id, pokemon_id)
     return Message(message="Pokémon removido dos favoritos")
 
 

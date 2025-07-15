@@ -24,7 +24,7 @@ from app.schemas.auth_schemas import UserCreate, TokenData
 class AuthService:
     """
     Serviço de autenticação JWT para gerenciamento completo de usuários.
-    
+
     Este serviço implementa todas as funcionalidades necessárias para autenticação
     segura, incluindo hash de senhas, criação de tokens, verificação de credenciais
     e gerenciamento de sessões de usuário.
@@ -47,11 +47,11 @@ class AuthService:
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """
         Verifica se a senha em texto plano corresponde ao hash armazenado.
-        
+
         Args:
             plain_password: Senha em texto plano fornecida pelo usuário
             hashed_password: Hash da senha armazenado no banco de dados
-            
+
         Returns:
             True se a senha estiver correta, False caso contrário
         """
@@ -60,10 +60,10 @@ class AuthService:
     def get_password_hash(self, password: str) -> str:
         """
         Gera hash seguro de uma senha usando bcrypt.
-        
+
         Args:
             password: Senha em texto plano para ser hasheada
-            
+
         Returns:
             Hash da senha gerado com bcrypt
         """
@@ -72,11 +72,11 @@ class AuthService:
     def create_access_token(self, data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
         """
         Cria token de acesso JWT com dados do usuário.
-        
+
         Args:
             data: Dicionário com dados do usuário (user_id, email, role, etc.)
             expires_delta: Tempo de expiração personalizado (opcional)
-            
+
         Returns:
             Token JWT codificado em string
         """
@@ -93,10 +93,10 @@ class AuthService:
     def create_refresh_token(self, data: Dict[str, Any]) -> str:
         """
         Cria token de refresh JWT para renovação de sessão.
-        
+
         Args:
             data: Dicionário com dados do usuário
-            
+
         Returns:
             Token de refresh JWT codificado em string
         """
@@ -109,43 +109,69 @@ class AuthService:
     def verify_token(self, token: str, token_type: str = "access") -> Optional[TokenData]:
         """
         Verifica e decodifica token JWT, validando sua autenticidade.
-        
+
         Args:
             token: Token JWT em string
             token_type: Tipo do token ('access' ou 'refresh')
-            
+
         Returns:
             TokenData com informações do usuário se válido, None caso contrário
         """
         try:
+            # Primeiro, vamos decodificar sem verificar para debug
+            from datetime import datetime
+            import logging
+            logger = logging.getLogger(__name__)
+
+            unverified_payload = jwt.get_unverified_claims(token)
+            if 'exp' in unverified_payload:
+                exp_time = datetime.utcfromtimestamp(unverified_payload['exp'])
+                current_time = datetime.utcnow()
+                logger.info(
+                    "DEBUG - Token exp: %s (UTC), current: %s (UTC), diff: %s seconds",
+                    exp_time.isoformat(),
+                    current_time.isoformat(),
+                    (exp_time - current_time).total_seconds()
+                )
+
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
 
             # Verifica tipo do token
             if payload.get("type") != token_type:
+                logger.warning("Token type mismatch: expected %s, got %s", token_type, payload.get("type"))
                 return None
 
-            user_id: int = payload.get("sub")
+            user_id_str: str = payload.get("sub")
             email: str = payload.get("email")
             role: str = payload.get("role", "user")  # Role padrão se não especificado
 
-            if user_id is None or email is None:
+            if user_id_str is None or email is None:
+                logger.warning("Token missing required fields: user_id=%s, email=%s", user_id_str, email)
                 return None
 
+            try:
+                user_id = int(user_id_str)
+            except (ValueError, TypeError):
+                logger.warning("Invalid user_id format in token: %s", user_id_str)
+                return None
+
+            logger.info("Token successfully verified for user %s", email)
             token_data = TokenData(user_id=user_id, email=email, role=role)
             return token_data
 
-        except JWTError:
+        except JWTError as e:
+            logger.error("JWT decode error: %s", str(e))
             return None
 
     def authenticate_user(self, db: Session, email: str, password: str) -> Optional[User]:
         """
         Autentica usuário verificando email e senha.
-        
+
         Args:
             db: Sessão do banco de dados
             email: Email do usuário
             password: Senha em texto plano
-            
+
         Returns:
             Objeto User se autenticação for bem-sucedida, None caso contrário
         """
@@ -157,11 +183,11 @@ class AuthService:
     def get_user_by_email(self, db: Session, email: str) -> Optional[User]:
         """
         Busca usuário no banco de dados pelo email.
-        
+
         Args:
             db: Sessão do banco de dados
             email: Email do usuário
-            
+
         Returns:
             Objeto User se encontrado, None caso contrário
         """
@@ -170,11 +196,11 @@ class AuthService:
     def get_user_by_id(self, db: Session, user_id: int) -> Optional[User]:
         """
         Busca usuário no banco de dados pelo ID.
-        
+
         Args:
             db: Sessão do banco de dados
             user_id: ID do usuário
-            
+
         Returns:
             Objeto User se encontrado, None caso contrário
         """
@@ -183,14 +209,14 @@ class AuthService:
     def create_user(self, db: Session, user_create: UserCreate) -> User:
         """
         Cria novo usuário no sistema com senha hasheada.
-        
+
         Args:
             db: Sessão do banco de dados
             user_create: Dados do usuário para criação
-            
+
         Returns:
             Objeto User criado
-            
+
         Raises:
             ValueError: Se o email já estiver em uso
         """
@@ -224,7 +250,7 @@ class AuthService:
     def update_user_password(self, db: Session, user: User, new_password: str):
         """
         Atualiza a senha de um usuário existente.
-        
+
         Args:
             db: Sessão do banco de dados
             user: Objeto User a ser atualizado
@@ -238,7 +264,7 @@ class AuthService:
     def deactivate_user(self, db: Session, user: User):
         """
         Desativa um usuário no sistema.
-        
+
         Args:
             db: Sessão do banco de dados
             user: Objeto User a ser desativado
@@ -250,7 +276,7 @@ class AuthService:
     def activate_user(self, db: Session, user: User):
         """
         Ativa um usuário previamente desativado.
-        
+
         Args:
             db: Sessão do banco de dados
             user: Objeto User a ser ativado
@@ -262,7 +288,7 @@ class AuthService:
     def generate_secure_secret_key(self) -> str:
         """
         Gera uma chave secreta segura para uso em JWT.
-        
+
         Returns:
             String com chave secreta segura
         """
@@ -271,11 +297,11 @@ class AuthService:
     def verify_security_answer(self, user: User, security_answer: str) -> bool:
         """
         Verifica se a resposta de segurança está correta.
-        
+
         Args:
             user: Objeto User
             security_answer: Resposta de segurança fornecida
-            
+
         Returns:
             True se a resposta estiver correta, False caso contrário
         """
@@ -287,13 +313,13 @@ class AuthService:
     def reset_password_with_security(self, db: Session, email: str, security_answer: str, new_password: str) -> bool:
         """
         Redefine senha de usuário usando pergunta de segurança.
-        
+
         Args:
             db: Sessão do banco de dados
             email: Email do usuário
             security_answer: Resposta da pergunta de segurança
             new_password: Nova senha
-            
+
         Returns:
             True se a redefinição for bem-sucedida, False caso contrário
         """

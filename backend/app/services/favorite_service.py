@@ -68,31 +68,31 @@ class FavoriteService:
         return db.query(FavoritePokemon).filter(
             FavoritePokemon.user_id == user_id
         ).all()
-        
+
     @staticmethod
     def check_multiple_favorites(
-        db: Session, 
-        user_id: int, 
+        db: Session,
+        user_id: int,
         pokemon_ids: List[int]
     ) -> dict:
         """
         Verifica quais Pokémons de uma lista estão nos favoritos do usuário.
-        
+
         Args:
             db: Sessão do banco de dados
             user_id: ID do usuário
             pokemon_ids: Lista de IDs de Pokémon para verificar
-            
+
         Returns:
-            Dicionário onde as chaves são os IDs dos Pokémons e os valores são 
+            Dicionário onde as chaves são os IDs dos Pokémons e os valores são
             booleanos indicando se estão nos favoritos
         """
         if not pokemon_ids:
             return {}
-            
+
         # Converte para set para remover duplicatas
         pokemon_ids = list(set(pokemon_ids))
-        
+
         # Busca todos os favoritos do usuário que estão na lista de IDs fornecida
         query = db.query(FavoritePokemon.pokemon_id)
         query = query.filter(
@@ -100,13 +100,13 @@ class FavoriteService:
             FavoritePokemon.pokemon_id.in_(pokemon_ids)
         )
         favorites = query.all()
-        
+
         # Cria um conjunto com os IDs dos favoritos para busca mais rápida
         favorite_ids = {fav.pokemon_id for fav in favorites}
-        
+
         # Retorna um dicionário com o status de cada Pokémon
         return {
-            str(pokemon_id): pokemon_id in favorite_ids 
+            str(pokemon_id): pokemon_id in favorite_ids
             for pokemon_id in pokemon_ids
         }
 
@@ -208,3 +208,23 @@ class FavoriteService:
     def get_all_favorites(db: Session) -> List[FavoritePokemon]:
         """Busca todos os favoritos do sistema."""
         return db.query(FavoritePokemon).all()
+
+    @staticmethod
+    def clear_all_favorites(db: Session, user_id: int) -> int:
+        """🚨 EMERGÊNCIA: Remove TODOS os favoritos de um usuário específico"""
+        import logging
+        logger = logging.getLogger(__name__)
+
+        logger.warning(f"🚨 LIMPEZA EMERGENCIAL: Removendo TODOS os favoritos do usuário ID {user_id}")
+
+        # Conta quantos favoritos serão removidos
+        count_query = db.query(FavoritePokemon).filter(FavoritePokemon.user_id == user_id)
+        deleted_count = count_query.count()
+
+        # Remove todos os favoritos do usuário
+        count_query.delete()
+        db.commit()
+
+        logger.info(f"✅ Limpeza concluída: {deleted_count} favoritos removidos para o usuário ID {user_id}")
+
+        return deleted_count
