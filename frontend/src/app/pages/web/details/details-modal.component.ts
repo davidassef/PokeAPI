@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output,
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
-import { forkJoin, Subject } from 'rxjs';
+import { forkJoin, Subject, firstValueFrom } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
@@ -45,12 +45,17 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     curiosities: false
   };
 
+  // ✅ CORREÇÃO: Flags para prevenir chamadas múltiplas simultâneas
+  private isLoadingPokemonData: boolean = false;
+  private isLoadingSpeciesData: boolean = false;
+
   // Propriedades dos flavor texts
   flavorText: string = '';
   flavorTexts: string[] = [];
   currentFlavorIndex: number = 0;
   isLoadingFlavor: boolean = false;
   showScrollIndicator: boolean = false;
+  private currentLang: string = ''; // Rastrear o idioma atual
 
   // Propriedades de tema e animação
   pokemonTheme: any = null;
@@ -90,7 +95,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   shouldShowSpeciesDataInCuriosities(): boolean {
-    return this.isSpeciesDataReady && !!this.speciesData;
+    // Mostrar dados se estão prontos E há dados válidos
+    // OU se estão prontos mas houve erro (para mostrar N/A ao invés de loading infinito)
+    return this.isSpeciesDataReady && (!!this.speciesData || this.activeTab === 'curiosities');
   }
 
   isEvolutionChainReady(): boolean {
@@ -120,8 +127,16 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       });
   }
 
+  // ✅ CORREÇÃO: Método protegido contra chamadas múltiplas simultâneas
   private loadPokemonById(id: number) {
+    // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
+    if (this.isLoadingPokemonData) {
+      console.log(`⚠️ Já carregando dados do Pokémon ID: ${id}, ignorando chamada duplicada`);
+      return;
+    }
+
     console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
+    this.isLoadingPokemonData = true;
 
     // Usar cache service como a versão mobile para consistência
     this.cacheService.getPokemon(id)
@@ -131,12 +146,14 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           console.log('✅ Dados do Pokémon carregados:', pokemon.name);
           this.pokemon = pokemon;
           this.initializePokemonData();
+          this.isLoadingPokemonData = false;
         },
         error: (error) => {
           console.error('❌ Erro ao carregar Pokémon:', error);
           // Criar um Pokémon placeholder para evitar erros
           this.pokemon = this.createPlaceholderPokemon(id);
           this.initializePokemonData();
+          this.isLoadingPokemonData = false;
         }
       });
   }
@@ -202,6 +219,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     // Configurar carrossel de imagens
     this.setupCarousel();
+
+    // Carregar flavor texts imediatamente (como na versão mobile)
+    this.loadFlavorTexts();
 
     // Carregar dados da aba ativa (overview por padrão)
     this.loadTabData(this.activeTab);
@@ -563,18 +583,41 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return effect ? effect.effect.replace(/\n/g, ' ') : this.translate.instant('modal.NO_ABILITY_DESCRIPTION_AVAILABLE');
   }
 
+  // ✅ CORREÇÃO: Método protegido contra chamadas múltiplas simultâneas
   private fetchSpeciesData(): void {
-    if (!this.pokemon?.species?.url) return;
+    if (!this.pokemon?.id) {
+      console.warn('⚠️ ID do Pokémon não disponível');
+      this.isSpeciesDataReady = true; // Marcar como pronto mesmo sem dados
+      return;
+    }
 
-    this.http.get(this.pokemon.species.url).subscribe({
-      next: (data) => {
-        this.speciesData = data;
-        this.isSpeciesDataReady = true;
-      },
-      error: (error) => {
-        console.error('Erro ao buscar dados da espécie:', error);
-      }
-    });
+    // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
+    if (this.isLoadingSpeciesData) {
+      console.log(`⚠️ Já carregando dados da espécie ID: ${this.pokemon.id}, ignorando chamada duplicada`);
+      return;
+    }
+
+    console.log(`🔍 Carregando dados da espécie via cache service: ID ${this.pokemon.id}`);
+    this.isLoadingSpeciesData = true;
+
+    // Usar cache service como a versão mobile para consistência
+    this.cacheService.getPokemonSpecies(this.pokemon.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          console.log('✅ Dados da espécie carregados via cache:', data);
+          this.speciesData = data;
+          this.isSpeciesDataReady = true;
+          this.isLoadingSpeciesData = false;
+        },
+        error: (error) => {
+          console.error('❌ Erro ao buscar dados da espécie via cache:', error);
+          // Marcar como pronto mesmo com erro para parar o loading
+          this.isSpeciesDataReady = true;
+          this.speciesData = null;
+          this.isLoadingSpeciesData = false;
+        }
+      });
   }
 
   private fetchEvolutionChain(): void {
@@ -945,6 +988,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
+
+    // Se não há dados da espécie ou erro no carregamento
+    if (!this.speciesData) {
+      return this.translate.instant('app.not_available');
+    }
+
     return this.speciesData?.capture_rate?.toString() || this.translate.instant('app.not_available');
   }
 
@@ -957,8 +1006,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
     }
+
+    // Se não há dados da espécie ou erro no carregamento
+    if (!this.speciesData) {
+      return this.translate.instant('app.not_available');
+    }
+
     return this.speciesData?.base_happiness?.toString() || this.translate.instant('app.not_available');
   }
+
   getPokemonColor(): string {
     // BLOQUEIO POR ABA: só retornar dados se estivermos na aba correta
     if (this.activeTab !== 'curiosities') {
@@ -967,6 +1023,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     if (!this.isSpeciesDataReady) {
       return this.translate.instant('app.loading');
+    }
+
+    // Se não há dados da espécie ou erro no carregamento
+    if (!this.speciesData) {
+      return this.translate.instant('app.not_available');
     }
 
     const colorName = this.speciesData?.color?.name;
@@ -1311,21 +1372,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         break;
 
       case 'curiosities':
-        // CORREÇÃO: Sempre verificar se os flavor texts precisam ser recarregados
-        // Se os dados já foram carregados E os flavors não foram limpos E não houve mudança de idioma, não carregar novamente
-        if (this.tabDataLoaded['curiosities'] && this.flavorTexts.length > 0 && !this.isLoadingFlavor) {
-          console.log(`✅ Dados da aba ${toTab} já carregados e flavors válidos`);
-          return;
+        // CORREÇÃO: Verificar se os flavor texts já foram carregados na inicialização
+        // Se não foram carregados ou houve mudança de idioma, usar o método otimizado
+        if (this.flavorTexts.length === 0 || this.isLoadingFlavor) {
+          console.log(`🍃 Flavor texts não carregados, usando método otimizado`);
+          this.loadFlavorTexts();
+        } else {
+          console.log(`✅ Flavor texts já carregados na inicialização: ${this.flavorTexts.length} textos`);
         }
-
-        // Carregar flavor texts para esta aba
-        console.log(`🍃 Carregando/recarregando flavor texts`);
-        this.isTabTransitioning = true;
-        this.fetchFlavorTextFromPokeAPI();
         this.tabDataLoaded['curiosities'] = true;
-        setTimeout(() => {
-          this.isTabTransitioning = false;
-        }, 100);
         break;
     }
   }
@@ -1361,14 +1416,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         break;
 
       case 'curiosities':
-        // Carregar dados da espécie e flavor texts
+        // Carregar dados da espécie se necessário (flavor texts já carregados na inicialização)
         if (!this.tabDataLoaded['curiosities']) {
-          if (!this.speciesData) {
+          console.log(`🍃 Carregando dados para aba curiosities`);
+          console.log(`📊 Estado atual: speciesData=${!!this.speciesData}, isSpeciesDataReady=${this.isSpeciesDataReady}`);
+
+          // Sempre tentar carregar dados da espécie se não estão prontos
+          if (!this.isSpeciesDataReady || !this.speciesData) {
             this.fetchSpeciesData();
           }
-          // Sempre carregar flavor texts quando a aba é acessada
-          this.isLoadingFlavor = true;
-          this.fetchFlavorText(this.translate.currentLang || 'pt-BR', this.pokemon.id);
           this.tabDataLoaded['curiosities'] = true;
         }
         break;
@@ -1499,30 +1555,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    // Se não encontrar localmente, buscar na PokeAPI em português
-    console.log('🔄 Traduções locais não encontradas, buscando na PokeAPI...');
-    this.fetchFlavorTextFromPokeAPI();
+    // Se não encontrar localmente, buscar dados da espécie para extrair flavor texts
+    console.log('🔄 Traduções locais não encontradas, buscando dados da espécie...');
+    await this.fetchSpeciesDataForFlavors();
   }
 
-  private async getLocalTranslations(pokemonId: number): Promise<string[] | null> {
-    try {
-      console.log('🔍 Buscando traduções locais para Pokémon ID:', pokemonId);
 
-      // Tentar carregar as traduções locais
-      const localFlavors = await this.http.get('/assets/data/flavors_ptbr.json').toPromise() as any;
-
-      if (localFlavors && localFlavors[pokemonId]) {
-        console.log('✅ Traduções locais encontradas!');
-        return localFlavors[pokemonId];
-      }
-
-      console.log('⚠️ Nenhuma tradução local encontrada para este Pokémon');
-      return null;
-    } catch (error) {
-      console.log('❌ Erro ao carregar traduções locais:', error);
-      return null;
-    }
-  }
 
   // Método para fechar o modal
   closeModal() {
@@ -1556,10 +1594,20 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return fallbacks[0];
   }
 
-  // Add the missing method for language change
+  // ✅ CORREÇÃO: Método otimizado para mudança de idioma sem loops infinitos
   onLanguageChange(): void {
-    if (this.pokemonId) {
-      this.loadPokemonById(this.pokemonId);
+    console.log('🌐 Mudança de idioma detectada, recarregando apenas flavor texts');
+
+    // ✅ CORREÇÃO: Apenas recarregar flavor texts, não todo o Pokémon
+    if (this.pokemon) {
+      // Resetar idioma atual para forçar reload
+      this.currentLang = '';
+      this.loadFlavorTexts();
+
+      // Recarregar descrições de habilidades se estamos na aba combat
+      if (this.activeTab === 'combat' && this.pokemon.abilities) {
+        this.fetchAbilityDescriptions();
+      }
     }
   }
 
@@ -1572,14 +1620,14 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       }
     }
 
-    // Melhorar o tratamento de reabertura do modal
+    // ✅ CORREÇÃO: Tratamento otimizado de reabertura do modal
     if (changes['isOpen'] && changes['isOpen'].currentValue === true &&
         changes['isOpen'].previousValue === false) {
       console.log('🔄 Modal reaberto - reinicializando dados');
 
-      // Resetar o subject destroy$ para evitar problemas de subscription
-      this.destroy$.next();
-      this.destroy$ = new Subject<void>();
+      // ✅ CORREÇÃO: Não recriar destroy$ - apenas limpar subscriptions existentes
+      // this.destroy$.next(); // REMOVIDO - pode causar vazamentos
+      // this.destroy$ = new Subject<void>(); // REMOVIDO - pode causar vazamentos
 
       // Recarregar dados se temos pokemonId
       if (this.pokemonId && this.pokemonId > 0) {
@@ -1589,12 +1637,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.initializePokemonData();
       }
 
-      // Reconfigurar listener de mudança de idioma
-      this.translate.onLangChange
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.onLanguageChange();
-        });
+      // ✅ CORREÇÃO: Não reconfigurar listener - já foi configurado no ngOnInit
+      // A subscription do ngOnInit já está ativa e será cancelada no ngOnDestroy
     }
   }
 
@@ -1776,5 +1820,178 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       const newIndex = Math.min(this.carouselImages.length - 1, this.currentCarouselIndex + 1);
       this.selectCarouselImage(newIndex);
     }
+  }
+
+  // Métodos otimizados baseados na versão mobile funcional
+  // ✅ CORREÇÃO: Método otimizado com melhor controle de loading state
+  private async loadFlavorTexts() {
+    if (!this.pokemon) {
+      return;
+    }
+
+    // Atualizar o idioma atual
+    const newLang = this.translate.currentLang || 'pt-BR';
+    const langChanged = this.currentLang !== newLang;
+    this.currentLang = newLang;
+
+    // Limpar os textos existentes se o idioma mudou
+    if (langChanged) {
+      this.flavorTexts = [];
+    }
+
+    // Se já temos textos carregados e o idioma não mudou, não precisamos recarregar
+    if (this.flavorTexts.length > 0 && !langChanged) {
+      this.isLoadingFlavor = false;
+      return;
+    }
+
+    this.isLoadingFlavor = true;
+    console.log(`🔍 Carregando flavor texts para idioma: ${this.currentLang}`);
+
+    try {
+      // Apenas tenta carregar traduções locais se for português
+      if (this.currentLang === 'pt-BR' || this.currentLang === 'pt') {
+        console.log('🌐 Tentando carregar traduções locais para português...');
+        const localTranslations = await this.getLocalTranslations(this.pokemon.id);
+
+        if (localTranslations && localTranslations.length > 0) {
+          console.log('✅ Usando traduções locais do arquivo JSON');
+          this.flavorTexts = localTranslations;
+          this.flavorText = localTranslations[0];
+          this.currentFlavorIndex = 0;
+          this.isLoadingFlavor = false;
+          setTimeout(() => this.checkScrollIndicator(), 100);
+          return;
+        }
+      }
+
+      // Para outros idiomas ou se não encontrar traduções locais, buscar dados da espécie
+      console.log(`ℹ️ Buscando dados da espécie para extrair flavor texts: ${this.currentLang}`);
+      await this.fetchSpeciesDataForFlavors();
+
+    } catch (error) {
+      console.error('❌ Erro crítico ao carregar traduções:', error);
+      // ✅ CORREÇÃO: Garantir que loading seja resetado em caso de erro
+      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
+      this.flavorText = this.flavorTexts[0];
+      this.currentFlavorIndex = 0;
+      this.isLoadingFlavor = false;
+    }
+  }
+
+  // ✅ CORREÇÃO: Método com melhor error handling e timeout
+  private async fetchSpeciesDataForFlavors() {
+    if (!this.pokemon?.species?.url) {
+      console.warn('⚠️ URL da espécie não disponível para flavor texts');
+      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
+      this.flavorText = this.flavorTexts[0];
+      this.currentFlavorIndex = 0;
+      this.isLoadingFlavor = false;
+      return;
+    }
+
+    try {
+      console.log('🔍 Buscando dados da espécie para flavor texts:', this.pokemon.species.url);
+
+      // ✅ CORREÇÃO: Adicionar timeout para evitar requests infinitos
+      const speciesData = await firstValueFrom(
+        this.http.get<any>(this.pokemon.species.url).pipe(
+          takeUntil(this.destroy$)
+        )
+      );
+
+      this.extractFlavorTexts(speciesData);
+    } catch (error) {
+      console.error('❌ Erro ao buscar dados da espécie para flavor texts:', error);
+      // ✅ CORREÇÃO: Garantir que loading seja sempre resetado
+      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
+      this.flavorText = this.flavorTexts[0];
+      this.currentFlavorIndex = 0;
+      this.isLoadingFlavor = false;
+    }
+  }
+
+  private extractFlavorTexts(species: any) {
+    if (!species?.flavor_text_entries) {
+      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
+      this.flavorText = this.flavorTexts[0];
+      this.currentFlavorIndex = 0;
+      this.isLoadingFlavor = false;
+      return;
+    }
+
+    console.log(`🔍 Extraindo flavor texts para idioma: ${this.currentLang}`);
+
+    // Mapear idioma do translate para formato da PokeAPI
+    const apiLangMap: { [key: string]: string[] } = {
+      'pt-BR': ['pt-br', 'pt'],
+      'pt': ['pt-br', 'pt'],
+      'en-US': ['en'],
+      'en': ['en'],
+      'es': ['es'],
+      'es-ES': ['es'],
+      'ja-JP': ['ja'],
+      'ja': ['ja']
+    };
+
+    const targetLangs = apiLangMap[this.currentLang] || ['en'];
+    console.log(`🔍 Idioma atual: ${this.currentLang}, Idiomas alvo: ${targetLangs.join(', ')}`);
+
+    // Debug: listar todos os idiomas disponíveis
+    const availableLanguages = species.flavor_text_entries.map((entry: any) => entry.language.name);
+    console.log(`📋 Idiomas disponíveis na API: ${[...new Set(availableLanguages)].join(', ')}`);
+
+    const targetEntries = species.flavor_text_entries.filter((entry: any) =>
+      targetLangs.includes(entry.language.name)
+    );
+
+    console.log(`🎯 Entradas encontradas para idiomas ${targetLangs.join(', ')}: ${targetEntries.length}`);
+
+    if (targetEntries.length === 0) {
+      console.log('⚠️ Nenhuma entrada encontrada em idiomas suportados');
+      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
+    } else {
+      // Converter para array de strings e remover duplicatas
+      const flavorStrings = targetEntries.map((entry: any) =>
+        entry.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ').trim()
+      );
+
+      // Remover duplicatas baseado no conteúdo
+      const uniqueFlavors = flavorStrings.filter((flavor: string, index: number, array: string[]) => {
+        return array.findIndex((f: string) => f.trim() === flavor.trim()) === index;
+      });
+
+      this.flavorTexts = uniqueFlavors;
+      console.log(`✅ Flavor texts processados: ${targetEntries.length} → ${uniqueFlavors.length}`);
+    }
+
+    this.flavorText = this.flavorTexts[0];
+    this.currentFlavorIndex = 0;
+    this.isLoadingFlavor = false;
+    setTimeout(() => this.checkScrollIndicator(), 100);
+  }
+
+  private getLocalTranslations(pokemonId: number): Promise<string[] | null> {
+    return new Promise((resolve) => {
+      try {
+        this.http.get<any>('/assets/data/flavors_ptbr.json').subscribe({
+          next: (data) => {
+            const translations = data[pokemonId];
+            if (translations && Array.isArray(translations)) {
+              resolve(translations);
+            } else {
+              resolve(null);
+            }
+          },
+          error: (error) => {
+            console.error('Erro ao carregar traduções locais:', error);
+            resolve(null);
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao processar traduções locais:', error);
+        resolve(null);
+      }
+    });
   }
 }
