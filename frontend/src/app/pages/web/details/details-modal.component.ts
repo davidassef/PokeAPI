@@ -947,77 +947,98 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   getPokemonTrivia(): string[] {
     const trivia: string[] = [];
 
-    if (this.pokemon) {
-      // Trivia baseada nas stats
-      const totalStats = this.getTotalStats();
-      if (totalStats > 600) {
-        trivia.push(this.translate.instant('details.trivia.legendary_stats'));
-      } else if (totalStats > 500) {
-        trivia.push(this.translate.instant('details.trivia.exceptional_stats'));
-      }
+    if (!this.pokemon) return [];
 
-      // Trivia baseada no peso e altura
-      const weight = (this.pokemon.weight || 0) / 10;
-      const height = (this.pokemon.height || 0) / 10;
+    // 1. Trivia sobre tipos
+    if (this.pokemon.types && this.pokemon.types.length > 0) {
+      const types = this.pokemon.types.map((t: any) => this.getTranslatedTypeName(t.type.name));
 
-      if (weight > 100) {
-        trivia.push(this.translate.instant('details.trivia.very_heavy', { weight }));
-      }
-
-      if (height > 2) {
-        trivia.push(this.translate.instant('details.trivia.very_tall', { height }));
-      }
-
-      // Trivia baseada nos tipos
-      if (this.pokemon.types) {
-        const typeNames = this.pokemon.types.map((t: any) => t.type.name);
-
-        if (typeNames.includes('dragon')) {
-          trivia.push(this.translate.instant('details.trivia.dragon_type'));
-        }
-
-        if (typeNames.includes('psychic')) {
-          trivia.push(this.translate.instant('details.trivia.psychic_type'));
-        }
-
-        if (typeNames.includes('ghost')) {
-          trivia.push(this.translate.instant('details.trivia.ghost_type'));
-        }
-
-        if (typeNames.length === 2) {
-          const translatedTypes = typeNames.map((t: any) => this.getTranslatedTypeName(t)).join(' e ');
-          trivia.push(this.translate.instant('details.trivia.dual_type', { types: translatedTypes }));
-        }
-      }
-
-      // Trivia baseada na experiência
-      if (this.pokemon.base_experience) {
-        if (this.pokemon.base_experience > 250) {
-          trivia.push(this.translate.instant('details.trivia.high_experience'));
-        }
-      }
-
-      // Easter eggs específicos
-      if (this.pokemon.id === 1) {
-        trivia.push(this.translate.instant('details.trivia.bulbasaur_first'));
-      }
-
-      if (this.pokemon.id === 150) {
-        trivia.push(this.translate.instant('details.trivia.mewtwo_origin'));
-      }
-
-      if (this.pokemon.id === 151) {
-        trivia.push(this.translate.instant('details.trivia.mew_original'));
-      }
-
-      if (this.pokemon.id === 25) {
-        trivia.push(this.translate.instant('details.trivia.pikachu_mascot'));
+      if (types.length === 1) {
+        trivia.push(this.translate.instant('mobile.trivia.single_type', { type: types[0] }));
+      } else if (types.length > 1) {
+        trivia.push(this.translate.instant('mobile.trivia.dual_type', {
+          type1: types[0],
+          type2: types[1]
+        }));
       }
     }
 
-    // Se não houver trivia específica, adicionar uma genérica
+    // 2. Trivia sobre peso e altura
+    if (this.pokemon.weight && this.pokemon.height) {
+      const weight = this.pokemon.weight / 10; // Converte para kg
+      const height = this.pokemon.height / 10; // Converte para metros
+
+      if (weight > 200) {
+        trivia.push(this.translate.instant('mobile.trivia.heavy_weight'));
+      } else if (weight < 10) {
+        trivia.push(this.translate.instant('mobile.trivia.light_weight'));
+      }
+
+      if (height > 2) {
+        trivia.push(this.translate.instant('mobile.trivia.tall_height'));
+      } else if (height < 0.5) {
+        trivia.push(this.translate.instant('mobile.trivia.small_height'));
+      }
+    }
+
+    // 3. Trivia sobre estatísticas
+    if (this.pokemon.stats) {
+      const stats = this.pokemon.stats.reduce((acc: any, stat: any) => {
+        acc[stat.stat.name] = stat.base_stat;
+        return acc;
+      }, {});
+
+      // Verifica se tem alguma estatística muito alta ou muito baixa
+      if (stats.hp > 150) {
+        trivia.push(this.translate.instant('mobile.trivia.high_hp'));
+      }
+
+      if (stats.attack > 120) {
+        trivia.push(this.translate.instant('mobile.trivia.high_attack'));
+      }
+
+      if (stats.speed > 120) {
+        trivia.push(this.translate.instant('mobile.trivia.high_speed'));
+      }
+    }
+
+    // 4. Trivia sobre espécie (se disponível)
+    if (this.speciesData) {
+      if (this.speciesData.is_legendary) {
+        trivia.push(this.translate.instant('mobile.trivia.legendary'));
+      }
+
+      if (this.speciesData.is_mythical) {
+        trivia.push(this.translate.instant('mobile.trivia.mythical'));
+      }
+
+      if (this.speciesData.habitat) {
+        trivia.push(this.translate.instant('mobile.trivia.habitat', {
+          habitat: this.translate.instant(`habitats.${this.speciesData.habitat.name}`)
+        }));
+      }
+    }
+
+    // 5. Easter eggs específicos
+    if (this.pokemon.id === 1) {
+      trivia.push(this.translate.instant('mobile.trivia.bulbasaur_first'));
+    }
+
+    if (this.pokemon.id === 150) {
+      trivia.push(this.translate.instant('mobile.trivia.mewtwo_origin'));
+    }
+
+    if (this.pokemon.id === 151) {
+      trivia.push(this.translate.instant('mobile.trivia.mew_original'));
+    }
+
+    if (this.pokemon.id === 25) {
+      trivia.push(this.translate.instant('mobile.trivia.pikachu_mascot'));
+    }
+
+    // 6. Garante que temos pelo menos uma curiosidade
     if (trivia.length === 0) {
-      trivia.push(this.translate.instant('details.trivia.generic'));
+      trivia.push(this.translate.instant('mobile.trivia.default'));
     }
 
     return trivia;

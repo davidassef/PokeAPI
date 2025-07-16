@@ -74,8 +74,8 @@
     },
     "trivia": {
       "title": "豆知識",
-      "single_type": "このポケモンは{type}タイプです。",
-      "dual_type": "このポケモンは{type1}と{type2}タイプです。",
+      "single_type": "このポケモンは{{type}}タイプです。",
+      "dual_type": "このポケモンは{{type1}}と{{type2}}タイプです。",
       "heavy_weight": "このポケモンは信じられないほど重いです！",
       "light_weight": "このポケモンは驚くほど軽いです！",
       "tall_height": "このポケモンは非常に背が高いです！",
@@ -85,7 +85,7 @@
       "high_speed": "最速のポケモンの一匹です！",
       "legendary": "これは伝説のポケモンです！",
       "mythical": "これは幻のポケモンです！",
-      "habitat": "通常、{habitat}で見つかります。",
+      "habitat": "通常、{{habitat}}で見つかります。",
       "default": "すべてのポケモンには語るべき物語があります。"
     },
     "cache_indicator": {

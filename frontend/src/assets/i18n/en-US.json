@@ -247,8 +247,8 @@
     },
     "trivia": {
       "title": "Trivia",
-      "single_type": "This Pokémon is a {type} type.",
-      "dual_type": "This Pokémon is a {type1} and {type2} type.",
+      "single_type": "This Pokémon is a {{type}} type.",
+      "dual_type": "This Pokémon is a {{type1}} and {{type2}} type.",
       "heavy_weight": "This Pokémon is incredibly heavy!",
       "light_weight": "This Pokémon is surprisingly light!",
       "tall_height": "This Pokémon is very tall!",
@@ -258,7 +258,7 @@
       "high_speed": "It's one of the fastest Pokémon around!",
       "legendary": "This is a Legendary Pokémon!",
       "mythical": "This is a Mythical Pokémon!",
-      "habitat": "Usually found in {habitat}.",
+      "habitat": "Usually found in {{habitat}}.",
       "default": "Every Pokémon has its own story to tell."
     },
     "cache_indicator": {
