@@ -616,6 +616,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           this.speciesData = data;
           this.isSpeciesDataReady = true;
           this.isLoadingSpeciesData = false;
+          // ✅ CORREÇÃO: Definir flag da aba curiosities quando dados estão prontos
+          if (this.activeTab === 'curiosities') {
+            this.tabDataLoaded['curiosities'] = true;
+          }
         },
         error: (error) => {
           console.error('❌ Erro ao buscar dados da espécie via cache:', error);
@@ -623,6 +627,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           this.isSpeciesDataReady = true;
           this.speciesData = null;
           this.isLoadingSpeciesData = false;
+          // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
+          if (this.activeTab === 'curiosities') {
+            this.tabDataLoaded['curiosities'] = true;
+          }
         }
       });
   }
@@ -665,23 +673,31 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
                   console.log(`🧬 Processando cadeia evolutiva...`);
                   this.processEvolutionChain(evolutionData.chain);
                   this.isLoadingEvolutionChain = false;
+                  // ✅ CORREÇÃO: Definir flag apenas quando dados estão prontos
+                  this.tabDataLoaded['evolution'] = true;
                 },
                 error: (error) => {
                   console.error('❌ Erro ao buscar cadeia evolutiva:', error);
                   this.evolutionChain = [];
                   this.isLoadingEvolutionChain = false;
+                  // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
+                  this.tabDataLoaded['evolution'] = true;
                 }
               });
           } else {
             console.warn('⚠️ URL da cadeia evolutiva não encontrada nos dados da espécie');
             this.evolutionChain = [];
             this.isLoadingEvolutionChain = false;
+            // ✅ CORREÇÃO: Definir flag mesmo quando não há cadeia evolutiva
+            this.tabDataLoaded['evolution'] = true;
           }
         },
         error: (error) => {
           console.error('❌ Erro ao buscar dados da espécie para evolução:', error);
           this.evolutionChain = [];
           this.isLoadingEvolutionChain = false;
+          // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
+          this.tabDataLoaded['evolution'] = true;
         }
       });
   }
@@ -1390,7 +1406,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         if (!this.speciesData) {
           this.fetchSpeciesData();
         }
-        this.tabDataLoaded['evolution'] = true;
+        // NÃO definir tabDataLoaded aqui - será definido quando os dados forem carregados
         setTimeout(() => {
           this.isTabTransitioning = false;
         }, 100);
@@ -1404,8 +1420,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           this.loadFlavorTexts();
         } else {
           console.log(`✅ Flavor texts já carregados na inicialização: ${this.flavorTexts.length} textos`);
+          // Se os flavor texts já estão carregados, definir a flag imediatamente
+          this.tabDataLoaded['curiosities'] = true;
         }
-        this.tabDataLoaded['curiosities'] = true;
         break;
     }
   }
@@ -1436,7 +1453,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           if (!this.speciesData) {
             this.fetchSpeciesData();
           }
-          this.tabDataLoaded['evolution'] = true;
+          // NÃO definir tabDataLoaded aqui - será definido quando os dados forem carregados
         }
         break;
 
@@ -1449,8 +1466,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           // Sempre tentar carregar dados da espécie se não estão prontos
           if (!this.isSpeciesDataReady || !this.speciesData) {
             this.fetchSpeciesData();
+          } else {
+            // Se os dados já estão prontos, definir a flag imediatamente
+            this.tabDataLoaded['curiosities'] = true;
           }
-          this.tabDataLoaded['curiosities'] = true;
+          // NÃO definir tabDataLoaded aqui se fetchSpeciesData foi chamado - será definido quando os dados forem carregados
         }
         break;
     }
@@ -1867,6 +1887,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     // Se já temos textos carregados e o idioma não mudou, não precisamos recarregar
     if (this.flavorTexts.length > 0 && !langChanged) {
       this.isLoadingFlavor = false;
+      // ✅ CORREÇÃO: Definir flag se estamos na aba curiosities
+      if (this.activeTab === 'curiosities') {
+        this.tabDataLoaded['curiosities'] = true;
+      }
       return;
     }
 
@@ -1885,6 +1909,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           this.flavorText = localTranslations[0];
           this.currentFlavorIndex = 0;
           this.isLoadingFlavor = false;
+          // ✅ CORREÇÃO: Definir flag se estamos na aba curiosities
+          if (this.activeTab === 'curiosities') {
+            this.tabDataLoaded['curiosities'] = true;
+          }
           setTimeout(() => this.checkScrollIndicator(), 100);
           return;
         }
@@ -1901,6 +1929,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.flavorText = this.flavorTexts[0];
       this.currentFlavorIndex = 0;
       this.isLoadingFlavor = false;
+      // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
+      if (this.activeTab === 'curiosities') {
+        this.tabDataLoaded['curiosities'] = true;
+      }
     }
   }
 
@@ -1933,6 +1965,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.flavorText = this.flavorTexts[0];
       this.currentFlavorIndex = 0;
       this.isLoadingFlavor = false;
+      // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
+      if (this.activeTab === 'curiosities') {
+        this.tabDataLoaded['curiosities'] = true;
+      }
     }
   }
 
@@ -1993,6 +2029,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.flavorText = this.flavorTexts[0];
     this.currentFlavorIndex = 0;
     this.isLoadingFlavor = false;
+    // ✅ CORREÇÃO: Definir flag se estamos na aba curiosities
+    if (this.activeTab === 'curiosities') {
+      this.tabDataLoaded['curiosities'] = true;
+    }
     setTimeout(() => this.checkScrollIndicator(), 100);
   }
 

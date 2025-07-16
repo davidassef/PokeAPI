@@ -30,6 +30,114 @@
     "back_shiny_female": "Back Shiny Female Sprite",
     "image_placeholder": "Default Image"
   },
+  "mobile": {
+    "title": "Details of {name}",
+    "loading": "Loading",
+    "error_message": "Could not load details. Please try again.",
+    "close": "Close",
+    "not_available": "N/A",
+    "see_more": "See more",
+    "see_less": "See less",
+    "overview": "Overview",
+    "overview_short": "Overview",
+    "combat": "Combat",
+    "stats_short": "Stats",
+    "evolution": "Evolution",
+    "evolution_short": "Evolution",
+    "curiosities": "Curiosities",
+    "curiosities_short": "Trivia",
+    "carousel": {
+      "previous": "Previous",
+      "next": "Next",
+      "counter": "({{currentIndex}}/{{total}})",
+      "artwork": "Official Artwork",
+      "sprite_default": "Default Sprite",
+      "sprite_shiny": "Shiny Sprite"
+    },
+    "actions": {
+      "zoom_in": "Zoom In",
+      "zoom_out": "Zoom Out"
+    },
+    "flavor_text": {
+      "counter": "{currentIndex} / {total}",
+      "no_description": "No description available for this Pokémon.",
+      "loading": "Loading description..."
+    },
+    "physical_characteristics": "Physical Characteristics",
+    "height": "Height",
+    "weight": "Weight",
+    "bmi": "BMI",
+    "unit": {
+      "meter": "m",
+      "kilogram": "kg"
+    },
+    "abilities": "Abilities",
+    "hidden_ability": "Hidden Ability",
+    "no_ability_description": "No description available for this ability.",
+    "loading_abilities": "Loading abilities...",
+    "stats": "Combat Stats",
+    "offensive_stats": "Offensive Stats",
+    "defensive_stats": "Defensive Stats",
+    "total_base": "Base Total",
+    "total": "Total",
+    "loading_stats": "Loading stats...",
+    "loading_evolution": "Loading evolution...",
+    "no_evolution": "This Pokémon does not evolve.",
+    "base_form": "Base form",
+    "capture_info": "Capture Information",
+    "capture_rate": "Capture Rate",
+    "base_happiness": "Base Happiness",
+    "generation": "Generation",
+    "color": "Color",
+    "types": "Types",
+    "trivia": {
+      "title": "Trivia",
+      "legendary_stats": "This Pokémon is legendary and has exceptional stats!",
+      "exceptional_stats": "This Pokémon has above-average stats!",
+      "very_heavy": "This Pokémon is very heavy, weighing an incredible {weight} kg!",
+      "very_tall": "This Pokémon is very tall, standing at an impressive {height} m!",
+      "dragon_type": "Dragon-type Pokémon are rare and powerful!",
+      "psychic_type": "Psychic-type Pokémon have incredible mental abilities!",
+      "ghost_type": "Ghost-type Pokémon are mysterious and hard to catch!",
+      "single_type": "This Pokémon has only one type: {type}!",
+      "dual_type": "This Pokémon has two types: {type1} and {type2}!",
+      "heavy_weight": "This Pokémon is very heavy, weighing over 200 kg!",
+      "light_weight": "This Pokémon is very light, weighing less than 10 kg!",
+      "tall_height": "This Pokémon is very tall, measuring over 2 meters!",
+      "small_height": "This Pokémon is very small, measuring less than 0.5 meters!",
+      "high_hp": "This Pokémon has an exceptional amount of HP!",
+      "high_attack": "This Pokémon has a very powerful attack!",
+      "high_speed": "This Pokémon is extremely fast!",
+      "legendary": "This is a legendary Pokémon!",
+      "mythical": "This is a mythical Pokémon!",
+      "habitat": "This Pokémon lives in {habitat}!",
+      "high_experience": "This Pokémon requires a lot of experience to evolve!",
+      "bulbasaur_first": "Bulbasaur is Pokémon number 001 in the National Pokédex!",
+      "mewtwo_origin": "Mewtwo was genetically created from Mew.",
+      "mew_original": "Mew contains the DNA of all Pokémon.",
+      "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
+      "default": "Every Pokémon is unique in its own special way!"
+    },
+    "cache_indicator": {
+      "api": "API",
+      "cached": "Cache"
+    },
+    "base_experience": "Base Experience",
+    "stats_names": {
+      "hp": "HP",
+      "attack": "Attack",
+      "defense": "Defense",
+      "special_attack": "Special Attack",
+      "special_defense": "Special Defense",
+      "speed": "Speed"
+    },
+    "utility_stats": "Utility Stats",
+    "evolution_methods": {
+      "level": "Level",
+      "level_up": "Level up",
+      "use_item": "Use item"
+    }
+  },
   "app": {
     "name": "Pokédex",
     "title": "Pokédex",
@@ -81,6 +189,17 @@
       "red": "Red",
       "white": "White",
       "yellow": "Yellow"
+    },
+    "habitats": {
+      "cave": "caves",
+      "forest": "forests",
+      "grassland": "grasslands",
+      "mountain": "mountains",
+      "rare": "rare locations",
+      "rough-terrain": "rough terrain",
+      "sea": "seas",
+      "urban": "urban areas",
+      "waters-edge": "water's edge"
     }
   },
   "mobile": {
@@ -88,9 +207,13 @@
     "error_message": "Image unavailable",
     "no_description": "No description available.",
     "overview": "Overview",
+    "overview_short": "Overview",
     "combat": "Combat",
+    "stats_short": "Stats",
     "evolution": "Evolution",
+    "evolution_short": "Evolution",
     "curiosities": "Trivia",
+    "curiosities_short": "Trivia",
     "close": "Close",
     "not_available": "N/A",
     "base_experience": "Base Experience",
@@ -109,7 +232,7 @@
     "carousel": {
       "previous": "Previous",
       "next": "Next",
-      "counter": "({currentIndex}/{total})",
+      "counter": "({{currentIndex}}/{{total}})",
       "artwork": "Official Art",
       "sprite_default": "Default Sprite",
       "sprite_shiny": "Shiny Sprite",
@@ -151,6 +274,15 @@
       "speed": "Speed"
     },
     "utility_stats": "Utility Stats",
+    "evolution_methods": {
+      "level": "Level",
+      "level_up": "Level Up",
+      "use_item": "Use Item",
+      "trade": "Trade",
+      "happiness": "Happiness",
+      "special": "Special",
+      "base_form": "Base Form"
+    },
     "stats": "Combat Stats",
     "overview_short": "Overview",
     "stats_short": "Stats",

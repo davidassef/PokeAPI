@@ -34,9 +34,13 @@
     "error_message": "画像を利用できません",
     "no_description": "説明がありません。",
     "overview": "概要",
+    "overview_short": "概要",
     "combat": "戦闘",
+    "stats_short": "ステータス",
     "evolution": "進化",
+    "evolution_short": "進化",
     "curiosities": "豆知識",
+    "curiosities_short": "豆知識",
     "close": "閉じる",
     "not_available": "N/A",
     "base_experience": "基礎経験値",
@@ -55,7 +59,7 @@
     "carousel": {
       "previous": "前へ",
       "next": "次へ",
-      "counter": "({currentIndex}/{total})",
+      "counter": "({{currentIndex}}/{{total}})",
       "artwork": "公式アート",
       "sprite_default": "通常スプライト",
       "sprite_shiny": "色違いスプライト",
@@ -97,6 +101,15 @@
       "speed": "すばやさ"
     },
     "utility_stats": "ユーティリティ能力値",
+    "evolution_methods": {
+      "level": "レベル",
+      "level_up": "レベルアップ",
+      "use_item": "アイテム使用",
+      "trade": "通信交換",
+      "happiness": "なつき度",
+      "special": "特殊",
+      "base_form": "基本形態"
+    },
     "stats": "戦闘ステータス",
     "overview_short": "概要",
     "stats_short": "ステータス",
@@ -159,6 +172,17 @@
       "red": "赤",
       "white": "白",
       "yellow": "黄"
+    },
+    "habitats": {
+      "cave": "洞窟",
+      "forest": "森",
+      "grassland": "草原",
+      "mountain": "山",
+      "rare": "稀少な場所",
+      "rough-terrain": "険しい地形",
+      "sea": "海",
+      "urban": "都市部",
+      "waters-edge": "水辺"
     }
   },
   "details": {

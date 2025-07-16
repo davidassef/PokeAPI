@@ -366,7 +366,7 @@
           </div>
 
           <!-- Loading state para dados da espécie na aba evolution -->
-          <div class="species-loading" *ngIf="pokemon && !shouldShowSpeciesDataInEvolution() && activeTab === 'evolution'">
+          <div class="species-loading" *ngIf="activeTab === 'evolution' && !isEvolutionDataReady()">
             <div class="loading-spinner">
               <ion-spinner name="crescent"></ion-spinner>
             </div>
@@ -483,7 +483,7 @@
           </div>
 
           <!-- Loading state para dados da espécie na aba curiosities -->
-          <div class="species-loading" *ngIf="!shouldShowSpeciesDataInCuriosities() && activeTab === 'curiosities'">
+          <div class="species-loading" *ngIf="activeTab === 'curiosities' && !isCuriositiesDataReady()">
             <div class="loading-spinner">
               <ion-spinner name="crescent"></ion-spinner>
             </div>
