@@ -104,90 +104,154 @@ export class RankingPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Método para carregar dados de ranking
+  // ✅ CORREÇÃO: Método para carregar dados de ranking com debug melhorado
   private async loadRankingData(endpoint: 'getGlobalRanking' | 'getLocalRanking', region?: string): Promise<PokemonRanking[]> {
     try {
+      console.log(`📡 [MOBILE-RANKING] Chamando ${endpoint}${region ? ` para região ${region}` : ''}`);
+
       const response = endpoint === 'getGlobalRanking'
         ? await this.pokeApiService.getGlobalRanking().toPromise()
         : await this.pokeApiService.getLocalRanking(region!).toPromise();
 
+      console.log(`📥 [MOBILE-RANKING] Resposta recebida do ${endpoint}:`, response);
+
       if (!response || !Array.isArray(response)) {
-        console.warn(`⚠️ Resposta inválida do ${endpoint}:`, response);
+        console.warn(`⚠️ [MOBILE-RANKING] Resposta inválida do ${endpoint}:`, response);
+        console.warn(`⚠️ [MOBILE-RANKING] Tipo da resposta: ${typeof response}, É array: ${Array.isArray(response)}`);
         return [];
       }
 
+      console.log(`✅ [MOBILE-RANKING] Resposta válida: ${response.length} itens`);
+
+      if (response.length === 0) {
+        console.warn(`⚠️ [MOBILE-RANKING] ${endpoint} retornou array vazio`);
+        return [];
+      }
+
+      // ✅ CORREÇÃO: Mapeamento com melhor validação e debug
       const mappedRanking = response
-        .filter(item => item && item.pokemon_id)
+        .filter(item => {
+          const isValid = item && item.pokemon_id && typeof item.pokemon_id === 'number';
+          if (!isValid) {
+            console.warn(`⚠️ [MOBILE-RANKING] Item inválido filtrado:`, item);
+          }
+          return isValid;
+        })
         .map((item: BackendRankingItem, idx: number) => {
           const validTrends = ['up', 'down', 'stable'] as const;
           const trend = validTrends.includes(item.trend as any)
             ? item.trend as 'up' | 'down' | 'stable'
             : 'stable';
 
-          return {
+          const mapped = {
             pokemonId: item.pokemon_id,
             favoriteCount: item.favorite_count || 0,
             rank: idx + 1,
             trend: trend,
             updatedAt: new Date().toISOString()
           };
+
+          console.log(`📋 [MOBILE-RANKING] Item ${idx + 1} mapeado:`, mapped);
+          return mapped;
         });
 
-      const pokemonPromises = mappedRanking.map(async (item: any) => {
+      console.log(`🗂️ [MOBILE-RANKING] Total de itens mapeados: ${mappedRanking.length}`);
+
+      // ✅ CORREÇÃO: Carregamento de Pokémon com melhor debug e error handling
+      console.log(`🔄 [MOBILE-RANKING] Iniciando carregamento de ${mappedRanking.length} Pokémon...`);
+
+      const pokemonPromises = mappedRanking.map(async (item: any, index: number) => {
         try {
+          console.log(`🔍 [MOBILE-RANKING] Carregando Pokémon ${item.pokemonId} (${index + 1}/${mappedRanking.length})`);
+
           const cacheKey = `pokemon_${item.pokemonId}`;
           const cachedPokemon = localStorage.getItem(cacheKey);
 
           let pokemon: Pokemon;
 
           if (cachedPokemon) {
+            console.log(`💾 [MOBILE-RANKING] Pokémon ${item.pokemonId} encontrado no cache`);
             pokemon = JSON.parse(cachedPokemon);
           } else {
+            console.log(`📡 [MOBILE-RANKING] Buscando Pokémon ${item.pokemonId} da API...`);
             pokemon = await firstValueFrom(this.pokeApiService.getPokemon(item.pokemonId));
             localStorage.setItem(cacheKey, JSON.stringify(pokemon));
+            console.log(`✅ [MOBILE-RANKING] Pokémon ${item.pokemonId} carregado e cacheado`);
           }
 
-          return {
+          const result = {
             pokemon: pokemon || this.getPlaceholderPokemon(item.pokemonId),
             favoriteCount: item.favoriteCount,
             rank: item.rank,
             trend: item.trend,
             updatedAt: item.updatedAt
           };
+
+          console.log(`✅ [MOBILE-RANKING] Resultado para Pokémon ${item.pokemonId}:`, result);
+          return result;
+
         } catch (error) {
-          console.error(`Erro ao carregar Pokémon ${item.pokemonId}:`, error);
-          return {
+          console.error(`❌ [MOBILE-RANKING] Erro ao carregar Pokémon ${item.pokemonId}:`, error);
+          const fallbackResult = {
             pokemon: this.getPlaceholderPokemon(item.pokemonId),
             favoriteCount: item.favoriteCount,
             rank: item.rank,
             trend: 'stable' as const,
             updatedAt: item.updatedAt
           };
+
+          console.log(`🔄 [MOBILE-RANKING] Usando placeholder para Pokémon ${item.pokemonId}:`, fallbackResult);
+          return fallbackResult;
         }
       });
 
+      console.log(`⏳ [MOBILE-RANKING] Aguardando carregamento de todos os Pokémon...`);
       const results = await Promise.all(pokemonPromises);
-      return results.filter(item => item.pokemon);
+
+      const validResults = results.filter(item => item.pokemon);
+      console.log(`🎯 [MOBILE-RANKING] Resultados válidos: ${validResults.length}/${results.length}`);
+
+      return validResults;
 
     } catch (error) {
-      console.error(`Erro ao carregar ${endpoint}:`, error);
+      console.error(`❌ [MOBILE-RANKING] Erro crítico ao carregar ${endpoint}:`, error);
+      console.error(`❌ [MOBILE-RANKING] Stack trace:`, error);
       return [];
     }
   }
 
-  // Carrega ranking global
+  // ✅ CORREÇÃO: Carrega ranking global com debug melhorado
   async loadRanking() {
-    if (this.loading) return;
+    if (this.loading) {
+      console.log('⚠️ [MOBILE-RANKING] Já carregando ranking, ignorando chamada duplicada');
+      return;
+    }
 
+    console.log('🚀 [MOBILE-RANKING] Iniciando carregamento do ranking global');
     this.loading = true;
+
     try {
+      console.log('📡 [MOBILE-RANKING] Chamando loadRankingData...');
       this.globalRanking = await this.loadRankingData('getGlobalRanking');
-      console.log(`✅ Ranking global carregado: ${this.globalRanking.length} itens`);
+
+      console.log(`✅ [MOBILE-RANKING] Ranking global carregado: ${this.globalRanking.length} itens`);
+      console.log('📊 [MOBILE-RANKING] Primeiros 3 itens:', this.globalRanking.slice(0, 3));
+
+      // ✅ CORREÇÃO: Verificar se temos dados válidos
+      if (this.globalRanking.length === 0) {
+        console.warn('⚠️ [MOBILE-RANKING] Ranking vazio - pode ser problema de API ou dados');
+      }
+
     } catch (error) {
-      console.error('❌ Erro ao carregar ranking global:', error);
+      console.error('❌ [MOBILE-RANKING] Erro ao carregar ranking global:', error);
+      console.error('🔗 [MOBILE-RANKING] Stack trace:', error);
       this.showErrorToast('ranking_page.error_loading_global');
+
+      // ✅ CORREÇÃO: Garantir que globalRanking seja array vazio em caso de erro
+      this.globalRanking = [];
     } finally {
       this.loading = false;
+      console.log(`🏁 [MOBILE-RANKING] Carregamento finalizado. Loading: ${this.loading}, Items: ${this.globalRanking.length}`);
       this.cdr.detectChanges();
     }
   }
