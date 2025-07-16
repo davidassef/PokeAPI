@@ -112,7 +112,8 @@
       "counter": "({currentIndex}/{total})",
       "artwork": "Official Art",
       "sprite_default": "Default Sprite",
-      "sprite_shiny": "Shiny Sprite"
+      "sprite_shiny": "Shiny Sprite",
+      "slide": "Image"
     },
     "actions": {
       "zoom_in": "Zoom In",
@@ -136,7 +137,30 @@
       "mythical": "This is a Mythical Pokémon!",
       "habitat": "Usually found in {habitat}.",
       "default": "Every Pokémon has its own story to tell."
-    }
+    },
+    "cache_indicator": {
+      "api": "API",
+      "cached": "Cached"
+    },
+    "stats_names": {
+      "hp": "HP",
+      "attack": "Attack",
+      "defense": "Defense",
+      "special_attack": "Special Attack",
+      "special_defense": "Special Defense",
+      "speed": "Speed"
+    },
+    "utility_stats": "Utility Stats",
+    "stats": "Combat Stats",
+    "overview_short": "Overview",
+    "stats_short": "Stats",
+    "evolution_short": "Evolution",
+    "curiosities_short": "Trivia",
+    "total": "Total",
+    "offensive_stats": "Offensive Stats",
+    "defensive_stats": "Defensive Stats",
+    "abilities": "Abilities",
+    "hidden_ability": "Hidden Ability"
   },
   "details": {
     "back": "Back",
@@ -676,54 +700,5 @@
     "light": "Light",
     "heavy": "Heavy",
     "very_heavy": "Very Heavy"
-  },
-  "mobile": {
-    "cache_indicator": {
-      "api": "API",
-      "cached": "Cached"
-    },
-    "carousel": {
-      "slide": "Image",
-      "previous": "Previous",
-      "next": "Next",
-      "counter": "({{currentIndex}}/{{total}})"
-    },
-    "base_experience": "Base Experience",
-    "stats_names": {
-      "hp": "HP",
-      "attack": "Attack",
-      "defense": "Defense",
-      "special_attack": "Special Attack",
-      "special_defense": "Special Defense",
-      "speed": "Speed"
-    },
-    "utility_stats": "Utility Stats",
-    "close": "Close",
-    "actions": {
-      "zoom_in": "Zoom In"
-    },
-    "height": "Height",
-    "weight": "Weight",
-    "overview": "Overview",
-    "stats": "Combat Stats",
-    "evolution": "Evolution",
-    "curiosities": "Trivia",
-    "overview_short": "Overview",
-    "stats_short": "Stats",
-    "evolution_short": "Evolution",
-    "curiosities_short": "Trivia",
-    "total": "Total",
-    "offensive_stats": "Offensive Stats",
-    "defensive_stats": "Defensive Stats",
-    "abilities": "Abilities",
-    "hidden_ability": "Hidden Ability",
-    "evolution_methods": {
-      "level_up": "Level Up"
-    },
-    "trivia": {
-      "dual_type": "This Pokémon has two types, offering versatility in combat.",
-      "light_weight": "With a weight considered light for its category, it's agile in movements.",
-      "habitat": "Can be found in various natural habitats."
-    }
   }
 }

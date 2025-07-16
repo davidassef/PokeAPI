@@ -112,7 +112,8 @@
       "counter": "({currentIndex}/{total})",
       "artwork": "Arte Oficial",
       "sprite_default": "Sprite Normal",
-      "sprite_shiny": "Sprite Brillante"
+      "sprite_shiny": "Sprite Brillante",
+      "slide": "Imagen"
     },
     "actions": {
       "zoom_in": "Acercar",
@@ -136,7 +137,30 @@
       "mythical": "¡Este es un Pokémon Mítico!",
       "habitat": "Se encuentra normalmente en {habitat}.",
       "default": "Cada Pokémon tiene su propia historia que contar."
-    }
+    },
+    "cache_indicator": {
+      "api": "API",
+      "cached": "En Caché"
+    },
+    "stats_names": {
+      "hp": "PS",
+      "attack": "Ataque",
+      "defense": "Defensa",
+      "special_attack": "Ataque Especial",
+      "special_defense": "Defensa Especial",
+      "speed": "Velocidad"
+    },
+    "utility_stats": "Estadísticas Utilitarias",
+    "stats": "Estadísticas de Combate",
+    "overview_short": "Resumen",
+    "stats_short": "Stats",
+    "evolution_short": "Evolución",
+    "curiosities_short": "Curiosidades",
+    "total": "Total",
+    "offensive_stats": "Estadísticas Ofensivas",
+    "defensive_stats": "Estadísticas Defensivas",
+    "abilities": "Habilidades",
+    "hidden_ability": "Habilidad Oculta"
   },
   "details": {
     "back": "Volver",
@@ -695,54 +719,5 @@
     "light": "Ligero",
     "heavy": "Pesado",
     "very_heavy": "Muy Pesado"
-  },
-  "mobile": {
-    "cache_indicator": {
-      "api": "API",
-      "cached": "En Caché"
-    },
-    "carousel": {
-      "slide": "Imagen",
-      "previous": "Anterior",
-      "next": "Siguiente",
-      "counter": "({{currentIndex}}/{{total}})"
-    },
-    "base_experience": "Experiencia Base",
-    "stats_names": {
-      "hp": "PS",
-      "attack": "Ataque",
-      "defense": "Defensa",
-      "special_attack": "Ataque Especial",
-      "special_defense": "Defensa Especial",
-      "speed": "Velocidad"
-    },
-    "utility_stats": "Estadísticas Utilitarias",
-    "close": "Cerrar",
-    "actions": {
-      "zoom_in": "Ampliar"
-    },
-    "height": "Altura",
-    "weight": "Peso",
-    "overview": "Resumen",
-    "stats": "Estadísticas de Combate",
-    "evolution": "Evolución",
-    "curiosities": "Curiosidades",
-    "overview_short": "Resumen",
-    "stats_short": "Stats",
-    "evolution_short": "Evolución",
-    "curiosities_short": "Trivia",
-    "total": "Total",
-    "offensive_stats": "Estadísticas Ofensivas",
-    "defensive_stats": "Estadísticas Defensivas",
-    "abilities": "Habilidades",
-    "hidden_ability": "Habilidad Oculta",
-    "evolution_methods": {
-      "level_up": "Subir de nivel"
-    },
-    "trivia": {
-      "dual_type": "Este Pokémon tiene dos tipos, ofreciendo versatilidad en combate.",
-      "light_weight": "Con un peso considerado ligero para su categoría, es ágil en movimientos.",
-      "habitat": "Se puede encontrar en varios hábitats naturales."
-    }
   }
 }

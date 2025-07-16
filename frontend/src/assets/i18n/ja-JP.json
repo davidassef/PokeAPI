@@ -58,7 +58,8 @@
       "counter": "({currentIndex}/{total})",
       "artwork": "公式アート",
       "sprite_default": "通常スプライト",
-      "sprite_shiny": "色違いスプライト"
+      "sprite_shiny": "色違いスプライト",
+      "slide": "画像"
     },
     "actions": {
       "zoom_in": "拡大",
@@ -82,7 +83,30 @@
       "mythical": "これは幻のポケモンです！",
       "habitat": "通常、{habitat}で見つかります。",
       "default": "すべてのポケモンには語るべき物語があります。"
-    }
+    },
+    "cache_indicator": {
+      "api": "API",
+      "cached": "キャッシュ済み"
+    },
+    "stats_names": {
+      "hp": "HP",
+      "attack": "こうげき",
+      "defense": "ぼうぎょ",
+      "special_attack": "とくこう",
+      "special_defense": "とくぼう",
+      "speed": "すばやさ"
+    },
+    "utility_stats": "ユーティリティ能力値",
+    "stats": "戦闘ステータス",
+    "overview_short": "概要",
+    "stats_short": "ステータス",
+    "evolution_short": "進化",
+    "curiosities_short": "豆知識",
+    "total": "合計",
+    "offensive_stats": "攻撃ステータス",
+    "defensive_stats": "防御ステータス",
+    "abilities": "特性",
+    "hidden_ability": "隠れ特性"
   },
   "app": {
     "name": "ポケモン図鑑",
@@ -696,54 +720,5 @@
     "light": "軽い",
     "heavy": "重い",
     "very_heavy": "とても重い"
-  },
-  "mobile": {
-    "cache_indicator": {
-      "api": "API",
-      "cached": "キャッシュ済み"
-    },
-    "carousel": {
-      "slide": "画像",
-      "previous": "前へ",
-      "next": "次へ",
-      "counter": "({{currentIndex}}/{{total}})"
-    },
-    "base_experience": "基礎経験値",
-    "stats_names": {
-      "hp": "HP",
-      "attack": "こうげき",
-      "defense": "ぼうぎょ",
-      "special_attack": "とくこう",
-      "special_defense": "とくぼう",
-      "speed": "すばやさ"
-    },
-    "utility_stats": "ユーティリティ能力値",
-    "close": "閉じる",
-    "actions": {
-      "zoom_in": "拡大"
-    },
-    "height": "高さ",
-    "weight": "重さ",
-    "overview": "概要",
-    "stats": "戦闘能力値",
-    "evolution": "進化",
-    "curiosities": "豆知識",
-    "overview_short": "概要",
-    "stats_short": "能力値",
-    "evolution_short": "進化",
-    "curiosities_short": "豆知識",
-    "total": "合計",
-    "offensive_stats": "攻撃能力値",
-    "defensive_stats": "防御能力値",
-    "abilities": "特性",
-    "hidden_ability": "隠れ特性",
-    "evolution_methods": {
-      "level_up": "レベルアップ"
-    },
-    "trivia": {
-      "dual_type": "このポケモンは2つのタイプを持ち、戦闘で多様性を提供します。",
-      "light_weight": "そのカテゴリーでは軽い体重で、動きが機敏です。",
-      "habitat": "様々な自然環境で見つけることができます。"
-    }
   }
 }
