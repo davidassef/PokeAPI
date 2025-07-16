@@ -94,10 +94,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.isSpeciesDataReady && !!this.speciesData;
   }
 
+  // ✅ CORREÇÃO: Lógica simplificada para evitar loop infinito
   shouldShowSpeciesDataInCuriosities(): boolean {
-    // Mostrar dados se estão prontos E há dados válidos
-    // OU se estão prontos mas houve erro (para mostrar N/A ao invés de loading infinito)
-    return this.isSpeciesDataReady && (!!this.speciesData || this.activeTab === 'curiosities');
+    // ✅ CORREÇÃO: Mostrar dados se estamos na aba curiosities E temos dados prontos
+    // Isso evita o loop infinito onde o loading nunca para
+    return this.activeTab === 'curiosities' && this.isSpeciesDataReady;
   }
 
   isEvolutionChainReady(): boolean {
@@ -979,60 +980,49 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   getBaseExperience(): string {
     return this.pokemon?.base_experience?.toString() || this.translate.instant('app.not_available');
   }
+  // ✅ CORREÇÃO: Método otimizado sem bloqueio por aba (como na versão mobile)
   getCaptureRate(): string {
-    // BLOQUEIO POR ABA: só retornar dados se estivermos na aba correta
-    if (this.activeTab !== 'curiosities') {
-      return ''; // Retorna vazio para não exibir nada no template
-    }
+    // ✅ CORREÇÃO: Remover bloqueio por aba que causava loop infinito
+    // if (this.activeTab !== 'curiosities') {
+    //   return ''; // REMOVIDO - causava problemas de loading
+    // }
 
-    if (!this.isSpeciesDataReady) {
-      return this.translate.instant('app.loading');
-    }
-
-    // Se não há dados da espécie ou erro no carregamento
-    if (!this.speciesData) {
+    // ✅ CORREÇÃO: Verificação direta dos dados sem dependência de isSpeciesDataReady
+    if (!this.speciesData || this.speciesData.capture_rate === undefined) {
       return this.translate.instant('app.not_available');
     }
 
-    return this.speciesData?.capture_rate?.toString() || this.translate.instant('app.not_available');
+    return this.speciesData.capture_rate.toString();
   }
 
+  // ✅ CORREÇÃO: Método otimizado sem bloqueio por aba (como na versão mobile)
   getBaseHappiness(): string {
-    // BLOQUEIO POR ABA: só retornar dados se estivermos na aba correta
-    if (this.activeTab !== 'curiosities') {
-      return ''; // Retorna vazio para não exibir nada no template
-    }
+    // ✅ CORREÇÃO: Remover bloqueio por aba que causava loop infinito
+    // if (this.activeTab !== 'curiosities') {
+    //   return ''; // REMOVIDO - causava problemas de loading
+    // }
 
-    if (!this.isSpeciesDataReady) {
-      return this.translate.instant('app.loading');
-    }
-
-    // Se não há dados da espécie ou erro no carregamento
-    if (!this.speciesData) {
+    // ✅ CORREÇÃO: Verificação direta dos dados sem dependência de isSpeciesDataReady
+    if (!this.speciesData || this.speciesData.base_happiness === undefined) {
       return this.translate.instant('app.not_available');
     }
 
-    return this.speciesData?.base_happiness?.toString() || this.translate.instant('app.not_available');
+    return this.speciesData.base_happiness.toString();
   }
 
+  // ✅ CORREÇÃO: Método otimizado sem bloqueio por aba (como na versão mobile)
   getPokemonColor(): string {
-    // BLOQUEIO POR ABA: só retornar dados se estivermos na aba correta
-    if (this.activeTab !== 'curiosities') {
-      return ''; // Retorna vazio para não exibir nada no template
-    }
+    // ✅ CORREÇÃO: Remover bloqueio por aba que causava loop infinito
+    // if (this.activeTab !== 'curiosities') {
+    //   return ''; // REMOVIDO - causava problemas de loading
+    // }
 
-    if (!this.isSpeciesDataReady) {
-      return this.translate.instant('app.loading');
-    }
-
-    // Se não há dados da espécie ou erro no carregamento
-    if (!this.speciesData) {
+    // ✅ CORREÇÃO: Verificação direta dos dados sem dependência de isSpeciesDataReady
+    if (!this.speciesData || !this.speciesData.color?.name) {
       return this.translate.instant('app.not_available');
     }
 
-    const colorName = this.speciesData?.color?.name;
-    if (!colorName) return this.translate.instant('app.not_available');
-
+    const colorName = this.speciesData.color.name;
     const translated = this.translate.instant(`colors.${colorName}`);
     return translated !== `colors.${colorName}` ? translated : colorName;
   }
