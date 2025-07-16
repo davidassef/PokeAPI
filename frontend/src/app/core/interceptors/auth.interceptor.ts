@@ -36,13 +36,17 @@ export class AuthInterceptor implements HttpInterceptor {
     const publicRoutes = ['/auth/login', '/auth/register', '/auth/reset-password', '/health'];
     const isPublicRoute = publicRoutes.some(route => request.url.includes(route));
 
-    console.log(`[AuthInterceptor] URL: ${request.url}, É rota pública: ${isPublicRoute}`);
+    // Verificar se é uma URL da PokeAPI (externa) que não precisa de JWT
+    const isPokeAPIRoute = request.url.includes('pokeapi.co') || request.url.includes('assets/data/');
+    const isExternalPublicRoute = isPublicRoute || isPokeAPIRoute;
+
+    console.log(`[AuthInterceptor] URL: ${request.url}, É rota pública: ${isExternalPublicRoute} (Backend: ${isPublicRoute}, PokeAPI: ${isPokeAPIRoute})`);
 
     // Obtém o token do serviço de autenticação
     const token = this.authService.getToken();
 
     // Clona a requisição e adiciona o token de autorização, se disponível e não for rota pública
-    if (token && !isPublicRoute) {
+    if (token && !isExternalPublicRoute) {
       console.log('[AuthInterceptor] Token JWT encontrado, adicionando ao cabeçalho');
       request = request.clone({
         setHeaders: {
@@ -52,7 +56,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
       // Log do header de autorização (apenas para depuração - remover em produção)
       console.log('[AuthInterceptor] Cabeçalho de autorização:', request.headers.get('Authorization')?.substring(0, 30) + '...');
-    } else if (isPublicRoute) {
+    } else if (isExternalPublicRoute) {
       console.log('[AuthInterceptor] Rota pública detectada, não adicionando token:', request.url);
     } else {
       console.warn('[AuthInterceptor] Nenhum token JWT encontrado para a requisição:', request.url);
