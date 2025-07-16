@@ -784,11 +784,19 @@
   },
   "evolution": {
     "triggers": {
-      "Nível 16": "Nível 16",
-      "Nível 36": "Nível 36",
-      "evolution.methods.level 16": "Nível 16",
-      "evolution.methods.level 36": "Nível 36",
-      "evolution.methods.level": "Nível"
+      "level_up": "Nível {{level}}",
+      "trade": "Troca",
+      "use_item": "Usar {{item}}",
+      "happiness": "Felicidade {{happiness}}",
+      "special": "Evolução Especial",
+      "stone": "Pedra Evolutiva",
+      "shed": "Mudança de Pele",
+      "spin": "Girar",
+      "take_damage": "Receber Dano",
+      "three_critical_hits": "Três Golpes Críticos",
+      "tower_of_darkness": "Torre das Trevas",
+      "tower_of_waters": "Torre das Águas",
+      "other": "Outro Método"
     },
     "methods": {
       "base_form": "Forma Base",

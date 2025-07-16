@@ -681,11 +681,19 @@
   },
   "evolution": {
     "triggers": {
-      "Nível 16": "Level 16",
-      "Nível 36": "Level 36",
-      "evolution.methods.level 16": "Level 16",
-      "evolution.methods.level 36": "Level 36",
-      "evolution.methods.level": "Level"
+      "level_up": "Level {{level}}",
+      "trade": "Trade",
+      "use_item": "Use {{item}}",
+      "happiness": "Happiness {{happiness}}",
+      "special": "Special Evolution",
+      "stone": "Evolution Stone",
+      "shed": "Shed",
+      "spin": "Spin",
+      "take_damage": "Take Damage",
+      "three_critical_hits": "Three Critical Hits",
+      "tower_of_darkness": "Tower of Darkness",
+      "tower_of_waters": "Tower of Waters",
+      "other": "Other Method"
     },
     "methods": {
       "base_form": "Base Form",

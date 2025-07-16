@@ -701,11 +701,19 @@
   },
   "evolution": {
     "triggers": {
-      "Nível 16": "レベル16",
-      "Nível 36": "レベル36",
-      "evolution.methods.level 16": "レベル16",
-      "evolution.methods.level 36": "レベル36",
-      "evolution.methods.level": "レベル"
+      "level_up": "レベル{{level}}",
+      "trade": "通信交換",
+      "use_item": "{{item}}を使用",
+      "happiness": "なつき度{{happiness}}",
+      "special": "特殊進化",
+      "stone": "進化の石",
+      "shed": "脱皮",
+      "spin": "回転",
+      "take_damage": "ダメージを受ける",
+      "three_critical_hits": "急所に3回当てる",
+      "tower_of_darkness": "悪の塔",
+      "tower_of_waters": "水の塔",
+      "other": "その他の方法"
     },
     "methods": {
       "base_form": "基本形態",

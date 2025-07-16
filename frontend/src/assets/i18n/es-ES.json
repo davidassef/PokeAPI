@@ -700,11 +700,19 @@
   "warning": "Advertencia",
   "evolution": {
     "triggers": {
-      "Nível 16": "Nivel 16",
-      "Nível 36": "Nivel 36",
-      "evolution.methods.level 16": "Nivel 16",
-      "evolution.methods.level 36": "Nivel 36",
-      "evolution.methods.level": "Nivel"
+      "level_up": "Nivel {{level}}",
+      "trade": "Intercambio",
+      "use_item": "Usar {{item}}",
+      "happiness": "Felicidad {{happiness}}",
+      "special": "Evolución Especial",
+      "stone": "Piedra Evolutiva",
+      "shed": "Muda",
+      "spin": "Girar",
+      "take_damage": "Recibir Daño",
+      "three_critical_hits": "Tres Golpes Críticos",
+      "tower_of_darkness": "Torre de la Oscuridad",
+      "tower_of_waters": "Torre de las Aguas",
+      "other": "Otro Método"
     },
     "methods": {
       "base_form": "Forma Base",

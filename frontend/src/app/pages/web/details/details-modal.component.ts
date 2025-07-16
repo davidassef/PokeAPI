@@ -723,6 +723,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return parseInt(parts[parts.length - 2], 10);
   }
 
+  // ✅ CORREÇÃO: Método corrigido para usar chaves de tradução estruturadas
   getEvolutionTriggerText(detailsOrTrigger: any): string {
     // Se for uma string simples (trigger name), traduzir diretamente
     if (typeof detailsOrTrigger === 'string') {
@@ -730,25 +731,34 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return this.translate.instant(`evolution.triggers.${triggerKey}`) || detailsOrTrigger;
     }
 
-    // Se for um objeto details, processar como antes
+    // Se for um objeto details, processar com chaves estruturadas
     const details = detailsOrTrigger;
+
+    // ✅ CORREÇÃO: Usar chave de tradução com interpolação em vez de concatenação
     if (details.min_level) {
-      return `${this.translate.instant('evolution.methods.level')} ${details.min_level}`;
+      return this.translate.instant('evolution.triggers.level_up', { level: details.min_level });
     }
 
     if (details.item) {
-      return `${this.translate.instant('evolution.triggers.use_item')} ${details.item.name}`;
+      const itemName = details.item.name?.replace(/-/g, ' ') || 'Unknown Item';
+      return this.translate.instant('evolution.triggers.use_item', { item: itemName });
     }
 
     if (details.trigger?.name === 'trade') {
-      return this.translate.instant('evolution.methods.trade');
+      return this.translate.instant('evolution.triggers.trade');
     }
 
     if (details.min_happiness) {
-      return `${this.translate.instant('evolution.methods.happiness')} ${details.min_happiness}`;
+      return this.translate.instant('evolution.triggers.happiness', { happiness: details.min_happiness });
     }
 
-    return this.translate.instant('evolution.methods.special');
+    // ✅ CORREÇÃO: Verificar outros tipos de trigger
+    if (details.trigger?.name) {
+      const triggerKey = details.trigger.name.replace(/-/g, '_');
+      return this.translate.instant(`evolution.triggers.${triggerKey}`) || details.trigger.name;
+    }
+
+    return this.translate.instant('evolution.triggers.special');
   }
 
   private fetchAbilityDescriptions(): void {
