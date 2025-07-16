@@ -73,12 +73,16 @@ export class CapturedPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // ✅ CORREÇÃO: Configurar subscription única para dados de captura
+    this.setupCapturedSubscription();
+
     this.authService.getAuthState()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAuthenticated => {
         this.isAuthenticated = isAuthenticated;
         if (isAuthenticated) {
           this.user = this.authService.getCurrentUser();
+          // ✅ CORREÇÃO: Força reload inicial dos dados
           this.loadCaptured();
         } else {
           this.user = null;
@@ -99,19 +103,22 @@ export class CapturedPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega Pokémons capturados
+   * Configura subscription única para dados de captura
    */
-  loadCaptured() {
-    if (!this.isAuthenticated) {
-      this.capturedPokemon = [];
-      this.updatePagination();
-      return;
-    }
-
-    this.loading = true;
+  private setupCapturedSubscription() {
+    // ✅ CORREÇÃO: Subscription única para evitar loops infinitos
     this.capturedService.getCaptured()
       .pipe(takeUntil(this.destroy$))
       .subscribe(async (captured) => {
+        console.log('[MOBILE-CAPTURED] Dados de captura atualizados:', captured.length);
+
+        if (!this.isAuthenticated) {
+          this.capturedPokemon = [];
+          this.updatePagination();
+          return;
+        }
+
+        this.loading = true;
         try {
           const pokemonPromises = captured
             .filter(cap => cap.pokemon_id)
@@ -129,6 +136,27 @@ export class CapturedPage implements OnInit, OnDestroy {
           this.loading = false;
         }
       });
+  }
+
+  /**
+   * Força reload dos dados de captura
+   */
+  async loadCaptured() {
+    // ✅ CORREÇÃO: Apenas força uma nova busca dos dados, não cria nova subscription
+    console.log('[MOBILE-CAPTURED] Forçando reload dos dados de captura');
+    if (!this.isAuthenticated) {
+      this.capturedPokemon = [];
+      this.updatePagination();
+      return;
+    }
+
+    this.loading = true;
+    try {
+      await this.capturedService.fetchCaptured().toPromise();
+    } catch (error) {
+      console.error('[MOBILE-CAPTURED] Erro ao recarregar capturas:', error);
+      this.loading = false;
+    }
   }
 
   /**

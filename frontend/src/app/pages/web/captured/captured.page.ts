@@ -75,6 +75,9 @@ export class CapturedPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // ✅ CORREÇÃO: Configurar subscription única para dados de captura
+    this.setupCapturedSubscription();
+
     // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo
     this.authService.getAuthState()
       .pipe(takeUntil(this.destroy$))
@@ -83,6 +86,7 @@ export class CapturedPage implements OnInit, OnDestroy {
         this.isAuthenticated = isAuthenticated;
         if (isAuthenticated) {
           this.user = this.authService.getCurrentUser();
+          // ✅ CORREÇÃO: Força reload inicial dos dados
           this.loadCaptured();
           console.log('[CapturedPage] Usuário carregado:', this.user);
         } else {
@@ -114,22 +118,37 @@ export class CapturedPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  async loadCaptured() {
-    this.loading = true;
-    try {
-      this.capturedService.captured$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(async (captured) => {
+  private setupCapturedSubscription() {
+    // ✅ CORREÇÃO: Subscription única para evitar loops infinitos
+    this.capturedService.captured$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async (captured) => {
+        console.log('[CapturedPage] Dados de captura atualizados:', captured.length);
+        this.loading = true;
+        try {
           const pokemonPromises = captured.map(c =>
             this.pokeApiService.getPokemon(c.pokemon_id).toPromise()
           );
           const pokemonData = await Promise.all(pokemonPromises);
           this.capturedPokemon = pokemonData.filter(p => p !== undefined) as Pokemon[];
           this.applyFiltersAndPaginate();
+        } catch (error) {
+          console.error('[CapturedPage] Erro ao carregar dados dos Pokémon:', error);
+          this.capturedPokemon = [];
+        } finally {
           this.loading = false;
-        });
+        }
+      });
+  }
+
+  async loadCaptured() {
+    // ✅ CORREÇÃO: Apenas força uma nova busca dos dados, não cria nova subscription
+    console.log('[CapturedPage] Forçando reload dos dados de captura');
+    this.loading = true;
+    try {
+      await this.capturedService.fetchCaptured().toPromise();
     } catch (error) {
-      console.error('Erro ao carregar capturados:', error);
+      console.error('[CapturedPage] Erro ao recarregar capturas:', error);
       this.loading = false;
     }
   }
@@ -224,10 +243,11 @@ export class CapturedPage implements OnInit, OnDestroy {
   async removeFromCaptured(pokemon: Pokemon) {
     try {
       await this.capturedService.removeFromCaptured(pokemon.id);
+      // ✅ CORREÇÃO: Não precisa chamar loadCaptured() - a subscription reativa já atualiza automaticamente
       // Toast específico será exibido pelo pokemon-card component
-      this.loadCaptured();
+      console.log('[CapturedPage] Pokémon removido, dados serão atualizados automaticamente via subscription');
     } catch (error) {
-      console.error('Erro ao remover dos capturados:', error);
+      console.error('[CapturedPage] Erro ao remover dos capturados:', error);
       this.showErrorToast();
     }
   }
