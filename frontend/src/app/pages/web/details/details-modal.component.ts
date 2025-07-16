@@ -48,6 +48,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   // ✅ CORREÇÃO: Flags para prevenir chamadas múltiplas simultâneas
   private isLoadingPokemonData: boolean = false;
   private isLoadingSpeciesData: boolean = false;
+  private isLoadingEvolutionChain: boolean = false;
 
   // Propriedades dos flavor texts
   flavorText: string = '';
@@ -90,8 +91,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.isCombatDataReady();
   }
 
+  // ✅ CORREÇÃO: Lógica consistente com shouldShowSpeciesDataInCuriosities()
   shouldShowSpeciesDataInEvolution(): boolean {
-    return this.isSpeciesDataReady && !!this.speciesData;
+    return this.activeTab === 'evolution' && this.isSpeciesDataReady && !!this.speciesData;
   }
 
   // ✅ CORREÇÃO: Lógica simplificada para evitar loop infinito
@@ -208,6 +210,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.evolutionChain = [];
     this.speciesData = null;
     this.isSpeciesDataReady = false; // Resetar flag de dados da espécie
+
+    // ✅ CORREÇÃO: Resetar flags de loading para evitar estados inconsistentes
+    this.isLoadingEvolutionChain = false;
+    this.isLoadingSpeciesData = false;
 
     // Resetar estado das abas
     this.activeTab = 'overview';
@@ -621,44 +627,63 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       });
   }
 
+  // ✅ CORREÇÃO: Método protegido contra chamadas múltiplas com subscriptions canceláveis
   private fetchEvolutionChain(): void {
     if (!this.pokemon?.species?.url) {
       console.warn('⚠️ Não foi possível carregar evolução: URL da espécie não disponível');
+      this.evolutionChain = []; // Garantir que array esteja vazio
+      return;
+    }
+
+    // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
+    if (this.isLoadingEvolutionChain) {
+      console.log(`⚠️ Já carregando cadeia evolutiva para: ${this.pokemon.name}, ignorando chamada duplicada`);
       return;
     }
 
     console.log(`🧬 Iniciando busca da cadeia evolutiva para: ${this.pokemon.name}`);
     console.log(`📍 URL da espécie: ${this.pokemon.species.url}`);
 
-    // Primeiro buscar os dados da espécie para obter a URL da cadeia evolutiva
-    this.http.get(this.pokemon.species.url).subscribe({
-      next: (speciesData: any) => {
-        console.log(`✅ Dados da espécie carregados: ${speciesData.name}`);
+    this.isLoadingEvolutionChain = true;
 
-        if (speciesData.evolution_chain?.url) {
-          console.log(`🔗 URL da cadeia evolutiva encontrada: ${speciesData.evolution_chain.url}`);
+    // ✅ CORREÇÃO: Primeiro buscar os dados da espécie com takeUntil()
+    this.http.get(this.pokemon.species.url)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (speciesData: any) => {
+          console.log(`✅ Dados da espécie carregados: ${speciesData.name}`);
 
-          this.http.get(speciesData.evolution_chain.url).subscribe({
-            next: (evolutionData: any) => {
-              console.log(`✅ Dados da cadeia evolutiva carregados`);
-              console.log(`🧬 Processando cadeia evolutiva...`);
-              this.processEvolutionChain(evolutionData.chain);
-            },
-            error: (error) => {
-              console.error('❌ Erro ao buscar cadeia evolutiva:', error);
-              this.evolutionChain = [];
-            }
-          });
-        } else {
-          console.warn('⚠️ URL da cadeia evolutiva não encontrada nos dados da espécie');
+          if (speciesData.evolution_chain?.url) {
+            console.log(`🔗 URL da cadeia evolutiva encontrada: ${speciesData.evolution_chain.url}`);
+
+            // ✅ CORREÇÃO: Segunda chamada HTTP também com takeUntil()
+            this.http.get(speciesData.evolution_chain.url)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe({
+                next: (evolutionData: any) => {
+                  console.log(`✅ Dados da cadeia evolutiva carregados`);
+                  console.log(`🧬 Processando cadeia evolutiva...`);
+                  this.processEvolutionChain(evolutionData.chain);
+                  this.isLoadingEvolutionChain = false;
+                },
+                error: (error) => {
+                  console.error('❌ Erro ao buscar cadeia evolutiva:', error);
+                  this.evolutionChain = [];
+                  this.isLoadingEvolutionChain = false;
+                }
+              });
+          } else {
+            console.warn('⚠️ URL da cadeia evolutiva não encontrada nos dados da espécie');
+            this.evolutionChain = [];
+            this.isLoadingEvolutionChain = false;
+          }
+        },
+        error: (error) => {
+          console.error('❌ Erro ao buscar dados da espécie para evolução:', error);
           this.evolutionChain = [];
+          this.isLoadingEvolutionChain = false;
         }
-      },
-      error: (error) => {
-        console.error('❌ Erro ao buscar dados da espécie para evolução:', error);
-        this.evolutionChain = [];
-      }
-    });
+      });
   }
 
   private processEvolutionChain(chain: any): void {
