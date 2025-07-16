@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { tap, catchError, shareReplay } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, Subject } from 'rxjs';
+import { tap, catchError, shareReplay, takeUntil } from 'rxjs/operators';
 
 export interface CacheEntry<T> {
   data: T;
@@ -20,10 +20,14 @@ export interface CacheStats {
 @Injectable({
   providedIn: 'root'
 })
-export class PokemonCacheService {
+export class PokemonCacheService implements OnDestroy {
   private cache = new Map<string, CacheEntry<any>>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutos
   private readonly MAX_CACHE_SIZE = 100; // Máximo 100 entradas
+
+  // ✅ CORREÇÃO: Subject para cancelar subscriptions e cleanup
+  private destroy$ = new Subject<void>();
+  private cleanupInterval: any;
 
   // Estatísticas de cache
   private stats = {
@@ -39,10 +43,27 @@ export class PokemonCacheService {
   constructor(private http: HttpClient) {
     console.log('🗄️ PokemonCacheService inicializado');
 
-    // Limpeza automática a cada 2 minutos
-    setInterval(() => {
+    // ✅ CORREÇÃO: Limpeza automática com referência para cleanup
+    this.cleanupInterval = setInterval(() => {
       this.cleanExpiredEntries();
     }, 2 * 60 * 1000);
+  }
+
+  // ✅ CORREÇÃO: Implementar OnDestroy para cleanup adequado
+  ngOnDestroy(): void {
+    console.log('🗄️ PokemonCacheService destruído - limpando recursos');
+
+    // Cancelar todas as subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    // Limpar interval de limpeza
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+
+    // Limpar cache
+    this.cache.clear();
   }
 
   /**
@@ -199,6 +220,7 @@ export class PokemonCacheService {
 
     console.log(`🚀 Pré-carregando Pokémon adjacentes: ${adjacentIds.join(', ')}`);
 
+    // ✅ CORREÇÃO: Usar takeUntil() para evitar vazamentos de memória
     adjacentIds.forEach(id => {
       // Pré-carregar apenas se não estiver no cache
       const pokemonKey = this.generateCacheKey(`https://pokeapi.co/api/v2/pokemon/${id}`);
@@ -206,31 +228,37 @@ export class PokemonCacheService {
       const flavorKey = `flavor_${id}_${currentLang}`;
 
       if (!this.cache.has(pokemonKey)) {
-        this.getPokemon(id).subscribe({
-          next: () => console.log(`✅ Pré-carregado: Pokémon ${id}`),
-          error: () => console.log(`❌ Erro ao pré-carregar: Pokémon ${id}`)
-        });
+        this.getPokemon(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => console.log(`✅ Pré-carregado: Pokémon ${id}`),
+            error: () => console.log(`❌ Erro ao pré-carregar: Pokémon ${id}`)
+          });
       }
 
       if (!this.cache.has(speciesKey)) {
-        this.getPokemonSpecies(id).subscribe({
-          next: () => console.log(`✅ Pré-carregado: Espécie ${id}`),
-          error: () => console.log(`❌ Erro ao pré-carregar: Espécie ${id}`)
-        });
+        this.getPokemonSpecies(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => console.log(`✅ Pré-carregado: Espécie ${id}`),
+            error: () => console.log(`❌ Erro ao pré-carregar: Espécie ${id}`)
+          });
       }
 
       // Pré-carregar flavor texts se não estiverem no cache
       if (!this.cache.has(flavorKey)) {
-        this.getFlavorTexts(id, currentLang).subscribe({
-          next: (flavors) => console.log(`✅ Pré-carregado: Flavor texts ${id} (${flavors.length} textos)`),
-          error: () => console.log(`❌ Erro ao pré-carregar: Flavor texts ${id}`)
-        });
+        this.getFlavorTexts(id, currentLang)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (flavors) => console.log(`✅ Pré-carregado: Flavor texts ${id} (${flavors.length} textos)`),
+            error: () => console.log(`❌ Erro ao pré-carregar: Flavor texts ${id}`)
+          });
       }
     });
   }
 
   /**
-   * Pré-carrega flavor texts para múltiplos idiomas
+   * ✅ CORREÇÃO: Pré-carrega flavor texts para múltiplos idiomas com takeUntil()
    */
   preloadFlavorTextsMultiLang(pokemonId: number, languages: string[] = ['pt-BR', 'en-US']): void {
     console.log(`🌐 Pré-carregando flavor texts multilíngue para Pokémon ${pokemonId}: ${languages.join(', ')}`);
@@ -239,30 +267,80 @@ export class PokemonCacheService {
       const flavorKey = `flavor_${pokemonId}_${lang}`;
 
       if (!this.cache.has(flavorKey)) {
-        this.getFlavorTexts(pokemonId, lang).subscribe({
-          next: (flavors) => console.log(`✅ Pré-carregado: Flavor texts ${pokemonId} (${lang}) - ${flavors.length} textos`),
-          error: () => console.log(`❌ Erro ao pré-carregar: Flavor texts ${pokemonId} (${lang})`)
-        });
+        this.getFlavorTexts(pokemonId, lang)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (flavors) => console.log(`✅ Pré-carregado: Flavor texts ${pokemonId} (${lang}) - ${flavors.length} textos`),
+            error: () => console.log(`❌ Erro ao pré-carregar: Flavor texts ${pokemonId} (${lang})`)
+          });
       }
     });
   }
 
   /**
-   * Limpa cache expirado
+   * ✅ NOVO: Método otimizado para pré-carregamento em lote
+   */
+  preloadBatch(pokemonIds: number[], priority: 'high' | 'low' = 'low'): void {
+    if (pokemonIds.length === 0) return;
+
+    console.log(`🚀 Pré-carregamento em lote: ${pokemonIds.length} Pokémon (prioridade: ${priority})`);
+
+    // ✅ CORREÇÃO: Limitar pré-carregamento para evitar sobrecarga
+    const maxBatchSize = priority === 'high' ? 5 : 3;
+    const batchIds = pokemonIds.slice(0, maxBatchSize);
+
+    batchIds.forEach((id, index) => {
+      // ✅ CORREÇÃO: Delay escalonado para evitar sobrecarga da API
+      const delay = priority === 'high' ? index * 100 : index * 500;
+
+      setTimeout(() => {
+        const pokemonKey = this.generateCacheKey(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        const speciesKey = this.generateCacheKey(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+
+        if (!this.cache.has(pokemonKey)) {
+          this.getPokemon(id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => console.log(`✅ Lote: Pokémon ${id} pré-carregado`),
+              error: () => console.log(`❌ Lote: Erro ao pré-carregar Pokémon ${id}`)
+            });
+        }
+
+        if (!this.cache.has(speciesKey)) {
+          this.getPokemonSpecies(id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => console.log(`✅ Lote: Espécie ${id} pré-carregada`),
+              error: () => console.log(`❌ Lote: Erro ao pré-carregar espécie ${id}`)
+            });
+        }
+      }, delay);
+    });
+  }
+
+  /**
+   * ✅ CORREÇÃO: Limpa cache expirado de forma mais eficiente
    */
   private cleanExpiredEntries(): void {
     const now = Date.now();
     let removedCount = 0;
+    const keysToRemove: string[] = [];
 
+    // ✅ CORREÇÃO: Coletar chaves primeiro, depois remover (evita modificar Map durante iteração)
     for (const [key, entry] of this.cache.entries()) {
       if (now > entry.expiresAt) {
-        this.cache.delete(key);
-        removedCount++;
+        keysToRemove.push(key);
       }
     }
 
+    // ✅ CORREÇÃO: Remover em lote para melhor performance
+    keysToRemove.forEach(key => {
+      this.cache.delete(key);
+      removedCount++;
+    });
+
     if (removedCount > 0) {
-      console.log(`🧹 Limpeza de cache: ${removedCount} entradas expiradas removidas`);
+      console.log(`🧹 Limpeza de cache: ${removedCount} entradas expiradas removidas (${this.cache.size} restantes)`);
       this.updateStats();
     }
 
@@ -273,16 +351,21 @@ export class PokemonCacheService {
   }
 
   /**
-   * Remove entradas mais antigas se o cache estiver cheio
+   * ✅ CORREÇÃO: Remove entradas mais antigas de forma mais eficiente
    */
   private evictOldestEntries(): void {
+    const entriesToRemove = this.cache.size - this.MAX_CACHE_SIZE;
+    if (entriesToRemove <= 0) return;
+
+    // ✅ CORREÇÃO: Usar algoritmo mais eficiente para encontrar entradas mais antigas
     const entries = Array.from(this.cache.entries())
-      .sort((a, b) => a[1].timestamp - b[1].timestamp);
+      .sort((a, b) => a[1].timestamp - b[1].timestamp)
+      .slice(0, entriesToRemove);
 
-    const toRemove = entries.slice(0, entries.length - this.MAX_CACHE_SIZE);
-    toRemove.forEach(([key]) => this.cache.delete(key));
+    // ✅ CORREÇÃO: Remover em lote
+    entries.forEach(([key]) => this.cache.delete(key));
 
-    console.log(`🗑️ Removidas ${toRemove.length} entradas antigas do cache`);
+    console.log(`🗑️ Cache LRU: Removidas ${entries.length} entradas antigas (tamanho: ${this.cache.size}/${this.MAX_CACHE_SIZE})`);
     this.updateStats();
   }
 
