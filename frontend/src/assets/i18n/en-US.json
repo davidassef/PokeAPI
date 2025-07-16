@@ -43,7 +43,8 @@
     "clear": "Clear",
     "version": "Version",
     "footer_text": "Made with ❤️ by David Assef",
-    "not_available": "N/A"
+    "not_available": "N/A",
+    "loading": "Loading"
   },
   "pokemon": {
     "details": "Details",
@@ -83,7 +84,7 @@
     }
   },
   "mobile": {
-    "loading": "Loading...",
+    "loading": "Loading",
     "error_message": "Image unavailable",
     "no_description": "No description available.",
     "overview": "Overview",
@@ -158,7 +159,26 @@
     "error_loading": "Error loading details",
     "url_copied": "URL copied to clipboard!",
     "no_evolution": "This Pokémon has no evolution",
-    "no_description": "Description not available in English"
+    "no_description": "Description not available in English",
+    "evolution": "Evolution",
+    "curiosities": "Trivia",
+    "level": "Level",
+    "trivia": {
+      "generic": "This Pokémon has unique characteristics that make it special in its species.",
+      "dual_type": "This Pokémon has two types, offering a unique combination of abilities and resistances.",
+      "exceptional_stats": "This Pokémon has exceptional stats!",
+      "legendary_stats": "This Pokémon has legendary stats!",
+      "very_heavy": "This Pokémon is very heavy at {{weight}} kg!",
+      "very_tall": "This Pokémon is very tall at {{height}} m!",
+      "high_experience": "This Pokémon gives a lot of experience when defeated!",
+      "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex!",
+      "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
+      "mew_original": "Mew is considered the ancestor of all Pokémon!",
+      "mewtwo_origin": "Mewtwo was genetically created from Mew's DNA!",
+      "psychic_type": "Psychic-type Pokémon are known for their mental powers!",
+      "ghost_type": "Ghost-type Pokémon can phase through walls!",
+      "dragon_type": "Dragon-type Pokémon are rare and powerful!"
+    }
   },
   "filters": {
     "all": "All",
@@ -230,19 +250,6 @@
     "sync_with_server": "Sync with server",
     "synced": "Synced",
     "pending": "Pending"
-  },
-  "colors": {
-    "black": "Black",
-    "blue": "Blue",
-    "brown": "Brown",
-    "gray": "Gray",
-    "grey": "Gray",
-    "green": "Green",
-    "pink": "Pink",
-    "purple": "Purple",
-    "red": "Red",
-    "white": "White",
-    "yellow": "Yellow"
   },
   "auth": {
     "login": "Login",
@@ -322,11 +329,8 @@
     "profile_options": "Profile Options",
     "administrator": "Administrator",
     "user_profile": "User Profile",
-    "save_changes": "Save Changes",
-    "confirm_password": "Confirm Password",
     "confirm_password_desc": "Enter your current password to confirm changes",
     "confirm_save": "Confirm and Save",
-    "profile_updated": "Profile updated successfully",
     "update_error": "Error updating profile",
     "validation_errors": "Please fix the errors in the form",
     "field_required": "This field is required",
@@ -377,33 +381,6 @@
         "select_type": "Select type"
       }
     }
-  },
-  "modal": {
-    "overview": "Overview",
-    "combat": "Combat",
-    "evolution": "Evolution",
-    "curiosities": "Curiosities",
-    "combat_stats": "Combat Statistics",
-    "total_base": "Base Total",
-    "offensive_stats": "Offensive Statistics",
-    "defensive_stats": "Defensive Statistics",
-    "utility_stats": "Utility Statistics",
-    "growth_info": "Growth Information",
-    "egg_groups:": "Egg Groups:",
-    "growth_rate:": "Growth Rate:",
-    "base_experience:": "Base Experience:",
-    "descriptions": "Descriptions",
-    "NO_FLAVOR_TEXT_AVAILABLE": "No description available for this Pokémon.",
-    "physical_characteristics": "Physical Characteristics",
-    "bmi": "BMI",
-    "capture_info": "Capture Information",
-    "capture_rate": "Capture Rate",
-    "base_happiness": "Base Happiness",
-    "color": "Color",
-    "trivia_title": "Trivia",
-    "egg_groups": "Egg Groups",
-    "growth_rate": "Growth Rate",
-    "base_experience": "Base Experience"
   },
   "types": {
     "normal": "Normal",
@@ -583,19 +560,6 @@
     "es-ES": "Spanish",
     "ja-JP": "Japanese"
   },
-  "colors": {
-    "black": "Black",
-    "blue": "Blue",
-    "brown": "Brown",
-    "gray": "Gray",
-    "grey": "Gray",
-    "green": "Green",
-    "pink": "Pink",
-    "purple": "Purple",
-    "red": "Red",
-    "white": "White",
-    "yellow": "Yellow"
-  },
   "menu": {
     "home": "Pokédex",
     "captured": "Captured",
@@ -712,27 +676,6 @@
     "light": "Light",
     "heavy": "Heavy",
     "very_heavy": "Very Heavy"
-  },
-  "details": {
-    "evolution": "Evolution",
-    "curiosities": "Trivia",
-    "level": "Level",
-    "trivia": {
-      "generic": "This Pokémon has unique characteristics that make it special in its species.",
-      "dual_type": "This Pokémon has two types, offering a unique combination of abilities and resistances.",
-      "exceptional_stats": "This Pokémon has exceptional stats!",
-      "legendary_stats": "This Pokémon has legendary stats!",
-      "very_heavy": "This Pokémon is very heavy at {{weight}} kg!",
-      "very_tall": "This Pokémon is very tall at {{height}} m!",
-      "high_experience": "This Pokémon gives a lot of experience when defeated!",
-      "bulbasaur_first": "Bulbasaur is the first Pokémon in the National Pokédex!",
-      "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
-      "mew_original": "Mew is considered the ancestor of all Pokémon!",
-      "mewtwo_origin": "Mewtwo was genetically created from Mew's DNA!",
-      "psychic_type": "Psychic-type Pokémon are known for their mental powers!",
-      "ghost_type": "Ghost-type Pokémon can phase through walls!",
-      "dragon_type": "Dragon-type Pokémon are rare and powerful!"
-    }
   },
   "mobile": {
     "cache_indicator": {

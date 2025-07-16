@@ -5,7 +5,7 @@
   },
   "mobile": {
     "title": "Detalhes de {name}",
-    "loading": "Carregando...",
+    "loading": "Carregando",
     "error_message": "Não foi possível carregar os detalhes. Tente novamente.",
     "close": "Fechar",
     "not_available": "N/A",
@@ -75,7 +75,21 @@
       "mew_original": "Mew contém o DNA de todos os Pokémon.",
       "pikachu_mascot": "Pikachu é o mascote oficial da franquia Pokémon!",
       "generic": "Cada Pokémon é único em sua própria maneira especial!"
-    }
+    },
+    "cache_indicator": {
+      "api": "API",
+      "cached": "Cache"
+    },
+    "base_experience": "Experiência Base",
+    "stats_names": {
+      "hp": "HP",
+      "attack": "Ataque",
+      "defense": "Defesa",
+      "special_attack": "Ataque Especial",
+      "special_defense": "Defesa Especial",
+      "speed": "Velocidade"
+    },
+    "utility_stats": "Estatísticas Utilitárias"
   },
   "evolution": {
     "methods": {
@@ -151,7 +165,8 @@
     "clear": "Limpar",
     "version": "Versão",
     "footer_text": "Desenvolvido com ❤️ por David Assef",
-    "not_available": "N/A"
+    "not_available": "N/A",
+    "loading": "Carregando"
   },
   "pokemon": {
     "details": "Detalhes",
@@ -291,11 +306,8 @@
     "profile_options": "Opções do Perfil",
     "administrator": "Administrador",
     "user_profile": "Perfil do Usuário",
-    "save_changes": "Salvar Alterações",
-    "confirm_password": "Confirmar Senha",
     "confirm_password_desc": "Digite sua senha atual para confirmar as alterações",
     "confirm_save": "Confirmar e Salvar",
-    "profile_updated": "Perfil atualizado com sucesso",
     "update_error": "Erro ao atualizar perfil",
     "validation_errors": "Por favor, corrija os erros no formulário",
     "field_required": "Este campo é obrigatório",
@@ -543,7 +555,7 @@
     "level": "Nível"
   },
   "app-loading": {
-    "loading": "Carregando..."
+    "loading": "Carregando"
   },
   "tabs": {
     "home": "Pokédex",
@@ -811,55 +823,6 @@
       "psychic_type": "Pokémon do tipo Psíquico são conhecidos por seus poderes mentais!",
       "ghost_type": "Pokémon do tipo Fantasma podem atravessar paredes!",
       "dragon_type": "Pokémon do tipo Dragão são raros e poderosos!"
-    }
-  },
-  "mobile": {
-    "cache_indicator": {
-      "api": "API",
-      "cached": "Cache"
-    },
-    "carousel": {
-      "slide": "Imagem",
-      "previous": "Anterior",
-      "next": "Próximo",
-      "counter": "({{currentIndex}}/{{total}})"
-    },
-    "base_experience": "Experiência Base",
-    "stats_names": {
-      "hp": "HP",
-      "attack": "Ataque",
-      "defense": "Defesa",
-      "special_attack": "Ataque Especial",
-      "special_defense": "Defesa Especial",
-      "speed": "Velocidade"
-    },
-    "utility_stats": "Estatísticas Utilitárias",
-    "close": "Fechar",
-    "actions": {
-      "zoom_in": "Ampliar"
-    },
-    "height": "Altura",
-    "weight": "Peso",
-    "overview": "Visão Geral",
-    "stats": "Estatísticas de Combate",
-    "evolution": "Evolução",
-    "curiosities": "Curiosidades",
-    "overview_short": "Geral",
-    "stats_short": "Stats",
-    "evolution_short": "Evolução",
-    "curiosities_short": "Trivia",
-    "total": "Total",
-    "offensive_stats": "Estatísticas Ofensivas",
-    "defensive_stats": "Estatísticas Defensivas",
-    "abilities": "Habilidades",
-    "hidden_ability": "Habilidade Oculta",
-    "evolution_methods": {
-      "level_up": "Subir de nível"
-    },
-    "trivia": {
-      "dual_type": "Este Pokémon possui dois tipos, oferecendo versatilidade em combate.",
-      "light_weight": "Com peso considerado leve para sua categoria, é ágil em movimentos.",
-      "habitat": "Pode ser encontrado em diversos habitats naturais."
     }
   }
 }

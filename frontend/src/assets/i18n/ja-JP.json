@@ -97,7 +97,8 @@
     "clear": "クリア",
     "version": "バージョン",
     "footer_text": "❤️ David Assefによって開発されました",
-    "not_available": "N/A"
+    "not_available": "N/A",
+    "loading": "読み込み中..."
   },
   "pokemon": {
     "details": "詳細",
@@ -157,7 +158,26 @@
     "error_loading": "詳細読み込みエラー",
     "url_copied": "URLをクリップボードにコピーしました！",
     "no_evolution": "このポケモンは進化しません",
-    "no_description": "日本語での説明は利用できません"
+    "no_description": "日本語での説明は利用できません",
+    "evolution": "進化",
+    "curiosities": "豆知識",
+    "level": "レベル",
+    "trivia": {
+      "generic": "このポケモンは種族の中で特別な特徴を持っています。",
+      "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。",
+      "exceptional_stats": "このポケモンは優秀な能力値を持っています！",
+      "legendary_stats": "このポケモンは伝説級の能力値を持っています！",
+      "very_heavy": "このポケモンは{{weight}}kgととても重いです！",
+      "very_tall": "このポケモンは{{height}}mととても高いです！",
+      "high_experience": "このポケモンは倒すと多くの経験値をくれます！",
+      "bulbasaur_first": "フシギダネは全国図鑑で最初のポケモンです！",
+      "pikachu_mascot": "ピカチュウはポケモンフランチャイズの公式マスコットです！",
+      "mew_original": "ミュウは全てのポケモンの祖先とされています！",
+      "mewtwo_origin": "ミュウツーはミュウのDNAから遺伝子操作で作られました！",
+      "psychic_type": "エスパータイプのポケモンは精神的な力で知られています！",
+      "ghost_type": "ゴーストタイプのポケモンは壁を通り抜けることができます！",
+      "dragon_type": "ドラゴンタイプのポケモンは珍しく強力です！"
+    }
   },
   "filters": {
     "all": "すべて",
@@ -226,19 +246,6 @@
     "sync_with_server": "サーバーとの同期",
     "synced": "同期済み",
     "pending": "保留中"
-  },
-  "colors": {
-    "black": "黒",
-    "blue": "青",
-    "brown": "茶",
-    "gray": "灰",
-    "grey": "灰",
-    "green": "緑",
-    "pink": "ピンク",
-    "purple": "紫",
-    "red": "赤",
-    "white": "白",
-    "yellow": "黄"
   },
   "auth": {
     "welcome_back": "おかえりなさい！",
@@ -318,11 +325,8 @@
     "profile_options": "プロフィールオプション",
     "administrator": "管理者",
     "user_profile": "ユーザープロフィール",
-    "save_changes": "変更を保存",
-    "confirm_password": "パスワード確認",
     "confirm_password_desc": "変更を確認するために現在のパスワードを入力してください",
     "confirm_save": "確認して保存",
-    "profile_updated": "プロフィールが正常に更新されました",
     "update_error": "プロフィール更新エラー",
     "validation_errors": "フォームのエラーを修正してください",
     "field_required": "この項目は必須です",
@@ -373,33 +377,6 @@
         "select_type": "タイプを選択"
       }
     }
-  },
-  "modal": {
-    "overview": "概要",
-    "combat": "戦闘",
-    "evolution": "進化",
-    "curiosities": "豆知識",
-    "combat_stats": "戦闘統計",
-    "total_base": "ベース合計",
-    "offensive_stats": "攻撃統計",
-    "defensive_stats": "防御統計",
-    "utility_stats": "ユーティリティ統計",
-    "growth_info": "成長情報",
-    "egg_groups:": "タマゴグループ:",
-    "growth_rate:": "成長率:",
-    "base_experience:": "基本経験値:",
-    "descriptions": "説明",
-    "NO_FLAVOR_TEXT_AVAILABLE": "このポケモンの説明はありません。",
-    "physical_characteristics": "身体的特徴",
-    "bmi": "BMI",
-    "capture_info": "捕獲情報",
-    "capture_rate": "捕獲率",
-    "base_happiness": "基本なつき度",
-    "color": "色",
-    "trivia_title": "豆知識",
-    "egg_groups": "タマゴグループ",
-    "growth_rate": "成長率",
-    "base_experience": "基本経験値"
   },
   "types": {
     "normal": "ノーマル",
@@ -719,27 +696,6 @@
     "light": "軽い",
     "heavy": "重い",
     "very_heavy": "とても重い"
-  },
-  "details": {
-    "evolution": "進化",
-    "curiosities": "豆知識",
-    "level": "レベル",
-    "trivia": {
-      "generic": "このポケモンは種族の中で特別な特徴を持っています。",
-      "dual_type": "このポケモンは2つのタイプを持ち、独特な能力と耐性の組み合わせを提供します。",
-      "exceptional_stats": "このポケモンは優秀な能力値を持っています！",
-      "legendary_stats": "このポケモンは伝説級の能力値を持っています！",
-      "very_heavy": "このポケモンは{{weight}}kgととても重いです！",
-      "very_tall": "このポケモンは{{height}}mととても高いです！",
-      "high_experience": "このポケモンは倒すと多くの経験値をくれます！",
-      "bulbasaur_first": "フシギダネは全国図鑑で最初のポケモンです！",
-      "pikachu_mascot": "ピカチュウはポケモンフランチャイズの公式マスコットです！",
-      "mew_original": "ミュウは全てのポケモンの祖先とされています！",
-      "mewtwo_origin": "ミュウツーはミュウのDNAから遺伝子操作で作られました！",
-      "psychic_type": "エスパータイプのポケモンは精神的な力で知られています！",
-      "ghost_type": "ゴーストタイプのポケモンは壁を通り抜けることができます！",
-      "dragon_type": "ドラゴンタイプのポケモンは珍しく強力です！"
-    }
   },
   "mobile": {
     "cache_indicator": {
