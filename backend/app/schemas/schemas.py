@@ -57,6 +57,11 @@ class FavoritePokemon(FavoritePokemonBase):
         from_attributes = True
 
 
+class CheckCapturedRequest(BaseModel):
+    """Schema para verificação de múltiplos Pokémon capturados."""
+    pokemon_ids: List[int]
+
+
 # Schemas de Ranking
 class PokemonRankingBase(BaseModel):
     """Schema base do ranking."""

@@ -7,7 +7,7 @@ from typing import List
 from core.database import get_db
 from core.auth import get_current_active_user
 from app.models.models import User
-from app.schemas.schemas import FavoritePokemon, FavoritePokemonCreate, Message
+from app.schemas.schemas import FavoritePokemon, FavoritePokemonCreate, Message, CheckCapturedRequest
 from app.services.favorite_service import FavoriteService
 
 router = APIRouter(prefix="/favorites", tags=["favorites"])
@@ -77,7 +77,7 @@ def check_favorite(
 
 @router.post("/check-captured", response_model=dict)
 def check_multiple_favorites(
-    pokemon_ids: List[int],
+    request: CheckCapturedRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
@@ -85,7 +85,7 @@ def check_multiple_favorites(
     Verifica quais Pokémons de uma lista estão nos favoritos do usuário.
 
     Args:
-        pokemon_ids: Lista de IDs de Pokémon para verificar
+        request: Objeto contendo a lista de IDs de Pokémon para verificar
 
     Returns:
         Dicionário onde as chaves são os IDs dos Pokémons (como strings) e os
@@ -95,7 +95,7 @@ def check_multiple_favorites(
     return service.check_multiple_favorites(
         db=db,
         user_id=current_user.id,
-        pokemon_ids=pokemon_ids
+        pokemon_ids=request.pokemon_ids
     )
 
 

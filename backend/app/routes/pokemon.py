@@ -12,18 +12,6 @@ import requests
 router = APIRouter(prefix="/pokemon", tags=["pokemon"])
 
 
-@router.get("/{pokemon_id_or_name}")
-async def get_pokemon(pokemon_id_or_name: str) -> Dict:
-    """Busca dados de um Pokémon específico."""
-    pokemon = await pokeapi_service.get_pokemon(pokemon_id_or_name)
-    if not pokemon:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Pokémon não encontrado"
-        )
-    return pokemon
-
-
 @router.get("/")
 async def get_pokemon_list(limit: int = 20, offset: int = 0) -> Dict:
     """Busca lista de Pokémons com paginação."""
@@ -34,6 +22,18 @@ async def get_pokemon_list(limit: int = 20, offset: int = 0) -> Dict:
             detail="Erro ao buscar lista de Pokémons"
         )
     return pokemon_list
+
+
+@router.get("/{pokemon_id_or_name}")
+async def get_pokemon(pokemon_id_or_name: str) -> Dict:
+    """Busca dados de um Pokémon específico."""
+    pokemon = await pokeapi_service.get_pokemon(pokemon_id_or_name)
+    if not pokemon:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pokémon não encontrado"
+        )
+    return pokemon
 
 
 @router.get("/{pokemon_id_or_name}/species")
