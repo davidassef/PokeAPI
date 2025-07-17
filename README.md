@@ -580,7 +580,7 @@ PokeAPIApp/
 - **Redoc**: http://localhost:8000/redoc
 
 ### **Produção**
-- **App Produção**: https://pokeapiapp.netlify.app
+- **App Produção**: https://pokeapi-frontend.onrender.com
 - **API Produção**: https://pokeapi-la6k.onrender.com
 - **Docs Produção**: https://pokeapi-la6k.onrender.com/docs
 
