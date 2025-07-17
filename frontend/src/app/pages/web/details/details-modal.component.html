@@ -131,8 +131,9 @@
     </div>
 
     <!-- Sistema de abas -->
-    <div class="modal-tabs" role="tablist" aria-label="Informações do Pokémon">
+    <div class="modal-tabs tab-btn" role="tablist" aria-label="Informações do Pokémon">
       <button
+        class="tab-btn"
         role="tab"
         [attr.aria-selected]="activeTab === 'overview'"
         [class.active]="activeTab === 'overview'"
@@ -142,6 +143,7 @@
         {{ 'modal.overview' | translate }}
       </button>
       <button
+        class="tab-btn"
         role="tab"
         [attr.aria-selected]="activeTab === 'combat'"
         [class.active]="activeTab === 'combat'"
@@ -153,6 +155,7 @@
         {{ 'modal.combat' | translate }}
       </button>
       <button
+        class="tab-btn"
         role="tab"
         [attr.aria-selected]="activeTab === 'evolution'"
         [class.active]="activeTab === 'evolution'"
@@ -162,6 +165,7 @@
         {{ 'modal.evolution' | translate }}
       </button>
       <button
+        class="tab-btn"
         role="tab"
         [attr.aria-selected]="activeTab === 'curiosities'"
         [class.active]="activeTab === 'curiosities'"

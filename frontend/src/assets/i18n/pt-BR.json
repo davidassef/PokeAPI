@@ -115,34 +115,7 @@
       "base_form": "Forma base"
     }
   },
-  "evolution": {
-    "methods": {
-      "level": "Nível",
-      "level_up": "Subindo de nível",
-      "use_item": "Usando item",
-      "trade": "Trocando",
-      "shed": "Nível 20 com espaço no time e Pokébola na mochila",
-      "spin": "Girar o joystick",
-      "tower_of_darkness": "Torre da Escuridão",
-      "tower_of_waters": "Torre das Águas",
-      "three_critical_hits": "Três golpes críticos em uma batalha",
-      "take_damage": "Levar dano sem desmaiar e depois subir de nível",
-      "use_item_on": "Usar item em",
-      "level_up_in_special_terrain": "Subir de nível em terreno especial",
-      "level_up_in_special_area": "Subir de nível em área especial",
-      "level_up_knowing_move_type": "Subir de nível sabendo movimento do tipo",
-      "level_up_gender": "Subir de nível (gênero específico)",
-      "level_up_holding_item_at_night": "Subir de nível segurando item à noite",
-      "level_up_holding_item_during_day": "Subir de nível segurando item durante o dia",
-      "level_up_with_other_pokemon_in_party": "Subir de nível com outro Pokémon no time",
-      "level_up_after_evolution": "Subir de nível após evolução",
-      "other": "Outro método",
-      "base_form": "Forma base"
-    },
-    "triggers": {
-      "Nível": "Nível"
-    }
-  },
+
   "stats": {
     "hp": "HP",
     "attack": "Ataque",

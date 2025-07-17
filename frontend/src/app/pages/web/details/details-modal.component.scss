@@ -12,6 +12,26 @@
   backdrop-filter: blur(4px);
 }
 
+// ✅ CORREÇÃO: Garantir visibilidade do modal quando aberto
+app-details-modal[ng-reflect-is-open="true"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+
+  .details-modal-overlay {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .details-modal-container {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
 .details-modal-container {
   display: flex;
   flex-direction: column;

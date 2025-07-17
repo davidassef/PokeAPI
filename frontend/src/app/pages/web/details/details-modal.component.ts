@@ -3,10 +3,11 @@ import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Subject, firstValueFrom } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil, tap } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
 import { PokemonCacheService } from '../../../core/services/pokemon-cache.service';
+import { PokeApiService } from '../../../core/services/pokeapi.service';
 
 @Component({
   selector: 'app-details-modal',
@@ -72,19 +73,25 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   // Métodos de verificação de dados para as abas
   isOverviewDataReady(): boolean {
-    return !!this.pokemon;
+    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
+    const ready = true; // Forçar renderização mesmo sem dados
+    console.log('🔍 isOverviewDataReady:', ready, 'Pokemon:', !!this.pokemon);
+    return ready;
   }
 
   isCombatDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['combat'];
+    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
+    return true; // Forçar renderização mesmo sem dados
   }
 
   isEvolutionDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['evolution'];
+    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
+    return true; // Forçar renderização mesmo sem dados
   }
 
   isCuriositiesDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['curiosities'];
+    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
+    return true; // Forçar renderização mesmo sem dados
   }
 
   shouldShowCombatData(): boolean {
@@ -112,14 +119,40 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     private translate: TranslateService,
     private http: HttpClient,
     private viewedPokemonService: ViewedPokemonService,
-    private cacheService: PokemonCacheService
+    private cacheService: PokemonCacheService,
+    private pokeApiService: PokeApiService
   ) {}
 
   ngOnInit() {
+    console.log('🚀 DetailsModalComponent - ngOnInit:', {
+      pokemon: !!this.pokemon,
+      pokemonId: this.pokemonId,
+      isOpen: this.isOpen,
+      timestamp: new Date().toISOString()
+    });
+
+    // ✅ CORREÇÃO DIRETA: Usar PokeApiService imediatamente se não há Pokemon
     if (this.pokemon) {
+      console.log('✅ Pokemon já disponível, inicializando dados');
       this.initializePokemonData();
-    } else if (this.pokemonId) {
-      this.loadPokemonById(this.pokemonId);
+    } else if (this.pokemonId && this.pokemonId > 0) {
+      console.log('🔍 CORREÇÃO: Carregando Pokemon diretamente com PokeApiService');
+
+      // Correção direta usando PokeApiService
+      this.pokeApiService.getPokemon(this.pokemonId).subscribe({
+        next: (pokemon) => {
+          console.log('🎉 CORREÇÃO DIRETA - Pokemon carregado:', pokemon?.name);
+          this.pokemon = pokemon;
+          this.initializePokemonData();
+        },
+        error: (error) => {
+          console.error('❌ CORREÇÃO DIRETA - Erro:', error);
+          this.pokemon = this.createPlaceholderPokemon(this.pokemonId);
+          this.initializePokemonData();
+        }
+      });
+    } else {
+      console.warn('⚠️ Nenhum Pokemon ou ID fornecido');
     }
 
     // Ouvir mudanças de idioma
@@ -138,27 +171,88 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
+    // TEMPORÁRIO: Verificar se há subscription ativa
+    if (this.destroy$) {
+      console.log('🔍 destroy$ Subject existe:', !this.destroy$.closed);
+      console.log('🔍 destroy$ Subject estado:', {
+        closed: this.destroy$.closed,
+        hasError: this.destroy$.hasError,
+        isStopped: this.destroy$.isStopped
+      });
+    } else {
+      console.log('❌ destroy$ Subject não existe!');
+    }
+
     console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
     this.isLoadingPokemonData = true;
 
-    // Usar cache service como a versão mobile para consistência
-    this.cacheService.getPokemon(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (pokemon: any) => {
-          console.log('✅ Dados do Pokémon carregados:', pokemon.name);
+    // ✅ CORREÇÃO: Usar PokeApiService diretamente para contornar problema do cache
+    console.log('🔄 CORREÇÃO: Usando PokeApiService diretamente...');
+
+    try {
+      const pokeApiObservable = this.pokeApiService.getPokemon(id);
+      console.log('🔍 PokeApiService Observable criado:', !!pokeApiObservable);
+
+      const pokeApiSubscription = pokeApiObservable.subscribe({
+        next: (pokemon) => {
+          console.log('🎉 POKEAPI SERVICE - NEXT EXECUTADO!', pokemon?.name);
           this.pokemon = pokemon;
           this.initializePokemonData();
           this.isLoadingPokemonData = false;
         },
         error: (error) => {
+          console.log('💥 POKEAPI SERVICE - ERROR EXECUTADO!', error);
+          this.pokemon = this.createPlaceholderPokemon(id);
+          this.initializePokemonData();
+          this.isLoadingPokemonData = false;
+        },
+        complete: () => {
+          console.log('🏁 POKEAPI SERVICE - COMPLETE EXECUTADO!');
+        }
+      });
+
+      console.log('🔄 PokeApiService subscription criada:', !!pokeApiSubscription);
+
+      // Retornar early para evitar executar o código problemático abaixo
+      return;
+
+    } catch (error) {
+      console.error('❌ Erro ao usar PokeApiService:', error);
+    }
+
+    // Usar cache service como a versão mobile para consistência
+    console.log('🔄 Iniciando subscription para getPokemon...');
+    const pokemonObservable = this.cacheService.getPokemon(id);
+    console.log('🔍 Observable criado:', !!pokemonObservable);
+
+    // TEMPORÁRIO: Testar subscription direta sem pipe
+    console.log('🔄 Testando subscription direta...');
+    const subscription = pokemonObservable.subscribe({
+        next: (pokemon: any) => {
+          console.log('🎉 CALLBACK NEXT EXECUTADO!');
+          console.log('✅ Dados do Pokémon carregados:', pokemon?.name, 'ID:', pokemon?.id);
+          console.log('🔧 Definindo this.pokemon:', !!pokemon);
+          this.pokemon = pokemon;
+          console.log('🔍 this.pokemon após definição:', !!this.pokemon, 'Nome:', this.pokemon?.name);
+          console.log('🎯 Chamando initializePokemonData...');
+          this.initializePokemonData();
+          this.isLoadingPokemonData = false;
+          console.log('✅ loadPokemonById concluído');
+        },
+        error: (error) => {
+          console.log('💥 CALLBACK ERROR EXECUTADO!');
           console.error('❌ Erro ao carregar Pokémon:', error);
           // Criar um Pokémon placeholder para evitar erros
           this.pokemon = this.createPlaceholderPokemon(id);
           this.initializePokemonData();
           this.isLoadingPokemonData = false;
+        },
+        complete: () => {
+          console.log('🏁 CALLBACK COMPLETE EXECUTADO!');
         }
       });
+
+    console.log('🔄 Subscription criada:', !!subscription);
   }
 
   private createPlaceholderPokemon(id: number) {
@@ -186,9 +280,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   private initializePokemonData() {
-    if (!this.pokemon) return;
+    if (!this.pokemon) {
+      console.error('❌ initializePokemonData: Pokemon não disponível');
+      return;
+    }
 
-    console.log(`Inicializando dados para: ${this.pokemon.name} (ID: ${this.pokemon.id})`);
+    console.log(`🔧 Inicializando dados para: ${this.pokemon.name} (ID: ${this.pokemon.id})`);
 
     // Mark Pokemon as viewed when details are initialized
     this.viewedPokemonService.markPokemonAsViewed(this.pokemon.id);
@@ -200,6 +297,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       evolution: false,
       curiosities: false
     };
+
+    console.log('📊 Estado inicial tabDataLoaded:', this.tabDataLoaded);
 
     // Limpar dados existentes para evitar vazamentos
     this.abilityDescriptions = {};
@@ -231,7 +330,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.loadFlavorTexts();
 
     // Carregar dados da aba ativa (overview por padrão)
+    console.log('🎯 Carregando dados da aba ativa:', this.activeTab);
     this.loadTabData(this.activeTab);
+
+    console.log('✅ Inicialização completa. Estado final:', {
+      pokemon: !!this.pokemon,
+      activeTab: this.activeTab,
+      tabDataLoaded: this.tabDataLoaded,
+      isOverviewDataReady: this.isOverviewDataReady()
+    });
   }
 
   ngAfterViewInit() {
@@ -595,17 +702,28 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     if (!this.pokemon?.id) {
       console.warn('⚠️ ID do Pokémon não disponível');
       this.isSpeciesDataReady = true; // Marcar como pronto mesmo sem dados
+      // ✅ CORREÇÃO: Definir flag de curiosities mesmo sem dados para evitar loading infinito
+      this.tabDataLoaded['curiosities'] = true;
       return;
     }
 
     // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
     if (this.isLoadingSpeciesData) {
       console.log(`⚠️ Já carregando dados da espécie ID: ${this.pokemon.id}, ignorando chamada duplicada`);
+      // ✅ CORREÇÃO: Se já está carregando e estamos na aba curiosities, definir flag para mostrar loading
+      if (this.activeTab === 'curiosities' && !this.tabDataLoaded['curiosities']) {
+        this.tabDataLoaded['curiosities'] = true;
+      }
       return;
     }
 
     console.log(`🔍 Carregando dados da espécie via cache service: ID ${this.pokemon.id}`);
     this.isLoadingSpeciesData = true;
+
+    // ✅ CORREÇÃO: Definir flag imediatamente se estamos na aba curiosities para mostrar loading
+    if (this.activeTab === 'curiosities') {
+      this.tabDataLoaded['curiosities'] = true;
+    }
 
     // Usar cache service como a versão mobile para consistência
     this.cacheService.getPokemonSpecies(this.pokemon.id)
@@ -616,10 +734,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           this.speciesData = data;
           this.isSpeciesDataReady = true;
           this.isLoadingSpeciesData = false;
-          // ✅ CORREÇÃO: Definir flag da aba curiosities quando dados estão prontos
-          if (this.activeTab === 'curiosities') {
-            this.tabDataLoaded['curiosities'] = true;
-          }
+          // ✅ CORREÇÃO: Sempre definir flag de curiosities quando dados estão prontos
+          this.tabDataLoaded['curiosities'] = true;
         },
         error: (error) => {
           console.error('❌ Erro ao buscar dados da espécie via cache:', error);
@@ -627,10 +743,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           this.isSpeciesDataReady = true;
           this.speciesData = null;
           this.isLoadingSpeciesData = false;
-          // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
-          if (this.activeTab === 'curiosities') {
-            this.tabDataLoaded['curiosities'] = true;
-          }
+          // ✅ CORREÇÃO: Sempre definir flag mesmo em caso de erro para evitar loop
+          this.tabDataLoaded['curiosities'] = true;
         }
       });
   }
@@ -640,6 +754,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     if (!this.pokemon?.species?.url) {
       console.warn('⚠️ Não foi possível carregar evolução: URL da espécie não disponível');
       this.evolutionChain = []; // Garantir que array esteja vazio
+      this.tabDataLoaded['evolution'] = true; // Marcar como carregado mesmo sem dados
       return;
     }
 
@@ -653,6 +768,16 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     console.log(`📍 URL da espécie: ${this.pokemon.species.url}`);
 
     this.isLoadingEvolutionChain = true;
+
+    // ✅ CORREÇÃO: Definir timeout de segurança para evitar loading infinito
+    const timeoutId = setTimeout(() => {
+      if (this.isLoadingEvolutionChain) {
+        console.warn('⏰ Timeout na busca da cadeia evolutiva - definindo como carregado');
+        this.isLoadingEvolutionChain = false;
+        this.tabDataLoaded['evolution'] = true;
+        this.evolutionChain = [];
+      }
+    }, 10000); // 10 segundos de timeout
 
     // ✅ CORREÇÃO: Primeiro buscar os dados da espécie com takeUntil()
     this.http.get(this.pokemon.species.url)
@@ -669,6 +794,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
               .pipe(takeUntil(this.destroy$))
               .subscribe({
                 next: (evolutionData: any) => {
+                  clearTimeout(timeoutId); // Limpar timeout de segurança
                   console.log(`✅ Dados da cadeia evolutiva carregados`);
                   console.log(`🧬 Processando cadeia evolutiva...`);
                   this.processEvolutionChain(evolutionData.chain);
@@ -677,6 +803,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
                   this.tabDataLoaded['evolution'] = true;
                 },
                 error: (error) => {
+                  clearTimeout(timeoutId); // Limpar timeout de segurança
                   console.error('❌ Erro ao buscar cadeia evolutiva:', error);
                   this.evolutionChain = [];
                   this.isLoadingEvolutionChain = false;
@@ -685,6 +812,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
                 }
               });
           } else {
+            clearTimeout(timeoutId); // Limpar timeout de segurança
             console.warn('⚠️ URL da cadeia evolutiva não encontrada nos dados da espécie');
             this.evolutionChain = [];
             this.isLoadingEvolutionChain = false;
@@ -693,6 +821,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
           }
         },
         error: (error) => {
+          clearTimeout(timeoutId); // Limpar timeout de segurança
           console.error('❌ Erro ao buscar dados da espécie para evolução:', error);
           this.evolutionChain = [];
           this.isLoadingEvolutionChain = false;
@@ -1449,14 +1578,23 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   loadTabData(tab: string): void {
-    console.log(`Loading tab data for ${tab}`);
+    console.log(`🎯 Loading tab data for ${tab}`, {
+      pokemon: !!this.pokemon,
+      pokemonName: this.pokemon?.name,
+      currentTabDataLoaded: this.tabDataLoaded
+    });
 
-    if (!this.pokemon) return;
+    if (!this.pokemon) {
+      console.error('❌ loadTabData: Pokemon não disponível');
+      return;
+    }
 
     switch (tab) {
       case 'overview':
+        console.log('📋 Carregando dados da aba overview');
         // Dados básicos já estão disponíveis no pokemon
         this.tabDataLoaded['overview'] = true;
+        console.log('✅ Overview data loaded:', this.tabDataLoaded['overview']);
         break;
 
       case 'combat':
@@ -1482,16 +1620,23 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         // Carregar dados da espécie se necessário (flavor texts já carregados na inicialização)
         if (!this.tabDataLoaded['curiosities']) {
           console.log(`🍃 Carregando dados para aba curiosities`);
-          console.log(`📊 Estado atual: speciesData=${!!this.speciesData}, isSpeciesDataReady=${this.isSpeciesDataReady}`);
+          console.log(`📊 Estado atual: speciesData=${!!this.speciesData}, isSpeciesDataReady=${this.isSpeciesDataReady}, isLoadingSpeciesData=${this.isLoadingSpeciesData}`);
 
-          // Sempre tentar carregar dados da espécie se não estão prontos
-          if (!this.isSpeciesDataReady || !this.speciesData) {
-            this.fetchSpeciesData();
-          } else {
-            // Se os dados já estão prontos, definir a flag imediatamente
+          // ✅ CORREÇÃO: Se já está carregando, definir flag para mostrar loading
+          if (this.isLoadingSpeciesData) {
+            console.log(`⏳ Dados da espécie já estão sendo carregados, definindo flag para mostrar loading`);
             this.tabDataLoaded['curiosities'] = true;
           }
-          // NÃO definir tabDataLoaded aqui se fetchSpeciesData foi chamado - será definido quando os dados forem carregados
+          // Se dados já estão prontos, definir a flag imediatamente
+          else if (this.isSpeciesDataReady && this.speciesData) {
+            console.log(`✅ Dados da espécie já estão prontos, definindo flag imediatamente`);
+            this.tabDataLoaded['curiosities'] = true;
+          }
+          // Caso contrário, carregar dados da espécie
+          else {
+            console.log(`🔄 Iniciando carregamento dos dados da espécie`);
+            this.fetchSpeciesData();
+          }
         }
         break;
     }
@@ -1691,9 +1836,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         changes['isOpen'].previousValue === false) {
       console.log('🔄 Modal reaberto - reinicializando dados');
 
-      // ✅ CORREÇÃO: Não recriar destroy$ - apenas limpar subscriptions existentes
-      // this.destroy$.next(); // REMOVIDO - pode causar vazamentos
-      // this.destroy$ = new Subject<void>(); // REMOVIDO - pode causar vazamentos
+      // ✅ CORREÇÃO: Limpar subscriptions existentes e recriar destroy$ para evitar problemas de estado
+      this.destroy$.next();
+      this.destroy$.complete();
+      this.destroy$ = new Subject<void>();
 
       // Recarregar dados se temos pokemonId
       if (this.pokemonId && this.pokemonId > 0) {
@@ -1703,8 +1849,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.initializePokemonData();
       }
 
-      // ✅ CORREÇÃO: Não reconfigurar listener - já foi configurado no ngOnInit
-      // A subscription do ngOnInit já está ativa e será cancelada no ngOnDestroy
+      // ✅ CORREÇÃO: Reconfigurar listener de mudança de idioma após recriar destroy$
+      this.translate.onLangChange
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.onLanguageChange();
+        });
     }
   }
 

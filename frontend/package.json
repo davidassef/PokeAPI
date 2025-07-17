@@ -14,6 +14,10 @@
     "build:prod": "ng build --configuration production && echo '/*    /index.html   200' > www/_redirects && cp src/404.html www/404.html",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "e2e:playwright": "playwright test",
+    "e2e:playwright:ui": "playwright test --ui",
+    "e2e:playwright:headed": "playwright test --headed",
+    "e2e:playwright:debug": "playwright test --debug",
     "lint": "ng lint"
   },
   "private": true,
