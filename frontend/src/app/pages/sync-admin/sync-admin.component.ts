@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ToastController, AlertController } from '@ionic/angular';
 import { PullSyncControlService } from '../../core/services/pull-sync-control.service';
 import { SyncConfigService } from '../../core/services/sync-config.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sync-admin',
@@ -19,6 +21,8 @@ export class SyncAdminComponent implements OnInit, OnDestroy {
   autoRefresh = true;
   refreshInterval: any;
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private pullSyncControl: PullSyncControlService,
     private syncConfig: SyncConfigService,
@@ -32,6 +36,11 @@ export class SyncAdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Limpar subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    // Limpar interval
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }

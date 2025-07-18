@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Output, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, EventEmitter, Output, OnDestroy, HostListener } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastNotificationService } from '../../../core/services/toast-notification.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-auth-modal-new',
@@ -21,8 +23,10 @@ import { ToastNotificationService } from '../../../core/services/toast-notificat
     ])
   ]
 })
-export class AuthModalNewComponent implements OnInit, OnDestroy {
+export class AuthModalNewComponent implements OnDestroy {
   @Output() closed = new EventEmitter<boolean>();
+
+  private destroy$ = new Subject<void>();
 
   // Estados do modal
   modo: 'login' | 'register' | 'forgot' = 'login';
@@ -56,7 +60,10 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     private toastNotification: ToastNotificationService
   ) {}
 
-
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   @HostListener('click', ['$event'])
   onHostClick(event: Event) {
@@ -139,7 +146,9 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.erro = '';
 
-    this.authService.login(this.email, this.senha).subscribe({
+    this.authService.login(this.email, this.senha)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: () => {
         this.loading = false;
         this.toastNotification.showAuthSuccess('auth.success.login_successful');
@@ -199,7 +208,9 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
       security_question: dadosRegistro.security_question
     });
 
-    this.authService.register(dadosRegistro).subscribe({
+    this.authService.register(dadosRegistro)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (result) => {
         console.log('[AuthModal] Registro bem-sucedido:', result);
         this.loading = false;
@@ -246,7 +257,9 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.erro = '';
 
-    this.authService.requestPasswordReset(this.email).subscribe({
+    this.authService.requestPasswordReset(this.email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (response) => {
         this.loading = false;
         this.usuarioEncontrado = response;
@@ -268,7 +281,9 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.erro = '';
 
-    this.authService.verifySecurityAnswer(this.email, this.respostaSeguranca).subscribe({
+    this.authService.verifySecurityAnswer(this.email, this.respostaSeguranca)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (response) => {
         this.loading = false;
         this.podeRedefinirSenha = true;
@@ -300,7 +315,9 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.erro = '';
 
-    this.authService.completePasswordReset(this.email, this.respostaSeguranca, this.novaSenha).subscribe({
+    this.authService.completePasswordReset(this.email, this.respostaSeguranca, this.novaSenha)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (response) => {
         this.loading = false;
         this.mostrarSucesso('auth.success.password_reset');
@@ -343,17 +360,21 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
   }
 
   private mostrarErro(mensagemKey: string) {
-    this.translate.get(mensagemKey).subscribe(mensagem => {
-      this.erro = mensagem;
-      this.sucesso = '';
-    });
+    this.translate.get(mensagemKey)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(mensagem => {
+        this.erro = mensagem;
+        this.sucesso = '';
+      });
   }
 
   private mostrarSucesso(mensagemKey: string) {
-    this.translate.get(mensagemKey).subscribe(mensagem => {
-      this.sucesso = mensagem;
-      this.erro = '';
-    });
+    this.translate.get(mensagemKey)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(mensagem => {
+        this.sucesso = mensagem;
+        this.erro = '';
+      });
   }
 
   private async mostrarToast(mensagem: string, cor: string = 'danger') {
