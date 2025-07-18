@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
-import { tap, catchError, map, switchMap, timeout, retry, retryWhen, delay, take } from 'rxjs/operators';
+import { tap, catchError, map, switchMap, timeout, retryWhen, delay, take, retry } from 'rxjs/operators';
 import { User } from '../../models/user.model';
 import { UserRole, getDefaultRole, isValidRole } from '../../models/user-role.enum';
+import { environment } from '../../../environments/environment';
 
 /** Interface para resposta de autenticação */
 interface AuthResponse {
@@ -50,34 +51,173 @@ interface DecodedToken {
 }
 
 /**
- * Serviço de autenticação JWT para login, logout e registro de usuários.
- * Gerencia o token JWT no localStorage e fornece métodos para verificar autenticação.
+ * Interface para configuração de autenticação
+ */
+interface AuthConfig {
+  tokenKey: string;
+  refreshTokenKey: string;
+  enableLogging: boolean;
+  apiUrl: string;
+  requestTimeout: number;
+}
+
+/**
+ * Gerenciador interno de tokens JWT
+ * Centraliza toda lógica relacionada a tokens
+ */
+class TokenManager {
+  constructor(private config: AuthConfig) {}
+
+  /**
+   * Verifica se existe um token válido
+   */
+  hasValidToken(): boolean {
+    const token = this.getToken();
+    return token ? this.isTokenValid(token) : false;
+  }
+
+  /**
+   * Obtém o token atual do localStorage
+   */
+  getToken(): string | null {
+    return localStorage.getItem(this.config.tokenKey);
+  }
+
+  /**
+   * Obtém o refresh token do localStorage
+   */
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.config.refreshTokenKey);
+  }
+
+  /**
+   * Salva tokens no localStorage
+   */
+  setTokens(accessToken: string, refreshToken?: string): void {
+    localStorage.setItem(this.config.tokenKey, accessToken);
+    if (refreshToken) {
+      localStorage.setItem(this.config.refreshTokenKey, refreshToken);
+    }
+  }
+
+  /**
+   * Remove todos os tokens do localStorage
+   */
+  clearTokens(): void {
+    localStorage.removeItem(this.config.tokenKey);
+    localStorage.removeItem(this.config.refreshTokenKey);
+  }
+
+  /**
+   * Decodifica token JWT e extrai dados do usuário
+   */
+  decodeToken(token: string): User | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      return {
+        id: payload.user_id || payload.sub,
+        email: payload.email || '',
+        name: payload.name || '',
+        role: isValidRole(payload.role) ? payload.role : getDefaultRole()
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Verifica se o token é válido (não expirado)
+   */
+  private isTokenValid(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      return payload.exp > currentTime;
+    } catch {
+      return false;
+    }
+  }
+}
+
+/**
+ * Gerenciador interno de estado de autenticação
+ * Centraliza o estado reativo da autenticação
+ */
+class AuthStateManager {
+  private authState = new BehaviorSubject<boolean>(false);
+  private currentUser = new BehaviorSubject<User | null>(null);
+
+  public authState$ = this.authState.asObservable();
+  public currentUser$ = this.currentUser.asObservable();
+
+  /**
+   * Verifica se o usuário está autenticado
+   */
+  isAuthenticated(): boolean {
+    return this.authState.value;
+  }
+
+  /**
+   * Obtém o usuário atual
+   */
+  getCurrentUser(): User | null {
+    return this.currentUser.value;
+  }
+
+  /**
+   * Define usuário autenticado e atualiza estado
+   */
+  setAuthenticatedUser(user: User): void {
+    this.currentUser.next(user);
+    this.authState.next(true);
+  }
+
+  /**
+   * Limpa autenticação e reseta estado
+   */
+  clearAuthentication(): void {
+    this.currentUser.next(null);
+    this.authState.next(false);
+  }
+
+  /**
+   * Sincroniza estado com token válido
+   */
+  syncWithToken(user: User | null): void {
+    if (user) {
+      this.setAuthenticatedUser(user);
+    } else {
+      this.clearAuthentication();
+    }
+  }
+}
+
+/**
+ * Serviço de autenticação JWT refatorado
+ * Gerencia autenticação com responsabilidades bem definidas
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** Chave usada para armazenar o token JWT no localStorage */
-  private readonly TOKEN_KEY = 'jwt_token';
+  /** Configuração do serviço */
+  private config: AuthConfig = {
+    tokenKey: 'jwt_token',
+    refreshTokenKey: 'refresh_token',
+    enableLogging: !environment.production,
+    apiUrl: '/api/v1',
+    requestTimeout: 30000
+  };
 
-  /** Chave usada para armazenar o refresh token no localStorage */
-  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
-
-  /** Estado de autenticação atual */
-  private authState = new BehaviorSubject<boolean>(false);
-
-  /** Usuário atualmente autenticado */
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  /** Gerenciadores internos */
+  private tokenManager = new TokenManager(this.config);
+  private stateManager = new AuthStateManager();
 
   /** Timer para renovação automática do token */
   private refreshTokenTimer: any = null;
 
-  /** Tempo de tolerância para expiração do token (em segundos) */
-  private readonly TOKEN_EXPIRATION_TOLERANCE = 60; // 1 minuto
-
-  /** Headers padrão para requisições autenticadas */
-  private get authHeaders(): { [header: string]: string } {
-    const token = this.getToken();
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-  }
+  /** Observables públicos */
+  public authState$ = this.stateManager.authState$;
+  public currentUser$ = this.stateManager.currentUser$;
 
   constructor(private http: HttpClient) {
     this.initializeAuthState();
@@ -85,26 +225,23 @@ export class AuthService {
 
   /**
    * Inicializa o estado de autenticação verificando o token armazenado
-   * e configura a renovação automática do token se necessário
-   * @returns Promise que resolve quando a inicialização for concluída
    */
   public initializeAuthState(): Promise<void> {
-    const token = this.getToken();
-    if (token && this.isTokenValid(token)) {
-      try {
-        const user = this.decodeToken(token);
-        if (user) {
-          this.currentUserSubject.next(user);
-          this.authState.next(true);
-          this.setupTokenRefresh(token);
-          return Promise.resolve();
-        }
-      } catch (error) {
-        console.error('Erro ao decodificar token:', error);
+    if (this.tokenManager.hasValidToken()) {
+      const token = this.tokenManager.getToken()!;
+      const user = this.tokenManager.decodeToken(token);
+
+      if (user) {
+        this.stateManager.setAuthenticatedUser(user);
+        this.setupTokenRefresh(token);
+        this.logIfEnabled('Auth state initialized for user:', user.email);
+      } else {
+        this.clearAuthState();
       }
+    } else {
+      this.clearAuthState();
     }
-    // Se chegou aqui, limpa o estado de autenticação
-    this.clearAuthState();
+
     return Promise.resolve();
   }
 
@@ -118,28 +255,32 @@ export class AuthService {
       clearTimeout(this.refreshTokenTimer);
     }
 
-    const decoded = this.decodeToken(token);
+    const decoded = this.tokenManager.decodeToken(token);
     if (!decoded) return;
 
-    // Usa o tempo de expiração do token ou um valor padrão (1 hora)
-    const expTime = (decoded as unknown as { exp?: number }).exp || Math.floor(Date.now() / 1000) + 3600;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expTime = payload.exp || Math.floor(Date.now() / 1000) + 3600;
 
-    // Calcula o tempo restante até a expiração (em ms)
-    const expiresIn = (expTime * 1000) - Date.now();
+      // Calcula o tempo restante até a expiração (em ms)
+      const expiresIn = (expTime * 1000) - Date.now();
 
-    // Renova o token 1 minuto antes de expirar (ou imediatamente se faltar menos de 1 minuto)
-    const refreshIn = Math.max(0, expiresIn - 60000);
+      // Renova o token 1 minuto antes de expirar (ou imediatamente se faltar menos de 1 minuto)
+      const refreshIn = Math.max(0, expiresIn - 60000);
 
-    if (refreshIn > 0) {
-      this.refreshTokenTimer = setTimeout(() => {
-        this.refreshToken().subscribe({
-          next: () => console.log('Token renovado com sucesso'),
-          error: (err) => {
-            console.error('Falha ao renovar token:', err);
-            this.logout();
-          }
-        });
-      }, refreshIn);
+      if (refreshIn > 0) {
+        this.refreshTokenTimer = setTimeout(() => {
+          this.refreshToken().subscribe({
+            next: () => this.logIfEnabled('Token renovado com sucesso'),
+            error: (err) => {
+              this.logIfEnabled('Falha ao renovar token:', err);
+              this.logout();
+            }
+          });
+        }, refreshIn);
+      }
+    } catch (error) {
+      this.logIfEnabled('Erro ao configurar renovação de token:', error);
     }
   }
 
@@ -155,39 +296,58 @@ export class AuthService {
    * @returns Observable com os dados do usuário e token
    */
   login(email: string, senha: string): Observable<{ token: string; user: User }> {
-    console.log('[AuthService] Iniciando processo de login para:', email);
-    return this.http.post<AuthResponse>('/api/v1/auth/login', { email, password: senha }).pipe(
-      tap((response) => {
-        console.log('[AuthService] Resposta do servidor:', response);
-        if (response?.access_token) {
-          console.log('[AuthService] Token recebido, configurando dados de autenticação...');
-          this.setAuthData({
-            token: response.access_token,
-            user: response.user,
-            expiresIn: response.expires_in,
-            refreshToken: response.refresh_token
-          });
+    this.logIfEnabled('Iniciando login para:', email);
 
-          // Usar os dados do usuário diretamente da resposta
-          console.log('[AuthService] Usuário recebido do servidor:', response.user);
-          this.currentUserSubject.next(response.user);
-          this.authState.next(true);
-          this.setupTokenRefresh(response.access_token);
-
-          // Verificar se o token foi salvo corretamente
-          const savedToken = localStorage.getItem(this.TOKEN_KEY);
-          console.log('[AuthService] Token salvo no localStorage:', savedToken ? 'Sim' : 'Não');
-        } else {
-          console.error('[AuthService] Resposta de login inválida - Token não encontrado');
-          throw new Error('Resposta de login inválida');
-        }
-      }),
+    return this.performLogin(email, senha).pipe(
+      tap(response => this.handleLoginSuccess(response)),
       map(() => ({
-        token: this.getToken() || '',
-        user: this.getCurrentUser() as User
+        token: this.tokenManager.getToken() || '',
+        user: this.stateManager.getCurrentUser() as User
       })),
-      catchError(error => this.handleError('login')(error))
+      catchError(error => this.handleLoginError(error))
     );
+  }
+
+  /**
+   * Executa a requisição de login
+   */
+  private performLogin(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.config.apiUrl}/auth/login`, { email, password }).pipe(
+      timeout(this.config.requestTimeout)
+    );
+  }
+
+  /**
+   * Trata sucesso do login
+   */
+  private handleLoginSuccess(response: AuthResponse): void {
+    if (!response?.access_token) {
+      throw new Error('Resposta de login inválida - Token não encontrado');
+    }
+
+    this.tokenManager.setTokens(response.access_token, response.refresh_token);
+    this.stateManager.setAuthenticatedUser(response.user);
+    this.setupTokenRefresh(response.access_token);
+
+    this.logIfEnabled('Login realizado com sucesso para:', response.user.email);
+  }
+
+  /**
+   * Trata erro do login
+   */
+  private handleLoginError(error: any): Observable<never> {
+    this.logIfEnabled('Erro no login:', error);
+    this.stateManager.clearAuthentication();
+    return throwError(() => error);
+  }
+
+  /**
+   * Log condicional (apenas em desenvolvimento)
+   */
+  private logIfEnabled(message: string, ...args: any[]): void {
+    if (this.config.enableLogging) {
+      console.log(`[AuthService] ${message}`, ...args);
+    }
   }
 
   /**
@@ -195,13 +355,7 @@ export class AuthService {
    * @param authData Dados de autenticação
    */
   private setAuthData(authData: AuthData): void {
-    if (authData.token) {
-      localStorage.setItem(this.TOKEN_KEY, authData.token);
-    }
-
-    if (authData.refreshToken) {
-      localStorage.setItem(this.REFRESH_TOKEN_KEY, authData.refreshToken);
-    }
+    this.tokenManager.setTokens(authData.token, authData.refreshToken);
   }
 
   /**
@@ -210,16 +364,19 @@ export class AuthService {
    */
   logout(notifyServer: boolean = true): void {
     if (notifyServer) {
-      // Tenta notificar o servidor sobre o logout, mas não bloqueia o processo
-      this.http.post('/api/v1/auth/logout', {}, {
-        headers: { ...this.authHeaders },
-        responseType: 'text'
-      }).pipe(
-        catchError(error => {
-          console.error('Erro ao notificar logout no servidor:', error);
-          return of(null);
-        })
-      ).subscribe();
+      const token = this.tokenManager.getToken();
+      if (token) {
+        // Tenta notificar o servidor sobre o logout, mas não bloqueia o processo
+        this.http.post(`${this.config.apiUrl}/auth/logout`, {}, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          responseType: 'text'
+        }).pipe(
+          catchError(error => {
+            this.logIfEnabled('Erro ao notificar logout no servidor:', error);
+            return of(null);
+          })
+        ).subscribe();
+      }
     }
 
     this.clearAuthState();
@@ -229,9 +386,8 @@ export class AuthService {
    * Limpa todos os dados de autenticação
    */
   private clearAuthState(): void {
-    // Limpa os tokens
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    // Limpa os tokens usando o manager
+    this.tokenManager.clearTokens();
 
     // Limpa o timer de renovação
     if (this.refreshTokenTimer) {
@@ -239,9 +395,8 @@ export class AuthService {
       this.refreshTokenTimer = null;
     }
 
-    // Atualiza o estado
-    this.currentUserSubject.next(null);
-    this.authState.next(false);
+    // Atualiza o estado usando o manager
+    this.stateManager.clearAuthentication();
   }
 
   /**
@@ -330,57 +485,43 @@ export class AuthService {
   }
 
   /**
-   * Verifica se o usuário está autenticado.
+   * Verifica se o usuário está autenticado
    */
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
+    const hasValidToken = this.tokenManager.hasValidToken();
+    const isStateAuthenticated = this.stateManager.isAuthenticated();
 
-    // Verifica se o token é válido (usa tolerância de 60 segundos)
-    if (!this.isTokenValid(token)) {
-      console.warn('[AuthService] Token expirado, limpando autenticação');
-      this.clearAuthState();
-      return false;
-    }
+    // Se há inconsistência, sincronizar estado
+    if (hasValidToken && !isStateAuthenticated) {
+      const token = this.tokenManager.getToken()!;
+      const user = this.tokenManager.decodeToken(token);
 
-    // Verifica se o estado atual está sincronizado
-    const currentAuthState = this.authState.value;
-    const hasValidToken = this.isTokenValid(token);
-
-    // Se temos um token válido mas o estado está como não autenticado, sincronizar
-    if (hasValidToken && !currentAuthState) {
-      console.log('[AuthService] Token válido encontrado, sincronizando estado de autenticação');
-      const user = this.decodeToken(token);
       if (user) {
-        this.currentUserSubject.next(user);
-        this.authState.next(true);
+        this.stateManager.setAuthenticatedUser(user);
         this.setupTokenRefresh(token);
+        this.logIfEnabled('Estado sincronizado - token válido encontrado');
+        return true;
       }
     }
 
-    // Se não temos token válido mas o estado está como autenticado, limpar
-    if (!hasValidToken && currentAuthState) {
-      console.warn('[AuthService] Estado inconsistente, limpando autenticação');
+    // Se não há token válido mas estado está autenticado, limpar
+    if (!hasValidToken && isStateAuthenticated) {
+      this.logIfEnabled('Token inválido - limpando estado');
       this.clearAuthState();
       return false;
     }
 
-    return hasValidToken;
+    return hasValidToken && isStateAuthenticated;
   }
 
   /**
    * Observable para mudanças de autenticação.
    */
   getAuthState(): Observable<boolean> {
-    return this.authState.asObservable();
+    return this.stateManager.authState$;
   }
 
-  /**
-   * Observable para o usuário atual
-   */
-  get currentUser$(): Observable<User | null> {
-    return this.currentUserSubject.asObservable();
-  }
+
 
   /**
    * Método público para obter o observable do usuário atual
@@ -394,110 +535,27 @@ export class AuthService {
    * Retorna o token JWT atual.
    */
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return this.tokenManager.getToken();
+  }
+
+  /**
+   * Retorna o refresh token atual.
+   */
+  getRefreshToken(): string | null {
+    return this.tokenManager.getRefreshToken();
   }
 
   /**
    * Decodifica o token JWT para obter as informações do usuário.
    * @param token Token JWT
    */
-  /**
-   * Verifica se um token JWT é válido
-   * @param token Token JWT a ser validado
-   * @returns true se o token for válido, false caso contrário
-   */
-  private isTokenValid(token: string): boolean {
-    if (!token) return false;
 
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        console.error('Token JWT inválido: formato incorreto');
-        return false;
-      }
-
-      const payload = JSON.parse(atob(parts[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-
-      // Verifica se o token expirou (com tolerância)
-      if (payload.exp && payload.exp < (currentTime - this.TOKEN_EXPIRATION_TOLERANCE)) {
-        console.warn('Token JWT expirado');
-        return false;
-      }
-
-      // Verifica se o token contém um ID de usuário
-      if (!payload.sub && !payload.id) {
-        console.error('Token JWT inválido: sem ID de usuário');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Erro ao validar token JWT:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Decodifica um token JWT e retorna as informações do usuário
-   * @param token Token JWT a ser decodificado
-   * @returns Objeto User ou null se o token for inválido
-   */
-  private decodeToken(token: string): User | null {
-    try {
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        console.error('Token JWT inválido: formato incorreto');
-        return null;
-      }
-
-      const payload: DecodedToken = JSON.parse(atob(parts[1]));
-
-      // Validações do payload
-      if (!payload || typeof payload !== 'object') {
-        console.error('Token JWT inválido: payload inválido');
-        return null;
-      }
-
-      // Valida campos obrigatórios
-      if (!payload.sub && !payload.id) {
-        console.error('Token JWT inválido: ID do usuário não encontrado');
-        return null;
-      }
-
-      // Determina o role do usuário
-      let userRole: UserRole = getDefaultRole();
-      if (payload.role && isValidRole(payload.role)) {
-        userRole = payload.role as UserRole;
-      }
-
-      // Cria o objeto de usuário com valores padrão seguros
-      const user: User = {
-        id: payload.sub || payload.id || '',
-        name: payload.name || 'Usuário',
-        firstName: payload.firstName || payload.name?.split(' ')[0] || 'Usuário',
-        email: payload.email || '',
-        role: userRole,
-        level: typeof payload.level === 'number' ? Math.max(1, payload.level) : 1,
-        // Adiciona propriedades adicionais do payload, se existirem
-        ...(payload['avatar'] && { avatar: String(payload['avatar']) }),
-        ...(payload['security_question'] && { security_question: String(payload['security_question']) }),
-        roles: Array.isArray(payload['roles']) ? payload['roles'] : []
-      };
-
-      return user;
-
-    } catch (error) {
-      console.error('Erro ao decodificar token JWT:', error);
-      return null;
-    }
-  }
 
   /**
    * Verifica se há token salvo.
    */
   private hasToken(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
+    return !!this.tokenManager.getToken();
   }
 
   /**
@@ -508,49 +566,44 @@ export class AuthService {
    */
   getCurrentUser(forceRefresh: boolean = false): User | null {
     // Se forçado a atualizar e tivermos um refresh token, tenta renovar
-    if (forceRefresh && this.getRefreshToken()) {
+    if (forceRefresh && this.tokenManager.getRefreshToken()) {
       this.refreshToken().subscribe({
-        next: () => console.log('Token renovado com sucesso'),
+        next: () => this.logIfEnabled('Token renovado com sucesso'),
         error: (err) => {
-          console.error('Falha ao renovar token:', err);
+          this.logIfEnabled('Falha ao renovar token:', err);
           this.logout();
         }
       });
     }
 
-    const token = this.getToken();
-    if (!token) {
-      return null;
-    }
+    // Verificar se há token válido e sincronizar estado se necessário
+    if (this.tokenManager.hasValidToken()) {
+      const token = this.tokenManager.getToken()!;
+      const user = this.tokenManager.decodeToken(token);
 
-    // Se o token estiver inválido, tenta renovar se possível
-    if (!this.isTokenValid(token) && this.getRefreshToken()) {
-      this.refreshToken().subscribe({
-        next: () => console.log('Token renovado com sucesso'),
-        error: (err) => {
-          console.error('Falha ao renovar token:', err);
-          this.logout();
-        }
-      });
-      return this.currentUserSubject.value; // Retorna o usuário atual enquanto renova
-    }
-
-    try {
-      const user = this.decodeToken(token);
       if (user) {
-        // Atualiza o usuário atual se for diferente
-        const currentUser = this.currentUserSubject.value;
-        if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
-          this.currentUserSubject.next(user);
+        // Sincronizar estado se necessário
+        const currentUser = this.stateManager.getCurrentUser();
+        if (!currentUser || JSON.stringify(currentUser) !== JSON.stringify(user)) {
+          this.stateManager.setAuthenticatedUser(user);
         }
         return user;
       }
-      return null;
-    } catch (error) {
-      console.error('Erro ao obter usuário atual:', error);
-      this.clearAuthState();
-      return null;
     }
+
+    // Se não há token válido mas há refresh token, tentar renovar
+    if (!this.tokenManager.hasValidToken() && this.tokenManager.getRefreshToken()) {
+      this.refreshToken().subscribe({
+        next: () => this.logIfEnabled('Token renovado automaticamente'),
+        error: (err) => {
+          this.logIfEnabled('Falha na renovação automática:', err);
+          this.logout();
+        }
+      });
+      return this.stateManager.getCurrentUser(); // Retorna usuário atual enquanto renova
+    }
+
+    return this.stateManager.getCurrentUser();
   }
 
   /**
@@ -575,8 +628,7 @@ export class AuthService {
             refreshToken: response.refresh_token
           });
 
-          this.currentUserSubject.next(response.user);
-          this.authState.next(true);
+          this.stateManager.setAuthenticatedUser(response.user);
           this.setupTokenRefresh(response.access_token);
         } else {
           throw new Error('Resposta de renovação de token inválida');
@@ -594,12 +646,7 @@ export class AuthService {
     );
   }
 
-  /**
-   * Obtém o refresh token armazenado
-   */
-  private getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
-  }
+
 
   /**
    * Verifica se o token está próximo do vencimento
@@ -611,10 +658,8 @@ export class AuthService {
     if (!currentToken) return true;
 
     try {
-      const decoded = this.decodeToken(currentToken);
-      if (!decoded) return true;
-
-      const expTime = (decoded as unknown as { exp?: number }).exp;
+      const payload = JSON.parse(atob(currentToken.split('.')[1]));
+      const expTime = payload.exp;
       if (!expTime) return true;
 
       const now = Math.floor(Date.now() / 1000);
@@ -640,13 +685,12 @@ export class AuthService {
     return this.http.get<{ token: string }>('/api/v1/auth/google').pipe(
       tap((res) => {
         if (res?.token) {
-          localStorage.setItem(this.TOKEN_KEY, res.token);
-          const user = this.decodeToken(res.token);
+          this.tokenManager.setTokens(res.token);
+          const user = this.tokenManager.decodeToken(res.token);
           if (user) {
-            this.currentUserSubject.next(user);
-            this.authState.next(true);
+            this.stateManager.setAuthenticatedUser(user);
           } else {
-            console.error('Falha ao decodificar token JWT do Google');
+            this.logIfEnabled('Falha ao decodificar token JWT do Google');
             this.clearAuthState();
             throw new Error('Token JWT inválido do Google');
           }
@@ -714,13 +758,12 @@ export class AuthService {
     return this.http.put<{ token: string }>('/api/v1/auth/me', dados).pipe(
       tap((res) => {
         if (res?.token) {
-          localStorage.setItem(this.TOKEN_KEY, res.token);
-          const user = this.decodeToken(res.token);
+          this.tokenManager.setTokens(res.token);
+          const user = this.tokenManager.decodeToken(res.token);
           if (user) {
-            this.currentUserSubject.next(user);
-            this.authState.next(true);
+            this.stateManager.setAuthenticatedUser(user);
           } else {
-            console.error('Falha ao decodificar token JWT após atualização');
+            this.logIfEnabled('Falha ao decodificar token JWT após atualização');
             this.clearAuthState();
             throw new Error('Token JWT inválido após atualização');
           }
