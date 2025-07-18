@@ -5,7 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
-import { PokemonCacheService } from '../../../core/services/pokemon-cache.service';
+import { PokemonCacheHelper } from '../../../core/services/pokemon-cache-helper.service';
+import { PokeApiService } from '../../../core/services/pokeapi.service';
 
 @Component({
   selector: 'app-pokemon-details-mobile',
@@ -51,7 +52,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     if (!this.pokemonSpecies || !this.pokemonSpecies.color) {
       return 'N/A';
     }
-    
+
     // Mapeamento de cores para português
     const colorMap: {[key: string]: string} = {
       'black': 'Preto',
@@ -65,11 +66,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
       'white': 'Branco',
       'yellow': 'Amarelo'
     };
-    
+
     const colorName = this.pokemonSpecies.color.name;
     return colorMap[colorName] || this.capitalizeFirstLetter(colorName) || 'N/A';
   }
-  
+
   /**
    * Capitaliza a primeira letra de uma string
    * @param str String para capitalizar
@@ -112,7 +113,8 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     private translate: TranslateService,
     private http: HttpClient,
     private viewedPokemonService: ViewedPokemonService,
-    private cacheService: PokemonCacheService,
+    private pokemonCacheHelper: PokemonCacheHelper,
+    private pokeApiService: PokeApiService,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
@@ -148,15 +150,15 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('PokemonDetailsMobileComponent - ngOnChanges', changes);
-    
+
     if (changes['pokemonId'] && changes['pokemonId'].currentValue !== changes['pokemonId'].previousValue) {
       if (changes['pokemonId'].currentValue && changes['pokemonId'].currentValue > 0) {
         this.loadPokemonData();
       }
     }
-    
+
     // Add this block to handle modal reopen events
-    if (changes['isOpen'] && changes['isOpen'].currentValue === true && 
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true &&
         changes['isOpen'].previousValue === false) {
       console.log('Modal reopened - reloading data');
       if (this.pokemonId && this.pokemonId > 0) {
@@ -185,9 +187,9 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     const cacheKey = `https://pokeapi.co/api/v2/pokemon/${this.pokemonId}`;
     const startTime = Date.now();
 
-    // Usar cache service em vez de HTTP direto
-    console.log('📦 Buscando dados do Pokémon no cache service...');
-    this.cacheService.getPokemon(this.pokemonId)
+    // Usar PokeApiService refatorado para consistência
+    console.log('📦 Buscando dados do Pokémon no PokeApiService...');
+    this.pokeApiService.getPokemon(this.pokemonId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (pokemon: any) => {
@@ -202,7 +204,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
           this.loading = false;
 
           // Pré-carregar Pokémon adjacentes para melhor UX
-          this.cacheService.preloadAdjacentPokemon(this.pokemonId);
+          this.pokemonCacheHelper.preloadAdjacentPokemon(this.pokemonId);
         },
         error: (error) => {
           console.error('❌ Erro ao carregar Pokémon:', error);
@@ -351,7 +353,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   getOffensiveStats(): any[] {
     if (!this.pokemon?.stats) return [];
     const offensiveStats = ['attack', 'special-attack', 'speed'];
-    return this.pokemon.stats.filter((stat: any) => 
+    return this.pokemon.stats.filter((stat: any) =>
       offensiveStats.includes(stat.stat.name)
     );
   }
@@ -359,7 +361,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   getDefensiveStats(): any[] {
     if (!this.pokemon?.stats) return [];
     const defensiveStats = ['defense', 'special-defense', 'hp'];
-    return this.pokemon.stats.filter((stat: any) => 
+    return this.pokemon.stats.filter((stat: any) =>
       defensiveStats.includes(stat.stat.name)
     );
   }
@@ -367,7 +369,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   getUtilityStats(): any[] {
     if (!this.pokemon?.stats) return [];
     const utilityStats = ['speed', 'hp'];
-    return this.pokemon.stats.filter((stat: any) => 
+    return this.pokemon.stats.filter((stat: any) =>
       utilityStats.includes(stat.stat.name)
     );
   }
@@ -378,7 +380,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
 
   getStatColor(stat: number): string {
     const percentage = stat / 255;
-    
+
     if (percentage >= 0.7) return '#4caf50'; // Verde
     if (percentage >= 0.4) return '#ffc107'; // Amarelo
     return '#f44336'; // Vermelho
@@ -388,13 +390,13 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     // Atualizar o idioma atual antes de carregar os dados
     this.currentLang = this.translate.currentLang || 'pt-BR';
     console.log(`🌐 Idioma atual: ${this.currentLang}`);
-    
+
     // Usar cache service para dados da espécie
     this.isLoadingFlavor = true;
     this.flavorTexts = []; // Limpar flavor texts antigos
     this.currentFlavorIndex = 0; // Resetar índice do flavor
-    
-    this.cacheService.getPokemonSpecies(this.pokemonId)
+
+    this.pokeApiService.getPokemonSpecies(this.pokemonId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (species: any) => {
@@ -420,18 +422,18 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     const newLang = this.translate.currentLang || 'pt-BR';
     const langChanged = this.currentLang !== newLang;
     this.currentLang = newLang;
-    
+
     // Limpar os textos existentes se o idioma mudou
     if (langChanged) {
       this.flavorTexts = [];
     }
-    
+
     // Se já temos textos carregados e o idioma não mudou, não precisamos recarregar
     if (this.flavorTexts.length > 0 && !langChanged) {
       this.isLoadingFlavor = false;
       return;
     }
-    
+
     this.isLoadingFlavor = true;
     console.log(`🔍 Carregando flavor texts para idioma: ${this.currentLang}`);
 
@@ -440,7 +442,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
       if (this.currentLang === 'pt-BR' || this.currentLang === 'pt') {
         console.log('🌐 Tentando carregar traduções locais para português...');
         const localTranslations = await this.getLocalTranslations(this.pokemonId);
-        
+
         if (localTranslations && localTranslations.length > 0) {
           console.log('✅ Usando traduções locais do arquivo JSON');
           this.flavorTexts = localTranslations;
@@ -449,11 +451,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
           return;
         }
       }
-      
+
       // Para outros idiomas ou se não encontrar traduções locais, extrair da API
       console.log(`ℹ️ Extraindo flavor texts da API para idioma: ${this.currentLang}`);
       this.extractFlavorTexts(this.pokemonSpecies);
-      
+
     } catch (error) {
       console.error('❌ Erro ao carregar traduções:', error);
       // Em caso de erro, tentar extrair dos dados da espécie como fallback
@@ -560,7 +562,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     if (!url) return;
 
     this.evolutionLoading = true;
-    this.cacheService.getEvolutionChain(url)
+    this.pokemonCacheHelper.getEvolutionChain(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (evolution: any) => {
@@ -685,13 +687,13 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   public onTouchEnd(event: TouchEvent): void {}
 
   public previousCarouselImage(): void {
-    this.currentCarouselIndex = 
-      (this.currentCarouselIndex - 1 + this.carouselImages.length) % 
+    this.currentCarouselIndex =
+      (this.currentCarouselIndex - 1 + this.carouselImages.length) %
       this.carouselImages.length;
   }
 
   public nextCarouselImage(): void {
-    this.currentCarouselIndex = 
+    this.currentCarouselIndex =
       (this.currentCarouselIndex + 1) % this.carouselImages.length;
   }
 
@@ -731,19 +733,19 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
 
   public getPokemonTrivia(): string[] {
     const trivia: string[] = [];
-    
+
     if (!this.pokemon) return [];
 
     // 1. Trivia sobre tipos
     if (this.pokemon.types && this.pokemon.types.length > 0) {
       const types = this.pokemon.types.map((t: any) => this.getTranslatedTypeName(t.type.name));
-      
+
       if (types.length === 1) {
         trivia.push(this.translate.instant('mobile.trivia.single_type', { type: types[0] }));
       } else if (types.length > 1) {
-        trivia.push(this.translate.instant('mobile.trivia.dual_type', { 
-          type1: types[0], 
-          type2: types[1] 
+        trivia.push(this.translate.instant('mobile.trivia.dual_type', {
+          type1: types[0],
+          type2: types[1]
         }));
       }
     }
@@ -752,13 +754,13 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     if (this.pokemon.weight && this.pokemon.height) {
       const weight = this.pokemon.weight / 10; // Converte para kg
       const height = this.pokemon.height / 10; // Converte para metros
-      
+
       if (weight > 200) {
         trivia.push(this.translate.instant('mobile.trivia.heavy_weight'));
       } else if (weight < 10) {
         trivia.push(this.translate.instant('mobile.trivia.light_weight'));
       }
-      
+
       if (height > 2) {
         trivia.push(this.translate.instant('mobile.trivia.tall_height'));
       } else if (height < 0.5) {
@@ -777,11 +779,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
       if (stats.hp > 150) {
         trivia.push(this.translate.instant('mobile.trivia.high_hp'));
       }
-      
+
       if (stats.attack > 120) {
         trivia.push(this.translate.instant('mobile.trivia.high_attack'));
       }
-      
+
       if (stats.speed > 120) {
         trivia.push(this.translate.instant('mobile.trivia.high_speed'));
       }
@@ -792,11 +794,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
       if (this.pokemonSpecies.is_legendary) {
         trivia.push(this.translate.instant('mobile.trivia.legendary'));
       }
-      
+
       if (this.pokemonSpecies.is_mythical) {
         trivia.push(this.translate.instant('mobile.trivia.mythical'));
       }
-      
+
       if (this.pokemonSpecies.habitat) {
         trivia.push(this.translate.instant('mobile.trivia.habitat', {
           habitat: this.translate.instant(`habitats.${this.pokemonSpecies.habitat.name}`)

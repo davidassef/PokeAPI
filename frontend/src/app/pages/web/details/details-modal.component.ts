@@ -6,7 +6,7 @@ import { forkJoin, Subject, firstValueFrom } from 'rxjs';
 import { map, takeUntil, tap } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
-import { PokemonCacheService } from '../../../core/services/pokemon-cache.service';
+import { PokemonCacheHelper } from '../../../core/services/pokemon-cache-helper.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
 
 @Component({
@@ -119,7 +119,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     private translate: TranslateService,
     private http: HttpClient,
     private viewedPokemonService: ViewedPokemonService,
-    private cacheService: PokemonCacheService,
+    private pokemonCacheHelper: PokemonCacheHelper,
     private pokeApiService: PokeApiService
   ) {}
 
@@ -220,9 +220,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       console.error('❌ Erro ao usar PokeApiService:', error);
     }
 
-    // Usar cache service como a versão mobile para consistência
+    // Usar PokeApiService refatorado para consistência
     console.log('🔄 Iniciando subscription para getPokemon...');
-    const pokemonObservable = this.cacheService.getPokemon(id);
+    const pokemonObservable = this.pokeApiService.getPokemon(id);
     console.log('🔍 Observable criado:', !!pokemonObservable);
 
     // TEMPORÁRIO: Testar subscription direta sem pipe
@@ -436,8 +436,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     console.log(`🔍 Iniciando busca de flavor text para: ${lang}, Pokémon ID: ${pokemonId}`);
     this.isLoadingFlavor = true;
 
-    // Tentar usar cache inteligente primeiro
-    this.cacheService.getFlavorTexts(pokemonId, lang)
+    // Tentar usar PokemonCacheHelper para flavor texts
+    this.pokemonCacheHelper.getFlavorTexts(pokemonId, lang)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cachedFlavors: string[]) => {
@@ -449,7 +449,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.isLoadingFlavor = false;
 
             // Pré-carregar flavor texts dos Pokémon adjacentes
-            this.cacheService.preloadAdjacentPokemon(pokemonId, lang);
+            this.pokemonCacheHelper.preloadAdjacentPokemon(pokemonId, lang);
 
             // Verificar indicador de scroll após carregamento
             setTimeout(() => this.checkScrollIndicator(), 100);
@@ -725,8 +725,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.tabDataLoaded['curiosities'] = true;
     }
 
-    // Usar cache service como a versão mobile para consistência
-    this.cacheService.getPokemonSpecies(this.pokemon.id)
+    // Usar PokeApiService refatorado para consistência
+    this.pokeApiService.getPokemonSpecies(this.pokemon.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {

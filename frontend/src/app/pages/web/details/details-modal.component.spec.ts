@@ -5,7 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { DetailsModalComponent } from './details-modal.component';
-import { PokemonCacheService } from '../../../core/services/pokemon-cache.service';
+import { PokemonCacheHelper } from '../../../core/services/pokemon-cache-helper.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
 import { Pokemon } from '../../../models/pokemon.model';
@@ -14,7 +14,7 @@ describe('DetailsModalComponent', () => {
   let component: DetailsModalComponent;
   let fixture: ComponentFixture<DetailsModalComponent>;
   let mockModalController: jasmine.SpyObj<ModalController>;
-  let mockCacheService: jasmine.SpyObj<PokemonCacheService>;
+  let mockCacheHelper: jasmine.SpyObj<PokemonCacheHelper>;
   let mockCapturedService: jasmine.SpyObj<CapturedService>;
   let mockViewedService: jasmine.SpyObj<ViewedPokemonService>;
 
@@ -73,7 +73,7 @@ describe('DetailsModalComponent', () => {
 
   beforeEach(async () => {
     const modalSpy = jasmine.createSpyObj('ModalController', ['dismiss']);
-    const cacheSpy = jasmine.createSpyObj('PokemonCacheService', ['getFlavorTexts']);
+    const cacheHelperSpy = jasmine.createSpyObj('PokemonCacheHelper', ['getFlavorTexts']);
     const capturedSpy = jasmine.createSpyObj('CapturedService', ['isCaptured', 'toggleCapture']);
     const viewedSpy = jasmine.createSpyObj('ViewedPokemonService', ['markAsViewed']);
 
@@ -86,7 +86,7 @@ describe('DetailsModalComponent', () => {
       ],
       providers: [
         { provide: ModalController, useValue: modalSpy },
-        { provide: PokemonCacheService, useValue: cacheSpy },
+        { provide: PokemonCacheHelper, useValue: cacheHelperSpy },
         { provide: CapturedService, useValue: capturedSpy },
         { provide: ViewedPokemonService, useValue: viewedSpy },
         TranslateService
@@ -95,9 +95,9 @@ describe('DetailsModalComponent', () => {
 
     fixture = TestBed.createComponent(DetailsModalComponent);
     component = fixture.componentInstance;
-    
+
     mockModalController = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
-    mockCacheService = TestBed.inject(PokemonCacheService) as jasmine.SpyObj<PokemonCacheService>;
+    mockCacheHelper = TestBed.inject(PokemonCacheHelper) as jasmine.SpyObj<PokemonCacheHelper>;
     mockCapturedService = TestBed.inject(CapturedService) as jasmine.SpyObj<CapturedService>;
     mockViewedService = TestBed.inject(ViewedPokemonService) as jasmine.SpyObj<ViewedPokemonService>;
 
@@ -111,7 +111,7 @@ describe('DetailsModalComponent', () => {
 
   it('should initialize with correct Pokemon data', () => {
     component.ngOnInit();
-    
+
     expect(component.pokemon).toEqual(mockPokemon);
     expect(component.pokemonId).toBe(1);
   });
@@ -119,9 +119,9 @@ describe('DetailsModalComponent', () => {
   it('should fetch flavor texts on initialization', () => {
     const mockFlavorTexts = ['Bulbasaur flavor text 1', 'Bulbasaur flavor text 2'];
     mockCacheService.getFlavorTexts.and.returnValue(of(mockFlavorTexts));
-    
+
     component.ngOnInit();
-    
+
     expect(mockCacheService.getFlavorTexts).toHaveBeenCalledWith(1, 'pt-BR');
     expect(component.flavorTexts).toEqual(mockFlavorTexts);
     expect(component.flavorText).toBe(mockFlavorTexts[0]);
@@ -130,10 +130,10 @@ describe('DetailsModalComponent', () => {
   it('should navigate between flavor texts correctly', () => {
     component.flavorTexts = ['Text 1', 'Text 2', 'Text 3'];
     component.currentFlavorIndex = 0;
-    
+
     component.nextFlavor();
     expect(component.currentFlavorIndex).toBe(1);
-    
+
     component.previousFlavor();
     expect(component.currentFlavorIndex).toBe(0);
   });
@@ -141,10 +141,10 @@ describe('DetailsModalComponent', () => {
   it('should not navigate beyond flavor text boundaries', () => {
     component.flavorTexts = ['Text 1', 'Text 2'];
     component.currentFlavorIndex = 1;
-    
+
     component.nextFlavor();
     expect(component.currentFlavorIndex).toBe(1); // Should not exceed array length
-    
+
     component.currentFlavorIndex = 0;
     component.previousFlavor();
     expect(component.currentFlavorIndex).toBe(0); // Should not go below 0
@@ -153,14 +153,14 @@ describe('DetailsModalComponent', () => {
   it('should return current flavor text correctly', () => {
     component.flavorTexts = ['First text', 'Second text'];
     component.currentFlavorIndex = 1;
-    
+
     const currentText = component.getCurrentFlavorText();
     expect(currentText).toBe('Second text');
   });
 
   it('should handle empty flavor texts gracefully', () => {
     component.flavorTexts = [];
-    
+
     const currentText = component.getCurrentFlavorText();
     expect(currentText).toContain('NO_FLAVOR_TEXT_AVAILABLE');
   });
@@ -169,21 +169,21 @@ describe('DetailsModalComponent', () => {
     spyOn(component, 'animateFlavorTransition').and.callThrough();
     component.flavorTexts = ['Text 1', 'Text 2'];
     component.currentFlavorIndex = 0;
-    
+
     component.nextFlavor();
-    
+
     expect(component.animateFlavorTransition).toHaveBeenCalled();
   });
 
   it('should close modal when closeModal is called', () => {
     component.closeModal();
-    
+
     expect(mockModalController.dismiss).toHaveBeenCalled();
   });
 
   it('should mark Pokemon as viewed on initialization', () => {
     component.ngOnInit();
-    
+
     expect(mockViewedService.markAsViewed).toHaveBeenCalledWith(mockPokemon);
   });
 
@@ -204,9 +204,9 @@ describe('DetailsModalComponent', () => {
 
   it('should check scroll indicator correctly', () => {
     spyOn(component, 'checkScrollIndicator').and.callThrough();
-    
+
     component.resetScrollAndCheckIndicator();
-    
+
     expect(component.checkScrollIndicator).toHaveBeenCalled();
   });
 
@@ -218,16 +218,16 @@ describe('DetailsModalComponent', () => {
         clientHeight: 100
       }
     };
-    
+
     component.onFlavorTextScroll(mockEvent);
-    
+
     // Should handle scroll without errors
     expect(component).toBeTruthy();
   });
 
   it('should ensure valid image fallback', () => {
     const validImage = component.ensureValidImage();
-    
+
     expect(validImage).toBeTruthy();
     expect(typeof validImage).toBe('string');
   });
@@ -235,21 +235,21 @@ describe('DetailsModalComponent', () => {
   it('should handle loading states correctly', () => {
     component.isLoadingFlavor = true;
     fixture.detectChanges();
-    
+
     expect(component.isLoadingFlavor).toBeTruthy();
-    
+
     component.isLoadingFlavor = false;
     fixture.detectChanges();
-    
+
     expect(component.isLoadingFlavor).toBeFalsy();
   });
 
   it('should destroy subscriptions on component destroy', () => {
     spyOn(component['destroy$'], 'next');
     spyOn(component['destroy$'], 'complete');
-    
+
     component.ngOnDestroy();
-    
+
     expect(component['destroy$'].next).toHaveBeenCalled();
     expect(component['destroy$'].complete).toHaveBeenCalled();
   });
