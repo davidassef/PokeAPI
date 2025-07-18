@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TypeColorService } from '../../../services/type-color.service';
 import { RankedPokemon } from '../../../models/ranked-pokemon.model';
 
@@ -7,7 +7,7 @@ import { RankedPokemon } from '../../../models/ranked-pokemon.model';
   templateUrl: './pokemon-rank-card.component.html',
   styleUrls: ['./pokemon-rank-card.component.scss']
 })
-export class PokemonRankCardComponent implements OnInit {
+export class PokemonRankCardComponent {
   @Input() pokemon!: RankedPokemon;
   @Input() position: number = 0;
   @Input() isChampion: boolean = false;

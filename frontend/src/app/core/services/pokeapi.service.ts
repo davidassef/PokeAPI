@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, from, of } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import {
   Pokemon,
@@ -13,32 +13,74 @@ import { CacheService } from './cache.service';
 import { ImagePreloadService } from './image-preload.service';
 
 /**
+ * Interface para configuração do PokeApiService
+ */
+interface PokeApiConfig {
+  baseUrl: string;
+  backendUrl: string;
+  cacheTTL: {
+    pokemon: number;
+    species: number;
+    list: number;
+    ranking: number;
+  };
+  enableLogging: boolean;
+}
+
+/**
  * Serviço para comunicação com a PokeAPI
  * Gerencia todas as requisições relacionadas aos dados dos Pokémons
  */
 @Injectable({
   providedIn: 'root'
 })
+
 export class PokeApiService {
-  private readonly baseUrl = 'https://pokeapi.co/api/v2';
-  private readonly backendUrl = `${environment.apiUrl}/api/v1`; // URL do nosso backend FastAPI
-  private pokemonCacheSubject = new BehaviorSubject<Map<string, Pokemon>>(new Map());
-  private speciesCacheSubject = new BehaviorSubject<Map<string, PokemonSpecies>>(new Map());
+  private config: PokeApiConfig = {
+    baseUrl: 'https://pokeapi.co/api/v2',
+    backendUrl: `${environment.apiUrl}/api/v1`,
+    cacheTTL: {
+      pokemon: 2 * 60 * 60 * 1000,    // 2 horas
+      species: 2 * 60 * 60 * 1000,    // 2 horas
+      list: 30 * 60 * 1000,           // 30 minutos
+      ranking: 5 * 60 * 1000          // 5 minutos
+    },
+    enableLogging: !environment.production
+  };
 
   constructor(
     private http: HttpClient,
     private cacheService: CacheService,
     private imagePreloadService: ImagePreloadService
   ) {
-    console.log('[PokeApiService] Backend URL configurada:', this.backendUrl);
-    console.log('[PokeApiService] Environment:', environment);
+    if (this.config.enableLogging) {
+      console.log('[PokeApiService] Backend URL configurada:', this.config.backendUrl);
+      console.log('[PokeApiService] Environment:', environment);
+    }
+  }
 
-    // Configurar cache para Pokémon
-    this.cacheService.configure({
-      maxSize: 100, // 100MB para dados de Pokémon
-      defaultTTL: 60 * 60 * 1000, // 1 hora para dados de Pokémon
-      cleanupInterval: 10 * 60 * 1000 // Limpeza a cada 10 minutos
-    });
+  /**
+   * Tratamento de erro padronizado
+   */
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      if (this.config.enableLogging) {
+        console.error(`${operation} failed:`, error);
+      }
+      return of(result as T);
+    };
+  }
+
+  /**
+   * Preload de imagem do Pokémon (responsabilidade separada)
+   */
+  private preloadPokemonImage(pokemon: Pokemon): void {
+    if (pokemon.sprites?.other?.['official-artwork']?.front_default) {
+      this.imagePreloadService.preload(
+        pokemon.sprites.other['official-artwork'].front_default,
+        'high'
+      ).subscribe();
+    }
   }
 
   /**
@@ -57,14 +99,15 @@ export class PokeApiService {
           .set('limit', limit.toString())
           .set('offset', offset.toString());
 
-        return this.http.get<PokemonListResponse>(`${this.baseUrl}/pokemon`, { params });
+        return this.http.get<PokemonListResponse>(`${this.config.baseUrl}/pokemon`, { params });
       },
-      30 * 60 * 1000 // 30 minutos TTL para listas
+      this.config.cacheTTL.list
     ).pipe(
       tap(response => {
         // Preload das primeiras imagens da lista
         this.preloadPokemonImages(response.results.slice(0, 10));
-      })
+      }),
+      catchError(this.handleError<PokemonListResponse>('getPokemonList', { results: [], count: 0, next: null, previous: null }))
     );
   }
 
@@ -94,6 +137,21 @@ export class PokeApiService {
   }
 
   /**
+   * Busca dados do Pokémon da API (método focado)
+   */
+  private fetchPokemonData(identifier: string | number): Observable<Pokemon> {
+    return this.http.get<Pokemon>(`${this.config.baseUrl}/pokemon/${identifier}`).pipe(
+      map(pokemon => {
+        // Cache adicional por ID se o identifier for nome
+        if (isNaN(Number(identifier))) {
+          this.cacheService.set(`pokemon_${pokemon.id}`, pokemon, this.config.cacheTTL.pokemon);
+        }
+        return pokemon;
+      })
+    );
+  }
+
+  /**
    * Busca detalhes de um Pokémon específico
    * @param identifier ID ou nome do Pokémon
    * @returns Observable com dados do Pokémon
@@ -103,26 +161,14 @@ export class PokeApiService {
 
     return this.cacheService.get<Pokemon>(
       cacheKey,
-      () => this.http.get<Pokemon>(`${this.baseUrl}/pokemon/${identifier}`).pipe(
-        map(pokemon => {
-          // Cache adicional por ID se o identifier for nome
-          if (isNaN(Number(identifier))) {
-            this.cacheService.set(`pokemon_${pokemon.id}`, pokemon);
-          }
-          return pokemon;
-        })
-      ),
-      2 * 60 * 60 * 1000 // 2 horas TTL para dados de Pokémon
+      () => this.fetchPokemonData(identifier),
+      this.config.cacheTTL.pokemon
     ).pipe(
       tap(pokemon => {
-        // Preload da imagem do Pokémon
-        if (pokemon.sprites?.other?.['official-artwork']?.front_default) {
-          this.imagePreloadService.preload(
-            pokemon.sprites.other['official-artwork'].front_default,
-            'high'
-          ).subscribe();
-        }
-      })
+        // Preload da imagem do Pokémon (responsabilidade separada)
+        this.preloadPokemonImage(pokemon);
+      }),
+      catchError(this.handleError<Pokemon>('getPokemon'))
     );
   }
 
@@ -132,22 +178,22 @@ export class PokeApiService {
    * @returns Observable com dados da espécie
    */
   getPokemonSpecies(identifier: string | number): Observable<PokemonSpecies> {
-    const key = identifier.toString().toLowerCase();
-    const cached = this.speciesCacheSubject.value.get(key);
+    const cacheKey = `pokemon_species_${identifier.toString().toLowerCase()}`;
 
-    if (cached) {
-      return from([cached]);
-    }
-
-    return this.http.get<PokemonSpecies>(`${this.baseUrl}/pokemon-species/${identifier}`).pipe(
-      map(species => {
-        // Adiciona ao cache
-        const cache = this.speciesCacheSubject.value;
-        cache.set(key, species);
-        cache.set(species.id.toString(), species);
-        this.speciesCacheSubject.next(cache);
-        return species;
-      })
+    return this.cacheService.get<PokemonSpecies>(
+      cacheKey,
+      () => this.http.get<PokemonSpecies>(`${this.config.baseUrl}/pokemon-species/${identifier}`).pipe(
+        map(species => {
+          // Cache adicional por ID se o identifier for nome
+          if (isNaN(Number(identifier))) {
+            this.cacheService.set(`pokemon_species_${species.id}`, species, this.config.cacheTTL.species);
+          }
+          return species;
+        })
+      ),
+      this.config.cacheTTL.species
+    ).pipe(
+      catchError(this.handleError<PokemonSpecies>('getPokemonSpecies'))
     );
   }
 
@@ -156,8 +202,16 @@ export class PokeApiService {
    * @returns Observable com lista de tipos
    */
   getPokemonTypes(): Observable<PokemonListItem[]> {
-    return this.http.get<PokemonListResponse>(`${this.baseUrl}/type`).pipe(
-      map(response => response.results)
+    const cacheKey = 'pokemon_types';
+
+    return this.cacheService.get<PokemonListItem[]>(
+      cacheKey,
+      () => this.http.get<PokemonListResponse>(`${this.config.baseUrl}/type`).pipe(
+        map(response => response.results)
+      ),
+      24 * 60 * 60 * 1000 // 24 horas TTL para tipos (dados estáticos)
+    ).pipe(
+      catchError(this.handleError<PokemonListItem[]>('getPokemonTypes', []))
     );
   }
 
@@ -167,8 +221,16 @@ export class PokeApiService {
    * @returns Observable com lista de Pokémons do tipo
    */
   getPokemonsByType(type: string): Observable<PokemonListItem[]> {
-    return this.http.get<any>(`${this.baseUrl}/type/${type}`).pipe(
-      map(response => response.pokemon.map((p: any) => p.pokemon))
+    const cacheKey = `pokemon_by_type_${type}`;
+
+    return this.cacheService.get<PokemonListItem[]>(
+      cacheKey,
+      () => this.http.get<any>(`${this.config.baseUrl}/type/${type}`).pipe(
+        map(response => response.pokemon.map((p: any) => p.pokemon))
+      ),
+      2 * 60 * 60 * 1000 // 2 horas TTL para listas por tipo
+    ).pipe(
+      catchError(this.handleError<PokemonListItem[]>('getPokemonsByType', []))
     );
   }
 
@@ -215,8 +277,7 @@ export class PokeApiService {
    * Limpa o cache de Pokémons
    */
   clearCache(): void {
-    this.pokemonCacheSubject.next(new Map());
-    this.speciesCacheSubject.next(new Map());
+    this.cacheService.clear();
   }
 
   /**
@@ -224,8 +285,9 @@ export class PokeApiService {
    * @returns Observable com lista de gerações
    */
   getGenerations(): Observable<PokemonListItem[]> {
-    return this.http.get<PokemonListResponse>(`${this.baseUrl}/generation`).pipe(
-      map(response => response.results)
+    return this.http.get<PokemonListResponse>(`${this.config.baseUrl}/generation`).pipe(
+      map(response => response.results),
+      catchError(this.handleError<PokemonListItem[]>('getGenerations', []))
     );
   }
 
@@ -235,8 +297,9 @@ export class PokeApiService {
    * @returns Observable com lista de Pokémons da geração
    */
   getPokemonsByGeneration(generation: string | number): Observable<PokemonListItem[]> {
-    return this.http.get<any>(`${this.baseUrl}/generation/${generation}`).pipe(
-      map(response => response.pokemon_species)
+    return this.http.get<any>(`${this.config.baseUrl}/generation/${generation}`).pipe(
+      map(response => response.pokemon_species),
+      catchError(this.handleError<PokemonListItem[]>('getPokemonsByGeneration', []))
     );
   }
 
@@ -246,7 +309,7 @@ export class PokeApiService {
    */
   async getTypes(): Promise<string[]> {
     try {
-      const response = await this.http.get<PokemonListResponse>(`${this.baseUrl}/type`).toPromise();
+      const response = await this.http.get<PokemonListResponse>(`${this.config.baseUrl}/type`).toPromise();
       return response?.results.map(type => type.name) || [];
     } catch (error) {
       console.error('Error fetching Pokemon types:', error);
@@ -277,7 +340,7 @@ export class PokeApiService {
         }
 
         // Usa o backend FastAPI em vez da PokeAPI
-        return this.http.get<any[]>(`${this.backendUrl}/ranking/`, { headers }).pipe(
+        return this.http.get<any[]>(`${this.config.backendUrl}/ranking/`, { headers }).pipe(
           map(response => this.normalizeRankingResponse(response)),
           catchError(error => {
             console.error('Erro ao buscar ranking global:', error);
@@ -327,7 +390,7 @@ export class PokeApiService {
         }
 
         // Usa a URL base do backend
-        return this.http.get<any[]>(`${this.backendUrl}/ranking/local`, {
+        return this.http.get<any[]>(`${this.config.backendUrl}/ranking/local`, {
           params: new HttpParams().set('region', region),
           headers
         }).pipe(
@@ -626,7 +689,7 @@ export class PokeApiService {
         }
 
         return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
-          `${this.backendUrl}/ranking/?limit=${limit}`,
+          `${this.config.backendUrl}/ranking/?limit=${limit}`,
           { headers }
         ).pipe(
           catchError(error => {

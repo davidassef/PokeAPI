@@ -26,7 +26,8 @@
 
   <!-- Pokemon Image -->
   <div class="pokemon-image">
-    <img [lazyImage]="pokemon.imageUrl"
+    <img appLazyImage
+         [lazyImage]="pokemon.imageUrl"
          [size]="'medium'"
          [pokemonId]="pokemon.id"
          [alt]="pokemon.name">
