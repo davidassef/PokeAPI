@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ToastController, AlertController } from '@ionic/angular';
 import { PullSyncControlService } from '../../core/services/pull-sync-control.service';
 import { SyncConfigService } from '../../core/services/sync-config.service';
@@ -8,7 +8,7 @@ import { SyncConfigService } from '../../core/services/sync-config.service';
   templateUrl: './sync-admin.component.html',
   styleUrls: ['./sync-admin.component.scss']
 })
-export class SyncAdminComponent implements OnInit {
+export class SyncAdminComponent implements OnInit, OnDestroy {
 
   pullSyncStatus: any = null;
   schedulerStatus: any = null;

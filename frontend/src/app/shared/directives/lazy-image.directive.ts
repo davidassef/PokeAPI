@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
  * Uso: <img [lazyImage]="imageUrl" [size]="'medium'" [pokemonId]="25" alt="Pokemon">
  */
 @Directive({
-  selector: '[lazyImage]'
+  selector: '[appLazyImage]'
 })
 export class LazyImageDirective implements OnInit, OnDestroy {
   @Input() lazyImage: string = '';

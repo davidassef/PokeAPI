@@ -34,7 +34,7 @@ export interface PokemonFormData {
 export class AdminPokemonModalComponent implements OnInit, OnDestroy {
   @Input() pokemon?: PokemonFormData;
   @Input() mode: 'add' | 'edit' = 'add';
-  @Output() close = new EventEmitter<{ success: boolean; pokemon?: PokemonFormData }>();
+  @Output() modalClose = new EventEmitter<{ success: boolean; pokemon?: PokemonFormData }>();
 
   private destroy$ = new Subject<void>();
 
@@ -250,7 +250,7 @@ export class AdminPokemonModalComponent implements OnInit, OnDestroy {
             if (response.success && response.data) {
               this.showSuccess('admin.pokemon.success.created');
               setTimeout(() => {
-                this.close.emit({ success: true, pokemon: response.data });
+                this.modalClose.emit({ success: true, pokemon: response.data });
               }, 1500);
             } else {
               throw new Error(response.message || 'Falha ao criar Pokemon');
@@ -269,7 +269,7 @@ export class AdminPokemonModalComponent implements OnInit, OnDestroy {
             if (response.success && response.data) {
               this.showSuccess('admin.pokemon.success.updated');
               setTimeout(() => {
-                this.close.emit({ success: true, pokemon: response.data });
+                this.modalClose.emit({ success: true, pokemon: response.data });
               }, 1500);
             } else {
               throw new Error(response.message || 'Falha ao atualizar Pokemon');
@@ -327,7 +327,7 @@ export class AdminPokemonModalComponent implements OnInit, OnDestroy {
           if (response.success) {
             this.showSuccess('admin.pokemon.success.deleted');
             setTimeout(() => {
-              this.close.emit({ success: true });
+              this.modalClose.emit({ success: true });
             }, 1500);
           } else {
             throw new Error(response.message || 'Falha ao deletar Pokemon');
@@ -349,7 +349,7 @@ export class AdminPokemonModalComponent implements OnInit, OnDestroy {
 
   // Fechar modal
   closeModal() {
-    this.close.emit({ success: false });
+    this.modalClose.emit({ success: false });
   }
 
   // Métodos auxiliares

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 
@@ -41,11 +41,11 @@ interface CacheStats {
 @Injectable({
   providedIn: 'root'
 })
-export class CacheService {
+export class CacheService implements OnDestroy {
   private cache = new Map<string, CacheItem<any>>();
   private accessOrder = new Map<string, number>(); // Para LRU
   private accessCounter = 0;
-  
+
   private config: CacheConfig = {
     maxSize: 50, // 50MB
     defaultTTL: 30 * 60 * 1000, // 30 minutos
@@ -77,7 +77,7 @@ export class CacheService {
    */
   get<T>(key: string, fallback?: () => Observable<T>, ttl?: number): Observable<T> {
     const item = this.cache.get(key);
-    
+
     if (item && !this.isExpired(item)) {
       // Cache hit
       this.updateAccessOrder(key);
@@ -226,7 +226,7 @@ export class CacheService {
     }
 
     keysToDelete.forEach(key => this.delete(key));
-    
+
     if (keysToDelete.length > 0) {
       console.log(`🧹 Cache cleanup: removed ${keysToDelete.length} expired items`);
     }
@@ -251,7 +251,7 @@ export class CacheService {
    */
   private ensureSpace(requiredSize: number): void {
     const maxSizeBytes = this.config.maxSize * 1024 * 1024; // Converter MB para bytes
-    
+
     while (this.stats.totalSize + requiredSize > maxSizeBytes && this.cache.size > 0) {
       this.evictLRU();
     }
@@ -356,7 +356,7 @@ export class CacheService {
       const cacheData = localStorage.getItem('pokeapi_cache');
       if (cacheData) {
         const parsed = JSON.parse(cacheData);
-        
+
         for (const [key, item] of Object.entries(parsed)) {
           const cacheItem = item as CacheItem<any>;
           if (!this.isExpired(cacheItem)) {
@@ -366,7 +366,7 @@ export class CacheService {
             this.stats.totalSize += cacheItem.size;
           }
         }
-        
+
         this.updateStats();
         console.log(`📥 Cache loaded: ${this.stats.totalItems} items (${this.formatSize(this.stats.totalSize)})`);
       }

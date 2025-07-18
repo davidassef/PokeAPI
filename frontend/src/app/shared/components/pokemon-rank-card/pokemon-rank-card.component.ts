@@ -15,7 +15,7 @@ export class PokemonRankCardComponent implements OnInit {
 
   constructor(private typeColorService: TypeColorService) {}
 
-  ngOnInit(): void {}
+
 
   /**
    * Retorna a cor associada ao tipo do Pokémon

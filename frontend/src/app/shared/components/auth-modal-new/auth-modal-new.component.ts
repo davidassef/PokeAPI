@@ -56,13 +56,7 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     private toastNotification: ToastNotificationService
   ) {}
 
-  ngOnInit() {
-    // Initialization if needed
-  }
 
-  ngOnDestroy() {
-    // Cleanup if needed
-  }
 
   @HostListener('click', ['$event'])
   onHostClick(event: Event) {

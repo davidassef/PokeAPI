@@ -19,7 +19,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   @Input() pokemon: any;
   @Input() pokemonId: number = 0; // Adicionar suporte para pokemonId
   @Input() isOpen: boolean = false; // Adicionar input para detectar reopen
-  @Output() close = new EventEmitter<void>();
+  @Output() modalClose = new EventEmitter<void>();
   @ViewChild('flavorTextWrapper', { static: false }) flavorTextWrapper?: ElementRef;
 
   private destroy$ = new Subject<void>();
@@ -1775,7 +1775,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   // Método para fechar o modal
   closeModal() {
-    this.close.emit();
+    this.modalClose.emit();
   }
 
   onClose(event?: any): void {
