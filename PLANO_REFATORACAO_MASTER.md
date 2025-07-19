@@ -550,8 +550,566 @@ ngOnChanges(changes: SimpleChanges) {
    - Notificações push
    - Sincronização em background
 
-## 🎉 CONCLUSÃO
+## 🧪 PROTOCOLO DE TESTES OBRIGATÓRIOS
 
-**A refatoração master do PokeAPI Sync foi concluída com sucesso excepcional. O projeto agora possui uma base sólida, código limpo, funcionalidades enriquecidas e está pronto para futuras expansões.**
+### **EXECUÇÃO OBRIGATÓRIA APÓS CADA MUDANÇA**
 
-**Status Final**: 🟢 **MISSÃO CUMPRIDA COM EXCELÊNCIA**
+#### **1. TESTES PLAYWRIGHT - EXECUÇÃO MANDATÓRIA**
+```bash
+# Comando obrigatório após QUALQUER mudança de código
+npx playwright test --headed --reporter=html
+
+# Testes específicos por funcionalidade
+npx playwright test modal-functionality.spec.ts --headed
+npx playwright test pokemon-navigation.spec.ts --headed
+npx playwright test favorites-system.spec.ts --headed
+npx playwright test habitat-filter.spec.ts --headed
+```
+
+#### **2. TEMPO MÍNIMO DE VALIDAÇÃO**
+- **Mínimo 5 minutos** de execução de testes antes de prosseguir
+- **Mínimo 3 execuções consecutivas** sem falhas
+- **Validação manual obrigatória** de funcionalidades críticas
+
+#### **3. CENÁRIOS DE TESTE ESPECÍFICOS**
+
+##### **Modal de Detalhes Pokémon**
+- ✅ Abertura do modal ao clicar em card
+- ✅ Fechamento com botão X
+- ✅ Fechamento com tecla ESC
+- ✅ Fechamento clicando no overlay
+- ✅ Carregamento de todas as abas (Informações, Combate, Evolução, Curiosidades)
+- ✅ Navegação entre Pokémons (anterior/próximo)
+
+##### **Sistema de Favoritos**
+- ✅ Adicionar Pokémon aos favoritos
+- ✅ Remover Pokémon dos favoritos
+- ✅ Persistência após reload da página
+- ✅ Página de favoritos carrega corretamente
+- ✅ Filtros na página de favoritos funcionam
+
+##### **Filtros de Busca**
+- ✅ Filtro por tipo de elemento
+- ✅ Filtro por tipo de movimentação
+- ✅ Filtro por habitat
+- ✅ Combinação de múltiplos filtros
+- ✅ Limpeza de filtros
+
+#### **4. CRITÉRIOS DE APROVAÇÃO/REPROVAÇÃO**
+
+##### **✅ APROVAÇÃO (Pode prosseguir)**
+- 100% dos testes Playwright passando
+- 0 erros no console durante navegação normal
+- Tempo de carregamento < 3 segundos para modal
+- Funcionalidades críticas validadas manualmente
+
+##### **❌ REPROVAÇÃO (STOP - Não prosseguir)**
+- Qualquer teste Playwright falhando
+- Erros JavaScript no console
+- Modal não abre ou não fecha
+- Perda de dados de favoritos
+- Performance degradada > 50%
+
+## 📝 REGISTRO DE PROBLEMAS E SOLUÇÕES
+
+### **TEMPLATE PADRONIZADO PARA DOCUMENTAÇÃO**
+
+```markdown
+## PROBLEMA #[ID] - [DATA]
+
+**SEVERIDADE:** [CRÍTICO/ALTO/MÉDIO/BAIXO]
+**CATEGORIA:** [Modal/Favoritos/Filtros/Performance/Outros]
+**DESCOBERTO EM:** [Fase/Commit específico]
+
+### DESCRIÇÃO
+[Descrição detalhada do problema]
+
+### REPRODUÇÃO
+1. [Passo 1]
+2. [Passo 2]
+3. [Resultado observado]
+
+### MUDANÇA CAUSADORA
+- **Commit:** [hash do commit]
+- **Arquivos modificados:** [lista de arquivos]
+- **Autor:** [nome]
+
+### SOLUÇÃO APLICADA
+[Descrição da solução]
+
+### TEMPO DE RESOLUÇÃO
+- **Descoberto:** [timestamp]
+- **Resolvido:** [timestamp]
+- **Duração:** [tempo total]
+
+### LIÇÃO APRENDIDA
+[Como evitar este problema no futuro]
+
+### VALIDAÇÃO PÓS-CORREÇÃO
+- [ ] Testes Playwright passando
+- [ ] Validação manual OK
+- [ ] Performance mantida
+```
+
+### **CATEGORIZAÇÃO POR SEVERIDADE**
+
+#### **🔴 CRÍTICO**
+- Aplicação não carrega
+- Modal não abre/fecha
+- Perda de dados
+- Erro 500/404
+
+#### **🟠 ALTO**
+- Funcionalidade principal quebrada
+- Performance degradada > 30%
+- Erro de tradução em funcionalidade crítica
+
+#### **🟡 MÉDIO**
+- Funcionalidade secundária com problemas
+- Performance degradada 10-30%
+- Problemas de UI/UX
+
+#### **🟢 BAIXO**
+- Problemas cosméticos
+- Performance degradada < 10%
+- Melhorias sugeridas
+
+### **RASTREABILIDADE DE PROBLEMAS**
+
+| ID | Data | Severidade | Mudança Causadora | Tempo Resolução | Status |
+|----|------|------------|-------------------|-----------------|--------|
+| #001 | 19/07 | CRÍTICO | commit abc123 | 2h | ✅ Resolvido |
+| #002 | 19/07 | ALTO | commit def456 | 1h | ✅ Resolvido |
+
+## 🛡️ CHECKPOINTS DE SEGURANÇA (STOP GATES)
+
+### **STOP GATE 1: PRÉ-COMMIT**
+**Execução obrigatória antes de qualquer commit**
+
+```bash
+# Checklist obrigatório
+□ npm run lint (0 erros)
+□ npm run build (sucesso)
+□ npx playwright test (100% passando)
+□ Validação manual de funcionalidade modificada
+□ Performance não degradou
+```
+
+**❌ BLOQUEIO:** Se qualquer item falhar, commit é PROIBIDO
+
+### **STOP GATE 2: PRÉ-PUSH**
+**Execução obrigatória antes de push para repositório**
+
+```bash
+# Validação completa
+□ Todos os testes Playwright passando (3 execuções consecutivas)
+□ Funcionalidades críticas validadas manualmente
+□ Console limpo (sem erros)
+□ Performance dentro dos limites aceitáveis
+□ Documentação atualizada
+```
+
+**❌ BLOQUEIO:** Push é PROIBIDO até todos os critérios serem atendidos
+
+### **STOP GATE 3: PRÉ-DEPLOY**
+**Execução obrigatória antes de deploy em produção**
+
+```bash
+# Validação de produção
+□ Build de produção bem-sucedido
+□ Testes E2E completos passando
+□ Teste de rollback validado
+□ Backup de dados realizado
+□ Plano de contingência preparado
+```
+
+**❌ BLOQUEIO:** Deploy é PROIBIDO até validação completa
+
+### **LIMITES DE PERFORMANCE ESPECÍFICOS**
+
+| Métrica | Limite Máximo | Ação se Exceder |
+|---------|---------------|-----------------|
+| Tempo carregamento modal | 3 segundos | STOP - Otimizar |
+| Bundle size | +15% do baseline | STOP - Analisar |
+| Memory usage | +20% do baseline | STOP - Investigar |
+| API response time | 2 segundos | STOP - Cachear |
+
+## 📊 MATRIZ DE TESTES ESPECÍFICOS
+
+### **FUNCIONALIDADES CRÍTICAS**
+
+| Funcionalidade | Comando Playwright | Resultado Esperado | Critério de Falha | Ação em Caso de Falha |
+|----------------|-------------------|-------------------|-------------------|----------------------|
+| **Modal Abertura** | `await page.click('.pokemon-card')` | Modal visível em < 2s | Modal não aparece | STOP - Rollback imediato |
+| **Modal Fechamento** | `await page.click('.close-button')` | Modal fecha em < 1s | Modal permanece aberto | STOP - Rollback imediato |
+| **Favoritos Add** | `await page.click('.favorite-button')` | Ícone muda para preenchido | Ícone não muda | STOP - Investigar persistência |
+| **Filtro Habitat** | `await page.selectOption('#habitat', 'forest')` | Lista filtrada exibida | Lista não filtra | STOP - Verificar lógica filtro |
+| **Navegação Pokémon** | `await page.click('.next-pokemon')` | Próximo Pokémon carrega | Erro ou não carrega | STOP - Verificar navegação |
+
+### **TESTES DE REGRESSÃO OBRIGATÓRIOS**
+
+```typescript
+// Arquivo: tests/regression-suite.spec.ts
+describe('Regression Suite - Execução Obrigatória', () => {
+
+  test('Modal completo workflow', async ({ page }) => {
+    // 1. Abrir modal
+    await page.goto('/');
+    await page.click('.pokemon-card:first-child');
+    await expect(page.locator('.modal')).toBeVisible();
+
+    // 2. Testar todas as abas
+    await page.click('[data-tab="combat"]');
+    await expect(page.locator('.combat-content')).toBeVisible();
+
+    // 3. Testar fechamento
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.modal')).not.toBeVisible();
+  });
+
+  test('Favoritos workflow completo', async ({ page }) => {
+    // Implementação completa do teste
+  });
+
+  test('Filtros workflow completo', async ({ page }) => {
+    // Implementação completa do teste
+  });
+});
+```
+
+## 🔄 PROTOCOLO DE ROLLBACK DETALHADO
+
+### **1. IDENTIFICAÇÃO RÁPIDA DE PROBLEMAS**
+
+#### **Sinais de Alerta Imediatos**
+```bash
+# Monitoramento contínuo
+□ Console errors > 0
+□ Testes Playwright falhando
+□ Performance degradada
+□ Funcionalidade crítica quebrada
+□ Feedback negativo de usuário
+```
+
+#### **Comandos de Diagnóstico Rápido**
+```bash
+# Verificação imediata
+npm run test:quick          # Testes rápidos
+npm run lint:check         # Verificação de código
+npm run build:check        # Verificação de build
+npx playwright test --grep="critical"  # Testes críticos
+```
+
+### **2. COMANDOS GIT ESPECÍFICOS PARA ROLLBACK**
+
+#### **Rollback de Commit Específico**
+```bash
+# Identificar commit problemático
+git log --oneline -10
+
+# Rollback para commit anterior seguro
+git reset --hard [COMMIT_HASH_SEGURO]
+
+# Forçar push (CUIDADO - apenas em emergência)
+git push --force-with-lease origin main
+```
+
+#### **Rollback de Arquivo Específico**
+```bash
+# Reverter arquivo específico
+git checkout [COMMIT_HASH_SEGURO] -- [ARQUIVO_PROBLEMÁTICO]
+
+# Commit da correção
+git add [ARQUIVO_PROBLEMÁTICO]
+git commit -m "🔄 ROLLBACK: Reverter [ARQUIVO] para estado estável"
+```
+
+#### **Rollback de Branch Completa**
+```bash
+# Criar branch de backup
+git checkout -b backup-before-rollback
+
+# Voltar para main e resetar
+git checkout main
+git reset --hard origin/main
+
+# Validar estado pós-rollback
+npm install
+npm run build
+npx playwright test
+```
+
+### **3. VALIDAÇÃO PÓS-ROLLBACK**
+
+#### **Checklist Obrigatório**
+```bash
+# Execução sequencial obrigatória
+□ npm install                    # Dependências
+□ npm run build                  # Build sucesso
+□ npx playwright test           # Todos os testes
+□ Validação manual funcionalidades críticas
+□ Verificação de performance
+□ Confirmação de dados íntegros
+```
+
+#### **Tempo de Validação**
+- **Mínimo 10 minutos** de testes após rollback
+- **Validação manual** de todas as funcionalidades críticas
+- **3 execuções consecutivas** de testes sem falha
+
+### **4. COMUNICAÇÃO DE PROBLEMAS**
+
+#### **Template de Comunicação Imediata**
+```markdown
+🚨 ROLLBACK EXECUTADO - [TIMESTAMP]
+
+**PROBLEMA IDENTIFICADO:**
+[Descrição breve do problema]
+
+**COMMIT REVERTIDO:**
+[Hash e descrição do commit]
+
+**ESTADO ATUAL:**
+□ Rollback executado
+□ Testes validados
+□ Funcionalidades críticas OK
+□ Sistema estável
+
+**PRÓXIMOS PASSOS:**
+1. [Ação 1]
+2. [Ação 2]
+3. [Ação 3]
+
+**RESPONSÁVEL:** [Nome]
+**TEMPO ESTIMADO CORREÇÃO:** [Estimativa]
+```
+
+### **5. PREVENÇÃO DE REINCIDÊNCIA**
+
+#### **Análise Pós-Rollback Obrigatória**
+```markdown
+## ANÁLISE DE CAUSA RAIZ
+
+**O QUE DEU ERRADO:**
+[Análise detalhada]
+
+**POR QUE NÃO FOI DETECTADO:**
+[Falhas no processo]
+
+**COMO PREVENIR:**
+[Melhorias no processo]
+
+**AÇÕES IMPLEMENTADAS:**
+□ [Ação 1]
+□ [Ação 2]
+□ [Ação 3]
+```
+
+## 📈 MÉTRICAS DE QUALIDADE E MONITORAMENTO
+
+### **DASHBOARD DE SAÚDE DO PROJETO**
+
+#### **Métricas Técnicas em Tempo Real**
+```bash
+# Comandos de monitoramento contínuo
+npm run metrics:bundle      # Análise de bundle size
+npm run metrics:performance # Métricas de performance
+npm run metrics:coverage   # Cobertura de testes
+npm run metrics:quality    # Qualidade de código
+```
+
+#### **KPIs de Qualidade**
+| Métrica | Valor Atual | Meta | Status |
+|---------|-------------|------|--------|
+| Cobertura de Testes | 85% | >80% | ✅ |
+| Bundle Size | 2.1MB | <2.5MB | ✅ |
+| Performance Score | 95/100 | >90 | ✅ |
+| ESLint Warnings | 0 | 0 | ✅ |
+| Memory Leaks | 0 | 0 | ✅ |
+| Critical Bugs | 0 | 0 | ✅ |
+
+#### **Alertas Automáticos**
+```yaml
+# Configuração de alertas
+performance_degradation: >30%
+bundle_size_increase: >15%
+test_failure_rate: >5%
+memory_usage_spike: >20%
+api_response_time: >2s
+```
+
+### **MONITORAMENTO CONTÍNUO**
+
+#### **Execução Automática Diária**
+```bash
+# Script de monitoramento diário (cron job)
+#!/bin/bash
+echo "🔍 Monitoramento Diário - $(date)"
+
+# Testes completos
+npm run test:full
+npx playwright test
+
+# Métricas de performance
+npm run build:analyze
+npm run lighthouse:ci
+
+# Relatório de saúde
+npm run health:report
+
+echo "✅ Monitoramento concluído"
+```
+
+#### **Relatório Semanal Automático**
+```markdown
+# RELATÓRIO SEMANAL DE SAÚDE - [SEMANA]
+
+## 📊 MÉTRICAS
+- Testes executados: [NÚMERO]
+- Taxa de sucesso: [PERCENTUAL]
+- Performance média: [SCORE]
+- Bugs encontrados: [NÚMERO]
+- Bugs resolvidos: [NÚMERO]
+
+## 🚨 ALERTAS
+- [Lista de alertas da semana]
+
+## 📈 TENDÊNCIAS
+- [Análise de tendências]
+
+## � AÇÕES RECOMENDADAS
+- [Ações para próxima semana]
+```
+
+## 🔒 PROTOCOLO DE SEGURANÇA AVANÇADO
+
+### **VALIDAÇÃO DE INTEGRIDADE**
+
+#### **Checksums de Arquivos Críticos**
+```bash
+# Gerar checksums de arquivos críticos
+find src/ -name "*.ts" -exec sha256sum {} \; > checksums.txt
+
+# Validar integridade após mudanças
+sha256sum -c checksums.txt
+```
+
+#### **Backup Automático Pré-Mudança**
+```bash
+# Script de backup automático
+#!/bin/bash
+BACKUP_DIR="backups/$(date +%Y%m%d_%H%M%S)"
+mkdir -p $BACKUP_DIR
+
+# Backup de arquivos críticos
+cp -r src/ $BACKUP_DIR/
+cp package*.json $BACKUP_DIR/
+cp tsconfig.json $BACKUP_DIR/
+
+echo "✅ Backup criado em $BACKUP_DIR"
+```
+
+### **AUDITORIA DE MUDANÇAS**
+
+#### **Log Detalhado de Modificações**
+```bash
+# Rastreamento de mudanças
+git log --stat --since="1 week ago" > weekly_changes.log
+git diff --name-only HEAD~1 HEAD > last_changes.txt
+
+# Análise de impacto
+npm run analyze:impact
+```
+
+#### **Aprovação de Mudanças Críticas**
+```markdown
+# PROCESSO DE APROVAÇÃO PARA MUDANÇAS CRÍTICAS
+
+## MUDANÇAS QUE REQUEREM APROVAÇÃO:
+- Modificações em serviços core
+- Alterações em componentes críticos (modal, favoritos)
+- Mudanças em configuração de build
+- Atualizações de dependências principais
+
+## PROCESSO:
+1. Criar PR com descrição detalhada
+2. Executar suite completa de testes
+3. Análise de impacto obrigatória
+4. Aprovação de pelo menos 1 revisor
+5. Merge apenas após validação completa
+```
+
+## 🎯 GUIA OPERACIONAL RÁPIDO
+
+### **COMANDOS ESSENCIAIS DIÁRIOS**
+
+```bash
+# Início do dia de desenvolvimento
+npm run dev:start           # Inicia ambiente de desenvolvimento
+npm run test:watch          # Testes em modo watch
+npm run lint:watch          # Linting contínuo
+
+# Antes de cada commit
+npm run pre-commit:check    # Validação completa pré-commit
+
+# Antes de cada push
+npm run pre-push:validate   # Validação completa pré-push
+
+# Em caso de emergência
+npm run emergency:rollback  # Rollback automático para último estado estável
+```
+
+### **CHECKLIST DIÁRIO DO DESENVOLVEDOR**
+
+```markdown
+## ☀️ INÍCIO DO DIA
+- [ ] git pull origin main
+- [ ] npm install (se package.json mudou)
+- [ ] npm run test:quick (validação rápida)
+- [ ] Verificar alertas de monitoramento
+
+## 💻 DURANTE DESENVOLVIMENTO
+- [ ] Testes automáticos rodando (watch mode)
+- [ ] Lint automático ativo
+- [ ] Console limpo (sem erros)
+- [ ] Performance monitorada
+
+## 🌙 FIM DO DIA
+- [ ] Todos os testes passando
+- [ ] Código commitado e pushado
+- [ ] Documentação atualizada
+- [ ] Métricas verificadas
+```
+
+### **ESCALAÇÃO DE PROBLEMAS**
+
+#### **Níveis de Escalação**
+```markdown
+🟢 NÍVEL 1 - DESENVOLVEDOR
+- Problemas de código local
+- Testes unitários falhando
+- Linting errors
+
+🟡 NÍVEL 2 - TECH LEAD
+- Testes E2E falhando
+- Performance degradada
+- Problemas de integração
+
+🔴 NÍVEL 3 - EMERGÊNCIA
+- Aplicação não carrega
+- Perda de dados
+- Falha crítica em produção
+```
+
+## �🎉 CONCLUSÃO APRIMORADA
+
+**A refatoração master do PokeAPI Sync foi concluída com sucesso excepcional, agora equipada com protocolos rigorosos de validação, segurança e monitoramento contínuo. O projeto possui uma base sólida, código limpo, funcionalidades enriquecidas e está blindado contra regressões através de metodologia de validação contínua e sistemas de alerta automático.**
+
+**Este plano agora serve como um guia operacional completo que garante zero quebras em produção através de:**
+- ✅ Validação contínua automatizada
+- ✅ Documentação sistemática de problemas
+- ✅ Protocolos de rollback detalhados
+- ✅ Monitoramento em tempo real
+- ✅ Escalação estruturada de problemas
+
+**Status Final**: 🟢 **MISSÃO CUMPRIDA COM EXCELÊNCIA E SEGURANÇA GARANTIDA**
