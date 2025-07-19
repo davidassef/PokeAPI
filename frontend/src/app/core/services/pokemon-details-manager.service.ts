@@ -131,7 +131,7 @@ export class PokemonDetailsManager {
   /**
    * Gera imagens do carrossel baseadas nos sprites disponíveis
    */
-  private generateCarouselImages(pokemon: any): CarouselImage[] {
+  generateCarouselImages(pokemon: any): CarouselImage[] {
     const images: CarouselImage[] = [];
 
     // Imagem oficial (artwork)

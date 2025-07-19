@@ -1,13 +1,13 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
-import { forkJoin, Subject, firstValueFrom } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
-import { PokemonCacheHelper } from '../../../core/services/pokemon-cache-helper.service';
-import { PokeApiService } from '../../../core/services/pokeapi.service';
+import { PokemonDetailsManager } from '../../../core/services/pokemon-details-manager.service';
+import { PokemonThemeService } from '../../../core/services/pokemon-theme.service';
+import { PokemonNavigationService } from '../../../core/services/pokemon-navigation.service';
 
 @Component({
   selector: 'app-details-modal',
@@ -17,8 +17,8 @@ import { PokeApiService } from '../../../core/services/pokeapi.service';
 })
 export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @Input() pokemon: any;
-  @Input() pokemonId: number = 0; // Adicionar suporte para pokemonId
-  @Input() isOpen: boolean = false; // Adicionar input para detectar reopen
+  @Input() pokemonId: number = 0;
+  @Input() isOpen: boolean = false;
   @Output() modalClose = new EventEmitter<void>();
   @ViewChild('flavorTextWrapper', { static: false }) flavorTextWrapper?: ElementRef;
 
@@ -32,11 +32,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   // Propriedades das abas
   activeTab: string = 'overview';
-  isTabTransitioning: boolean = false; // Flag para controlar transições entre abas
-
-  // Controle específico para debugging Overview ↔ Combat
+  isTabTransitioning: boolean = false;
   isOverviewCombatTransition: boolean = false;
-  disableTabAnimation: boolean = false; // Nova propriedade para desabilitar animações
+  disableTabAnimation: boolean = false;
 
   // Controle de carregamento de dados por aba
   tabDataLoaded: { [key: string]: boolean } = {
@@ -46,18 +44,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     curiosities: false
   };
 
-  // ✅ CORREÇÃO: Flags para prevenir chamadas múltiplas simultâneas
-  private isLoadingPokemonData: boolean = false;
-  private isLoadingSpeciesData: boolean = false;
-  private isLoadingEvolutionChain: boolean = false;
-
   // Propriedades dos flavor texts
   flavorText: string = '';
   flavorTexts: string[] = [];
   currentFlavorIndex: number = 0;
   isLoadingFlavor: boolean = false;
   showScrollIndicator: boolean = false;
-  private currentLang: string = ''; // Rastrear o idioma atual
 
   // Propriedades de tema e animação
   pokemonTheme: any = null;
@@ -67,46 +59,37 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   speciesData: any = null;
   evolutionChain: any[] = [];
   abilityDescriptions: { [key: string]: string } = {};
-
-  // Add the missing property
   isSpeciesDataReady = false;
+
+  // Estados de loading
+  private isLoadingPokemonData: boolean = false;
 
   // Métodos de verificação de dados para as abas
   isOverviewDataReady(): boolean {
-    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
-    const ready = true; // Forçar renderização mesmo sem dados
-    console.log('🔍 isOverviewDataReady:', ready, 'Pokemon:', !!this.pokemon);
-    return ready;
+    return !!this.pokemon && this.tabDataLoaded['overview'];
   }
 
   isCombatDataReady(): boolean {
-    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
-    return true; // Forçar renderização mesmo sem dados
+    return !!this.pokemon && this.tabDataLoaded['combat'];
   }
 
   isEvolutionDataReady(): boolean {
-    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
-    return true; // Forçar renderização mesmo sem dados
+    return !!this.pokemon && this.tabDataLoaded['evolution'];
   }
 
   isCuriositiesDataReady(): boolean {
-    // ✅ CORREÇÃO TEMPORÁRIA: Sempre retornar true para forçar renderização das abas
-    return true; // Forçar renderização mesmo sem dados
+    return !!this.pokemon && this.tabDataLoaded['curiosities'];
   }
 
   shouldShowCombatData(): boolean {
     return this.isCombatDataReady();
   }
 
-  // ✅ CORREÇÃO: Lógica consistente com shouldShowSpeciesDataInCuriosities()
   shouldShowSpeciesDataInEvolution(): boolean {
     return this.activeTab === 'evolution' && this.isSpeciesDataReady && !!this.speciesData;
   }
 
-  // ✅ CORREÇÃO: Lógica simplificada para evitar loop infinito
   shouldShowSpeciesDataInCuriosities(): boolean {
-    // ✅ CORREÇÃO: Mostrar dados se estamos na aba curiosities E temos dados prontos
-    // Isso evita o loop infinito onde o loading nunca para
     return this.activeTab === 'curiosities' && this.isSpeciesDataReady;
   }
 
@@ -117,10 +100,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   constructor(
     private modalController: ModalController,
     private translate: TranslateService,
-    private http: HttpClient,
     private viewedPokemonService: ViewedPokemonService,
-    private pokemonCacheHelper: PokemonCacheHelper,
-    private pokeApiService: PokeApiService
+    private pokemonDetailsManager: PokemonDetailsManager,
+    private pokemonThemeService: PokemonThemeService,
+    private pokemonNavigationService: PokemonNavigationService
   ) {}
 
   ngOnInit() {
@@ -131,26 +114,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       timestamp: new Date().toISOString()
     });
 
-    // ✅ CORREÇÃO DIRETA: Usar PokeApiService imediatamente se não há Pokemon
     if (this.pokemon) {
       console.log('✅ Pokemon já disponível, inicializando dados');
       this.initializePokemonData();
     } else if (this.pokemonId && this.pokemonId > 0) {
-      console.log('🔍 CORREÇÃO: Carregando Pokemon diretamente com PokeApiService');
-
-      // Correção direta usando PokeApiService
-      this.pokeApiService.getPokemon(this.pokemonId).subscribe({
-        next: (pokemon) => {
-          console.log('🎉 CORREÇÃO DIRETA - Pokemon carregado:', pokemon?.name);
-          this.pokemon = pokemon;
-          this.initializePokemonData();
-        },
-        error: (error) => {
-          console.error('❌ CORREÇÃO DIRETA - Erro:', error);
-          this.pokemon = this.createPlaceholderPokemon(this.pokemonId);
-          this.initializePokemonData();
-        }
-      });
+      console.log('🔍 Carregando Pokemon com PokemonDetailsManager');
+      this.loadPokemonById(this.pokemonId);
     } else {
       console.warn('⚠️ Nenhum Pokemon ou ID fornecido');
     }
@@ -163,96 +132,42 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       });
   }
 
-  // ✅ CORREÇÃO: Método protegido contra chamadas múltiplas simultâneas
   private loadPokemonById(id: number) {
-    // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
     if (this.isLoadingPokemonData) {
       console.log(`⚠️ Já carregando dados do Pokémon ID: ${id}, ignorando chamada duplicada`);
       return;
     }
 
-    // TEMPORÁRIO: Verificar se há subscription ativa
-    if (this.destroy$) {
-      console.log('🔍 destroy$ Subject existe:', !this.destroy$.closed);
-      console.log('🔍 destroy$ Subject estado:', {
-        closed: this.destroy$.closed,
-        hasError: this.destroy$.hasError,
-        isStopped: this.destroy$.isStopped
-      });
-    } else {
-      console.log('❌ destroy$ Subject não existe!');
-    }
-
     console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
     this.isLoadingPokemonData = true;
 
-    // ✅ CORREÇÃO: Usar PokeApiService diretamente para contornar problema do cache
-    console.log('🔄 CORREÇÃO: Usando PokeApiService diretamente...');
+    this.pokemonDetailsManager.loadPokemonDetails(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (enrichedData) => {
+          console.log('🎉 Dados enriquecidos carregados:', enrichedData.pokemon?.name);
+          this.pokemon = enrichedData.pokemon;
+          this.speciesData = enrichedData.species;
+          this.flavorTexts = enrichedData.flavorTexts;
+          this.abilityDescriptions = enrichedData.abilityDescriptions;
+          this.carouselImages = enrichedData.carouselImages;
 
-    try {
-      const pokeApiObservable = this.pokeApiService.getPokemon(id);
-      console.log('🔍 PokeApiService Observable criado:', !!pokeApiObservable);
+          if (this.flavorTexts.length > 0) {
+            this.flavorText = this.flavorTexts[0];
+            this.currentFlavorIndex = 0;
+          }
 
-      const pokeApiSubscription = pokeApiObservable.subscribe({
-        next: (pokemon) => {
-          console.log('🎉 POKEAPI SERVICE - NEXT EXECUTADO!', pokemon?.name);
-          this.pokemon = pokemon;
+          this.isSpeciesDataReady = !!this.speciesData;
           this.initializePokemonData();
           this.isLoadingPokemonData = false;
         },
         error: (error) => {
-          console.log('💥 POKEAPI SERVICE - ERROR EXECUTADO!', error);
+          console.error('❌ Erro ao carregar dados do Pokémon:', error);
           this.pokemon = this.createPlaceholderPokemon(id);
           this.initializePokemonData();
           this.isLoadingPokemonData = false;
-        },
-        complete: () => {
-          console.log('🏁 POKEAPI SERVICE - COMPLETE EXECUTADO!');
         }
       });
-
-      console.log('🔄 PokeApiService subscription criada:', !!pokeApiSubscription);
-
-      // Retornar early para evitar executar o código problemático abaixo
-      return;
-
-    } catch (error) {
-      console.error('❌ Erro ao usar PokeApiService:', error);
-    }
-
-    // Usar PokeApiService refatorado para consistência
-    console.log('🔄 Iniciando subscription para getPokemon...');
-    const pokemonObservable = this.pokeApiService.getPokemon(id);
-    console.log('🔍 Observable criado:', !!pokemonObservable);
-
-    // TEMPORÁRIO: Testar subscription direta sem pipe
-    console.log('🔄 Testando subscription direta...');
-    const subscription = pokemonObservable.subscribe({
-        next: (pokemon: any) => {
-          console.log('🎉 CALLBACK NEXT EXECUTADO!');
-          console.log('✅ Dados do Pokémon carregados:', pokemon?.name, 'ID:', pokemon?.id);
-          console.log('🔧 Definindo this.pokemon:', !!pokemon);
-          this.pokemon = pokemon;
-          console.log('🔍 this.pokemon após definição:', !!this.pokemon, 'Nome:', this.pokemon?.name);
-          console.log('🎯 Chamando initializePokemonData...');
-          this.initializePokemonData();
-          this.isLoadingPokemonData = false;
-          console.log('✅ loadPokemonById concluído');
-        },
-        error: (error) => {
-          console.log('💥 CALLBACK ERROR EXECUTADO!');
-          console.error('❌ Erro ao carregar Pokémon:', error);
-          // Criar um Pokémon placeholder para evitar erros
-          this.pokemon = this.createPlaceholderPokemon(id);
-          this.initializePokemonData();
-          this.isLoadingPokemonData = false;
-        },
-        complete: () => {
-          console.log('🏁 CALLBACK COMPLETE EXECUTADO!');
-        }
-      });
-
-    console.log('🔄 Subscription criada:', !!subscription);
   }
 
   private createPlaceholderPokemon(id: number) {
@@ -300,34 +215,21 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     console.log('📊 Estado inicial tabDataLoaded:', this.tabDataLoaded);
 
-    // Limpar dados existentes para evitar vazamentos
-    this.abilityDescriptions = {};
-    this.flavorTexts = [];
-    this.flavorText = '';
-    this.currentFlavorIndex = 0;
-    this.isLoadingFlavor = false;
-    this.evolutionChain = [];
-    this.speciesData = null;
-    this.isSpeciesDataReady = false; // Resetar flag de dados da espécie
-
-    // ✅ CORREÇÃO: Resetar flags de loading para evitar estados inconsistentes
-    this.isLoadingEvolutionChain = false;
-    this.isLoadingSpeciesData = false;
-
     // Resetar estado das abas
     this.activeTab = 'overview';
     this.isTabTransitioning = false;
     this.isOverviewCombatTransition = false;
     this.disableTabAnimation = false;
 
-    // Gerar tema baseado nos tipos do Pokémon primeiro
+    // Gerar tema baseado nos tipos do Pokémon usando o serviço especializado
     this.generatePokemonTheme();
 
-    // Configurar carrossel de imagens
-    this.setupCarousel();
-
-    // Carregar flavor texts imediatamente (como na versão mobile)
-    this.loadFlavorTexts();
+    // Configurar carrossel de imagens se não foi feito pelo PokemonDetailsManager
+    if (!this.carouselImages || this.carouselImages.length === 0) {
+      this.setupCarousel();
+    } else {
+      this.updateCurrentCarouselImage();
+    }
 
     // Carregar dados da aba ativa (overview por padrão)
     console.log('🎯 Carregando dados da aba ativa:', this.activeTab);
@@ -349,80 +251,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   setupCarousel() {
-    const sprites = this.pokemon?.sprites;
-    const fallbackImage = this.ensureValidImage();
-
     console.log('🖼️ Configurando carrossel para:', this.pokemon?.name);
-    console.log('Sprites disponíveis:', sprites);
 
-    // Criar array de imagens com validação (incluindo mais variações)
-    const potentialImages = [
-      {
-        url: sprites?.other?.['official-artwork']?.front_default,
-        label: 'Artwork Oficial'
-      },
-      {
-        url: sprites?.other?.dream_world?.front_default,
-        label: 'Dream World'
-      },
-      {
-        url: sprites?.other?.home?.front_default,
-        label: 'Home'
-      },
-      {
-        url: sprites?.other?.['official-artwork']?.front_shiny,
-        label: 'Artwork Shiny'
-      },
-      {
-        url: sprites?.front_default,
-        label: 'Frente'
-      },
-      {
-        url: sprites?.back_default,
-        label: 'Costas'
-      },
-      {
-        url: sprites?.front_shiny,
-        label: 'Frente Shiny'
-      },
-      {
-        url: sprites?.back_shiny,
-        label: 'Costas Shiny'
-      },
-      {
-        url: sprites?.front_female,
-        label: 'Frente Fêmea'
-      },
-      {
-        url: sprites?.back_female,
-        label: 'Costas Fêmea'
-      },
-      {
-        url: sprites?.front_shiny_female,
-        label: 'Frente Shiny Fêmea'
-      },
-      {
-        url: sprites?.back_shiny_female,
-        label: 'Costas Shiny Fêmea'
-      }
-    ];
-
-    // Filtrar apenas imagens válidas e adicionar fallback se necessário
-    this.carouselImages = potentialImages
-      .filter(image => this.isValidImageUrl(image.url))
-      .map(image => ({
-        url: image.url,
-        label: image.label
-      }));
-
-    // Se não há imagens válidas, usar apenas o placeholder
-    if (this.carouselImages.length === 0) {
-      console.warn('⚠️ Nenhuma imagem válida encontrada, usando placeholder');
-      this.carouselImages = [{
-        url: fallbackImage,
-        label: 'Imagem Padrão'
-      }];
-    }
+    // Usar o PokemonDetailsManager para gerar as imagens do carrossel
+    this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(this.pokemon);
 
     console.log('Imagens do carrossel:', this.carouselImages);
 
@@ -432,441 +264,17 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.updateCurrentCarouselImage();
   }
 
-  private fetchFlavorText(lang: string, pokemonId: number): void {
-    console.log(`🔍 Iniciando busca de flavor text para: ${lang}, Pokémon ID: ${pokemonId}`);
-    this.isLoadingFlavor = true;
 
-    // Tentar usar PokemonCacheHelper para flavor texts
-    this.pokemonCacheHelper.getFlavorTexts(pokemonId, lang)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (cachedFlavors: string[]) => {
-          if (cachedFlavors && cachedFlavors.length > 0) {
-            console.log(`✅ Flavor texts obtidos do cache: ${cachedFlavors.length} textos`);
-            this.flavorTexts = cachedFlavors;
-            this.flavorText = cachedFlavors[0];
-            this.currentFlavorIndex = 0;
-            this.isLoadingFlavor = false;
 
-            // Pré-carregar flavor texts dos Pokémon adjacentes
-            this.pokemonCacheHelper.preloadAdjacentPokemon(pokemonId, lang);
 
-            // Verificar indicador de scroll após carregamento
-            setTimeout(() => this.checkScrollIndicator(), 100);
-            return;
-          }
 
-          // Fallback para método anterior se cache não retornar dados
-          this.fetchFlavorTextFallback(lang, pokemonId);
-        },
-        error: (error) => {
-          console.error('❌ Erro ao buscar flavor texts do cache:', error);
-          this.fetchFlavorTextFallback(lang, pokemonId);
-        }
-      });
-  }
 
-  private fetchFlavorTextFallback(lang: string, pokemonId: number) {
-    // Para pt-BR, sempre usar tradução local primeiro
-    if (lang === 'pt-BR' || lang === 'pt') {
-      console.log('🇧🇷 Idioma português detectado, priorizando traduções locais');
-      this.fetchFlavorTextFromLocalThenAPI();
-      return;
-    }
 
-    // Para japonês, ir direto para PokeAPI nativa (backend não suporta japonês)
-    if (lang === 'ja-JP' || lang === 'ja') {
-      console.log('🇯🇵 Idioma japonês detectado, buscando diretamente da PokeAPI nativa');
-      this.fetchFlavorTextFromPokeAPINative(lang);
-      return;
-    }
 
-    // Para outros idiomas, tentar backend primeiro e depois PokeAPI nativa
-    console.log(`🌐 Idioma ${lang} detectado, buscando do backend/API nativa`);
-    return this.http.get(`/api/v1/pokemon/${pokemonId}/flavor?lang=${lang}`)
-      .pipe(
-        map((data: any) => {
-          console.log('📦 Dados recebidos do backend:', data);
-          return data;
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({
-        next: (data: any) => {
-          console.log('✅ Resposta do backend recebida:', data);
 
-          // Para idiomas não português, usar diretamente os flavors da API
-          const flavors = data.flavors || [];
-          this.flavorTexts = flavors.length > 0 ? flavors : [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
-          this.flavorText = this.flavorTexts[0];
-          this.currentFlavorIndex = 0;
-          this.isLoadingFlavor = false;
 
-          console.log(`✅ Flavor texts em ${lang} carregados:`, this.flavorTexts.length);
 
-          // Verificar indicador de scroll após carregamento
-          setTimeout(() => this.checkScrollIndicator(), 100);
-        },
-        error: (error) => {
-          console.error('❌ Erro ao buscar flavor text do backend:');
-          console.error('  Status:', error.status);
-          console.error('  Message:', error.message);
-          console.error('  Full error:', error);
 
-          if (error.status === 504) {
-            console.log('🔄 Erro 504 (Gateway Timeout) detectado, acionando fallback para PokeAPI');
-          } else {
-            console.log('🔄 Erro do backend detectado, acionando fallback');
-          }
-
-          // Fallback direto para PokeAPI quando backend falha
-          this.fetchFlavorTextFromPokeAPINative(lang);
-        }
-      });
-  }
-
-  private fetchFlavorTextFromPokeAPI(): void {
-    if (!this.pokemon?.species?.url) {
-      console.warn('⚠️ URL da espécie não disponível para fallback');
-      this.flavorText = this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-      return;
-    }
-
-    console.log('🔄 Iniciando fallback: buscando flavor text da PokeAPI para:', this.pokemon.species.url);
-
-    this.http.get(this.pokemon.species.url)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data: any) => {
-          console.log('📦 Dados da espécie recebidos via fallback:', {
-            name: data.name,
-            totalFlavors: data.flavor_text_entries?.length || 0
-          });
-
-          const flavorEntries = data.flavor_text_entries || [];
-
-          // Buscar primeiro em pt-br
-          const ptBrEntries = flavorEntries.filter((entry: any) => entry.language.name === 'pt-br');
-          console.log('🇧🇷 Entradas em pt-br encontradas:', ptBrEntries.length);
-
-          // Se não encontrar pt-br, buscar em pt
-          const ptEntries = flavorEntries.filter((entry: any) => entry.language.name === 'pt');
-          console.log('🇵🇹 Entradas em pt encontradas:', ptEntries.length);
-
-          if (ptBrEntries.length === 0 && ptEntries.length === 0) {
-            console.log(' ⚠️ Nenhuma entrada em português encontrada via fallback');
-            this.flavorText = this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-            this.flavorTexts = [this.flavorText];
-            this.currentFlavorIndex = 0;
-          } else {
-            // Usar pt-br se disponível, senão pt
-            const selectedEntries = ptBrEntries.length > 0 ? ptBrEntries : ptEntries;
-            this.flavorTexts = selectedEntries.map((entry: any) =>
-              entry.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ')
-            );
-            this.flavorText = this.flavorTexts[0] || this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-            this.currentFlavorIndex = 0;
-
-            console.log('✅ Fallback bem-sucedido! Flavor texts em português carregados:', this.flavorTexts.length);
-            console.log('📝 Primeiro flavor:', this.flavorText.substring(0, 100) + '...');
-
-            // Verificar indicador de scroll
-            setTimeout(() => this.checkScrollIndicator(), 100);
-          }
-          this.isLoadingFlavor = false;
-        },
-        error: (error) => {
-          console.error('❌ Erro no fallback da PokeAPI:', error);
-          this.flavorText = this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-          this.isLoadingFlavor = false;
-        }
-      });
-  }
-
-  private fetchFlavorTextFromPokeAPINative(lang: string): void {
-    if (!this.pokemon?.species?.url) {
-      console.warn('⚠️ URL da espécie não disponível para fallback');
-      this.flavorText = this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-      this.isLoadingFlavor = false;
-      return;
-    }
-
-    console.log(`🔄 Iniciando fallback nativo: buscando flavor text da PokeAPI em ${lang} para:`, this.pokemon.species.url);
-
-    this.http.get(this.pokemon.species.url)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data: any) => {
-          console.log('📦 Dados da espécie recebidos via fallback nativo:', {
-            name: data.name,
-            totalFlavors: data.flavor_text_entries?.length || 0
-          });
-
-          const flavorEntries = data.flavor_text_entries || [];
-
-          // Mapear idioma do translate para formato da PokeAPI
-          const apiLangMap: { [key: string]: string[] } = {
-            'en-US': ['en'],
-            'en': ['en'],
-            'es': ['es'],
-            'es-ES': ['es'],
-            'fr': ['fr'],
-            'de': ['de'],
-            'it': ['it'],
-            'ja': ['ja', 'ja-Hrkt'],
-            'ja-JP': ['ja', 'ja-Hrkt'],
-            'ko': ['ko']
-          };
-
-          const targetLanguages = apiLangMap[lang] || ['en']; // fallback para inglês
-
-          // Buscar entradas no idioma específico
-          let targetEntries = flavorEntries.filter((entry: any) =>
-            targetLanguages.includes(entry.language.name)
-          );
-
-          console.log(`🌐 Entradas em ${lang} (${targetLanguages.join(',')}) encontradas:`, targetEntries.length);
-
-          // Se não encontrar no idioma específico, usar inglês como fallback
-          if (targetEntries.length === 0 && !targetLanguages.includes('en')) {
-            console.log('🔄 Tentando fallback para inglês...');
-            targetEntries = flavorEntries.filter((entry: any) => entry.language.name === 'en');
-            console.log('🇺🇸 Entradas em inglês encontradas:', targetEntries.length);
-          }
-
-          if (targetEntries.length === 0) {
-            console.log('⚠️ Nenhuma entrada encontrada em idiomas suportados');
-            this.flavorText = this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-            this.flavorTexts = [this.flavorText];
-            this.currentFlavorIndex = 0;
-          } else {
-            this.flavorTexts = targetEntries.map((entry: any) =>
-              entry.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ')
-            );
-            this.flavorText = this.flavorTexts[0] || this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-            this.currentFlavorIndex = 0;
-
-            console.log(`✅ Fallback nativo bem-sucedido! Flavor texts em ${lang} carregados:`, this.flavorTexts.length);
-            console.log('📝 Primeiro flavor:', this.flavorText.substring(0, 100) + '...');
-
-            // Verificar indicador de scroll
-            setTimeout(() => this.checkScrollIndicator(), 100);
-          }
-          this.isLoadingFlavor = false;
-        },
-        error: (error) => {
-          console.error('❌ Erro no fallback nativo da PokeAPI:', error);
-          this.flavorText = this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE');
-          this.isLoadingFlavor = false;
-        }
-      });
-  }
-
-  private extractAbilityDescription(abilityData: any): string {
-    const flavorTextEntries = abilityData.flavor_text_entries || [];
-
-    // Obter idioma atual do serviço de tradução
-    const currentLang = this.translate.currentLang || 'pt-BR';
-
-    // Buscar descrição no idioma atual primeiro
-    let description = flavorTextEntries.find((entry: any) => {
-      if (currentLang === 'pt-BR' || currentLang === 'pt') {
-        return entry.language.name === 'pt-br' || entry.language.name === 'pt';
-      }
-      return entry.language.name === currentLang;
-    });
-
-    // Se não encontrar no idioma atual, usar inglês como fallback
-    if (!description) {
-      description = flavorTextEntries.find((entry: any) => entry.language.name === 'en');
-    }
-
-    if (description) {
-      return description.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ');
-    }
-
-    // Fallback para effect_entries se não houver flavor_text
-    const effectEntries = abilityData.effect_entries || [];
-    const effect = effectEntries.find((entry: any) => {
-      if (currentLang === 'pt-BR' || currentLang === 'pt') {
-        return entry.language.name === 'pt-br' || entry.language.name === 'pt' || entry.language.name === 'en';
-      }
-      return entry.language.name === currentLang || entry.language.name === 'en';
-    });
-
-    return effect ? effect.effect.replace(/\n/g, ' ') : this.translate.instant('modal.NO_ABILITY_DESCRIPTION_AVAILABLE');
-  }
-
-  // ✅ CORREÇÃO: Método protegido contra chamadas múltiplas simultâneas
-  private fetchSpeciesData(): void {
-    if (!this.pokemon?.id) {
-      console.warn('⚠️ ID do Pokémon não disponível');
-      this.isSpeciesDataReady = true; // Marcar como pronto mesmo sem dados
-      // ✅ CORREÇÃO: Definir flag de curiosities mesmo sem dados para evitar loading infinito
-      this.tabDataLoaded['curiosities'] = true;
-      return;
-    }
-
-    // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
-    if (this.isLoadingSpeciesData) {
-      console.log(`⚠️ Já carregando dados da espécie ID: ${this.pokemon.id}, ignorando chamada duplicada`);
-      // ✅ CORREÇÃO: Se já está carregando e estamos na aba curiosities, definir flag para mostrar loading
-      if (this.activeTab === 'curiosities' && !this.tabDataLoaded['curiosities']) {
-        this.tabDataLoaded['curiosities'] = true;
-      }
-      return;
-    }
-
-    console.log(`🔍 Carregando dados da espécie via cache service: ID ${this.pokemon.id}`);
-    this.isLoadingSpeciesData = true;
-
-    // ✅ CORREÇÃO: Definir flag imediatamente se estamos na aba curiosities para mostrar loading
-    if (this.activeTab === 'curiosities') {
-      this.tabDataLoaded['curiosities'] = true;
-    }
-
-    // Usar PokeApiService refatorado para consistência
-    this.pokeApiService.getPokemonSpecies(this.pokemon.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          console.log('✅ Dados da espécie carregados via cache:', data);
-          this.speciesData = data;
-          this.isSpeciesDataReady = true;
-          this.isLoadingSpeciesData = false;
-          // ✅ CORREÇÃO: Sempre definir flag de curiosities quando dados estão prontos
-          this.tabDataLoaded['curiosities'] = true;
-        },
-        error: (error) => {
-          console.error('❌ Erro ao buscar dados da espécie via cache:', error);
-          // Marcar como pronto mesmo com erro para parar o loading
-          this.isSpeciesDataReady = true;
-          this.speciesData = null;
-          this.isLoadingSpeciesData = false;
-          // ✅ CORREÇÃO: Sempre definir flag mesmo em caso de erro para evitar loop
-          this.tabDataLoaded['curiosities'] = true;
-        }
-      });
-  }
-
-  // ✅ CORREÇÃO: Método protegido contra chamadas múltiplas com subscriptions canceláveis
-  private fetchEvolutionChain(): void {
-    if (!this.pokemon?.species?.url) {
-      console.warn('⚠️ Não foi possível carregar evolução: URL da espécie não disponível');
-      this.evolutionChain = []; // Garantir que array esteja vazio
-      this.tabDataLoaded['evolution'] = true; // Marcar como carregado mesmo sem dados
-      return;
-    }
-
-    // ✅ CORREÇÃO: Prevenir chamadas múltiplas simultâneas
-    if (this.isLoadingEvolutionChain) {
-      console.log(`⚠️ Já carregando cadeia evolutiva para: ${this.pokemon.name}, ignorando chamada duplicada`);
-      return;
-    }
-
-    console.log(`🧬 Iniciando busca da cadeia evolutiva para: ${this.pokemon.name}`);
-    console.log(`📍 URL da espécie: ${this.pokemon.species.url}`);
-
-    this.isLoadingEvolutionChain = true;
-
-    // ✅ CORREÇÃO: Definir timeout de segurança para evitar loading infinito
-    const timeoutId = setTimeout(() => {
-      if (this.isLoadingEvolutionChain) {
-        console.warn('⏰ Timeout na busca da cadeia evolutiva - definindo como carregado');
-        this.isLoadingEvolutionChain = false;
-        this.tabDataLoaded['evolution'] = true;
-        this.evolutionChain = [];
-      }
-    }, 10000); // 10 segundos de timeout
-
-    // ✅ CORREÇÃO: Primeiro buscar os dados da espécie com takeUntil()
-    this.http.get(this.pokemon.species.url)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (speciesData: any) => {
-          console.log(`✅ Dados da espécie carregados: ${speciesData.name}`);
-
-          if (speciesData.evolution_chain?.url) {
-            console.log(`🔗 URL da cadeia evolutiva encontrada: ${speciesData.evolution_chain.url}`);
-
-            // ✅ CORREÇÃO: Segunda chamada HTTP também com takeUntil()
-            this.http.get(speciesData.evolution_chain.url)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe({
-                next: (evolutionData: any) => {
-                  clearTimeout(timeoutId); // Limpar timeout de segurança
-                  console.log(`✅ Dados da cadeia evolutiva carregados`);
-                  console.log(`🧬 Processando cadeia evolutiva...`);
-                  this.processEvolutionChain(evolutionData.chain);
-                  this.isLoadingEvolutionChain = false;
-                  // ✅ CORREÇÃO: Definir flag apenas quando dados estão prontos
-                  this.tabDataLoaded['evolution'] = true;
-                },
-                error: (error) => {
-                  clearTimeout(timeoutId); // Limpar timeout de segurança
-                  console.error('❌ Erro ao buscar cadeia evolutiva:', error);
-                  this.evolutionChain = [];
-                  this.isLoadingEvolutionChain = false;
-                  // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
-                  this.tabDataLoaded['evolution'] = true;
-                }
-              });
-          } else {
-            clearTimeout(timeoutId); // Limpar timeout de segurança
-            console.warn('⚠️ URL da cadeia evolutiva não encontrada nos dados da espécie');
-            this.evolutionChain = [];
-            this.isLoadingEvolutionChain = false;
-            // ✅ CORREÇÃO: Definir flag mesmo quando não há cadeia evolutiva
-            this.tabDataLoaded['evolution'] = true;
-          }
-        },
-        error: (error) => {
-          clearTimeout(timeoutId); // Limpar timeout de segurança
-          console.error('❌ Erro ao buscar dados da espécie para evolução:', error);
-          this.evolutionChain = [];
-          this.isLoadingEvolutionChain = false;
-          // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
-          this.tabDataLoaded['evolution'] = true;
-        }
-      });
-  }
-
-  private processEvolutionChain(chain: any): void {
-    const evolutionChain: any[] = [];
-    let current = chain;
-
-    while (current) {
-      const pokemonId = this.extractIdFromUrl(current.species.url);
-      const potentialImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
-
-      const evolutionData: any = {
-        id: pokemonId,
-        name: current.species.name,
-        imageUrl: this.isValidImageUrl(potentialImageUrl) ? potentialImageUrl : this.ensureValidImage(),
-        isCurrent: pokemonId === this.pokemon.id,
-        method: this.translate.instant('evolution.methods.base_form')
-      };
-
-      // Adicionar método de evolução se não for o primeiro
-      if (current.evolution_details && current.evolution_details.length > 0) {
-        const details = current.evolution_details[0];
-        evolutionData.trigger = this.getEvolutionTriggerText(details);
-      }
-
-      evolutionChain.push(evolutionData);
-
-      // Continuar para a próxima evolução
-      current = current.evolves_to.length > 0 ? current.evolves_to[0] : null;
-    }
-
-    this.evolutionChain = evolutionChain;
-    console.log('🧬 Cadeia de evolução processada:', this.evolutionChain);
-  }
-
-  private extractIdFromUrl(url: string): number {
-    const parts = url.split('/');
-    return parseInt(parts[parts.length - 2], 10);
-  }
 
   // ✅ CORREÇÃO: Método corrigido para usar chaves de tradução estruturadas
   getEvolutionTriggerText(detailsOrTrigger: any): string {
@@ -906,32 +314,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.translate.instant('evolution.triggers.special');
   }
 
-  private fetchAbilityDescriptions(): void {
-    if (!this.pokemon?.abilities) return;
 
-    const abilityRequests = this.pokemon.abilities.map((ability: any) =>
-      this.http.get(ability.ability.url).pipe(
-        map((data: any) => ({
-          name: ability.ability.name,
-          description: this.extractAbilityDescription(data)
-        })),
-        takeUntil(this.destroy$)
-      )
-    );
-
-    forkJoin(abilityRequests)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (descriptions: any) => {
-          descriptions.forEach((desc: any) => {
-            this.abilityDescriptions[desc.name] = desc.description;
-          });
-        },
-        (error) => {
-          console.error('Erro ao buscar descrições das habilidades:', error);
-        }
-      );
-  }
 
   // Métodos da interface
   getOffensiveStats() {
@@ -1529,49 +912,23 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         break;
 
       case 'combat':
-        // Carregar APENAS descrições das habilidades para esta aba
-        if (!this.tabDataLoaded['combat'] && this.pokemon?.abilities) {
-          this.isTabTransitioning = true;
-          this.fetchAbilityDescriptions();
-          this.tabDataLoaded['combat'] = true;
-          setTimeout(() => {
-            this.isTabTransitioning = false;
-          }, 100);
+        // Dados de combate serão carregados pelo loadTabData
+        if (!this.tabDataLoaded['combat']) {
+          this.loadTabData('combat');
         }
         break;
 
       case 'evolution':
-        // CORREÇÃO: Sempre verificar se a cadeia de evolução precisa ser recarregada
-        // Se os dados já foram carregados E a cadeia não foi limpa, não carregar novamente
-        if (this.tabDataLoaded['evolution'] && this.evolutionChain.length > 0) {
-          console.log(`✅ Dados da aba ${toTab} já carregados e cadeia válida`);
-          return;
+        // Dados de evolução serão carregados pelo loadTabData
+        if (!this.tabDataLoaded['evolution']) {
+          this.loadTabData('evolution');
         }
-
-        // Carregar dados de evolução e espécie para esta aba
-        console.log(`🧬 Carregando/recarregando cadeia de evolução`);
-        this.isTabTransitioning = true;
-        this.fetchEvolutionChain();
-        // fetchSpeciesData apenas se não foi carregado por outra aba
-        if (!this.speciesData) {
-          this.fetchSpeciesData();
-        }
-        // NÃO definir tabDataLoaded aqui - será definido quando os dados forem carregados
-        setTimeout(() => {
-          this.isTabTransitioning = false;
-        }, 100);
         break;
 
       case 'curiosities':
-        // CORREÇÃO: Verificar se os flavor texts já foram carregados na inicialização
-        // Se não foram carregados ou houve mudança de idioma, usar o método otimizado
-        if (this.flavorTexts.length === 0 || this.isLoadingFlavor) {
-          console.log(`🍃 Flavor texts não carregados, usando método otimizado`);
-          this.loadFlavorTexts();
-        } else {
-          console.log(`✅ Flavor texts já carregados na inicialização: ${this.flavorTexts.length} textos`);
-          // Se os flavor texts já estão carregados, definir a flag imediatamente
-          this.tabDataLoaded['curiosities'] = true;
+        // Dados de curiosidades serão carregados pelo loadTabData
+        if (!this.tabDataLoaded['curiosities']) {
+          this.loadTabData('curiosities');
         }
         break;
     }
@@ -1589,57 +946,62 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    switch (tab) {
-      case 'overview':
-        console.log('📋 Carregando dados da aba overview');
-        // Dados básicos já estão disponíveis no pokemon
-        this.tabDataLoaded['overview'] = true;
-        console.log('✅ Overview data loaded:', this.tabDataLoaded['overview']);
-        break;
-
-      case 'combat':
-        // Carregar descrições das habilidades se ainda não foram carregadas
-        if (!this.tabDataLoaded['combat'] && this.pokemon.abilities) {
-          this.fetchAbilityDescriptions();
-          this.tabDataLoaded['combat'] = true;
-        }
-        break;
-
-      case 'evolution':
-        // Carregar dados de evolução e espécie
-        if (!this.tabDataLoaded['evolution']) {
-          this.fetchEvolutionChain();
-          if (!this.speciesData) {
-            this.fetchSpeciesData();
-          }
-          // NÃO definir tabDataLoaded aqui - será definido quando os dados forem carregados
-        }
-        break;
-
-      case 'curiosities':
-        // Carregar dados da espécie se necessário (flavor texts já carregados na inicialização)
-        if (!this.tabDataLoaded['curiosities']) {
-          console.log(`🍃 Carregando dados para aba curiosities`);
-          console.log(`📊 Estado atual: speciesData=${!!this.speciesData}, isSpeciesDataReady=${this.isSpeciesDataReady}, isLoadingSpeciesData=${this.isLoadingSpeciesData}`);
-
-          // ✅ CORREÇÃO: Se já está carregando, definir flag para mostrar loading
-          if (this.isLoadingSpeciesData) {
-            console.log(`⏳ Dados da espécie já estão sendo carregados, definindo flag para mostrar loading`);
-            this.tabDataLoaded['curiosities'] = true;
-          }
-          // Se dados já estão prontos, definir a flag imediatamente
-          else if (this.isSpeciesDataReady && this.speciesData) {
-            console.log(`✅ Dados da espécie já estão prontos, definindo flag imediatamente`);
-            this.tabDataLoaded['curiosities'] = true;
-          }
-          // Caso contrário, carregar dados da espécie
-          else {
-            console.log(`🔄 Iniciando carregamento dos dados da espécie`);
-            this.fetchSpeciesData();
-          }
-        }
-        break;
+    // Se os dados já foram carregados, não recarregar
+    if (this.tabDataLoaded[tab]) {
+      console.log(`✅ Dados da aba ${tab} já carregados`);
+      return;
     }
+
+    // Usar o PokemonDetailsManager para carregar dados específicos da aba
+    this.pokemonDetailsManager.loadTabData(this.pokemon.id, tab)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (tabData) => {
+          console.log(`✅ Dados da aba ${tab} carregados:`, tabData);
+
+          switch (tab) {
+            case 'overview':
+              this.tabDataLoaded['overview'] = true;
+              break;
+
+            case 'combat':
+              if (tabData.abilityDescriptions) {
+                this.abilityDescriptions = { ...this.abilityDescriptions, ...tabData.abilityDescriptions };
+              }
+              this.tabDataLoaded['combat'] = true;
+              break;
+
+            case 'evolution':
+              if (tabData.evolutionChain) {
+                this.evolutionChain = tabData.evolutionChain;
+              }
+              if (tabData.speciesData) {
+                this.speciesData = tabData.speciesData;
+                this.isSpeciesDataReady = true;
+              }
+              this.tabDataLoaded['evolution'] = true;
+              break;
+
+            case 'curiosities':
+              if (tabData.speciesData) {
+                this.speciesData = tabData.speciesData;
+                this.isSpeciesDataReady = true;
+              }
+              if (tabData.flavorTexts && tabData.flavorTexts.length > 0) {
+                this.flavorTexts = tabData.flavorTexts;
+                this.flavorText = this.flavorTexts[0];
+                this.currentFlavorIndex = 0;
+              }
+              this.tabDataLoaded['curiosities'] = true;
+              break;
+          }
+        },
+        error: (error) => {
+          console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
+          // Marcar como carregado mesmo com erro para evitar loops
+          this.tabDataLoaded[tab] = true;
+        }
+      });
   }
 
   private clearNonTabData(currentTab: string): void {
@@ -1749,27 +1111,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     console.log('Animação dos cards iniciada');
   }
 
-  // Métodos de tradução inteligente
-  private async fetchFlavorTextFromLocalThenAPI(): Promise<void> {
-    console.log('🔍 Iniciando busca com prioridade para traduções locais...');
 
-    // Primeiro tentar buscar localmente (somente para português)
-    const localTranslations = await this.getLocalTranslations(this.pokemon.id);
-
-    if (localTranslations && localTranslations.length > 0) {
-      console.log('✅ Usando traduções locais encontradas');
-      this.flavorTexts = localTranslations;
-      this.flavorText = localTranslations[0];
-      this.currentFlavorIndex = 0;
-      this.isLoadingFlavor = false;
-      setTimeout(() => this.checkScrollIndicator(), 100);
-      return;
-    }
-
-    // Se não encontrar localmente, buscar dados da espécie para extrair flavor texts
-    console.log('🔄 Traduções locais não encontradas, buscando dados da espécie...');
-    await this.fetchSpeciesDataForFlavors();
-  }
 
 
 
@@ -1807,18 +1149,20 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   // ✅ CORREÇÃO: Método otimizado para mudança de idioma sem loops infinitos
   onLanguageChange(): void {
-    console.log('🌐 Mudança de idioma detectada, recarregando apenas flavor texts');
+    console.log('🌐 Mudança de idioma detectada, recarregando dados dependentes de idioma');
 
-    // ✅ CORREÇÃO: Apenas recarregar flavor texts, não todo o Pokémon
     if (this.pokemon) {
-      // Resetar idioma atual para forçar reload
-      this.currentLang = '';
-      this.loadFlavorTexts();
+      // Resetar dados dependentes de idioma
+      this.flavorTexts = [];
+      this.flavorText = '';
+      this.abilityDescriptions = {};
 
-      // Recarregar descrições de habilidades se estamos na aba combat
-      if (this.activeTab === 'combat' && this.pokemon.abilities) {
-        this.fetchAbilityDescriptions();
-      }
+      // Marcar abas como não carregadas para forçar reload com novo idioma
+      this.tabDataLoaded['combat'] = false;
+      this.tabDataLoaded['curiosities'] = false;
+
+      // Recarregar dados da aba ativa
+      this.loadTabData(this.activeTab);
     }
   }
 
@@ -1871,131 +1215,17 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   private generatePokemonTheme(): void {
     if (!this.pokemon?.types || this.pokemon.types.length === 0) {
       console.log('⚠️ Tipos não encontrados, usando gradiente padrão');
-      this.pokemonTheme = {
-        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        primaryColor: '#667eea',
-        secondaryColor: '#764ba2'
-      };
+      this.pokemonTheme = this.pokemonThemeService.getDefaultTheme();
       return;
     }
 
-    const typeColors = this.getTypeColors();
     const pokemonTypes = this.pokemon.types.map((type: any) => type.type.name);
-    const colors = pokemonTypes.map((typeName: string) => typeColors[typeName] || '#888888');
+    console.log(`🎨 Gerando tema para ${this.pokemon.name}:`, { types: pokemonTypes });
 
-    console.log(`🎨 Gerando tema para ${this.pokemon.name}:`, {
-      types: pokemonTypes,
-      colors: colors
-    });
-
-    if (colors.length === 1) {
-      // Um tipo: criar variações harmoniosas da mesma cor
-      const baseColor = colors[0];
-      const lighterColor = this.lightenColor(baseColor, 30);
-      const darkerColor = this.darkenColor(baseColor, 20);
-      const midColor = this.blendColors(baseColor, lighterColor, 0.3);
-
-      this.pokemonTheme = {
-        gradient: `linear-gradient(135deg, ${lighterColor} 0%, ${midColor} 35%, ${baseColor} 70%, ${darkerColor} 100%)`,
-        primaryColor: baseColor,
-        secondaryColor: darkerColor
-      };
-
-      console.log(`✨ Gradiente de tipo único criado: ${baseColor} com variações`);
-    } else {
-      // Dois tipos: misturar as cores dos tipos de forma harmoniosa
-      const primaryColor = colors[0];
-      const secondaryColor = colors[1];
-      const blendedColor = this.blendColors(primaryColor, secondaryColor, 0.5);
-
-      // Criar gradiente mais suave com cor misturada no meio
-      this.pokemonTheme = {
-        gradient: `linear-gradient(135deg, ${primaryColor} 0%, ${blendedColor} 50%, ${secondaryColor} 100%)`,
-        primaryColor: primaryColor,
-        secondaryColor: secondaryColor
-      };
-
-      console.log(`🌈 Gradiente de duplo tipo criado: ${primaryColor} → ${blendedColor} → ${secondaryColor}`);
-    }
+    this.pokemonTheme = this.pokemonThemeService.generateTheme(pokemonTypes);
   }
 
-  private getTypeColors(): { [key: string]: string } {
-    return {
-      normal: '#A8A878',
-      fighting: '#C03028',
-      flying: '#A890F0',
-      poison: '#A040A0',
-      ground: '#E0C068',
-      rock: '#B8A038',
-      bug: '#A8B820',
-      ghost: '#705898',
-      steel: '#B8B8D0',
-      fire: '#F08030',
-      water: '#6890F0',
-      grass: '#78C850',
-      electric: '#F8D030',
-      psychic: '#F85888',
-      ice: '#98D8D8',
-      dragon: '#7038F8',
-      dark: '#705848',
-      fairy: '#EE99AC',
-      stellar: '#40B5A8',
-      unknown: '#68A090'
-    };
-  }
 
-  private lightenColor(color: string, percent: number): string {
-    const num = parseInt(color.replace("#", ""), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const B = (num >> 8 & 0x00FF) + amt;
-    const G = (num & 0x0000FF) + amt;
-
-    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-                  (B < 255 ? B < 1 ? 0 : B : 255) * 0x100 +
-                  (G < 255 ? G < 1 ? 0 : G : 255))
-                  .toString(16).slice(1);
-  }
-
-  private darkenColor(color: string, percent: number): string {
-    const num = parseInt(color.replace("#", ""), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) - amt;
-    const B = (num >> 8 & 0x00FF) - amt;
-    const G = (num & 0x0000FF) - amt;
-
-    return "#" + (0x1000000 + (R > 255 ? 255 : R < 0 ? 0 : R) * 0x10000 +
-                  (B > 255 ? 255 : B < 0 ? 0 : B) * 0x100 +
-                  (G > 255 ? 255 : G < 0 ? 0 : G))
-                  .toString(16).slice(1);
-  }
-
-  private blendColors(color1: string, color2: string, ratio: number): string {
-    // Converter cores hex para RGB
-    const hex1 = color1.replace('#', '');
-    const hex2 = color2.replace('#', '');
-
-    const r1 = parseInt(hex1.substr(0, 2), 16);
-    const g1 = parseInt(hex1.substr(2, 2), 16);
-    const b1 = parseInt(hex1.substr(4, 2), 16);
-
-    const r2 = parseInt(hex2.substr(0, 2), 16);
-    const g2 = parseInt(hex2.substr(2, 2), 16);
-    const b2 = parseInt(hex2.substr(4, 2), 16);
-
-    // Misturar as cores com base no ratio
-    const r = Math.round(r1 * (1 - ratio) + r2 * ratio);
-    const g = Math.round(g1 * (1 - ratio) + g2 * ratio);
-    const b = Math.round(b1 * (1 - ratio) + b2 * ratio);
-
-    // Converter de volta para hex
-    const toHex = (n: number) => {
-      const hex = n.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    };
-
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  }
 
   // Método para resetar dados da evolução quando necessário
   private resetEvolutionData(): void {
@@ -2038,196 +1268,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
-  // Métodos otimizados baseados na versão mobile funcional
-  // ✅ CORREÇÃO: Método otimizado com melhor controle de loading state
-  private async loadFlavorTexts() {
-    if (!this.pokemon) {
-      return;
-    }
 
-    // Atualizar o idioma atual
-    const newLang = this.translate.currentLang || 'pt-BR';
-    const langChanged = this.currentLang !== newLang;
-    this.currentLang = newLang;
 
-    // Limpar os textos existentes se o idioma mudou
-    if (langChanged) {
-      this.flavorTexts = [];
-    }
 
-    // Se já temos textos carregados e o idioma não mudou, não precisamos recarregar
-    if (this.flavorTexts.length > 0 && !langChanged) {
-      this.isLoadingFlavor = false;
-      // ✅ CORREÇÃO: Definir flag se estamos na aba curiosities
-      if (this.activeTab === 'curiosities') {
-        this.tabDataLoaded['curiosities'] = true;
-      }
-      return;
-    }
-
-    this.isLoadingFlavor = true;
-    console.log(`🔍 Carregando flavor texts para idioma: ${this.currentLang}`);
-
-    try {
-      // Apenas tenta carregar traduções locais se for português
-      if (this.currentLang === 'pt-BR' || this.currentLang === 'pt') {
-        console.log('🌐 Tentando carregar traduções locais para português...');
-        const localTranslations = await this.getLocalTranslations(this.pokemon.id);
-
-        if (localTranslations && localTranslations.length > 0) {
-          console.log('✅ Usando traduções locais do arquivo JSON');
-          this.flavorTexts = localTranslations;
-          this.flavorText = localTranslations[0];
-          this.currentFlavorIndex = 0;
-          this.isLoadingFlavor = false;
-          // ✅ CORREÇÃO: Definir flag se estamos na aba curiosities
-          if (this.activeTab === 'curiosities') {
-            this.tabDataLoaded['curiosities'] = true;
-          }
-          setTimeout(() => this.checkScrollIndicator(), 100);
-          return;
-        }
-      }
-
-      // Para outros idiomas ou se não encontrar traduções locais, buscar dados da espécie
-      console.log(`ℹ️ Buscando dados da espécie para extrair flavor texts: ${this.currentLang}`);
-      await this.fetchSpeciesDataForFlavors();
-
-    } catch (error) {
-      console.error('❌ Erro crítico ao carregar traduções:', error);
-      // ✅ CORREÇÃO: Garantir que loading seja resetado em caso de erro
-      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
-      this.flavorText = this.flavorTexts[0];
-      this.currentFlavorIndex = 0;
-      this.isLoadingFlavor = false;
-      // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
-      if (this.activeTab === 'curiosities') {
-        this.tabDataLoaded['curiosities'] = true;
-      }
-    }
-  }
-
-  // ✅ CORREÇÃO: Método com melhor error handling e timeout
-  private async fetchSpeciesDataForFlavors() {
-    if (!this.pokemon?.species?.url) {
-      console.warn('⚠️ URL da espécie não disponível para flavor texts');
-      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
-      this.flavorText = this.flavorTexts[0];
-      this.currentFlavorIndex = 0;
-      this.isLoadingFlavor = false;
-      return;
-    }
-
-    try {
-      console.log('🔍 Buscando dados da espécie para flavor texts:', this.pokemon.species.url);
-
-      // ✅ CORREÇÃO: Adicionar timeout para evitar requests infinitos
-      const speciesData = await firstValueFrom(
-        this.http.get<any>(this.pokemon.species.url).pipe(
-          takeUntil(this.destroy$)
-        )
-      );
-
-      this.extractFlavorTexts(speciesData);
-    } catch (error) {
-      console.error('❌ Erro ao buscar dados da espécie para flavor texts:', error);
-      // ✅ CORREÇÃO: Garantir que loading seja sempre resetado
-      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
-      this.flavorText = this.flavorTexts[0];
-      this.currentFlavorIndex = 0;
-      this.isLoadingFlavor = false;
-      // ✅ CORREÇÃO: Definir flag mesmo em caso de erro para evitar loop
-      if (this.activeTab === 'curiosities') {
-        this.tabDataLoaded['curiosities'] = true;
-      }
-    }
-  }
-
-  private extractFlavorTexts(species: any) {
-    if (!species?.flavor_text_entries) {
-      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
-      this.flavorText = this.flavorTexts[0];
-      this.currentFlavorIndex = 0;
-      this.isLoadingFlavor = false;
-      return;
-    }
-
-    console.log(`🔍 Extraindo flavor texts para idioma: ${this.currentLang}`);
-
-    // Mapear idioma do translate para formato da PokeAPI
-    const apiLangMap: { [key: string]: string[] } = {
-      'pt-BR': ['pt-br', 'pt'],
-      'pt': ['pt-br', 'pt'],
-      'en-US': ['en'],
-      'en': ['en'],
-      'es': ['es'],
-      'es-ES': ['es'],
-      'ja-JP': ['ja'],
-      'ja': ['ja']
-    };
-
-    const targetLangs = apiLangMap[this.currentLang] || ['en'];
-    console.log(`🔍 Idioma atual: ${this.currentLang}, Idiomas alvo: ${targetLangs.join(', ')}`);
-
-    // Debug: listar todos os idiomas disponíveis
-    const availableLanguages = species.flavor_text_entries.map((entry: any) => entry.language.name);
-    console.log(`📋 Idiomas disponíveis na API: ${[...new Set(availableLanguages)].join(', ')}`);
-
-    const targetEntries = species.flavor_text_entries.filter((entry: any) =>
-      targetLangs.includes(entry.language.name)
-    );
-
-    console.log(`🎯 Entradas encontradas para idiomas ${targetLangs.join(', ')}: ${targetEntries.length}`);
-
-    if (targetEntries.length === 0) {
-      console.log('⚠️ Nenhuma entrada encontrada em idiomas suportados');
-      this.flavorTexts = [this.translate.instant('modal.NO_FLAVOR_TEXT_AVAILABLE')];
-    } else {
-      // Converter para array de strings e remover duplicatas
-      const flavorStrings = targetEntries.map((entry: any) =>
-        entry.flavor_text.replace(/\n/g, ' ').replace(/\f/g, ' ').trim()
-      );
-
-      // Remover duplicatas baseado no conteúdo
-      const uniqueFlavors = flavorStrings.filter((flavor: string, index: number, array: string[]) => {
-        return array.findIndex((f: string) => f.trim() === flavor.trim()) === index;
-      });
-
-      this.flavorTexts = uniqueFlavors;
-      console.log(`✅ Flavor texts processados: ${targetEntries.length} → ${uniqueFlavors.length}`);
-    }
-
-    this.flavorText = this.flavorTexts[0];
-    this.currentFlavorIndex = 0;
-    this.isLoadingFlavor = false;
-    // ✅ CORREÇÃO: Definir flag se estamos na aba curiosities
-    if (this.activeTab === 'curiosities') {
-      this.tabDataLoaded['curiosities'] = true;
-    }
-    setTimeout(() => this.checkScrollIndicator(), 100);
-  }
-
-  private getLocalTranslations(pokemonId: number): Promise<string[] | null> {
-    return new Promise((resolve) => {
-      try {
-        this.http.get<any>('/assets/data/flavors_ptbr.json').subscribe({
-          next: (data) => {
-            const translations = data[pokemonId];
-            if (translations && Array.isArray(translations)) {
-              resolve(translations);
-            } else {
-              resolve(null);
-            }
-          },
-          error: (error) => {
-            console.error('Erro ao carregar traduções locais:', error);
-            resolve(null);
-          }
-        });
-      } catch (error) {
-        console.error('Erro ao processar traduções locais:', error);
-        resolve(null);
-      }
-    });
-  }
 }

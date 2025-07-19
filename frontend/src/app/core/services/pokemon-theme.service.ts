@@ -189,7 +189,7 @@ export class PokemonThemeService {
   /**
    * Retorna tema padrão para casos de erro
    */
-  private getDefaultTheme(): PokemonTheme {
+  getDefaultTheme(): PokemonTheme {
     const defaultColor = this.typeColors['normal'];
 
     return {
