@@ -281,6 +281,37 @@ export class PokeApiService {
   }
 
   /**
+   * Busca descrição de uma habilidade
+   * @param abilityUrl URL da habilidade
+   * @returns Observable com descrição da habilidade
+   */
+  getAbilityDescription(abilityUrl: string): Observable<string> {
+    const cacheKey = `ability_desc_${this.generateCacheKey(abilityUrl)}`;
+
+    return this.cacheService.get<any>(
+      cacheKey,
+      () => this.http.get<any>(abilityUrl),
+      2 * 60 * 60 * 1000 // 2 horas TTL
+    ).pipe(
+      map(ability => {
+        // Buscar descrição em português ou inglês
+        const flavorText = ability.flavor_text_entries?.find((entry: any) =>
+          entry.language.name === 'pt-BR' || entry.language.name === 'en'
+        );
+        return flavorText?.flavor_text?.replace(/\f/g, ' ').trim() || 'Descrição não disponível';
+      }),
+      catchError(this.handleError<string>('getAbilityDescription', 'Descrição não disponível'))
+    );
+  }
+
+  /**
+   * Gera chave de cache única para URLs
+   */
+  private generateCacheKey(url: string): string {
+    return btoa(url).replace(/[^a-zA-Z0-9]/g, '');
+  }
+
+  /**
    * Obtém informações sobre gerações de Pokémon
    * @returns Observable com lista de gerações
    */
