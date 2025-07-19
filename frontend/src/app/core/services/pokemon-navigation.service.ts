@@ -37,9 +37,10 @@ export class PokemonNavigationService {
   public currentNavigation$ = this.currentNavigationSubject.asObservable();
 
   constructor() {
-    if (this.config.enableLogging) {
-      console.log('🧭 PokemonNavigationService inicializado');
-    }
+    // ✅ CLEANUP: Log de inicialização removido - serviço estável
+    // if (this.config.enableLogging) {
+    //   console.log('🧭 PokemonNavigationService inicializado');
+    // }
   }
 
   /**
@@ -121,7 +122,7 @@ export class PokemonNavigationService {
    */
   navigateNext(currentId: number): number | null {
     const nextId = this.getNextPokemonId(currentId);
-    
+
     if (nextId) {
       this.logIfEnabled('Navegando para próximo:', currentId, '->', nextId);
       this.getNavigationInfo(nextId); // Atualiza o subject
@@ -135,7 +136,7 @@ export class PokemonNavigationService {
    */
   navigatePrevious(currentId: number): number | null {
     const previousId = this.getPreviousPokemonId(currentId);
-    
+
     if (previousId) {
       this.logIfEnabled('Navegando para anterior:', currentId, '->', previousId);
       this.getNavigationInfo(previousId); // Atualiza o subject
@@ -192,8 +193,8 @@ export class PokemonNavigationService {
    * Verifica se um ID de Pokémon é válido
    */
   isValidPokemonId(pokemonId: number): boolean {
-    return Number.isInteger(pokemonId) && 
-           pokemonId >= this.config.minPokemonId && 
+    return Number.isInteger(pokemonId) &&
+           pokemonId >= this.config.minPokemonId &&
            pokemonId <= this.config.maxPokemonId;
   }
 

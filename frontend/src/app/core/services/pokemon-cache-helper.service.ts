@@ -27,9 +27,10 @@ export class PokemonCacheHelper implements OnDestroy {
     private pokeApiService: PokeApiService,
     private http: HttpClient
   ) {
-    if (this.config.enableLogging) {
-      console.log('🗄️ PokemonCacheHelper inicializado');
-    }
+    // ✅ CLEANUP: Log de inicialização removido - serviço estável
+    // if (this.config.enableLogging) {
+    //   console.log('🗄️ PokemonCacheHelper inicializado');
+    // }
     this.loadLocalFlavorTexts(); // Carregar flavor texts locais na inicialização
   }
 
@@ -269,9 +270,10 @@ export class PokemonCacheHelper implements OnDestroy {
 
     flavorKeys.forEach(key => this.cacheService.delete(key));
 
-    if (this.config.enableLogging) {
-      console.log(`🧹 Limpeza de flavor texts: ${flavorKeys.length} entradas removidas`);
-    }
+    // ✅ CLEANUP: Log de limpeza removido - funcionalidade estável
+    // if (this.config.enableLogging) {
+    //   console.log(`🧹 Limpeza de flavor texts: ${flavorKeys.length} entradas removidas`);
+    // }
   }
 
   /**

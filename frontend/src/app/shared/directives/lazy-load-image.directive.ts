@@ -1,9 +1,9 @@
-import { 
-  Directive, 
-  ElementRef, 
-  Input, 
-  OnInit, 
-  OnDestroy, 
+import {
+  Directive,
+  ElementRef,
+  Input,
+  OnInit,
+  OnDestroy,
   Renderer2,
   Output,
   EventEmitter
@@ -62,16 +62,16 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
    */
   private setupInitialState(): void {
     const img = this.el.nativeElement;
-    
+
     // Definir placeholder inicial
     this.renderer.setAttribute(img, 'src', this.placeholder);
     this.renderer.addClass(img, this.loadingClass);
-    
+
     // Adicionar atributos de acessibilidade
     if (!img.getAttribute('alt')) {
       this.renderer.setAttribute(img, 'alt', 'Loading image...');
     }
-    
+
     // Adicionar loading="lazy" nativo como fallback
     this.renderer.setAttribute(img, 'loading', 'lazy');
   }
@@ -130,7 +130,7 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.currentAttempt++;
-    
+
     const img = this.el.nativeElement;
     this.renderer.addClass(img, this.loadingClass);
     this.imageStartLoading.emit();
@@ -138,13 +138,13 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
     try {
       // Tentar carregar versão WebP primeiro (se suportado)
       const imageUrl = await this.getOptimalImageUrl(this.imageSrc);
-      
+
       // Precarregar a imagem
       await this.preloadImage(imageUrl);
-      
+
       // Aplicar a imagem carregada
       this.applyLoadedImage(imageUrl);
-      
+
     } catch (error) {
       console.error(`Erro ao carregar imagem (tentativa ${this.currentAttempt}):`, error);
       this.handleImageError(error as Error);
@@ -168,7 +168,7 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
         }
       }
     }
-    
+
     return originalUrl;
   }
 
@@ -200,15 +200,15 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
   private preloadImage(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      
+
       img.onload = () => resolve();
       img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
-      
+
       // Timeout para evitar travamento
       setTimeout(() => {
         reject(new Error(`Image load timeout: ${url}`));
       }, 10000);
-      
+
       img.src = url;
     });
   }
@@ -218,25 +218,26 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
    */
   private applyLoadedImage(url: string): void {
     const img = this.el.nativeElement;
-    
+
     // Remover classes de loading
     this.renderer.removeClass(img, this.loadingClass);
     this.renderer.removeClass(img, this.errorClass);
-    
+
     // Aplicar imagem e classe de sucesso
     this.renderer.setAttribute(img, 'src', url);
     this.renderer.addClass(img, this.loadedClass);
-    
+
     // Atualizar alt text
     if (img.getAttribute('alt') === 'Loading image...') {
       this.renderer.setAttribute(img, 'alt', 'Loaded image');
     }
-    
+
     this.isLoading = false;
     this.isLoaded = true;
     this.imageLoaded.emit();
-    
-    console.log(`✅ Lazy image loaded: ${url}`);
+
+    // ✅ CLEANUP: Log de sucesso removido - funcionalidade estável após FASE 4
+    // console.log(`✅ Lazy image loaded: ${url}`);
   }
 
   /**
@@ -244,12 +245,12 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
    */
   private handleImageError(error: Error): void {
     this.isLoading = false;
-    
+
     if (this.currentAttempt < this.retryAttempts) {
       // Retry com delay exponencial
       const delay = this.retryDelay * Math.pow(2, this.currentAttempt - 1);
       console.log(`🔄 Retrying image load in ${delay}ms (attempt ${this.currentAttempt + 1}/${this.retryAttempts})`);
-      
+
       this.retryTimeout = setTimeout(() => {
         this.loadImage();
       }, delay);
@@ -265,12 +266,12 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
    */
   private applyErrorImage(): void {
     const img = this.el.nativeElement;
-    
+
     this.renderer.removeClass(img, this.loadingClass);
     this.renderer.addClass(img, this.errorClass);
     this.renderer.setAttribute(img, 'src', this.errorImage);
     this.renderer.setAttribute(img, 'alt', 'Failed to load image');
-    
+
     console.error(`❌ Failed to load image after ${this.retryAttempts} attempts`);
   }
 
@@ -282,7 +283,7 @@ export class LazyLoadImageDirective implements OnInit, OnDestroy {
       this.observer.disconnect();
       this.observer = null;
     }
-    
+
     if (this.retryTimeout) {
       clearTimeout(this.retryTimeout);
       this.retryTimeout = null;

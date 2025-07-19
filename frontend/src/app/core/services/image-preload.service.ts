@@ -226,7 +226,8 @@ export class ImagePreloadService {
       this.imageCache.set(item.url, img);
       this.stats.totalLoaded++;
 
-      console.log(`✅ Image preloaded: ${item.url} (${item.loadTime}ms)`);
+      // ✅ CLEANUP: Log de preload removido - funcionalidade estável após FASE 4
+      // console.log(`✅ Image preloaded: ${item.url} (${item.loadTime}ms)`);
 
     } catch (error) {
       // Erro

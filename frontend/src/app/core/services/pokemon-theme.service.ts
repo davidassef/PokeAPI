@@ -76,9 +76,10 @@ export class PokemonThemeService {
   };
 
   constructor() {
-    if (this.config.enableLogging) {
-      console.log('🎨 PokemonThemeService inicializado');
-    }
+    // ✅ CLEANUP: Log de inicialização removido - serviço estável
+    // if (this.config.enableLogging) {
+    //   console.log('🎨 PokemonThemeService inicializado');
+    // }
   }
 
   /**

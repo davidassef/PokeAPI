@@ -48,7 +48,8 @@ export class ToastNotificationService {
     private toastController: ToastController,
     private translate: TranslateService
   ) {
-    console.log('🍞 ToastNotificationService inicializado');
+    // ✅ CLEANUP: Log de inicialização removido - serviço estável
+    // console.log('🍞 ToastNotificationService inicializado');
   }
 
   /**
@@ -222,7 +223,8 @@ export class ToastNotificationService {
       // Atualizar estatísticas
       this.updateStats(finalConfig.type, finalConfig.duration || 3000);
 
-      console.log(`🍞 Toast exibido: ${finalConfig.type} - "${message}"`);
+      // ✅ CLEANUP: Log de toast removido - funcionalidade estável
+      // console.log(`🍞 Toast exibido: ${finalConfig.type} - "${message}"`);
 
     } catch (error) {
       console.error('🍞 Erro ao exibir toast:', error);
@@ -242,7 +244,8 @@ export class ToastNotificationService {
       const nextToast = this.toastQueue.shift();
 
       if (nextToast) {
-        console.log(`🍞 Processando toast da fila. Restantes: ${this.toastQueue.length}`);
+        // ✅ CLEANUP: Log de fila removido - funcionalidade estável
+        // console.log(`🍞 Processando toast da fila. Restantes: ${this.toastQueue.length}`);
         await this.showToast(nextToast);
       }
 

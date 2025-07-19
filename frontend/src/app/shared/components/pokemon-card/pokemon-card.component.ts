@@ -241,14 +241,16 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
    * Callback quando a imagem começa a carregar
    */
   onImageStartLoading(): void {
-    console.log(`🔄 Loading image for ${this.pokemon.name}`);
+    // ✅ CLEANUP: Log de carregamento removido - funcionalidade estável após FASE 4
+    // console.log(`🔄 Loading image for ${this.pokemon.name}`);
   }
 
   /**
    * Callback quando a imagem é carregada com sucesso
    */
   onImageLoaded(): void {
-    console.log(`✅ Image loaded for ${this.pokemon.name}`);
+    // ✅ CLEANUP: Log de sucesso removido - funcionalidade estável após FASE 4
+    // console.log(`✅ Image loaded for ${this.pokemon.name}`);
   }
 
   /**
