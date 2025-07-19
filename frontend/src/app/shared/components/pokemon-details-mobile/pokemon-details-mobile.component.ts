@@ -119,11 +119,12 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   ) {}
 
   ngOnInit() {
-    console.log('🚀 PokemonDetailsMobileComponent - ngOnInit:', {
-      pokemonId: this.pokemonId,
-      isOpen: this.isOpen,
-      timestamp: new Date().toISOString()
-    });
+    // ✅ LIMPEZA: Log de inicialização removido - componente estável
+    // console.log('🚀 PokemonDetailsMobileComponent - ngOnInit:', {
+    //   pokemonId: this.pokemonId,
+    //   isOpen: this.isOpen,
+    //   timestamp: new Date().toISOString()
+    // });
 
     // Adicionar classe modal-open ao body para controlar z-index dos FABs
     if (this.isOpen) {
@@ -801,7 +802,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
 
       if (this.pokemonSpecies.habitat) {
         trivia.push(this.translate.instant('mobile.trivia.habitat', {
-          habitat: this.translate.instant(`habitats.${this.pokemonSpecies.habitat.name}`)
+          habitat: this.translate.instant(`pokemon.habitats.${this.pokemonSpecies.habitat.name}`)
         }));
       }
     }

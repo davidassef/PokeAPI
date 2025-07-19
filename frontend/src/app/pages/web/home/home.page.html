@@ -103,6 +103,6 @@
     *ngIf="showDetailsModal && selectedPokemonId"
     [pokemonId]="selectedPokemonId"
     [isOpen]="showDetailsModal"
-    (close)="closeDetailsModal()">
+    (modalClose)="closeDetailsModal()">
   </app-details-modal>
 </ion-content>

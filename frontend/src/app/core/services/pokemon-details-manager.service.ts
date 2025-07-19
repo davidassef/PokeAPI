@@ -46,9 +46,10 @@ export class PokemonDetailsManager {
     private pokemonCacheHelper: PokemonCacheHelper,
     private viewedPokemonService: ViewedPokemonService
   ) {
-    if (this.config.enableLogging) {
-      console.log('🗄️ PokemonDetailsManager inicializado');
-    }
+    // ✅ LIMPEZA: Log de inicialização removido - serviço funciona corretamente
+    // if (this.config.enableLogging) {
+    //   console.log('🗄️ PokemonDetailsManager inicializado');
+    // }
   }
 
   /**
@@ -60,15 +61,18 @@ export class PokemonDetailsManager {
     return this.pokeApiService.getPokemon(pokemonId).pipe(
       tap(pokemon => {
         this.viewedPokemonService.markPokemonAsViewed(pokemon.id);
-        this.logIfEnabled('Pokémon marcado como visualizado:', pokemon.name);
+        // ✅ LIMPEZA: Log de visualização removido - funcionalidade estável
+        // this.logIfEnabled('Pokémon marcado como visualizado:', pokemon.name);
       }),
       switchMap(pokemon => this.enrichPokemonData(pokemon)),
       tap(() => {
         // Preload de Pokémons adjacentes para melhor UX
         this.pokemonCacheHelper.preloadAdjacentPokemon(pokemonId);
-        this.logIfEnabled('Preload de adjacentes iniciado para ID:', pokemonId);
+        // ✅ LIMPEZA: Log de preload removido - funcionalidade estável
+        // this.logIfEnabled('Preload de adjacentes iniciado para ID:', pokemonId);
       }),
       catchError(error => {
+        // ✅ MANTER: Log de erro é crítico para debugging
         this.logIfEnabled('Erro ao carregar detalhes do Pokémon:', error);
         throw error;
       })
@@ -79,7 +83,8 @@ export class PokemonDetailsManager {
    * Enriquece dados básicos do Pokémon com informações adicionais
    */
   private enrichPokemonData(pokemon: any): Observable<PokemonDetails> {
-    this.logIfEnabled('Enriquecendo dados do Pokémon:', pokemon.name);
+    // ✅ LIMPEZA: Log de enriquecimento removido - processo estável
+    // this.logIfEnabled('Enriquecendo dados do Pokémon:', pokemon.name);
 
     return forkJoin({
       pokemon: of(pokemon),
@@ -94,12 +99,13 @@ export class PokemonDetailsManager {
         abilityDescriptions: {}
       })),
       tap(details => {
-        this.logIfEnabled('Dados enriquecidos:', {
-          pokemon: details.pokemon.name,
-          species: !!details.species,
-          flavorTexts: details.flavorTexts.length,
-          carouselImages: details.carouselImages.length
-        });
+        // ✅ LIMPEZA: Log de dados enriquecidos removido - processo estável
+        // this.logIfEnabled('Dados enriquecidos:', {
+        //   pokemon: details.pokemon.name,
+        //   species: !!details.species,
+        //   flavorTexts: details.flavorTexts.length,
+        //   carouselImages: details.carouselImages.length
+        // });
       })
     );
   }
@@ -196,7 +202,8 @@ export class PokemonDetailsManager {
    * Carrega dados específicos de uma aba
    */
   loadTabData(tab: string, pokemon: any, speciesData?: any): Observable<any> {
-    this.logIfEnabled('Carregando dados da aba:', tab);
+    // ✅ LIMPEZA: Log de carregamento de aba removido - funcionalidade estável
+    // this.logIfEnabled('Carregando dados da aba:', tab);
 
     switch (tab) {
       case 'evolution':

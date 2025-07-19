@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges, HostBinding } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges, HostBinding, HostListener } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
@@ -119,20 +119,24 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   ) {}
 
   ngOnInit() {
-    console.log('🚀 DetailsModalComponent - ngOnInit:', {
-      pokemon: !!this.pokemon,
-      pokemonId: this.pokemonId,
-      isOpen: this.isOpen,
-      timestamp: new Date().toISOString()
-    });
+    // ✅ LIMPEZA: Log de inicialização removido - componente estável
+    // console.log('🚀 DetailsModalComponent - ngOnInit:', {
+    //   pokemon: !!this.pokemon,
+    //   pokemonId: this.pokemonId,
+    //   isOpen: this.isOpen,
+    //   timestamp: new Date().toISOString()
+    // });
 
     if (this.pokemon) {
-      console.log('✅ Pokemon já disponível, inicializando dados');
+      // ✅ LIMPEZA: Log de disponibilidade removido - fluxo estável
+      // console.log('✅ Pokemon já disponível, inicializando dados');
       this.initializePokemonData();
     } else if (this.pokemonId && this.pokemonId > 0) {
-      console.log('🔍 Carregando Pokemon com PokemonDetailsManager');
+      // ✅ LIMPEZA: Log de carregamento removido - fluxo estável
+      // console.log('🔍 Carregando Pokemon com PokemonDetailsManager');
       this.loadPokemonById(this.pokemonId);
     } else {
+      // ✅ MANTER: Warning crítico para debugging
       console.warn('⚠️ Nenhum Pokemon ou ID fornecido');
     }
 
@@ -556,7 +560,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
       if (this.speciesData.habitat) {
         trivia.push(this.translate.instant('mobile.trivia.habitat', {
-          habitat: this.translate.instant(`habitats.${this.speciesData.habitat.name}`)
+          habitat: this.translate.instant(`pokemon.habitats.${this.speciesData.habitat.name}`)
         }));
       }
     }
@@ -807,7 +811,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   onImageLoad(event: any): void {
-    console.log('✅ Imagem carregada com sucesso:', event.target.src);
+    // ✅ LIMPEZA: Log de sucesso de imagem removido - fallback funciona corretamente
+    // console.log('✅ Imagem carregada com sucesso:', event.target.src);
     // Remover classe de erro se existir
     const container = event.target.closest('.main-image-container');
     if (container) {
@@ -827,6 +832,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       parent: event.target.parentElement?.className
     };
 
+    // ✅ MANTER: Logs de erro de imagem são críticos para debugging
     console.warn('❌ Erro ao carregar imagem:', failedUrl);
     console.warn('📍 Elemento:', elementInfo);
 
@@ -1071,15 +1077,18 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   private animateHeader(): void {
-    console.log('Animação do header iniciada');
+    // ✅ LIMPEZA: Log de animação removido - funcionalidade estável
+    // console.log('Animação do header iniciada');
   }
 
   private animateStats(): void {
-    console.log('Animação das stats iniciada');
+    // ✅ LIMPEZA: Log de animação removido - funcionalidade estável
+    // console.log('Animação das stats iniciada');
   }
 
   private animateCards(): void {
-    console.log('Animação dos cards iniciada');
+    // ✅ LIMPEZA: Log de animação removido - funcionalidade estável
+    // console.log('Animação dos cards iniciada');
   }
 
 
@@ -1097,6 +1106,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
     this.closeModal();
+  }
+
+  // ✅ CORREÇÃO: Adicionar suporte para tecla ESC
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(event: KeyboardEvent): void {
+    if (this.isOpen) {
+      this.closeModal();
+      event.preventDefault();
+    }
   }
 
   getStatPercentage(baseStat: number): number {
