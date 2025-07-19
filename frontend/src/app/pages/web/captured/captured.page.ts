@@ -55,6 +55,7 @@ export class CapturedPage implements OnInit, OnDestroy {
       searchTerm: this.currentFilters.name || '',
       selectedElementTypes: this.currentFilters.elementTypes || [],
       selectedMovementTypes: this.currentFilters.movementTypes || [],
+      selectedHabitats: this.currentFilters.habitats || [],
       selectedGeneration: this.currentFilters.generation || null,
       sortBy: this.currentFilters.sortBy,
       sortOrder: this.currentFilters.sortOrder
@@ -162,6 +163,7 @@ export class CapturedPage implements OnInit, OnDestroy {
       name: filters.searchTerm || '',
       elementTypes: filters.selectedElementTypes || [],
       movementTypes: filters.selectedMovementTypes || [],
+      habitats: filters.selectedHabitats || [],
       generation: filters.selectedGeneration || undefined,
       sortBy: filters.sortBy,
       sortOrder: filters.sortOrder

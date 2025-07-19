@@ -239,7 +239,8 @@
     "advanced_filters": "Filtros Avançados",
     "types": "Tipos",
     "types_elements": "Tipos de Elemento",
-    "types_movement": "Tipos de Movimentação"
+    "types_movement": "Tipos de Movimentação",
+    "habitats": "Habitats"
   },
   "settings_page": {
     "language_theme": "Idioma e Tema",

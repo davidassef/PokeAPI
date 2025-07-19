@@ -77,6 +77,23 @@
         </div>
       </div>
 
+      <!-- Habitats Filter -->
+      <div class="filter-section">
+        <h5>{{ 'filters.habitats' | translate }}</h5>
+        <div class="types-grid">
+          <ion-chip
+            *ngFor="let habitat of habitats"
+            [class.selected]="isHabitatSelected(habitat)"
+            [style.background-color]="isHabitatSelected(habitat) ? '#4CAF50' : 'transparent'"
+            [style.color]="isHabitatSelected(habitat) ? 'white' : '#4CAF50'"
+            [style.border-color]="'#4CAF50'"
+            (click)="onHabitatToggle(habitat)"
+            class="auto-width-center">
+            {{ ('pokemon.habitats.' + habitat) | translate }}
+          </ion-chip>
+        </div>
+      </div>
+
       <!-- Generation + Sort Options (lado a lado, compactos) -->
       <div class="filter-section row-group">
         <!-- Geração -->

@@ -14,6 +14,8 @@ export interface FilterOptions {
   selectedElementTypes: string[];
   /** Tipos de movimentação selecionados (ex: voador) */
   selectedMovementTypes: string[];
+  /** Habitats selecionados (ex: floresta, caverna) */
+  selectedHabitats: string[];
   /** Geração selecionada (1 a 8) ou null para todas */
   selectedGeneration: number | null;
   /** Campo de ordenação: id, name, height ou weight */
@@ -42,6 +44,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     searchTerm: '',
     selectedElementTypes: [],
     selectedMovementTypes: [],
+    selectedHabitats: [],
     selectedGeneration: null,
     sortBy: 'id',
     sortOrder: 'asc'
@@ -61,6 +64,8 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
   elementTypes: string[] = [];
   /** Lista de tipos de movimentação disponíveis */
   movementTypes: string[] = [];
+  /** Lista de habitats disponíveis */
+  habitats: string[] = [];
   /** Lista de gerações disponíveis */
   generations = [
     { id: 1, name: 'filters.generation_1' },
@@ -98,6 +103,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       searchTerm: [''],
       selectedElementTypes: [[]],
       selectedMovementTypes: [[]],
+      selectedHabitats: [[]],
       selectedGeneration: [null],
       sortBy: ['id'],
       sortOrder: ['asc']
@@ -109,6 +115,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.loadPokemonTypes();
+    this.loadHabitats();
     // Inicializa o formulário com os filtros atuais, se fornecidos
     if (this.currentFilters) {
       this.filterForm.patchValue(this.currentFilters);
@@ -151,6 +158,24 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Carrega os habitats disponíveis baseado nas traduções existentes.
+   */
+  private loadHabitats() {
+    // Lista de habitats baseada nas traduções já existentes no sistema
+    this.habitats = [
+      'cave',
+      'forest',
+      'grassland',
+      'mountain',
+      'rare',
+      'rough-terrain',
+      'sea',
+      'urban',
+      'waters-edge'
+    ];
+  }
+
+  /**
    * Configura subscriptions reativas para os campos do formulário de filtro.
    */
   private setupFormSubscriptions() {
@@ -173,6 +198,11 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
         this.emitFilterChange();
       });
     this.filterForm.get('selectedMovementTypes')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.emitFilterChange();
+      });
+    this.filterForm.get('selectedHabitats')?.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.emitFilterChange();
@@ -202,6 +232,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       searchTerm: this.filterForm.get('searchTerm')?.value || '',
       selectedElementTypes: this.filterForm.get('selectedElementTypes')?.value || [],
       selectedMovementTypes: this.filterForm.get('selectedMovementTypes')?.value || [],
+      selectedHabitats: this.filterForm.get('selectedHabitats')?.value || [],
       selectedGeneration: this.filterForm.get('selectedGeneration')?.value,
       sortBy: this.filterForm.get('sortBy')?.value || 'id',
       sortOrder: this.filterForm.get('sortOrder')?.value || 'asc'
@@ -260,6 +291,30 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Verifica se um habitat está selecionado.
+   */
+  isHabitatSelected(habitat: string): boolean {
+    const selectedHabitats = this.filterForm.get('selectedHabitats')?.value || [];
+    return selectedHabitats.includes(habitat);
+  }
+
+  /**
+   * Alterna a seleção de um habitat.
+   */
+  onHabitatToggle(habitat: string) {
+    const currentHabitats = this.filterForm.get('selectedHabitats')?.value || [];
+    const index = currentHabitats.indexOf(habitat);
+
+    if (index > -1) {
+      currentHabitats.splice(index, 1);
+    } else {
+      currentHabitats.push(habitat);
+    }
+
+    this.filterForm.get('selectedHabitats')?.setValue([...currentHabitats]);
+  }
+
+  /**
    * Limpa todos os filtros e reseta o formulário.
    */
   onClearFilters() {
@@ -267,6 +322,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       searchTerm: '',
       selectedElementTypes: [],
       selectedMovementTypes: [],
+      selectedHabitats: [],
       selectedGeneration: null,
       sortBy: 'id',
       sortOrder: 'asc'
@@ -319,6 +375,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     if (formValue.searchTerm) count++;
     if (formValue.selectedElementTypes?.length > 0) count++;
     if (formValue.selectedMovementTypes?.length > 0) count++;
+    if (formValue.selectedHabitats?.length > 0) count++;
     if (formValue.selectedGeneration !== null) count++;
     if (formValue.sortBy !== 'id' || formValue.sortOrder !== 'asc') count++;
     return count;
