@@ -24,6 +24,18 @@
          (imageError)="onImageError($event)"
          (imageStartLoading)="onImageStartLoading()">
 
+    <!-- Favorite Button -->
+    <div class="favorite-button-container" *ngIf="showFavoriteButton">
+      <app-favorite-button
+        [pokemon]="pokemon"
+        size="small"
+        fill="clear"
+        color="medium"
+        favoriteColor="danger"
+        (favoriteChanged)="onFavoriteChanged($event)">
+      </app-favorite-button>
+    </div>
+
     <!-- Capture Button with Enhanced Visual Feedback -->
     <button *ngIf="showCaptureButton"
             class="capture-btn"

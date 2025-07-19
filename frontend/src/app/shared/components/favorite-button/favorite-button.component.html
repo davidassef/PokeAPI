@@ -1,0 +1,22 @@
+<ion-button
+  [fill]="fill"
+  [color]="buttonColor"
+  [disabled]="disabled || isLoading"
+  [class]="sizeClass"
+  (click)="onToggleFavorite($event)"
+  class="favorite-button">
+  
+  <ion-icon 
+    [name]="iconName" 
+    slot="icon-only"
+    *ngIf="!showText">
+  </ion-icon>
+  
+  <ion-icon 
+    [name]="iconName" 
+    slot="start"
+    *ngIf="showText">
+  </ion-icon>
+  
+  <span *ngIf="showText">{{ buttonText }}</span>
+</ion-button>

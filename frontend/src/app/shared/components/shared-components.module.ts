@@ -21,6 +21,7 @@ import { AccountSettingsModalComponent } from './account-settings-modal/account-
 import { AdminPokemonModalComponent } from './admin-pokemon-modal/admin-pokemon-modal.component';
 import { PokemonDetailsMobileComponent } from './pokemon-details-mobile/pokemon-details-mobile.component';
 import { CacheStatsComponent } from './cache-stats/cache-stats.component';
+import { FavoriteButtonComponent } from './favorite-button/favorite-button.component';
 
 
 // Shared Modules
@@ -44,7 +45,8 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AccountSettingsModalComponent,
     AdminPokemonModalComponent,
     PokemonDetailsMobileComponent,
-    CacheStatsComponent
+    CacheStatsComponent,
+    FavoriteButtonComponent
   ],  imports: [
     CommonModule,
     IonicModule,
@@ -71,6 +73,7 @@ import { SharedDirectivesModule } from '../directives/shared-directives.module';
     AdminPokemonModalComponent,
     PokemonDetailsMobileComponent,
     CacheStatsComponent,
+    FavoriteButtonComponent,
     SharedPipesModule,
     SharedDirectivesModule,
     TranslateModule,
