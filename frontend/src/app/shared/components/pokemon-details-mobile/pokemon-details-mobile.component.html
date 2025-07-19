@@ -291,7 +291,7 @@
 
                   <div class="pokemon-evolution-card">
                     <div class="evolution-image">
-                      <img [src]="stage.imageUrl || ensureValidImage()" [alt]="stage.name"
+                      <img [src]="getValidImageUrl(stage.imageUrl)" [alt]="stage.name"
                            (error)="onImageError($event)">
                     </div>
                     <div class="evolution-info-text">

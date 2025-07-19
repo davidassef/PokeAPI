@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges, HostBinding } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { modalAnimations } from './modal.animations';
@@ -8,6 +9,7 @@ import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.serv
 import { PokemonDetailsManager } from '../../../core/services/pokemon-details-manager.service';
 import { PokemonThemeService } from '../../../core/services/pokemon-theme.service';
 import { PokemonNavigationService } from '../../../core/services/pokemon-navigation.service';
+import { PokeApiService } from '../../../core/services/pokeapi.service';
 
 @Component({
   selector: 'app-details-modal',
@@ -21,6 +23,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   @Input() isOpen: boolean = false;
   @Output() modalClose = new EventEmitter<void>();
   @ViewChild('flavorTextWrapper', { static: false }) flavorTextWrapper?: ElementRef;
+
+  // ✅ CORREÇÃO: HostBinding para controlar visibilidade do modal
+  @HostBinding('class.modal-open') get modalOpen() {
+    return this.isOpen;
+  }
 
   private destroy$ = new Subject<void>();
 
@@ -44,6 +51,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     curiosities: false
   };
 
+  // ✅ FASE 4: Estados simplificados inspirados no mobile
+  isLoadingTabData: boolean = false;
+
   // Propriedades dos flavor texts
   flavorText: string = '';
   flavorTexts: string[] = [];
@@ -64,21 +74,21 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   // Estados de loading
   private isLoadingPokemonData: boolean = false;
 
-  // Métodos de verificação de dados para as abas
+  // ✅ FASE 4: Métodos de verificação simplificados
   isOverviewDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['overview'];
+    return !!this.pokemon;
   }
 
   isCombatDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['combat'];
+    return !!this.pokemon && !this.isLoadingTabData;
   }
 
   isEvolutionDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['evolution'];
+    return !!this.pokemon && !this.isLoadingTabData;
   }
 
   isCuriositiesDataReady(): boolean {
-    return !!this.pokemon && this.tabDataLoaded['curiosities'];
+    return !!this.pokemon && !this.isLoadingTabData;
   }
 
   shouldShowCombatData(): boolean {
@@ -100,10 +110,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   constructor(
     private modalController: ModalController,
     private translate: TranslateService,
+    private http: HttpClient,
     private viewedPokemonService: ViewedPokemonService,
     private pokemonDetailsManager: PokemonDetailsManager,
     private pokemonThemeService: PokemonThemeService,
-    private pokemonNavigationService: PokemonNavigationService
+    private pokemonNavigationService: PokemonNavigationService,
+    private pokeApiService: PokeApiService
   ) {}
 
   ngOnInit() {
@@ -139,35 +151,53 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
 
     console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
+    this.loadPokemonDetailsDirectly(id);
+  }
+
+  /**
+   * ✅ FASE 1: Método modificado para carregar dados com flavor texts diretos
+   * Implementa a lógica especificada no plano de correção
+   */
+  private async loadPokemonDetailsDirectly(id: number): Promise<void> {
     this.isLoadingPokemonData = true;
 
-    this.pokemonDetailsManager.loadPokemonDetails(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (enrichedData) => {
-          console.log('🎉 Dados enriquecidos carregados:', enrichedData.pokemon?.name);
-          this.pokemon = enrichedData.pokemon;
-          this.speciesData = enrichedData.species;
-          this.flavorTexts = enrichedData.flavorTexts;
-          this.abilityDescriptions = enrichedData.abilityDescriptions;
-          this.carouselImages = enrichedData.carouselImages;
+    try {
+      // 1. Carregar dados básicos (manter como está)
+      const pokemon = await this.pokeApiService.getPokemon(id).toPromise();
+      this.pokemon = pokemon;
 
-          if (this.flavorTexts.length > 0) {
-            this.flavorText = this.flavorTexts[0];
-            this.currentFlavorIndex = 0;
-          }
+      // 2. Carregar species (manter como está)
+      const species = await this.pokeApiService.getPokemonSpecies(id).toPromise();
+      this.speciesData = species;
 
-          this.isSpeciesDataReady = !!this.speciesData;
-          this.initializePokemonData();
-          this.isLoadingPokemonData = false;
-        },
-        error: (error) => {
-          console.error('❌ Erro ao carregar dados do Pokémon:', error);
-          this.pokemon = this.createPlaceholderPokemon(id);
-          this.initializePokemonData();
-          this.isLoadingPokemonData = false;
-        }
-      });
+      // 3. ✅ NOVA IMPLEMENTAÇÃO: Carregar flavor texts diretamente
+      this.flavorTexts = await this.loadFlavorTextsDirectly(id);
+      this.currentFlavorIndex = 0;
+
+      if (this.flavorTexts.length > 0) {
+        this.flavorText = this.flavorTexts[0];
+      }
+
+      // 4. Configurar carrossel (manter como está)
+      this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(pokemon);
+
+      this.isSpeciesDataReady = !!this.speciesData;
+      this.initializePokemonData();
+      this.isLoadingPokemonData = false;
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar detalhes:', error);
+      this.handleLoadingError(id);
+    }
+  }
+
+  private handleLoadingError(id?: number): void {
+    console.error('❌ Erro ao carregar dados do Pokémon');
+    if (id) {
+      this.pokemon = this.createPlaceholderPokemon(id);
+    }
+    this.initializePokemonData();
+    this.isLoadingPokemonData = false;
   }
 
   private createPlaceholderPokemon(id: number) {
@@ -205,12 +235,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     // Mark Pokemon as viewed when details are initialized
     this.viewedPokemonService.markPokemonAsViewed(this.pokemon.id);
 
-    // Resetar todos os dados de abas
+    // ✅ CORREÇÃO: Resetar dados de abas, mas manter curiosities se já temos flavor texts
     this.tabDataLoaded = {
       overview: false,
       combat: false,
       evolution: false,
-      curiosities: false
+      curiosities: this.flavorTexts && this.flavorTexts.length > 0 // Marcar como carregado se já temos dados
     };
 
     console.log('📊 Estado inicial tabDataLoaded:', this.tabDataLoaded);
@@ -785,6 +815,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
+  /**
+   * ✅ FASE 3: Método de tratamento de erro de imagem atualizado
+   * Remove dependência do arquivo corrompido pokemon-placeholder.png
+   */
   onImageError(event: any): void {
     const failedUrl = event.target.src;
     const elementInfo = {
@@ -796,18 +830,17 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     console.warn('❌ Erro ao carregar imagem:', failedUrl);
     console.warn('📍 Elemento:', elementInfo);
 
-    // Evitar loop infinito - verificar se já não é um placeholder
-    if (!failedUrl.includes('pokemon-placeholder.png') &&
-        !failedUrl.includes('placeholder.png') &&
-        !failedUrl.includes('pokeball.png') &&
+    // ✅ REMOVER referência ao arquivo corrompido
+    if (!failedUrl.includes('pokeball.png') &&
         !failedUrl.includes('data:image/svg+xml')) {
       const placeholderPath = this.ensureValidImage();
-      console.log('🔄 Tentando carregar placeholder:', placeholderPath);
+      console.log('🔄 Usando placeholder válido:', placeholderPath);
       event.target.src = placeholderPath;
     } else {
-      // Se até o placeholder falhar, ocultar a imagem e mostrar mensagem
-      console.error('💥 Falha crítica: não foi possível carregar nem o placeholder');
-      event.target.style.display = 'none';
+      // ✅ Usar SVG inline como último recurso
+      console.log('💥 Usando fallback SVG absoluto');
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4MCIgZmlsbD0iI0Y1RjVGNSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjQiLz48cGF0aCBkPSJNMjAgMTAwaDE2MCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjQiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjE1IiBmaWxsPSIjRkZGIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg==';
+      event.target.style.display = 'block'; // Garantir que a imagem seja visível
 
       // Adicionar classe para mostrar placeholder alternativo
       const container = event.target.closest('.main-image-container, .evolution-image, .thumbnail-btn-inline');
@@ -815,66 +848,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         container.classList.add('image-failed');
       }
     }
-  }  // Métodos das abas
-  setActiveTab(tab: string): void {
-    if (this.activeTab === tab) {
-      console.log(`🔄 Já estamos na aba: ${tab}, ignorando mudança`);
-      return; // Se já estamos na aba, não fazer nada
-    }
-
-    console.log(`🔄 Mudança de aba: ${this.activeTab} -> ${tab}`);
-
-    const previousTab = this.activeTab;
-
-    // CONTROLE ESPECÍFICO para Overview ↔ Combat
-    const isOverviewCombatSwitch = (
-      (previousTab === 'overview' && tab === 'combat') ||
-      (previousTab === 'combat' && tab === 'overview')
-    );
-
-    // CONTROLE ESPECÍFICO para Evolution - forçar recarregamento se necessário
-    if (tab === 'evolution' && this.evolutionChain.length === 0) {
-      console.log(`🧬 Voltando para aba de evolução com dados limpos - forçando reset`);
-      this.resetEvolutionData();
-    }
-
-    // CONTROLE ESPECÍFICO para Curiosities - forçar recarregamento se necessário
-    if (tab === 'curiosities' && this.flavorTexts.length === 0) {
-      console.log(`🍃 Voltando para aba de curiosidades com dados limpos - forçando reset`);
-      this.resetFlavorData();
-    }
-
-    if (isOverviewCombatSwitch) {
-      console.log(`🎯 TRANSIÇÃO OVERVIEW ↔ COMBAT DETECTADA: ${previousTab} -> ${tab}`);
-      this.isOverviewCombatTransition = true;
-
-      // MANTER ANIMAÇÃO ATIVA para transições Overview ↔ Combat
-      // this.disableTabAnimation = true; // REMOVIDO - permitir animação
-
-      // LIMPEZA IMEDIATA E SÍNCRONA - sem delays
-      this.instantCleanupOverviewCombat(previousTab, tab);
-    }
-
-    this.activeTab = tab;
-
-    // Para outras transições, usar método normal
-    if (!isOverviewCombatSwitch) {
-      this.cleanupDataForTabSwitch(previousTab, tab);
-    }
-
-    // Carregar dados específicos da aba sob demanda
-    this.loadTabData(tab);
-
-    // Liberar controle específico após um tempo mínimo
-    if (isOverviewCombatSwitch) {
-      setTimeout(() => {
-        this.isOverviewCombatTransition = false;
-        // Animação permanece ativa (não desabilitar)
-        // this.disableTabAnimation = false; // REMOVIDO
-        console.log(`✅ Transição Overview ↔ Combat finalizada`);
-      }, 250); // Aumentado para 250ms para coincidir com a duração da animação
-    }
-  }
+  }  // Métodos das abas - função setActiveTab movida para seção simplificada
 
   private instantCleanupOverviewCombat(fromTab: string, toTab: string): void {
     console.log(`⚡ LIMPEZA INSTANTÂNEA OVERVIEW ↔ COMBAT: ${fromTab} -> ${toTab}`);
@@ -891,11 +865,14 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       // Apenas garantir que não serão exibidas na overview
     }
 
-    // Limpeza geral para ambas as direções
+    // ✅ CORREÇÃO: Limpeza seletiva - não limpar flavor texts se vamos para curiosities
+    // Só limpar evolution chain para transições overview ↔ combat
     this.evolutionChain = [];
-    this.flavorTexts = [];
-    this.flavorText = '';
-    this.isLoadingFlavor = false;
+
+    // ✅ NÃO LIMPAR flavor texts aqui - eles são necessários para curiosities
+    // this.flavorTexts = []; // REMOVIDO
+    // this.flavorText = ''; // REMOVIDO
+    // this.isLoadingFlavor = false; // REMOVIDO
   }
 
   private cleanupDataForTabSwitch(fromTab: string, toTab: string): void {
@@ -912,24 +889,18 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         break;
 
       case 'combat':
-        // Dados de combate serão carregados pelo loadTabData
-        if (!this.tabDataLoaded['combat']) {
-          this.loadTabData('combat');
-        }
+        // ✅ CORREÇÃO: Dados de combate serão carregados pelo loadTabData principal
+        // Removido chamada duplicada para evitar loops
         break;
 
       case 'evolution':
-        // Dados de evolução serão carregados pelo loadTabData
-        if (!this.tabDataLoaded['evolution']) {
-          this.loadTabData('evolution');
-        }
+        // ✅ CORREÇÃO: Dados de evolução serão carregados pelo loadTabData principal
+        // Removido chamada duplicada para evitar loops infinitos
         break;
 
       case 'curiosities':
-        // Dados de curiosidades serão carregados pelo loadTabData
-        if (!this.tabDataLoaded['curiosities']) {
-          this.loadTabData('curiosities');
-        }
+        // ✅ CORREÇÃO: Dados de curiosidades serão carregados pelo loadTabData principal
+        // Removido chamada duplicada para evitar loops
         break;
     }
   }
@@ -952,45 +923,45 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    // Usar o PokemonDetailsManager para carregar dados específicos da aba
-    this.pokemonDetailsManager.loadTabData(this.pokemon.id, tab)
+    // ✅ CORREÇÃO CRÍTICA: Usar o PokemonDetailsManager com parâmetros corretos
+    this.pokemonDetailsManager.loadTabData(tab, this.pokemon, this.speciesData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (tabData) => {
           console.log(`✅ Dados da aba ${tab} carregados:`, tabData);
 
+          // ✅ CORREÇÃO: Processar dados corretamente baseado no tipo retornado
           switch (tab) {
             case 'overview':
+              // Overview retorna dados básicos do pokemon
+              if (tabData && typeof tabData === 'object') {
+                console.log('📊 Dados de overview processados:', Object.keys(tabData));
+              }
               this.tabDataLoaded['overview'] = true;
               break;
 
             case 'combat':
-              if (tabData.abilityDescriptions) {
-                this.abilityDescriptions = { ...this.abilityDescriptions, ...tabData.abilityDescriptions };
+              // Combat retorna diretamente as descrições das habilidades
+              if (tabData && typeof tabData === 'object') {
+                this.abilityDescriptions = { ...this.abilityDescriptions, ...tabData };
+                console.log('⚔️ Habilidades carregadas:', Object.keys(tabData));
               }
               this.tabDataLoaded['combat'] = true;
               break;
 
             case 'evolution':
-              if (tabData.evolutionChain) {
-                this.evolutionChain = tabData.evolutionChain;
-              }
-              if (tabData.speciesData) {
-                this.speciesData = tabData.speciesData;
-                this.isSpeciesDataReady = true;
+              // Evolution retorna diretamente o array da cadeia
+              if (tabData && Array.isArray(tabData)) {
+                this.evolutionChain = tabData;
+                console.log('🔄 Cadeia de evolução carregada:', tabData.length, 'estágios');
               }
               this.tabDataLoaded['evolution'] = true;
               break;
 
             case 'curiosities':
-              if (tabData.speciesData) {
-                this.speciesData = tabData.speciesData;
-                this.isSpeciesDataReady = true;
-              }
-              if (tabData.flavorTexts && tabData.flavorTexts.length > 0) {
-                this.flavorTexts = tabData.flavorTexts;
-                this.flavorText = this.flavorTexts[0];
-                this.currentFlavorIndex = 0;
+              // ✅ CORREÇÃO: Curiosities retorna null, dados já estão no pokemon enriquecido
+              if (tabData === null) {
+                console.log('🎭 Curiosidades: usando dados já carregados no enriquecimento');
               }
               this.tabDataLoaded['curiosities'] = true;
               break;
@@ -1136,15 +1107,27 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   // Método auxiliar para garantir que há sempre uma imagem válida
   ensureValidImage(): string {
     const fallbacks = [
-      'assets/img/pokemon-placeholder.png',
-      'assets/img/placeholder.png',
+      // ✅ CORREÇÃO: Usar pokeball.png que sabemos que funciona
       'assets/img/pokeball.png',
-      // Data URL como fallback absoluto
-      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTAwTTEwMCA2MEM3Ny45MDg2IDYwIDYwIDc3LjkwODYgNjAgMTAwQzYwIDEyMi4wOTEgNzcuOTA4NiAxNDAgMTAwIDE0MEM1MS44NjI5IDE0MCAxNDAgMTIyLjA5MSAxNDAgMTAwQzE0MCA3Ny45MDg2IDEyMi4wOTEgNjAgMTAwIDYwWiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K'
+      'assets/img/placeholder.png',
+      // Data URL como fallback absoluto - Pokeball SVG
+      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4MCIgZmlsbD0iI0Y1RjVGNSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjQiLz48cGF0aCBkPSJNMjAgMTAwaDE2MCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjQiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjE1IiBmaWxsPSIjRkZGIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg=='
     ];
 
     // Retorna o primeiro fallback (assumindo que existe)
     return fallbacks[0];
+  }
+
+  /**
+   * ✅ FASE 4: Método para validar URLs de imagem antes de usar
+   * Aplica o mesmo padrão da FASE 3 para imagens de evolução
+   */
+  getValidImageUrl(imageUrl: string | null | undefined): string {
+    // Se não há URL ou é inválida, usar fallback imediatamente
+    if (!imageUrl || !this.isValidImageUrl(imageUrl)) {
+      return this.ensureValidImage();
+    }
+    return imageUrl;
   }
 
   // ✅ CORREÇÃO: Método otimizado para mudança de idioma sem loops infinitos
@@ -1219,10 +1202,32 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    const pokemonTypes = this.pokemon.types.map((type: any) => type.type.name);
-    console.log(`🎨 Gerando tema para ${this.pokemon.name}:`, { types: pokemonTypes });
+    // ✅ CORREÇÃO: O generateTheme espera o objeto pokemon completo, não apenas os tipos
+    console.log(`🎨 Gerando tema para ${this.pokemon.name}:`, { types: this.pokemon.types });
 
-    this.pokemonTheme = this.pokemonThemeService.generateTheme(pokemonTypes);
+    this.pokemonTheme = this.pokemonThemeService.generateTheme(this.pokemon);
+
+    // ✅ APLICAR CORES NO HEADER: Definir variáveis CSS para o header
+    this.applyThemeToHeader();
+  }
+
+  private applyThemeToHeader(): void {
+    if (!this.pokemonTheme) return;
+
+    // Aplicar variáveis CSS para o header refletir as cores dos badges
+    const headerElement = document.querySelector('.pokemon-header-optimized') as HTMLElement;
+    if (headerElement) {
+      headerElement.style.setProperty('--pokemon-primary-color', this.pokemonTheme.primaryColor);
+      headerElement.style.setProperty('--pokemon-secondary-color', this.pokemonTheme.secondaryColor);
+      headerElement.style.setProperty('--pokemon-text-color', this.pokemonTheme.textColor);
+      headerElement.style.setProperty('--pokemon-shadow-color', this.pokemonTheme.shadowColor);
+
+      console.log('🎨 Tema aplicado ao header:', {
+        primary: this.pokemonTheme.primaryColor,
+        secondary: this.pokemonTheme.secondaryColor,
+        gradient: this.pokemonTheme.gradient
+      });
+    }
   }
 
 
@@ -1241,6 +1246,168 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.flavorText = '';
     this.isLoadingFlavor = false;
     this.tabDataLoaded['curiosities'] = false;
+  }
+
+  /**
+   * ✅ FASE 4: Método simplificado inspirado no mobile
+   * Substitui o sistema complexo por estados mais simples
+   */
+  setActiveTab(tab: string): void {
+    if (this.activeTab === tab) {
+      console.log(`🔄 Já estamos na aba: ${tab}`);
+      return;
+    }
+
+    console.log(`🔄 Mudança de aba: ${this.activeTab} -> ${tab}`);
+    this.activeTab = tab;
+
+    // ✅ CARREGAR dados apenas se necessário
+    this.loadTabDataIfNeeded(tab);
+  }
+
+  /**
+   * ✅ FASE 4: Carregamento sob demanda simplificado
+   */
+  private loadTabDataIfNeeded(tab: string): void {
+    switch (tab) {
+      case 'overview':
+        // Dados básicos já carregados no início
+        break;
+
+      case 'combat':
+        if (!this.abilityDescriptions || Object.keys(this.abilityDescriptions).length === 0) {
+          this.loadCombatData();
+        }
+        break;
+
+      case 'evolution':
+        if (!this.evolutionChain || this.evolutionChain.length === 0) {
+          this.loadEvolutionData();
+        }
+        break;
+
+      case 'curiosities':
+        if (!this.flavorTexts || this.flavorTexts.length === 0) {
+          this.loadCuriositiesData();
+        }
+        break;
+    }
+  }
+
+  /**
+   * ✅ FASE 4: Métodos específicos para cada aba
+   */
+  private async loadCombatData(): Promise<void> {
+    if (!this.pokemon?.abilities) return;
+
+    this.isLoadingTabData = true;
+    try {
+      const descriptions = await this.pokemonDetailsManager
+        .loadTabData('combat', this.pokemon, this.speciesData).toPromise();
+      this.abilityDescriptions = descriptions || {};
+    } catch (error) {
+      console.error('❌ Erro ao carregar dados de combate:', error);
+    } finally {
+      this.isLoadingTabData = false;
+    }
+  }
+
+  private async loadEvolutionData(): Promise<void> {
+    if (!this.speciesData?.evolution_chain?.url) {
+      console.log('⚠️ Pokémon sem evolução');
+      this.evolutionChain = [];
+      return;
+    }
+
+    this.isLoadingTabData = true;
+    try {
+      const evolution = await this.pokemonDetailsManager
+        .loadTabData('evolution', this.pokemon, this.speciesData).toPromise();
+      this.evolutionChain = evolution || [];
+    } catch (error) {
+      console.error('❌ Erro ao carregar evolução:', error);
+      this.evolutionChain = [];
+    } finally {
+      this.isLoadingTabData = false;
+    }
+  }
+
+  private async loadCuriositiesData(): Promise<void> {
+    if (!this.pokemon?.id) return;
+
+    this.isLoadingTabData = true;
+    try {
+      this.flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
+      this.currentFlavorIndex = 0;
+      if (this.flavorTexts.length > 0) {
+        this.flavorText = this.flavorTexts[0];
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar curiosidades:', error);
+      this.flavorTexts = ['Descrição não disponível'];
+    } finally {
+      this.isLoadingTabData = false;
+    }
+  }
+
+  /**
+   * ✅ FASE 1: Método direto para carregar flavor texts PT-BR
+   * Prioriza arquivo local antes da API, conforme especificado no plano
+   */
+  private async loadFlavorTextsDirectly(pokemonId: number): Promise<string[]> {
+    // 1. Para português, tentar arquivo local PRIMEIRO
+    if (this.translate.currentLang === 'pt-BR' || this.translate.currentLang === 'pt') {
+      try {
+        const localData = await this.http.get<any>('./assets/data/flavors_ptbr.json').toPromise();
+        const localTexts = localData[pokemonId] || localData[pokemonId.toString()];
+
+        if (localTexts && Array.isArray(localTexts) && localTexts.length > 0) {
+          console.log(`✅ Flavor texts pt-BR carregados: ${localTexts.length} textos`);
+          return localTexts; // PARAR AQUI - não continuar para API
+        }
+      } catch (error) {
+        console.log('📁 Arquivo local não disponível, usando API como fallback');
+      }
+    }
+
+    // 2. Fallback para API apenas se necessário
+    try {
+      const species = await this.pokeApiService.getPokemonSpecies(pokemonId).toPromise();
+      return this.extractFlavorTextsFromAPI(species);
+    } catch (error) {
+      console.error('❌ Erro ao carregar flavor texts:', error);
+      return ['Descrição não disponível'];
+    }
+  }
+
+  /**
+   * ✅ FASE 1: Extrai flavor texts da API com prioridade de idiomas
+   */
+  private extractFlavorTextsFromAPI(species: any): string[] {
+    if (!species?.flavor_text_entries) return [];
+
+    const currentLang = this.translate.currentLang || 'pt-BR';
+    const langMap: { [key: string]: string[] } = {
+      'pt-BR': ['pt-br', 'pt', 'en'], // Prioridade clara
+      'pt': ['pt-br', 'pt', 'en'],
+      'en-US': ['en'],
+      'en': ['en']
+    };
+
+    const targetLangs = langMap[currentLang] || ['en'];
+
+    for (const lang of targetLangs) {
+      const texts = species.flavor_text_entries
+        .filter((entry: any) => entry.language.name === lang)
+        .map((entry: any) => entry.flavor_text.replace(/\f/g, ' ').replace(/\n/g, ' ').trim())
+        .filter((text: string) => text.length > 0);
+
+      if (texts.length > 0) {
+        return [...new Set(texts)] as string[]; // Remove duplicatas
+      }
+    }
+
+    return ['Descrição não disponível'];
   }
 
   // Métodos para navegação das miniaturas

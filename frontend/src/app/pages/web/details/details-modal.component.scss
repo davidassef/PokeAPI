@@ -1,19 +1,20 @@
-.details-modal-overlay {
+// ✅ CORREÇÃO CRÍTICA: Estado padrão do modal (escondido)
+:host {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-pokemon-modal); // Hierarquia: Auth(10000) > Sidemenu(9000) > Pokemon Modal(8000) > Music(7000) > FAB(6000) > Header(5000)
-  backdrop-filter: blur(4px);
+  z-index: var(--z-pokemon-modal);
 }
 
 // ✅ CORREÇÃO: Garantir visibilidade do modal quando aberto
-app-details-modal[ng-reflect-is-open="true"] {
+:host(.modal-open),
+:host([ng-reflect-is-open="true"]) {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -30,6 +31,20 @@ app-details-modal[ng-reflect-is-open="true"] {
     visibility: visible !important;
     opacity: 1 !important;
   }
+}
+
+.details-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-pokemon-modal); // Hierarquia: Auth(10000) > Sidemenu(9000) > Pokemon Modal(8000) > Music(7000) > FAB(6000) > Header(5000)
+  backdrop-filter: blur(4px);
 }
 
 .details-modal-container {

@@ -71,6 +71,32 @@ test.describe('Teste Simples do Modal', () => {
 
           console.log(`📄 Conteúdo de curiosidades: ${curiositiesVisible}`);
 
+          // ✅ NOVO DEBUG: Verificar estado interno do componente
+          const debugInfo = await page.evaluate(() => {
+            const modal = document.querySelector('app-details-modal') as any;
+            if (modal && modal.componentInstance) {
+              const component = modal.componentInstance;
+              return {
+                pokemon: !!component.pokemon,
+                flavorTexts: component.flavorTexts?.length || 0,
+                tabDataLoaded: component.tabDataLoaded,
+                activeTab: component.activeTab,
+                isCuriositiesDataReady: component.isCuriositiesDataReady()
+              };
+            }
+            return null;
+          });
+
+          console.log('🔍 Debug info:', JSON.stringify(debugInfo, null, 2));
+
+          // ✅ NOVO DEBUG: Verificar elementos específicos
+          const tabLoadingElements = await modal.locator('.tab-loading').count();
+          const loadingSpinners = await modal.locator('.loading-spinner').count();
+          const flavorTexts = await modal.locator('.flavor-text').count();
+          console.log('📊 Tab loading elements:', tabLoadingElements);
+          console.log('⏳ Spinners de loading:', loadingSpinners);
+          console.log('💬 Flavor texts encontrados:', flavorTexts);
+
           if (curiositiesVisible > 0) {
             console.log('✅ SUCESSO: Seção Curiosidades carregou!');
 
@@ -83,6 +109,14 @@ test.describe('Teste Simples do Modal', () => {
             }
           } else {
             console.log('❌ PROBLEMA: Seção Curiosidades não apareceu');
+
+            if (loadingSpinners > 0) {
+              console.log('⚠️ ATENÇÃO: Ainda há spinners de loading');
+            }
+
+            if (tabLoadingElements > 0) {
+              console.log('⚠️ ATENÇÃO: Há elementos de tab loading');
+            }
           }
         } else {
           console.log('❌ PROBLEMA: Aba Curiosidades não encontrada');

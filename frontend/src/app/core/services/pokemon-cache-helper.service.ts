@@ -30,6 +30,48 @@ export class PokemonCacheHelper implements OnDestroy {
     if (this.config.enableLogging) {
       console.log('🗄️ PokemonCacheHelper inicializado');
     }
+    this.loadLocalFlavorTexts(); // Carregar flavor texts locais na inicialização
+  }
+
+  // ✅ CORREÇÃO: Armazenar os dados localmente em vez de depender do cache
+  private localFlavorTexts: any = null;
+
+  /**
+   * Carrega o arquivo de flavor texts pt-BR na inicialização
+   */
+  private loadLocalFlavorTexts(): void {
+    // Verificar se já foi carregado
+    if (this.localFlavorTexts) {
+      return;
+    }
+
+    // Carregar arquivo local
+    if (this.config.enableLogging) {
+      console.log('🔄 Tentando carregar flavor texts pt-BR do arquivo local...');
+    }
+
+    this.http.get<any>('./assets/data/flavors_ptbr.json').subscribe({
+      next: (data) => {
+        // ✅ CORREÇÃO: Armazenar diretamente na propriedade da classe
+        this.localFlavorTexts = data;
+
+        // Também manter no cache para outros usos
+        const cacheKey = `local_flavors_ptbr`;
+        this.cacheService.set(cacheKey, data, 24 * 60 * 60 * 1000);
+
+        if (this.config.enableLogging) {
+          console.log('✅ Flavor texts pt-BR carregados:', Object.keys(data).length, 'Pokémon');
+          console.log('🔍 Primeiras 5 chaves do arquivo:', Object.keys(data).slice(0, 5));
+          console.log('🔍 Exemplo de dados para chave "1":', data['1'] ? `${data['1'].length} textos` : 'não encontrado');
+        }
+      },
+      error: (error) => {
+        if (this.config.enableLogging) {
+          console.error('❌ Erro ao carregar flavor texts pt-BR:', error);
+          console.error('❌ Detalhes do erro:', error.message, error.status);
+        }
+      }
+    });
   }
 
   /**
@@ -266,8 +308,21 @@ export class PokemonCacheHelper implements OnDestroy {
    * Busca flavor texts da API e processa
    */
   private fetchFlavorTexts(pokemonId: number, lang: string): Observable<string[]> {
+    if (this.config.enableLogging) {
+      console.log(`🔄 fetchFlavorTexts chamado: Pokémon ${pokemonId}, idioma: ${lang}`);
+    }
+
     return this.pokeApiService.getPokemonSpecies(pokemonId).pipe(
-      map(species => this.extractFlavorTextsFromSpecies(species, lang)),
+      map(species => {
+        const result = this.extractFlavorTextsFromSpecies(species, lang);
+        if (this.config.enableLogging) {
+          console.log(`🔄 extractFlavorTextsFromSpecies retornou: ${result.length} textos para idioma ${lang}`);
+          if (result.length > 0) {
+            console.log(`🔍 Primeiro texto (${lang}):`, result[0].substring(0, 50) + '...');
+          }
+        }
+        return result;
+      }),
       tap(flavorTexts => {
         if (this.config.enableLogging) {
           console.log(`💾 Flavor texts processados: Pokémon ${pokemonId} (${flavorTexts.length} textos)`);
@@ -277,20 +332,136 @@ export class PokemonCacheHelper implements OnDestroy {
   }
 
   /**
-   * Extrai flavor texts da resposta da species
+   * Extrai flavor texts da resposta da species ou arquivo local
    */
   private extractFlavorTextsFromSpecies(species: any, targetLang: string): string[] {
+    if (this.config.enableLogging) {
+      console.log(`🔄 extractFlavorTextsFromSpecies: idioma ${targetLang}, species ID: ${species?.id}`);
+    }
+
     if (!species?.flavor_text_entries) {
+      if (this.config.enableLogging) {
+        console.log(`❌ Nenhuma flavor_text_entries encontrada na species`);
+      }
       return [];
     }
 
-    const flavorTexts = species.flavor_text_entries
-      .filter((entry: any) => entry.language.name === targetLang)
-      .map((entry: any) => entry.flavor_text.replace(/\f/g, ' ').trim())
-      .filter((text: string) => text.length > 0);
+    // ✅ CORREÇÃO: Para português, tentar carregar do arquivo local primeiro
+    if (targetLang === 'pt-BR' || targetLang === 'pt') {
+      const pokemonId = this.extractPokemonIdFromSpecies(species);
+      if (this.config.enableLogging) {
+        console.log(`🔍 Tentando carregar flavor texts locais para Pokémon ID: ${pokemonId}`);
+      }
+      if (pokemonId) {
+        const localTexts = this.getLocalFlavorTexts(pokemonId);
+        if (this.config.enableLogging) {
+          console.log(`🔍 Resultado do arquivo local:`, localTexts ? localTexts.length : 'null', 'textos');
+        }
+        if (localTexts && localTexts.length > 0) {
+          if (this.config.enableLogging) {
+            console.log(`💬 Flavor texts carregados do arquivo local pt-BR:`, localTexts.length, 'textos');
+            console.log(`🔍 Primeiro texto pt-BR:`, localTexts[0].substring(0, 50) + '...');
+          }
+          return localTexts;
+        } else {
+          if (this.config.enableLogging) {
+            console.log(`⚠️ Arquivo local não retornou textos pt-BR, fazendo fallback para API`);
+          }
+        }
+      }
+    }
+
+    // ✅ FALLBACK: Mapear idiomas para formato da PokeAPI
+    const langMap: { [key: string]: string[] } = {
+      'pt-BR': ['en'], // Para português, usar inglês da API como fallback
+      'pt': ['en'],
+      'en-US': ['en'],
+      'en': ['en'],
+      'es-ES': ['es', 'en'],
+      'es': ['es', 'en'],
+      'ja-JP': ['ja', 'en'],
+      'ja': ['ja', 'en']
+    };
+
+    const apiLangs = langMap[targetLang] || [targetLang.toLowerCase(), 'en'];
+
+    let flavorTexts: string[] = [];
+
+    // Tentar cada idioma na ordem de preferência
+    for (const lang of apiLangs) {
+      const textsForLang = species.flavor_text_entries
+        .filter((entry: any) => entry.language.name === lang)
+        .map((entry: any) => entry.flavor_text.replace(/\f/g, ' ').replace(/\n/g, ' ').trim())
+        .filter((text: string) => text.length > 0);
+
+      if (textsForLang.length > 0) {
+        flavorTexts = textsForLang;
+        if (this.config.enableLogging) {
+          console.log(`💬 Flavor texts encontrados em '${lang}' para Pokémon:`, textsForLang.length, 'textos');
+        }
+        break; // Usar o primeiro idioma que tiver textos
+      }
+    }
 
     // Remover duplicatas
     return [...new Set(flavorTexts)] as string[];
+  }
+
+  /**
+   * Extrai o ID do Pokémon da resposta da species
+   */
+  private extractPokemonIdFromSpecies(species: any): number | null {
+    if (species?.id) {
+      return species.id;
+    }
+
+    // Tentar extrair do URL se não tiver ID direto
+    if (species?.url) {
+      const match = species.url.match(/\/pokemon-species\/(\d+)\//);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Carrega flavor texts do arquivo local pt-BR
+   */
+  private getLocalFlavorTexts(pokemonId: number): string[] | null {
+    try {
+      // ✅ CORREÇÃO: Usar a propriedade local em vez do cache
+      if (!this.localFlavorTexts) {
+        if (this.config.enableLogging) {
+          console.log(`🔍 DEBUG: Flavor texts locais ainda não carregados`);
+        }
+        return null;
+      }
+
+      const data = this.localFlavorTexts;
+
+      // ✅ DEBUG: Verificar o que realmente está nos dados
+      if (this.config.enableLogging && pokemonId === 1) {
+        console.log(`🔍 DEBUG: Tipo dos dados:`, typeof data);
+        console.log(`🔍 DEBUG: Chaves disponíveis:`, Object.keys(data).slice(0, 10));
+        console.log(`🔍 DEBUG: Valor para chave 1:`, data[1]);
+        console.log(`🔍 DEBUG: Valor para chave "1":`, data["1"]);
+        console.log(`🔍 DEBUG: Valor direto:`, data["1"] ? data["1"].slice(0, 2) : 'null');
+      }
+
+      // ✅ CORREÇÃO: Tentar tanto número quanto string como chave
+      const result = data[pokemonId] || data[pokemonId.toString()] || null;
+      if (this.config.enableLogging) {
+        console.log(`🔍 Buscando no arquivo local: chave ${pokemonId} ou "${pokemonId.toString()}"`, result ? `${result.length} textos encontrados` : 'não encontrado');
+      }
+      return result;
+    } catch (error) {
+      if (this.config.enableLogging) {
+        console.error('❌ Erro ao carregar flavor texts locais:', error);
+      }
+      return null;
+    }
   }
 
   /**

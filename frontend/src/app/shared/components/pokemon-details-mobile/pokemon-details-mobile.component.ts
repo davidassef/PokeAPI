@@ -822,6 +822,18 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     return 'assets/images/pokemon/default.png';
   }
 
+  /**
+   * ✅ FASE 4: Método para validar URLs de imagem antes de usar (Mobile)
+   * Aplica o mesmo padrão da FASE 3 para imagens de evolução
+   */
+  public getValidImageUrl(imageUrl: string | null | undefined): string {
+    // Se não há URL ou é inválida, usar fallback imediatamente
+    if (!imageUrl || !this.isValidImageUrl(imageUrl)) {
+      return this.ensureValidImage();
+    }
+    return imageUrl;
+  }
+
   private updateStaticTranslations() {
     // Forçar atualização das traduções estáticas
     this.changeDetectorRef.detectChanges();

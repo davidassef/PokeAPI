@@ -195,12 +195,12 @@ export class PokemonDetailsManager {
   /**
    * Carrega dados específicos de uma aba
    */
-  loadTabData(tab: string, pokemon: any): Observable<any> {
+  loadTabData(tab: string, pokemon: any, speciesData?: any): Observable<any> {
     this.logIfEnabled('Carregando dados da aba:', tab);
 
     switch (tab) {
       case 'evolution':
-        return this.loadEvolutionChain(pokemon);
+        return this.loadEvolutionChain(pokemon, speciesData);
       case 'combat':
         return this.loadAbilityDescriptions(pokemon);
       case 'overview':
@@ -215,12 +215,35 @@ export class PokemonDetailsManager {
   /**
    * Carrega cadeia de evolução do Pokémon
    */
-  private loadEvolutionChain(pokemon: any): Observable<any[]> {
-    if (!pokemon.species?.evolution_chain?.url) {
+  private loadEvolutionChain(pokemon: any, speciesData?: any): Observable<any[]> {
+    // ✅ CORREÇÃO: Usar speciesData se fornecido, senão usar pokemon.species
+    const species = speciesData || pokemon.species;
+
+    // ✅ FASE 2: Logs de debug melhorados conforme plano
+    this.logIfEnabled('🔍 Debug evolução:', {
+      pokemonId: pokemon?.id,
+      pokemonName: pokemon?.name,
+      hasSpeciesData: !!speciesData,
+      hasSpecies: !!species,
+      hasEvolutionChain: !!species?.evolution_chain,
+      evolutionUrl: species?.evolution_chain?.url
+    });
+
+    if (!species?.evolution_chain?.url) {
+      this.logIfEnabled('❌ Sem dados de evolução - retornando array vazio');
+      this.logIfEnabled('🔍 Detalhes da ausência de evolução:', {
+        species: !!species,
+        evolutionChain: !!species?.evolution_chain,
+        url: species?.evolution_chain?.url,
+        usingSpeciesData: !!speciesData,
+        pokemonName: pokemon?.name
+      });
       return of([]);
     }
 
-    return this.pokemonCacheHelper.getEvolutionChain(pokemon.species.evolution_chain.url).pipe(
+    this.logIfEnabled('🔄 Carregando evolução da URL:', species.evolution_chain.url);
+
+    return this.pokemonCacheHelper.getEvolutionChain(species.evolution_chain.url).pipe(
       map(evolutionData => this.processEvolutionChain(evolutionData)),
       catchError(error => {
         this.logIfEnabled('Erro ao carregar cadeia de evolução:', error);
@@ -231,24 +254,35 @@ export class PokemonDetailsManager {
 
   /**
    * Processa dados brutos da cadeia de evolução
+   * ✅ CORREÇÃO: Incluir URLs das imagens e processamento recursivo completo
    */
   private processEvolutionChain(evolutionData: any): any[] {
     const chain: any[] = [];
-    let current = evolutionData.chain;
 
-    while (current) {
-      const pokemonId = this.extractPokemonIdFromUrl(current.species.url);
+    const processChainNode = (node: any) => {
+      const pokemonId = this.extractPokemonIdFromUrl(node.species.url);
 
       chain.push({
         id: pokemonId,
-        name: current.species.name,
-        evolutionDetails: current.evolution_details || []
+        name: node.species.name,
+        // ✅ CORREÇÃO: Adicionar URL da imagem para cada Pokémon da cadeia evolutiva
+        imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`,
+        level: node.evolution_details[0]?.min_level || null,
+        method: node.evolution_details[0]?.trigger?.name || 'level',
+        trigger: node.evolution_details[0]?.trigger?.name || null,
+        evolutionDetails: node.evolution_details || []
       });
 
-      current = current.evolves_to?.[0];
-    }
+      // ✅ CORREÇÃO: Processamento recursivo para capturar todas as evoluções (incluindo ramificações)
+      if (node.evolves_to && node.evolves_to.length > 0) {
+        node.evolves_to.forEach((evolution: any) => processChainNode(evolution));
+      }
+    };
+
+    processChainNode(evolutionData.chain);
 
     this.logIfEnabled('Cadeia de evolução processada:', chain.length, 'estágios');
+    this.logIfEnabled('URLs das imagens geradas:', chain.map(stage => ({ name: stage.name, imageUrl: stage.imageUrl })));
     return chain;
   }
 
