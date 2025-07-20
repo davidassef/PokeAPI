@@ -125,22 +125,11 @@
       // Grid de chips de tipos
       .types-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(80px, max-content));
+        grid-template-columns: repeat(auto-fit, minmax(70px, max-content));
         justify-content: center;
-        gap: 8px; // Gap ligeiramente maior para melhor espaçamento
+        gap: 6px;
         width: 100%;
         margin: 0 auto;
-
-        // Ajuste específico para habitats com textos longos
-        &:has(.auto-width-center) {
-          grid-template-columns: repeat(auto-fit, minmax(90px, 140px));
-          gap: 6px;
-
-          @media (max-width: 480px) {
-            grid-template-columns: repeat(auto-fit, minmax(70px, 120px));
-            gap: 4px;
-          }
-        }
 
         ion-chip {
           margin: 0;
@@ -153,34 +142,41 @@
           letter-spacing: 0.5px;
           padding: 2px 6px; // Reduzido
 
-          // Ajustes específicos para chips de habitat com textos longos
+          // Estilo específico para badges de habitat (similar aos cards dos Pokémon)
           &.auto-width-center {
-            min-width: 80px; // Largura mínima aumentada para habitats
-            max-width: 140px; // Largura máxima para acomodar textos longos
-            padding: 4px 8px; // Padding aumentado para melhor legibilidade
-            font-size: 10px; // Fonte ligeiramente menor para caber mais texto
-            text-transform: none; // Remove uppercase para habitats (mais legível)
-            letter-spacing: 0.3px; // Espaçamento reduzido
-            white-space: nowrap; // Evita quebra de linha
-            overflow: hidden; // Esconde overflow
-            text-overflow: ellipsis; // Adiciona "..." se necessário
+            // Replicar estilo das badges dos cards dos Pokémon
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            border: none; // Remove border para ficar igual aos cards
 
-            // Responsividade para telas menores
-            @media (max-width: 480px) {
-              min-width: 70px;
-              max-width: 120px;
-              font-size: 9px;
-              padding: 3px 6px;
+            &:hover {
+              transform: scale(1.05);
+            }
+
+            &.selected {
+              // Manter o mesmo estilo quando selecionado
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+              transform: scale(1.02);
             }
           }
 
-          &:hover {
-            transform: scale(1.04); // Menor
-          }
+          // Estilo padrão para outros chips (tipos de elemento/movimento)
+          &:not(.auto-width-center) {
+            &:hover {
+              transform: scale(1.04);
+            }
 
-          &.selected {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); // Menor
-            transform: scale(1.01); // Menor
+            &.selected {
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+              transform: scale(1.01);
+            }
           }
 
           // Centralização e ajuste automático dos chips de tipo
@@ -438,24 +434,6 @@
       .filter-section {
         h5 {
           color: #ccc;
-        }
-
-        // Melhorar legibilidade dos chips de habitat no tema escuro
-        .types-grid {
-          ion-chip.auto-width-center {
-            border-color: rgba(255, 255, 255, 0.3);
-            color: #fff;
-
-            &:hover {
-              border-color: rgba(255, 255, 255, 0.5);
-              background-color: rgba(255, 255, 255, 0.1);
-            }
-
-            &.selected {
-              border-color: currentColor;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            }
-          }
         }
 
         ion-select {
