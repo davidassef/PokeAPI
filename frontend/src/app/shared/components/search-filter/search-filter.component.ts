@@ -556,7 +556,13 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     if (formValue.selectedMovementTypes?.length > 0) count++;
     if (formValue.selectedHabitats?.length > 0) count++;
     if (formValue.selectedGeneration !== null) count++;
-    if (formValue.sortBy !== 'id' || formValue.sortOrder !== 'asc') count++;
+
+    // Contar ordenação apenas se estiver ativa (não 'none')
+    // Verificar se há um campo de ordenação ativo através dos sortStates
+    const hasActiveSorting = this.activeSortField !== null &&
+                            this.sortStates[this.activeSortField] !== 'none';
+    if (hasActiveSorting) count++;
+
     return count;
   }
 }
