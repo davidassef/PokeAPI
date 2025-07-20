@@ -123,14 +123,16 @@
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); // Sombra sutil
       }
 
-      // Grid de chips de tipos
+      // Grid de chips de tipos com expansão automática
       .types-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(70px, max-content));
+        display: flex;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 6px;
+        align-items: center;
+        gap: 8px; // Aumentado para melhor espaçamento
         width: 100%;
         margin: 0 auto;
+        padding: 4px; // Padding para evitar cortes nas bordas
 
         ion-chip {
           margin: 0;
@@ -141,12 +143,24 @@
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          padding: 2px 6px;
+          padding: 4px 8px; // Padding aumentado para melhor centralização
 
-          // Estilo específico para badges de habitat (similar aos cards dos Pokémon)
+          // Centralização perfeita e expansão automática
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          min-width: 60px; // Largura mínima para consistência
+          max-width: none; // Remove limite máximo para expansão automática
+          width: auto; // Largura automática baseada no conteúdo
+          min-height: 32px; // Altura mínima consistente
+          white-space: nowrap; // Evita quebra de linha desnecessária
+          overflow: visible; // Permite expansão do conteúdo
+
+          // Estilo específico para badges de habitat com expansão automática
           &.auto-width-center {
-            // Replicar estilo das badges dos cards dos Pokémon com stroke
-            padding: 4px 12px;
+            // Replicar estilo das badges dos cards dos Pokémon com melhorias
+            padding: 6px 16px; // Padding aumentado para melhor centralização
             border-radius: 20px;
             color: white;
             font-size: 12px;
@@ -157,6 +171,18 @@
             transition: transform 0.2s ease;
             border: 2px solid; // Mantém stroke
 
+            // Centralização perfeita e expansão automática
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 80px; // Largura mínima maior para habitats
+            max-width: 200px; // Largura máxima expandida para textos longos
+            width: auto;
+            min-height: 36px; // Altura mínima maior
+            white-space: nowrap; // Mantém texto em uma linha
+            overflow: visible;
+
             &:hover {
               transform: scale(1.05);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -168,9 +194,9 @@
             }
           }
 
-          // Estilo específico para badges de geração
+          // Estilo específico para badges de geração com expansão automática
           &.generation-badge {
-            padding: 4px 12px;
+            padding: 6px 16px; // Padding aumentado para melhor centralização
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -179,6 +205,18 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease;
             border: 2px solid; // Stroke
+
+            // Centralização perfeita e expansão automática
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 100px; // Largura mínima para gerações
+            max-width: 250px; // Largura máxima expandida para textos longos como "Generation I (Kanto)"
+            width: auto;
+            min-height: 36px; // Altura mínima consistente
+            white-space: nowrap; // Mantém texto em uma linha
+            overflow: visible;
 
             &:hover {
               transform: scale(1.05);
@@ -191,9 +229,9 @@
             }
           }
 
-          // Estilo específico para badges de ordenação
+          // Estilo específico para badges de ordenação com expansão automática
           &.sort-badge {
-            padding: 4px 12px;
+            padding: 6px 16px; // Padding aumentado para melhor centralização
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -202,6 +240,18 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease;
             border: 2px solid; // Stroke
+
+            // Centralização perfeita e expansão automática
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 80px; // Largura mínima para ordenação
+            max-width: 180px; // Largura máxima expandida para textos como "Pokédex Number"
+            width: auto;
+            min-height: 36px; // Altura mínima consistente
+            white-space: nowrap; // Mantém texto em uma linha
+            overflow: visible;
 
             &:hover {
               transform: scale(1.05);
@@ -214,9 +264,23 @@
             }
           }
 
-          // Estilo padrão para outros chips (tipos de elemento/movimento) com stroke
+          // Estilo padrão para badges de tipos de elemento/movimento com expansão automática
           &:not(.auto-width-center):not(.generation-badge):not(.sort-badge) {
             border: 2px solid; // Stroke para badges de tipo
+            padding: 4px 12px; // Padding aumentado para melhor centralização
+            border-radius: 16px; // Border radius para consistência
+
+            // Centralização perfeita e expansão automática
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 70px; // Largura mínima para tipos
+            max-width: 150px; // Largura máxima expandida
+            width: auto;
+            min-height: 32px; // Altura mínima consistente
+            white-space: nowrap;
+            overflow: visible;
 
             &:hover {
               transform: scale(1.04);
@@ -229,25 +293,74 @@
             }
           }
 
-          // Centralização e ajuste automático dos chips de tipo
-          &.auto-width-center {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 0;
-            width: auto;
-            max-width: 140px; // Largura máxima aumentada
-            white-space: normal; // Permitir quebra de linha
-            word-wrap: break-word;
-            text-overflow: ellipsis;
-            line-height: 1.3;
-            padding: 6px 10px; // Mais padding para texto multi-linha
-            height: auto; // Altura automática
-            min-height: 28px; // Altura mínima
-            max-width: 100%;
-            white-space: nowrap;
-            text-align: center;
-            padding: 0 6px; // Reduzido
+
+        }
+      }
+
+      // Responsividade para diferentes tamanhos de tela
+      @media (max-width: 768px) {
+        .types-grid {
+          gap: 6px; // Gap menor em telas pequenas
+
+          ion-chip {
+            font-size: 10px; // Fonte menor em mobile
+            padding: 4px 8px; // Padding reduzido
+            min-height: 28px; // Altura mínima reduzida
+
+            &.auto-width-center {
+              max-width: 160px; // Largura máxima reduzida para habitats
+              padding: 4px 12px;
+              min-height: 32px;
+            }
+
+            &.generation-badge {
+              max-width: 200px; // Largura máxima reduzida para gerações
+              padding: 4px 12px;
+              min-height: 32px;
+            }
+
+            &.sort-badge {
+              max-width: 140px; // Largura máxima reduzida para ordenação
+              padding: 4px 12px;
+              min-height: 32px;
+            }
+
+            &:not(.auto-width-center):not(.generation-badge):not(.sort-badge) {
+              max-width: 120px; // Largura máxima reduzida para tipos
+              padding: 3px 8px;
+              min-height: 28px;
+            }
+          }
+        }
+      }
+
+      @media (max-width: 480px) {
+        .types-grid {
+          gap: 4px; // Gap ainda menor em telas muito pequenas
+
+          ion-chip {
+            font-size: 9px; // Fonte ainda menor
+            letter-spacing: 0.3px; // Letter spacing reduzido
+
+            &.auto-width-center {
+              max-width: 140px;
+              padding: 3px 10px;
+            }
+
+            &.generation-badge {
+              max-width: 180px;
+              padding: 3px 10px;
+            }
+
+            &.sort-badge {
+              max-width: 120px;
+              padding: 3px 10px;
+            }
+
+            &:not(.auto-width-center):not(.generation-badge):not(.sort-badge) {
+              max-width: 100px;
+              padding: 3px 6px;
+            }
           }
         }
       }
