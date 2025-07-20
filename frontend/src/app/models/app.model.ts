@@ -23,6 +23,7 @@ export interface PokemonFilters {
   name?: string;
   elementTypes?: string[];
   movementTypes?: string[];
+  habitats?: string[];
   generation?: number;
   sortBy: 'id' | 'name' | 'height' | 'weight';
   sortOrder: 'asc' | 'desc';

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { FavoritesService, FavoriteData, FavoritesStats } from '../../../core/services/favorites.service';
+import { FilterOptions } from '../../../shared/components/search-filter/search-filter.component';
 import { Router } from '@angular/router';
 
 /**
@@ -22,6 +23,7 @@ export class FavoritesPage implements OnInit, OnDestroy {
 
   // Estados da UI
   isLoading: boolean = true;
+  loading: boolean = true;
   searchTerm: string = '';
   selectedType: string = '';
   sortBy: 'name' | 'date' | 'type' = 'date';
@@ -31,6 +33,16 @@ export class FavoritesPage implements OnInit, OnDestroy {
   showDetailsModal: boolean = false;
   selectedPokemonId: number | null = null;
 
+  // Paginação
+  currentPage: number = 1;
+  itemsPerPage: number = 12;
+  totalPages: number = 1;
+
+  // Propriedades para o template
+  totalFavorites: number = 0;
+  averageRating: number = 0;
+  paginatedFavorites: any[] = [];
+
   constructor(
     private favoritesService: FavoritesService,
     private router: Router
@@ -39,6 +51,7 @@ export class FavoritesPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadFavorites();
     this.loadStats();
+    this.updatePagination();
   }
 
   ngOnDestroy() {
@@ -51,6 +64,7 @@ export class FavoritesPage implements OnInit, OnDestroy {
    */
   private loadFavorites(): void {
     this.isLoading = true;
+    this.loading = true;
 
     this.favoritesService.favorites$
       .pipe(takeUntil(this.destroy$))
@@ -58,6 +72,7 @@ export class FavoritesPage implements OnInit, OnDestroy {
         this.favorites = favorites;
         this.applyFiltersAndSort();
         this.isLoading = false;
+        this.loading = false;
       });
   }
 
@@ -114,13 +129,14 @@ export class FavoritesPage implements OnInit, OnDestroy {
     });
 
     this.filteredFavorites = filtered;
+    this.updatePagination();
   }
 
   /**
    * Manipuladores de eventos de filtro
    */
-  onSearchChange(event: any): void {
-    this.searchTerm = event.detail.value || '';
+  onSearchChange(searchTerm: string): void {
+    this.searchTerm = searchTerm || '';
     this.applyFiltersAndSort();
   }
 
@@ -260,5 +276,91 @@ export class FavoritesPage implements OnInit, OnDestroy {
       fairy: '#EE99AC'
     };
     return typeColors[type] || '#68A090';
+  }
+
+  /**
+   * Métodos faltantes para o template
+   */
+  refreshFavorites(): void {
+    this.loadFavorites();
+    this.loadStats();
+  }
+
+  onFiltersChange(filters: FilterOptions): void {
+    this.searchTerm = filters.searchTerm;
+    this.applyFiltersAndSort();
+  }
+
+  openDetailsModal(pokemonId: number): void {
+    this.selectedPokemonId = pokemonId;
+    this.showDetailsModal = true;
+  }
+
+  onCaptureToggle(pokemonId: number): void {
+    // Implementar lógica de captura se necessário
+    console.log('Capture toggle for pokemon:', pokemonId);
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  private updatePagination(): void {
+    this.totalFavorites = this.filteredFavorites.length;
+    this.totalPages = Math.ceil(this.totalFavorites / this.itemsPerPage);
+
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    this.paginatedFavorites = this.filteredFavorites.slice(startIndex, endIndex).map((fav, index) => ({
+      ...fav,
+      pokemon: {
+        id: fav.pokemonId,
+        name: fav.name,
+        sprites: { other: { 'official-artwork': { front_default: fav.imageUrl } } },
+        types: fav.types.map((type: string) => ({ type: { name: type } }))
+      },
+      animationDelay: index * 100
+    }));
+
+    // Calcular estatísticas
+    if (this.stats) {
+      this.averageRating = this.calculateAverageRating();
+    }
+  }
+
+  private calculateAverageRating(): number {
+    // Implementar cálculo de rating médio baseado nos tipos
+    const typeRatings: { [key: string]: number } = {
+      fire: 8.5, water: 8.0, grass: 7.5, electric: 8.2,
+      psychic: 8.8, ice: 7.8, dragon: 9.2, dark: 8.1,
+      fighting: 7.9, poison: 6.8, ground: 7.2, flying: 7.6,
+      bug: 6.5, rock: 7.1, ghost: 8.3, steel: 8.0,
+      fairy: 8.4, normal: 6.9
+    };
+
+    if (this.favorites.length === 0) return 0;
+
+    const totalRating = this.favorites.reduce((sum, fav) => {
+      const avgTypeRating = fav.types.reduce((typeSum, type) =>
+        typeSum + (typeRatings[type] || 7.0), 0) / fav.types.length;
+      return sum + avgTypeRating;
+    }, 0);
+
+    return totalRating / this.favorites.length;
   }
 }

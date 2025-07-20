@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { FavoritesService } from '../../../core/services/favorites.service';
-import { PokemonListItem } from '../../../core/interfaces/pokemon.interface';
+import { PokemonListItem } from '../../../models/pokemon.model';
 
 /**
  * Componente de botão de favorito reutilizável
@@ -122,7 +122,7 @@ export class FavoriteButtonComponent implements OnInit, OnDestroy {
       // Simular pequeno delay para feedback visual
       setTimeout(() => {
         this.favoritesService.toggleFavorite(this.pokemon);
-        
+
         // Emitir evento
         this.favoriteChanged.emit({
           pokemon: this.pokemon,

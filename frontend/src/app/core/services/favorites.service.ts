@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { PokemonListItem } from '../interfaces/pokemon.interface';
+import { PokemonListItem } from '../../models/pokemon.model';
 
 /**
  * Interface para dados de favoritos
@@ -84,7 +84,7 @@ export class FavoritesService {
    */
   addToFavorites(pokemon: PokemonListItem | any): void {
     const currentFavorites = this.favoritesSubject.value;
-    
+
     // Verificar se já está nos favoritos
     if (this.isFavorite(pokemon.id)) {
       console.warn('⚠️ Pokémon já está nos favoritos:', pokemon.name);
@@ -111,7 +111,7 @@ export class FavoritesService {
   removeFromFavorites(pokemonId: number): void {
     const currentFavorites = this.favoritesSubject.value;
     const updatedFavorites = currentFavorites.filter(fav => fav.pokemonId !== pokemonId);
-    
+
     this.favoritesSubject.next(updatedFavorites);
     this.saveFavoritesToStorage();
     this.updateStats();
@@ -146,7 +146,7 @@ export class FavoritesService {
    * Obtém favoritos ordenados por data (mais recentes primeiro)
    */
   getFavoritesSortedByDate(): FavoriteData[] {
-    return [...this.favoritesSubject.value].sort((a, b) => 
+    return [...this.favoritesSubject.value].sort((a, b) =>
       b.addedAt.getTime() - a.addedAt.getTime()
     );
   }
@@ -155,7 +155,7 @@ export class FavoritesService {
    * Obtém favoritos filtrados por tipo
    */
   getFavoritesByType(type: string): FavoriteData[] {
-    return this.favoritesSubject.value.filter(fav => 
+    return this.favoritesSubject.value.filter(fav =>
       fav.types.includes(type)
     );
   }
@@ -174,7 +174,7 @@ export class FavoritesService {
    */
   private updateStats(): void {
     const favorites = this.favoritesSubject.value;
-    
+
     // Contagem por tipo
     const byType: { [type: string]: number } = {};
     favorites.forEach(fav => {
@@ -228,7 +228,7 @@ export class FavoritesService {
   importFavorites(jsonData: string): boolean {
     try {
       const favorites: FavoriteData[] = JSON.parse(jsonData);
-      
+
       // Validar estrutura dos dados
       if (!Array.isArray(favorites)) {
         throw new Error('Dados devem ser um array');
@@ -242,7 +242,7 @@ export class FavoritesService {
       this.favoritesSubject.next(favorites);
       this.saveFavoritesToStorage();
       this.updateStats();
-      
+
       return true;
     } catch (error) {
       console.error('❌ Erro ao importar favoritos:', error);

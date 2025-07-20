@@ -57,20 +57,7 @@
     margin-bottom: 12px;
     padding: 16px;
 
-    // Botão de favorito
-    .favorite-button-container {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      z-index: 3;
 
-      app-favorite-button {
-        --border-radius: 50%;
-        --background: rgba(255, 255, 255, 0.9);
-        --backdrop-filter: blur(10px);
-        --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-    }
     background: var(--surface-bg);
     border-radius: 12px;
 
@@ -87,46 +74,7 @@
       }
     }
 
-    .favorite-btn {
-      /* Botão de favoritar */
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      cursor: pointer;
 
-      ion-icon {
-        font-size: 20px;
-        color: #ccc;
-        transition: all 0.3s ease;
-      }
-
-      &:hover {
-        transform: scale(1.1);
-        background: rgba(255, 255, 255, 1);
-      }
-
-      &.active {
-        ion-icon {
-          color: #e74c3c;
-          animation: heartBeat 0.6s ease-in-out;
-        }
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-    }
 
     .capture-btn {
       position: absolute;
@@ -464,14 +412,7 @@
   }
 }
 
-@keyframes heartBeat {
-  0%, 50%, 100% {
-    transform: scale(1);
-  }
-  25%, 75% {
-    transform: scale(1.2);
-  }
-}
+
 
 @keyframes captureSuccess {
   0% {

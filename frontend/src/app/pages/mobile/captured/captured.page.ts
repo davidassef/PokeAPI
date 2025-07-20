@@ -54,6 +54,7 @@ export class CapturedPage implements OnInit, OnDestroy {
       searchTerm: this.currentFilters.name || '',
       selectedElementTypes: this.currentFilters.elementTypes || [],
       selectedMovementTypes: this.currentFilters.movementTypes || [],
+      selectedHabitats: this.currentFilters.habitats || [],
       selectedGeneration: this.currentFilters.generation || null,
       sortBy: this.currentFilters.sortBy,
       sortOrder: this.currentFilters.sortOrder

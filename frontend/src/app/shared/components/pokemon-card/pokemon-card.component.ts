@@ -22,7 +22,7 @@ import { ToastNotificationService } from '../../../core/services/toast-notificat
 export class PokemonCardComponent implements OnInit, OnDestroy {
   @Input() pokemon!: Pokemon;
   @Input() showCaptureButton = true;
-  @Input() showFavoriteButton = true;
+
   @Input() showStats = false;
   @Input() animationDelay = 0;
   @Input() isCaptured = false;
@@ -30,7 +30,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
   @Input() favoriteCount?: number;
   @Input() showAdminControls = true; // Controla se mostra botões de admin
   @Output() captureToggle = new EventEmitter<{ pokemon: Pokemon, isCaptured: boolean }>();
-  @Output() favoriteChanged = new EventEmitter<{ pokemon: Pokemon, isFavorite: boolean }>();
+
   @Output() cardClick = new EventEmitter<Pokemon>();
   @Output() pokemonUpdated = new EventEmitter<Pokemon>(); // Evento para quando Pokemon é atualizado
   @Output() pokemonDeleted = new EventEmitter<number>(); // Evento para quando Pokemon é deletado
@@ -262,15 +262,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     console.error(`❌ Image error for ${this.pokemon.name}:`, error);
   }
 
-  /**
-   * Manipula mudanças no status de favorito
-   */
-  onFavoriteChanged(event: { pokemon: any, isFavorite: boolean }): void {
-    this.favoriteChanged.emit({
-      pokemon: this.pokemon,
-      isFavorite: event.isFavorite
-    });
-  }
+
 
   /**
    * Abre o modal de autenticação

@@ -28,7 +28,10 @@
     "back_female": "Sprite Trasero Hembra",
     "front_shiny_female": "Sprite Frontal Shiny Hembra",
     "back_shiny_female": "Sprite Trasero Shiny Hembra",
-    "image_placeholder": "Imagen Predeterminada"
+    "image_placeholder": "Imagen Predeterminada",
+    "level": "Nivel",
+    "no_evolution": "Este Pokémon no evoluciona.",
+    "no_more_text": "No hay más descripciones disponibles."
   },
   "mobile": {
     "title": "Detalles de {name}",
@@ -44,6 +47,14 @@
     "stats_short": "Stats",
     "evolution": "Evolución",
     "evolution_short": "Evolución",
+    "evolution_triggers": {
+      "level-up": "por nivel",
+      "trade": "por intercambio",
+      "use-item": "usando objeto",
+      "happiness": "por felicidad",
+      "special": "evolución especial",
+      "stone": "piedra evolutiva"
+    },
     "curiosities": "Curiosidades",
     "curiosities_short": "Trivia",
     "carousel": {
@@ -833,6 +844,7 @@
   "evolution": {
     "triggers": {
       "level_up": "Nivel {{level}}",
+      "level-up": "por nivel",
       "trade": "Intercambio",
       "use_item": "Usar {{item}}",
       "happiness": "Felicidad {{happiness}}",

@@ -24,8 +24,8 @@
     <app-search-filter
       [placeholder]="'favorites.search_placeholder'"
       [showAdvancedFilters]="true"
-      (searchChange)="onSearchChange($event)"
-      (filtersChange)="onFiltersChange($event)">
+      (searchChanged)="onSearchChange($event)"
+      (filterChange)="onFiltersChange($event)">
     </app-search-filter>
   </div>
 
@@ -67,8 +67,8 @@
         [isCaptured]="true"
         [showCaptureButton]="true"
         [animationDelay]="favorite.animationDelay"
-        (cardClick)="openDetailsModal($event)"
-        (captureToggle)="onCaptureToggle($event)"
+        (cardClick)="openDetailsModal(favorite.pokemon.id)"
+        (captureToggle)="onCaptureToggle(favorite.pokemon.id)"
         class="favorite-card">
       </app-pokemon-card>
     </div>

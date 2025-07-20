@@ -102,11 +102,24 @@ export interface PokemonSpecies {
   habitat: {
     name: string;
     url: string;
-  };
+  } | null;
   color: {
     name: string;
     url: string;
   };
+  evolution_chain: {
+    url: string;
+  };
+  egg_groups: Array<{
+    name: string;
+    url: string;
+  }>;
+  growth_rate: {
+    name: string;
+    url: string;
+  };
+  base_happiness: number;
+  capture_rate: number;
 }
 
 /**

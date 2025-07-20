@@ -20,6 +20,10 @@ const routes: Routes = [
         loadChildren: () => import('../pages/web/ranking/ranking.module').then(m => m.RankingPageModule)
       },
       {
+        path: 'favorites',
+        loadChildren: () => import('../pages/web/favorites/favorites.module').then(m => m.FavoritesPageModule)
+      },
+      {
         path: 'settings',
         loadChildren: () => import('../pages/web/settings/settings.module').then(m => m.SettingsPageModule)
       },
