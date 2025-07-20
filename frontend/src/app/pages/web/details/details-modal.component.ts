@@ -154,45 +154,77 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
-    this.loadPokemonDetailsDirectly(id);
+    // ✅ OTIMIZAÇÃO: Debounce para evitar múltiplas requisições rápidas
+    if (this.loadingDebounceTimer) {
+      clearTimeout(this.loadingDebounceTimer);
+    }
+
+    this.loadingDebounceTimer = setTimeout(() => {
+      console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
+      this.loadPokemonDetailsDirectly(id);
+    }, 100); // 100ms de debounce
   }
 
+  private loadingDebounceTimer: any;
+
   /**
-   * ✅ FASE 1: Método modificado para carregar dados com flavor texts diretos
-   * Implementa a lógica especificada no plano de correção
+   * ✅ OTIMIZAÇÃO: Método otimizado para carregar apenas dados essenciais inicialmente
+   * Implementa lazy loading para melhor performance
    */
   private async loadPokemonDetailsDirectly(id: number): Promise<void> {
     this.isLoadingPokemonData = true;
 
     try {
-      // 1. Carregar dados básicos (manter como está)
-      const pokemon = await this.pokeApiService.getPokemon(id).toPromise();
-      this.pokemon = pokemon;
+      // ✅ OTIMIZAÇÃO: Carregar dados básicos e species em paralelo
+      const [pokemon, species] = await Promise.all([
+        this.pokeApiService.getPokemon(id).toPromise(),
+        this.pokeApiService.getPokemonSpecies(id).toPromise()
+      ]);
 
-      // 2. Carregar species (manter como está)
-      const species = await this.pokeApiService.getPokemonSpecies(id).toPromise();
+      this.pokemon = pokemon;
       this.speciesData = species;
 
-      // 3. ✅ NOVA IMPLEMENTAÇÃO: Carregar flavor texts diretamente
-      this.flavorTexts = await this.loadFlavorTextsDirectly(id);
-      this.currentFlavorIndex = 0;
-
-      if (this.flavorTexts.length > 0) {
-        this.flavorText = this.flavorTexts[0];
-      }
-
-      // 4. Configurar carrossel (manter como está)
+      // ✅ OTIMIZAÇÃO: Configurar carrossel apenas com dados básicos
       this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(pokemon);
+
+      // ✅ OTIMIZAÇÃO: Não carregar flavor texts inicialmente - lazy load na aba
+      this.flavorTexts = [];
+      this.currentFlavorIndex = 0;
 
       this.isSpeciesDataReady = !!this.speciesData;
       this.initializePokemonData();
       this.isLoadingPokemonData = false;
 
+      // ✅ OTIMIZAÇÃO: Pré-carregar imagens em background
+      this.preloadCarouselImages();
+
     } catch (error) {
       console.error('❌ Erro ao carregar detalhes:', error);
       this.handleLoadingError(id);
     }
+  }
+
+  /**
+   * ✅ OTIMIZAÇÃO: Pré-carregamento de imagens em background
+   */
+  private preloadCarouselImages(): void {
+    if (!this.carouselImages || this.carouselImages.length === 0) return;
+
+    // Pré-carregar apenas as primeiras 3 imagens para não sobrecarregar
+    const imagesToPreload = this.carouselImages.slice(0, 3);
+
+    imagesToPreload.forEach((imageData, index) => {
+      if (imageData.url && this.isValidImageUrl(imageData.url)) {
+        const img = new Image();
+        img.onload = () => {
+          console.log(`✅ Imagem ${index + 1} pré-carregada:`, imageData.label);
+        };
+        img.onerror = () => {
+          console.warn(`❌ Erro ao pré-carregar imagem ${index + 1}:`, imageData.label);
+        };
+        img.src = imageData.url;
+      }
+    });
   }
 
   private handleLoadingError(id?: number): void {
@@ -392,9 +424,24 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   getEvolutionMethodText(method: string): string {
-    const methodKey = method.toLowerCase().replace(/\s+/g, '_');
-    const translated = this.translate.instant(`evolution.methods.${methodKey}`);
-    return translated !== `evolution.methods.${methodKey}` ? translated : method;
+    if (!method) return '';
+
+    // Mapear métodos para chaves de tradução corretas
+    const methodMapping: { [key: string]: string } = {
+      'level': 'evolution.methods.level',
+      'level-up': 'evolution.triggers.level-up',
+      'level_up': 'evolution.triggers.level-up',
+      'trade': 'evolution.triggers.trade',
+      'stone': 'evolution.triggers.stone',
+      'happiness': 'evolution.triggers.happiness',
+      'special': 'evolution.triggers.special'
+    };
+
+    const methodKey = method.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+    const translationKey = methodMapping[methodKey] || `evolution.methods.${methodKey}`;
+
+    const translated = this.translate.instant(translationKey);
+    return translated !== translationKey ? translated : method;
   }
 
 
@@ -1204,6 +1251,16 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   ngOnDestroy() {
+    console.log('DetailsModalComponent - ngOnDestroy');
+
+    // ✅ OTIMIZAÇÃO: Limpar timers para evitar memory leaks
+    if (this.loadingDebounceTimer) {
+      clearTimeout(this.loadingDebounceTimer);
+    }
+    if (this.tabChangeDebounceTimer) {
+      clearTimeout(this.tabChangeDebounceTimer);
+    }
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -1267,8 +1324,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   /**
-   * ✅ FASE 4: Método simplificado inspirado no mobile
-   * Substitui o sistema complexo por estados mais simples
+   * ✅ OTIMIZAÇÃO: Método otimizado com lazy loading e debounce
+   * Carrega dados apenas quando necessário para melhor performance
    */
   setActiveTab(tab: string): void {
     if (this.activeTab === tab) {
@@ -1277,71 +1334,150 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
 
     console.log(`🔄 Mudança de aba: ${this.activeTab} -> ${tab}`);
-    this.activeTab = tab;
 
-    // ✅ CARREGAR dados apenas se necessário
-    this.loadTabDataIfNeeded(tab);
+    // ✅ OTIMIZAÇÃO: Debounce para mudanças rápidas de aba
+    if (this.tabChangeDebounceTimer) {
+      clearTimeout(this.tabChangeDebounceTimer);
+    }
+
+    this.tabChangeDebounceTimer = setTimeout(() => {
+      this.activeTab = tab;
+
+      // ✅ OTIMIZAÇÃO: Lazy loading - carregar dados apenas quando necessário
+      this.loadTabDataIfNeeded(tab);
+
+      // ✅ OTIMIZAÇÃO: Pré-carregar próxima aba provável
+      this.preloadNextTabData(tab);
+    }, 50); // 50ms de debounce para mudanças rápidas
+  }
+
+  private tabChangeDebounceTimer: any;
+
+  /**
+   * ✅ OTIMIZAÇÃO: Pré-carregamento inteligente da próxima aba
+   */
+  private preloadNextTabData(currentTab: string): void {
+    const tabSequence = ['overview', 'combat', 'evolution', 'curiosities'];
+    const currentIndex = tabSequence.indexOf(currentTab);
+
+    if (currentIndex >= 0 && currentIndex < tabSequence.length - 1) {
+      const nextTab = tabSequence[currentIndex + 1];
+
+      // Pré-carregar próxima aba em background após um delay
+      setTimeout(() => {
+        if (!this.tabDataLoaded[nextTab]) {
+          console.log(`🔮 Pré-carregando dados da próxima aba: ${nextTab}`);
+          this.loadTabDataIfNeeded(nextTab);
+        }
+      }, 1000); // 1 segundo de delay para não interferir com a aba atual
+    }
   }
 
   /**
-   * ✅ FASE 4: Carregamento sob demanda simplificado
+   * ✅ OTIMIZAÇÃO: Carregamento sob demanda otimizado com cache e priorização
    */
   private loadTabDataIfNeeded(tab: string): void {
+    // ✅ OTIMIZAÇÃO: Verificar se já está carregando para evitar duplicação
+    if (this.isLoadingTabData) {
+      console.log(`⚠️ Já carregando dados de aba, ignorando: ${tab}`);
+      return;
+    }
+
     switch (tab) {
       case 'overview':
-        // Dados básicos já carregados no início
+        // ✅ OTIMIZAÇÃO: Carregar flavor texts apenas quando necessário
+        if (!this.flavorTexts || this.flavorTexts.length === 0) {
+          this.loadFlavorTextsLazy();
+        }
         break;
 
       case 'combat':
         if (!this.abilityDescriptions || Object.keys(this.abilityDescriptions).length === 0) {
-          this.loadCombatData();
+          this.loadCombatDataOptimized();
         }
         break;
 
       case 'evolution':
         if (!this.evolutionChain || this.evolutionChain.length === 0) {
-          this.loadEvolutionData();
+          this.loadEvolutionDataOptimized();
         }
         break;
 
       case 'curiosities':
         if (!this.flavorTexts || this.flavorTexts.length === 0) {
-          this.loadCuriositiesData();
+          this.loadCuriositiesDataOptimized();
         }
         break;
     }
   }
 
   /**
-   * ✅ FASE 4: Métodos específicos para cada aba
+   * ✅ OTIMIZAÇÃO: Carregamento lazy de flavor texts
    */
-  private async loadCombatData(): Promise<void> {
+  private async loadFlavorTextsLazy(): Promise<void> {
+    if (!this.pokemon?.id) return;
+
+    try {
+      console.log('🔮 Carregando flavor texts em lazy loading...');
+      this.flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
+      this.currentFlavorIndex = 0;
+
+      if (this.flavorTexts.length > 0) {
+        this.flavorText = this.flavorTexts[0];
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar flavor texts:', error);
+      this.flavorTexts = [];
+    }
+  }
+
+  /**
+   * ✅ OTIMIZAÇÃO: Métodos otimizados para carregamento de dados por aba
+   */
+  private async loadCombatDataOptimized(): Promise<void> {
     if (!this.pokemon?.abilities) return;
+
+    // ✅ OTIMIZAÇÃO: Verificar cache primeiro
+    if (this.abilityDescriptions && Object.keys(this.abilityDescriptions).length > 0) {
+      console.log('✅ Dados de combate já em cache');
+      return;
+    }
 
     this.isLoadingTabData = true;
     try {
+      console.log('🔮 Carregando dados de combate otimizados...');
       const descriptions = await this.pokemonDetailsManager
         .loadTabData('combat', this.pokemon, this.speciesData).toPromise();
       this.abilityDescriptions = descriptions || {};
+      this.tabDataLoaded['combat'] = true;
     } catch (error) {
       console.error('❌ Erro ao carregar dados de combate:', error);
+      this.abilityDescriptions = {};
     } finally {
       this.isLoadingTabData = false;
     }
   }
 
-  private async loadEvolutionData(): Promise<void> {
+  private async loadEvolutionDataOptimized(): Promise<void> {
     if (!this.speciesData?.evolution_chain?.url) {
       console.log('⚠️ Pokémon sem evolução');
       this.evolutionChain = [];
       return;
     }
 
+    // ✅ OTIMIZAÇÃO: Verificar cache primeiro
+    if (this.evolutionChain && this.evolutionChain.length > 0) {
+      console.log('✅ Dados de evolução já em cache');
+      return;
+    }
+
     this.isLoadingTabData = true;
     try {
+      console.log('🔮 Carregando dados de evolução otimizados...');
       const evolution = await this.pokemonDetailsManager
         .loadTabData('evolution', this.pokemon, this.speciesData).toPromise();
       this.evolutionChain = evolution || [];
+      this.tabDataLoaded['evolution'] = true;
     } catch (error) {
       console.error('❌ Erro ao carregar evolução:', error);
       this.evolutionChain = [];
@@ -1350,16 +1486,24 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
-  private async loadCuriositiesData(): Promise<void> {
+  private async loadCuriositiesDataOptimized(): Promise<void> {
     if (!this.pokemon?.id) return;
+
+    // ✅ OTIMIZAÇÃO: Verificar cache primeiro
+    if (this.flavorTexts && this.flavorTexts.length > 0) {
+      console.log('✅ Dados de curiosidades já em cache');
+      return;
+    }
 
     this.isLoadingTabData = true;
     try {
+      console.log('🔮 Carregando dados de curiosidades otimizados...');
       this.flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
       this.currentFlavorIndex = 0;
       if (this.flavorTexts.length > 0) {
         this.flavorText = this.flavorTexts[0];
       }
+      this.tabDataLoaded['curiosities'] = true;
     } catch (error) {
       console.error('❌ Erro ao carregar curiosidades:', error);
       this.flavorTexts = ['Descrição não disponível'];
