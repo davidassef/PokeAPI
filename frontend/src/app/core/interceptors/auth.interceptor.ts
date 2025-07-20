@@ -11,6 +11,7 @@ import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap, switchMap, filter, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { LoggerService } from '../services/logger.service';
 
 /**
  * Interceptor para adicionar o token JWT a todas as requisições HTTP
@@ -23,14 +24,16 @@ export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private logger: LoggerService
   ) {}
 
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    console.log(`[AuthInterceptor] Interceptando requisição: ${request.method} ${request.url}`);
+    // ✅ OTIMIZAÇÃO: Log apenas em debug mode
+    this.logger.debug('auth', `Interceptando requisição: ${request.method} ${request.url}`);
 
     // Lista de rotas públicas que não precisam de autenticação
     const publicRoutes = ['/auth/login', '/auth/register', '/auth/reset-password', '/health'];
@@ -47,55 +50,55 @@ export class AuthInterceptor implements HttpInterceptor {
 
     // Clona a requisição e adiciona o token de autorização, se disponível e não for rota pública
     if (token && !isExternalPublicRoute) {
-      console.log('[AuthInterceptor] Token JWT encontrado, adicionando ao cabeçalho');
+      this.logger.debug('auth', 'Token JWT encontrado, adicionando ao cabeçalho');
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      // Log do header de autorização (apenas para depuração - remover em produção)
-      console.log('[AuthInterceptor] Cabeçalho de autorização:', request.headers.get('Authorization')?.substring(0, 30) + '...');
+      // ✅ OTIMIZAÇÃO: Log de header apenas em debug
+      this.logger.debug('auth', `Cabeçalho de autorização: ${request.headers.get('Authorization')?.substring(0, 30)}...`);
     } else if (isExternalPublicRoute) {
-      console.log('[AuthInterceptor] Rota pública detectada, não adicionando token:', request.url);
+      this.logger.debug('auth', `Rota pública detectada: ${request.url}`);
     } else {
-      console.warn('[AuthInterceptor] Nenhum token JWT encontrado para a requisição:', request.url);
+      this.logger.warn('auth', `Nenhum token JWT encontrado para: ${request.url}`);
     }
 
     // Encaminha a requisição e trata erros de autenticação
-    console.log(`[AuthInterceptor] Enviando requisição para: ${request.url}`);
+    this.logger.debug('auth', `Enviando requisição para: ${request.url}`);
     return next.handle(request).pipe(
       tap((event: HttpEvent<any>) => {
-        // Log de resposta bem-sucedida (apenas para respostas HTTP completas)
+        // ✅ OTIMIZAÇÃO: Log de resposta apenas em debug
         if (event.type === HttpEventType.Response) {
-          console.log(`[AuthInterceptor] Resposta recebida de ${request.url}`, {
+          this.logger.debug('auth', `Resposta recebida de ${request.url}`, {
             status: event.status,
-            statusText: event.statusText,
-            headers: event.headers
+            statusText: event.statusText
           });
         }
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error(`[AuthInterceptor] Erro na requisição ${request.method} ${request.url}:`, error);
-        console.error(`[AuthInterceptor] Status: ${error.status}, StatusText: ${error.statusText}`);
-        console.error(`[AuthInterceptor] Error details:`, error.error);
+        // ✅ OTIMIZAÇÃO: Logs de erro mantidos mas organizados
+        this.logger.error('auth', `Erro na requisição ${request.method} ${request.url}`, {
+          status: error.status,
+          statusText: error.statusText,
+          error: error.error
+        });
 
         // Se o erro for de autenticação (401) e não for uma rota de login/registro
         if (error.status === 401 && !request.url.includes('/auth/')) {
-          console.warn('[AuthInterceptor] Erro 401 - Tentando renovar token automaticamente');
+          this.logger.warn('auth', 'Erro 401 - Tentando renovar token automaticamente');
           return this.handle401Error(request, next);
         } else if (error.status === 403) {
-          console.error('[AuthInterceptor] Erro 403 - Acesso negado (Forbidden)');
-          console.error('Detalhes do erro:', {
+          this.logger.error('auth', 'Erro 403 - Acesso negado (Forbidden)', {
             url: request.url,
             method: request.method,
-            headers: request.headers,
             error: error.error
           });
         } else if (error.status === 0) {
-          console.error('[AuthInterceptor] Erro de conectividade - Backend pode estar offline');
+          this.logger.error('auth', 'Erro de conectividade - Backend pode estar offline');
         } else if (error.status >= 500) {
-          console.error('[AuthInterceptor] Erro interno do servidor');
+          this.logger.error('auth', 'Erro interno do servidor');
         }
 
         // Repassa o erro para o serviço que fez a requisição

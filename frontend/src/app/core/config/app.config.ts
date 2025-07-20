@@ -16,16 +16,36 @@ export const APP_CONFIG = {
     maxRetries: 2
   },
 
-  // Configurações de logging
+  // ✅ OTIMIZAÇÃO: Configurações de logging expandidas para controle granular
   logging: {
     suppressKnownWarnings: true,
     logLevel: 'warn' as 'debug' | 'info' | 'warn' | 'error',
+
+    // ✅ NOVO: Controle específico por componente
+    componentLogs: {
+      auth: false,           // Desabilitar logs do auth interceptor
+      cache: false,          // Desabilitar logs de cache hits
+      musicPlayer: false,    // Desabilitar logs de mudanças de estado
+      captured: false,       // Desabilitar logs de sincronização
+      performance: false,    // Desabilitar logs de performance detalhados
+      navigation: false,     // Desabilitar logs de navegação
+      startup: false         // Desabilitar logs de inicialização
+    },
+
+    // ✅ NOVO: Logs que devem sempre aparecer
+    alwaysShow: {
+      errors: true,          // Sempre mostrar erros
+      warnings: true,        // Sempre mostrar warnings
+      critical: true,        // Sempre mostrar logs críticos
+      userActions: false     // Logs de ações do usuário (opcional)
+    },
 
     // Filtros para suprimir avisos específicos
     suppressedWarnings: [
       'ms-high-contrast', // Aviso de depreciação CSS
       'Images loaded lazily', // Aviso de lazy loading
       'Ionic Warning', // Avisos do Ionic já tratados
+      'ExpressionChangedAfterItHasBeenCheckedError', // Erros de change detection
     ]
   },
 

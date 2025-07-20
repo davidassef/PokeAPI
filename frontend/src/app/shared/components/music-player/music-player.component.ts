@@ -4,6 +4,7 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AudioService } from '../../../core/services/audio.service';
 import { SettingsService } from '../../../core/services/settings.service';
+import { LoggerService } from '../../../core/services/logger.service';
 
 export interface Track {
   id: string;
@@ -47,7 +48,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private elementRef: ElementRef,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private logger: LoggerService
   ) {}
 
   ngOnInit() {
@@ -80,7 +82,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
       this.setupAudioService();
       this.setupLanguageListener();
     } catch (error) {
-      console.error('MusicPlayer: Erro na inicialização:', error);
+      this.logger.error('musicPlayer', 'Erro na inicialização', error);
     }
   }
 
@@ -121,7 +123,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         debounceTime(100)
       )
       .subscribe(settings => {
-        console.log('[MusicPlayer] Configurações atualizadas:', {
+        // ✅ OTIMIZAÇÃO: Log apenas em debug
+        this.logger.debug('musicPlayer', 'Configurações atualizadas', {
           musicEnabled: settings.musicEnabled,
           theme: settings.theme,
           darkMode: settings.darkMode
@@ -141,7 +144,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
             this.audioService.setVolume(newVolume);
           }
 
-          console.log('[MusicPlayer] Volume/mute atualizados:', { volume: newVolume, muted: newMuted });
+          // ✅ OTIMIZAÇÃO: Log apenas em debug
+          this.logger.debug('musicPlayer', 'Volume/mute atualizados', { volume: newVolume, muted: newMuted });
         }
       });
   }
@@ -154,7 +158,8 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         debounceTime(50)
       )
       .subscribe(state => {
-        console.log('[MusicPlayer] Estado do AudioService atualizado:', {
+        // ✅ OTIMIZAÇÃO: Log apenas em debug
+        this.logger.debug('musicPlayer', 'Estado do AudioService atualizado', {
           isPlaying: state.isPlaying,
           currentTrack: state.currentTrack?.name,
           currentTime: state.currentTime
@@ -242,14 +247,15 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
     if (!this.currentTrack) return;
 
     try {
-      console.log('[MusicPlayer] Toggle play - Estado atual:', this.isPlaying);
+      // ✅ OTIMIZAÇÃO: Log apenas em debug
+      this.logger.debug('musicPlayer', `Toggle play - Estado atual: ${this.isPlaying}`);
 
       // Usar APENAS o AudioService - fonte única da verdade
       await this.audioService.togglePlayPause();
 
-      console.log('[MusicPlayer] Toggle play concluído');
+      this.logger.debug('musicPlayer', 'Toggle play concluído');
     } catch (error) {
-      console.error('MusicPlayer: Erro no toggle play:', error);
+      this.logger.error('musicPlayer', 'Erro no toggle play', error);
     }
   }
 
