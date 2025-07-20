@@ -60,6 +60,11 @@ export class HomePage implements OnInit, OnDestroy {
   user: User | null = null;
   showUserMenu = false;
 
+  // Estado dos filtros para detecção de estado vazio
+  hasHabitatFilter = false;
+  hasAnyFilter = false;
+  appliedFilters: any = null;
+
   get currentFilterOptions(): FilterOptions {
     return {
       searchTerm: this.currentFilters.name || '',
@@ -146,7 +151,8 @@ export class HomePage implements OnInit, OnDestroy {
       orderBy: this.currentFilters.sortBy,
       sortOrder: this.currentFilters.sortOrder,
       elementTypes: this.currentFilters.elementTypes,
-      movementTypes: this.currentFilters.movementTypes
+      movementTypes: this.currentFilters.movementTypes,
+      habitats: this.currentFilters.habitats
     };
 
     console.log('[HOME] Aplicando filtros:', filters);
@@ -157,6 +163,13 @@ export class HomePage implements OnInit, OnDestroy {
         console.log('[HOME] Resultado da busca:', result);
         this.totalPokemons = result.total;
         this.totalPages = result.totalPages;
+
+        // Capturar informações sobre filtros aplicados
+        this.appliedFilters = result.appliedFilters;
+        this.hasHabitatFilter = !!(filters.habitats && filters.habitats.length > 0);
+        this.hasAnyFilter = !!(filters.name || filters.elementTypes?.length || filters.movementTypes?.length ||
+                              filters.habitats?.length || filters.generation);
+
         // Carregar detalhes dos pokémons da página
         this.paginatedPokemons = await this.loadPokemonDetails(result.pokemons);
         this.loading = false;
@@ -166,6 +179,8 @@ export class HomePage implements OnInit, OnDestroy {
         this.paginatedPokemons = [];
         this.totalPokemons = 0;
         this.totalPages = 1;
+        this.hasHabitatFilter = false;
+        this.hasAnyFilter = false;
       });
   }
 
@@ -255,6 +270,7 @@ export class HomePage implements OnInit, OnDestroy {
       name: '',
       elementTypes: [],
       movementTypes: [],
+      habitats: [],
       generation: undefined,
       sortBy: 'id',
       sortOrder: 'asc'
@@ -477,4 +493,26 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.loadPaginatedPokemons();
   }
+
+  /**
+   * Obtém o nome traduzido do habitat selecionado
+   */
+  getSelectedHabitatName(): string {
+    if (!this.currentFilters.habitats || this.currentFilters.habitats.length === 0) {
+      return '';
+    }
+    const habitat = this.currentFilters.habitats[0];
+    // Retorna a chave de tradução que será processada pelo pipe translate
+    return this.translate.instant(`pokemon.habitats.${habitat}`);
+  }
+
+  /**
+   * Limpa apenas o filtro de habitat
+   */
+  clearHabitatFilter() {
+    this.currentFilters.habitats = [];
+    this.currentPage = 1;
+    this.loadPaginatedPokemons();
+  }
+
 }
