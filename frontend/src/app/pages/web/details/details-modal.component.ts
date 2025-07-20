@@ -1223,30 +1223,39 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       }
     }
 
-    // ✅ CORREÇÃO: Tratamento otimizado de reabertura do modal
+    // ✅ OTIMIZAÇÃO CRÍTICA: Tratamento inteligente de reabertura do modal
     if (changes['isOpen'] && changes['isOpen'].currentValue === true &&
         changes['isOpen'].previousValue === false) {
-      console.log('🔄 Modal reaberto - reinicializando dados');
+      console.log('🔄 Modal reaberto - verificando necessidade de recarregamento');
 
-      // ✅ CORREÇÃO: Limpar subscriptions existentes e recriar destroy$ para evitar problemas de estado
-      this.destroy$.next();
-      this.destroy$.complete();
-      this.destroy$ = new Subject<void>();
+      // ✅ OTIMIZAÇÃO: Verificar se já temos dados válidos antes de recarregar
+      const hasValidData = this.pokemon && this.pokemon.id === this.pokemonId;
+      const hasValidSpecies = this.speciesData && this.isSpeciesDataReady;
 
-      // Recarregar dados se temos pokemonId
-      if (this.pokemonId && this.pokemonId > 0) {
-        this.loadPokemonById(this.pokemonId);
-      } else if (this.pokemon) {
-        // Se já temos dados do pokemon, apenas reinicializar
+      if (hasValidData && hasValidSpecies) {
+        console.log('✅ Dados já válidos - reutilizando sem recarregar');
+        // Apenas reinicializar interface sem recarregar dados
         this.initializePokemonData();
-      }
+      } else {
+        console.log('🔄 Dados inválidos ou ausentes - recarregando');
 
-      // ✅ CORREÇÃO: Reconfigurar listener de mudança de idioma após recriar destroy$
-      this.translate.onLangChange
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.onLanguageChange();
-        });
+        // ✅ CORREÇÃO: Limpar subscriptions existentes apenas se necessário
+        this.destroy$.next();
+        this.destroy$.complete();
+        this.destroy$ = new Subject<void>();
+
+        // Recarregar dados apenas se necessário
+        if (this.pokemonId && this.pokemonId > 0) {
+          this.loadPokemonById(this.pokemonId);
+        }
+
+        // ✅ CORREÇÃO: Reconfigurar listener de mudança de idioma
+        this.translate.onLangChange
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            this.onLanguageChange();
+          });
+      }
     }
   }
 
@@ -1324,7 +1333,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   /**
-   * ✅ OTIMIZAÇÃO: Método otimizado com lazy loading e debounce
+   * ✅ OTIMIZAÇÃO CRÍTICA: Método otimizado com lazy loading e debounce agressivo
    * Carrega dados apenas quando necessário para melhor performance
    */
   setActiveTab(tab: string): void {
@@ -1335,20 +1344,24 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     console.log(`🔄 Mudança de aba: ${this.activeTab} -> ${tab}`);
 
-    // ✅ OTIMIZAÇÃO: Debounce para mudanças rápidas de aba
+    // ✅ OTIMIZAÇÃO CRÍTICA: Debounce mais agressivo para mudanças rápidas
     if (this.tabChangeDebounceTimer) {
       clearTimeout(this.tabChangeDebounceTimer);
     }
 
-    this.tabChangeDebounceTimer = setTimeout(() => {
-      this.activeTab = tab;
+    // ✅ OTIMIZAÇÃO: Mudança imediata da aba para responsividade visual
+    this.activeTab = tab;
 
+    // ✅ OTIMIZAÇÃO: Debounce apenas para carregamento de dados
+    this.tabChangeDebounceTimer = setTimeout(() => {
       // ✅ OTIMIZAÇÃO: Lazy loading - carregar dados apenas quando necessário
       this.loadTabDataIfNeeded(tab);
 
-      // ✅ OTIMIZAÇÃO: Pré-carregar próxima aba provável
-      this.preloadNextTabData(tab);
-    }, 50); // 50ms de debounce para mudanças rápidas
+      // ✅ OTIMIZAÇÃO: Pré-carregar próxima aba provável (com delay maior)
+      setTimeout(() => {
+        this.preloadNextTabData(tab);
+      }, 500); // Delay maior para não interferir com carregamento atual
+    }, 100); // 100ms de debounce para carregamento de dados
   }
 
   private tabChangeDebounceTimer: any;
@@ -1374,38 +1387,59 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   /**
-   * ✅ OTIMIZAÇÃO: Carregamento sob demanda otimizado com cache e priorização
+   * ✅ OTIMIZAÇÃO CRÍTICA: Carregamento sob demanda com cache inteligente
    */
   private loadTabDataIfNeeded(tab: string): void {
+    if (!this.pokemon) {
+      console.warn('❌ loadTabDataIfNeeded: Pokemon não disponível');
+      return;
+    }
+
+    // ✅ OTIMIZAÇÃO: Verificar cache antes de carregar
+    if (this.tabDataLoaded[tab]) {
+      console.log(`✅ Dados da aba ${tab} já em cache`);
+      return;
+    }
+
     // ✅ OTIMIZAÇÃO: Verificar se já está carregando para evitar duplicação
     if (this.isLoadingTabData) {
       console.log(`⚠️ Já carregando dados de aba, ignorando: ${tab}`);
       return;
     }
 
+    console.log(`🔄 Carregando dados necessários para aba: ${tab}`);
+
     switch (tab) {
       case 'overview':
         // ✅ OTIMIZAÇÃO: Carregar flavor texts apenas quando necessário
         if (!this.flavorTexts || this.flavorTexts.length === 0) {
           this.loadFlavorTextsLazy();
+        } else {
+          this.tabDataLoaded[tab] = true;
         }
         break;
 
       case 'combat':
         if (!this.abilityDescriptions || Object.keys(this.abilityDescriptions).length === 0) {
           this.loadCombatDataOptimized();
+        } else {
+          this.tabDataLoaded[tab] = true;
         }
         break;
 
       case 'evolution':
         if (!this.evolutionChain || this.evolutionChain.length === 0) {
           this.loadEvolutionDataOptimized();
+        } else {
+          this.tabDataLoaded[tab] = true;
         }
         break;
 
       case 'curiosities':
         if (!this.flavorTexts || this.flavorTexts.length === 0) {
           this.loadCuriositiesDataOptimized();
+        } else {
+          this.tabDataLoaded[tab] = true;
         }
         break;
     }

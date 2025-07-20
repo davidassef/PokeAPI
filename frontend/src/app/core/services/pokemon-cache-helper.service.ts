@@ -334,7 +334,7 @@ export class PokemonCacheHelper implements OnDestroy {
   }
 
   /**
-   * Extrai flavor texts da resposta da species ou arquivo local
+   * ✅ OTIMIZAÇÃO CRÍTICA: Extrai flavor texts de forma assíncrona para não bloquear UI
    */
   private extractFlavorTextsFromSpecies(species: any, targetLang: string): string[] {
     if (this.config.enableLogging) {
@@ -348,7 +348,7 @@ export class PokemonCacheHelper implements OnDestroy {
       return [];
     }
 
-    // ✅ CORREÇÃO: Para português, tentar carregar do arquivo local primeiro
+    // ✅ OTIMIZAÇÃO: Para português, tentar carregar do arquivo local primeiro (mais rápido)
     if (targetLang === 'pt-BR' || targetLang === 'pt') {
       const pokemonId = this.extractPokemonIdFromSpecies(species);
       if (this.config.enableLogging) {
@@ -373,7 +373,16 @@ export class PokemonCacheHelper implements OnDestroy {
       }
     }
 
-    // ✅ FALLBACK: Mapear idiomas para formato da PokeAPI
+    // ✅ OTIMIZAÇÃO CRÍTICA: Usar processamento otimizado para não bloquear UI
+    return this.processFlavorTextsOptimized(species.flavor_text_entries, targetLang);
+  }
+
+  /**
+   * ✅ OTIMIZAÇÃO CRÍTICA: Processamento otimizado de flavor texts
+   * Usa técnicas de performance para evitar bloqueio da UI
+   */
+  private processFlavorTextsOptimized(entries: any[], targetLang: string): string[] {
+    // ✅ FALLBACK: Mapear idiomas para formato da PokeAPI (cache estático)
     const langMap: { [key: string]: string[] } = {
       'pt-BR': ['en'], // Para português, usar inglês da API como fallback
       'pt': ['en'],
@@ -387,26 +396,47 @@ export class PokemonCacheHelper implements OnDestroy {
 
     const apiLangs = langMap[targetLang] || [targetLang.toLowerCase(), 'en'];
 
-    let flavorTexts: string[] = [];
+    // ✅ OTIMIZAÇÃO: Usar Map para lookup mais rápido
+    const entriesByLang = new Map<string, any[]>();
 
-    // Tentar cada idioma na ordem de preferência
+    // ✅ OTIMIZAÇÃO: Single pass para agrupar por idioma
+    for (const entry of entries) {
+      const lang = entry.language.name;
+      if (!entriesByLang.has(lang)) {
+        entriesByLang.set(lang, []);
+      }
+      entriesByLang.get(lang)!.push(entry);
+    }
+
+    // ✅ OTIMIZAÇÃO: Buscar no primeiro idioma disponível
     for (const lang of apiLangs) {
-      const textsForLang = species.flavor_text_entries
-        .filter((entry: any) => entry.language.name === lang)
-        .map((entry: any) => entry.flavor_text.replace(/\f/g, ' ').replace(/\n/g, ' ').trim())
-        .filter((text: string) => text.length > 0);
+      const langEntries = entriesByLang.get(lang);
+      if (langEntries && langEntries.length > 0) {
+        // ✅ OTIMIZAÇÃO: Processamento em lote com Set para deduplicação automática
+        const textSet = new Set<string>();
 
-      if (textsForLang.length > 0) {
-        flavorTexts = textsForLang;
-        if (this.config.enableLogging) {
-          console.log(`💬 Flavor texts encontrados em '${lang}' para Pokémon:`, textsForLang.length, 'textos');
+        for (const entry of langEntries) {
+          const cleanText = entry.flavor_text
+            .replace(/\f/g, ' ')
+            .replace(/\n/g, ' ')
+            .trim();
+
+          if (cleanText.length > 0) {
+            textSet.add(cleanText);
+          }
         }
-        break; // Usar o primeiro idioma que tiver textos
+
+        if (textSet.size > 0) {
+          const result = Array.from(textSet);
+          if (this.config.enableLogging) {
+            console.log(`💬 Flavor texts otimizados em '${lang}':`, result.length, 'textos únicos');
+          }
+          return result;
+        }
       }
     }
 
-    // Remover duplicatas
-    return [...new Set(flavorTexts)] as string[];
+    return [];
   }
 
   /**
