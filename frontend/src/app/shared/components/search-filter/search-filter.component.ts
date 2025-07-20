@@ -299,19 +299,115 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Alterna a seleção de um habitat.
+   * Alterna a seleção de uma geração (apenas uma geração pode ser selecionada por vez).
+   * @param generationId ID da geração ou null para todas as gerações
+   */
+  onGenerationToggle(generationId: number | null) {
+    const currentGeneration = this.filterForm.get('selectedGeneration')?.value;
+
+    if (currentGeneration === generationId) {
+      // Se a geração já está selecionada, desseleciona (volta para "todas")
+      this.filterForm.get('selectedGeneration')?.setValue(null);
+    } else {
+      // Seleciona a nova geração
+      this.filterForm.get('selectedGeneration')?.setValue(generationId);
+    }
+  }
+
+  /**
+   * Verifica se uma geração está selecionada.
+   * @param generationId ID da geração ou null para todas as gerações
+   */
+  isGenerationSelected(generationId: number | null): boolean {
+    const selectedGeneration = this.filterForm.get('selectedGeneration')?.value;
+    return selectedGeneration === generationId;
+  }
+
+  /**
+   * Alterna a seleção de uma opção de ordenação (apenas uma pode ser selecionada por vez).
+   * @param sortValue Valor da opção de ordenação
+   */
+  onSortOptionToggle(sortValue: string) {
+    this.filterForm.get('sortBy')?.setValue(sortValue);
+  }
+
+  /**
+   * Verifica se uma opção de ordenação está selecionada.
+   * @param sortValue Valor da opção de ordenação
+   */
+  isSortOptionSelected(sortValue: string): boolean {
+    const selectedSort = this.filterForm.get('sortBy')?.value;
+    return selectedSort === sortValue;
+  }
+
+  /**
+   * Obtém a cor para uma geração específica.
+   * @param generationId ID da geração ou null para todas as gerações
+   */
+  getGenerationColor(generationId: number | null): string {
+    if (generationId === null) return '#6c757d'; // Cinza para "todas"
+
+    const colors = [
+      '#e74c3c', // Gen 1 - Vermelho (Kanto)
+      '#f39c12', // Gen 2 - Laranja (Johto)
+      '#27ae60', // Gen 3 - Verde (Hoenn)
+      '#3498db', // Gen 4 - Azul (Sinnoh)
+      '#9b59b6', // Gen 5 - Roxo (Unova)
+      '#e91e63', // Gen 6 - Rosa (Kalos)
+      '#ff9800', // Gen 7 - Laranja vibrante (Alola)
+      '#795548'  // Gen 8 - Marrom (Galar)
+    ];
+
+    return colors[generationId - 1] || '#6c757d';
+  }
+
+  /**
+   * Obtém a cor para uma opção de ordenação específica.
+   * @param sortValue Valor da opção de ordenação
+   */
+  getSortColor(sortValue: string): string {
+    const colors = {
+      'id': '#007bff',     // Azul para ID/Número
+      'name': '#28a745',   // Verde para Nome
+      'height': '#ffc107', // Amarelo para Altura
+      'weight': '#dc3545'  // Vermelho para Peso
+    };
+
+    return colors[sortValue as keyof typeof colors] || '#6c757d';
+  }
+
+  /**
+   * Retorna a cor temática para um habitat específico
+   */
+  getHabitatColor(habitat: string): string {
+    const habitatColors: { [key: string]: string } = {
+      'cave': '#8B4513',        // Marrom para cavernas
+      'forest': '#228B22',      // Verde para florestas
+      'grassland': '#9ACD32',   // Verde claro para campos
+      'mountain': '#696969',    // Cinza para montanhas
+      'rare': '#9932CC',        // Roxo para locais raros
+      'rough-terrain': '#A0522D', // Marrom claro para terrenos acidentados
+      'sea': '#4682B4',         // Azul para oceanos
+      'urban': '#708090',       // Cinza azulado para áreas urbanas
+      'waters-edge': '#20B2AA'  // Azul esverdeado para beiras d'água
+    };
+    return habitatColors[habitat] || '#4CAF50'; // Verde padrão
+  }
+
+  /**
+   * Alterna a seleção de um habitat (apenas um habitat pode ser selecionado por vez).
    */
   onHabitatToggle(habitat: string) {
     const currentHabitats = this.filterForm.get('selectedHabitats')?.value || [];
-    const index = currentHabitats.indexOf(habitat);
+    const isCurrentlySelected = currentHabitats.includes(habitat);
 
-    if (index > -1) {
-      currentHabitats.splice(index, 1);
+    if (isCurrentlySelected) {
+      // Se o habitat já está selecionado, desseleciona (limpa a seleção)
+      this.filterForm.get('selectedHabitats')?.setValue([]);
     } else {
-      currentHabitats.push(habitat);
+      // Se não está selecionado, seleciona apenas este habitat (single-selection)
+      this.filterForm.get('selectedHabitats')?.setValue([habitat]);
     }
-
-    this.filterForm.get('selectedHabitats')?.setValue([...currentHabitats]);
   }
 
   /**

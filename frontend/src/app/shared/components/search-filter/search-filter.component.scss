@@ -114,12 +114,13 @@
       width: 100%;
 
       h5 {
-        margin: 0 0 8px 0; // Reduzido
+        margin: 0 0 12px 0; // Aumentado para melhor espaçamento
         color: #495057;
-        font-weight: 600;
-        font-size: 12px; // Reduzido
+        font-weight: 700; // Mais bold para hierarquia visual
+        font-size: 16px; // Aumentado para melhor hierarquia
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1.2px; // Aumentado para destaque
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); // Sombra sutil
       }
 
       // Grid de chips de tipos
@@ -135,16 +136,16 @@
           margin: 0;
           cursor: pointer;
           transition: all 0.3s ease;
-          border: 2px solid;
+          border: 2px solid; // Stroke para todas as badges
           font-weight: 600;
-          font-size: 11px; // Reduzido
+          font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          padding: 2px 6px; // Reduzido
+          padding: 2px 6px;
 
           // Estilo específico para badges de habitat (similar aos cards dos Pokémon)
           &.auto-width-center {
-            // Replicar estilo das badges dos cards dos Pokémon
+            // Replicar estilo das badges dos cards dos Pokémon com stroke
             padding: 4px 12px;
             border-radius: 20px;
             color: white;
@@ -154,23 +155,72 @@
             letter-spacing: 0.5px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease;
-            border: none; // Remove border para ficar igual aos cards
+            border: 2px solid; // Mantém stroke
 
             &:hover {
               transform: scale(1.05);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             }
 
             &.selected {
-              // Manter o mesmo estilo quando selecionado
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
               transform: scale(1.02);
             }
           }
 
-          // Estilo padrão para outros chips (tipos de elemento/movimento)
-          &:not(.auto-width-center) {
+          // Estilo específico para badges de geração
+          &.generation-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            border: 2px solid; // Stroke
+
+            &:hover {
+              transform: scale(1.05);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            &.selected {
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+              transform: scale(1.02);
+            }
+          }
+
+          // Estilo específico para badges de ordenação
+          &.sort-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            border: 2px solid; // Stroke
+
+            &:hover {
+              transform: scale(1.05);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            &.selected {
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+              transform: scale(1.02);
+            }
+          }
+
+          // Estilo padrão para outros chips (tipos de elemento/movimento) com stroke
+          &:not(.auto-width-center):not(.generation-badge):not(.sort-badge) {
+            border: 2px solid; // Stroke para badges de tipo
+
             &:hover {
               transform: scale(1.04);
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             }
 
             &.selected {
@@ -433,7 +483,10 @@
 
       .filter-section {
         h5 {
-          color: #ccc;
+          color: #fff; // Branco para melhor contraste no tema escuro
+          font-weight: 700; // Consistente com tema claro
+          font-size: 16px; // Consistente com tema claro
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); // Sombra mais forte no tema escuro
         }
 
         ion-select {

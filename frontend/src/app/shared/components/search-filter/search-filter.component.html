@@ -84,9 +84,9 @@
           <ion-chip
             *ngFor="let habitat of habitats"
             [class.selected]="isHabitatSelected(habitat)"
-            [style.background-color]="isHabitatSelected(habitat) ? '#4CAF50' : 'transparent'"
-            [style.color]="isHabitatSelected(habitat) ? 'white' : '#4CAF50'"
-            [style.border-color]="'#4CAF50'"
+            [style.background-color]="isHabitatSelected(habitat) ? getHabitatColor(habitat) : 'transparent'"
+            [style.color]="isHabitatSelected(habitat) ? 'white' : getHabitatColor(habitat)"
+            [style.border-color]="getHabitatColor(habitat)"
             (click)="onHabitatToggle(habitat)"
             class="auto-width-center">
             {{ ('pokemon.habitats.' + habitat) | translate }}
@@ -94,38 +94,46 @@
         </div>
       </div>
 
-      <!-- Generation + Sort Options (lado a lado, compactos) -->
-      <div class="filter-section row-group">
-        <!-- Geração -->
-        <div class="generation-select">
-          <h5>{{ 'filters.generation' | translate }}</h5>
-          <ion-select
-            formControlName="selectedGeneration"
-            [placeholder]="'filters.select_generation' | translate"
-            interface="popover"
-            (ionChange)="filterForm.get('selectedGeneration')?.setValue($event.detail.value)">
-            <ion-select-option [value]="null">{{ 'filters.all_generations' | translate }}</ion-select-option>
-            <ion-select-option
-              *ngFor="let gen of generations"
-              [value]="gen.id">
-              {{ gen.name | translate }}
-            </ion-select-option>
-          </ion-select>
+      <!-- Generation Filter -->
+      <div class="filter-section">
+        <h5>{{ 'filters.generation' | translate }}</h5>
+        <div class="types-grid">
+          <ion-chip
+            [class.selected]="isGenerationSelected(null)"
+            [style.background-color]="isGenerationSelected(null) ? getGenerationColor(null) : 'transparent'"
+            [style.color]="isGenerationSelected(null) ? 'white' : getGenerationColor(null)"
+            [style.border-color]="getGenerationColor(null)"
+            (click)="onGenerationToggle(null)"
+            class="generation-badge">
+            {{ 'filters.all_generations' | translate }}
+          </ion-chip>
+          <ion-chip
+            *ngFor="let gen of generations"
+            [class.selected]="isGenerationSelected(gen.id)"
+            [style.background-color]="isGenerationSelected(gen.id) ? getGenerationColor(gen.id) : 'transparent'"
+            [style.color]="isGenerationSelected(gen.id) ? 'white' : getGenerationColor(gen.id)"
+            [style.border-color]="getGenerationColor(gen.id)"
+            (click)="onGenerationToggle(gen.id)"
+            class="generation-badge">
+            {{ gen.name | translate }}
+          </ion-chip>
         </div>
-        <!-- Ordenação -->
-        <div class="sort-controls">
-          <h5>{{ 'filters.sort_by' | translate }}</h5>
-          <ion-select
-            formControlName="sortBy"
-            [placeholder]="'filters.sort_by' | translate"
-            interface="popover"
-            class="sort-select">
-            <ion-select-option
-              *ngFor="let option of sortOptions"
-              [value]="option.value">
-              {{ ('filters.sort_by_' + option.value) | translate }}
-            </ion-select-option>
-          </ion-select>
+      </div>
+
+      <!-- Sort Options Filter -->
+      <div class="filter-section">
+        <h5>{{ 'filters.sort_by' | translate }}</h5>
+        <div class="types-grid">
+          <ion-chip
+            *ngFor="let option of sortOptions"
+            [class.selected]="isSortOptionSelected(option.value)"
+            [style.background-color]="isSortOptionSelected(option.value) ? getSortColor(option.value) : 'transparent'"
+            [style.color]="isSortOptionSelected(option.value) ? 'white' : getSortColor(option.value)"
+            [style.border-color]="getSortColor(option.value)"
+            (click)="onSortOptionToggle(option.value)"
+            class="sort-badge">
+            {{ ('filters.sort_by_' + option.value) | translate }}
+          </ion-chip>
         </div>
       </div>
     </div>
