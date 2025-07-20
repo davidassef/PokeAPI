@@ -1456,14 +1456,25 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     try {
       console.log(`🔄 Carregando dados unificados para aba: ${tab}`);
 
-      const tabData = await this.pokemonDetailsManager
-        .loadTabData(tab, this.pokemon, this.speciesData)
-        .toPromise();
+      // ✅ CORREÇÃO: Tratamento específico para cada aba
+      switch (tab) {
+        case 'overview':
+        case 'curiosities':
+          // Para overview e curiosities, carregar flavor texts diretamente
+          await this.loadFlavorTextsForTab(tab);
+          break;
 
-      // Processar dados baseado na aba
-      this.processTabDataUnified(tab, tabData);
+        case 'combat':
+        case 'evolution':
+          // Para combat e evolution, usar PokemonDetailsManager
+          const tabData = await this.pokemonDetailsManager
+            .loadTabData(tab, this.pokemon, this.speciesData)
+            .toPromise();
+          this.processTabDataUnified(tab, tabData);
+          break;
+      }
+
       this.tabDataLoaded[tab] = true;
-
       console.log(`✅ Dados da aba ${tab} carregados com sucesso`);
 
     } catch (error) {
@@ -1471,6 +1482,41 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
     } finally {
       this.isLoadingTabData = false;
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO: Carregar flavor texts para abas específicas
+   */
+  private async loadFlavorTextsForTab(tab: string): Promise<void> {
+    if (!this.pokemon?.id) {
+      console.warn(`❌ loadFlavorTextsForTab: Pokemon ID não disponível para aba ${tab}`);
+      return;
+    }
+
+    try {
+      console.log(`🔮 Carregando flavor texts para aba: ${tab}`);
+
+      // Carregar flavor texts usando o método direto
+      const flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
+
+      if (flavorTexts && flavorTexts.length > 0) {
+        this.flavorTexts = flavorTexts;
+        this.currentFlavorIndex = 0;
+        this.flavorText = this.flavorTexts[0];
+        console.log(`✅ Flavor texts carregados para aba ${tab}:`, flavorTexts.length, 'textos');
+      } else {
+        this.flavorTexts = ['Descrição não disponível'];
+        this.currentFlavorIndex = 0;
+        this.flavorText = this.flavorTexts[0];
+        console.log(`⚠️ Nenhum flavor text encontrado para aba ${tab}`);
+      }
+
+    } catch (error) {
+      console.error(`❌ Erro ao carregar flavor texts para aba ${tab}:`, error);
+      this.flavorTexts = ['Descrição não disponível'];
+      this.currentFlavorIndex = 0;
+      this.flavorText = this.flavorTexts[0];
     }
   }
 
@@ -1498,29 +1544,27 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   private processTabDataUnified(tab: string, tabData: any): void {
     switch (tab) {
       case 'overview':
-        if (tabData && Array.isArray(tabData)) {
-          this.flavorTexts = tabData;
-          this.currentFlavorIndex = 0;
-          this.flavorText = this.flavorTexts[0] || '';
-        }
+        // ✅ CORREÇÃO: Overview não processa flavor texts aqui
+        // Flavor texts são carregados diretamente em loadFlavorTextsForTab
+        console.log('🎯 Overview: dados básicos processados');
         break;
 
       case 'combat':
         this.abilityDescriptions = tabData || {};
+        console.log('⚔️ Combat: habilidades carregadas:', Object.keys(this.abilityDescriptions).length);
         break;
 
       case 'evolution':
         if (tabData && Array.isArray(tabData)) {
           this.evolutionChain = tabData;
-          console.log('🔄 Cadeia de evolução carregada:', tabData.length, 'estágios');
+          console.log('🔄 Evolution: cadeia carregada:', tabData.length, 'estágios');
         }
         break;
 
       case 'curiosities':
-        // Curiosities usa dados já carregados no enriquecimento
-        if (tabData === null) {
-          console.log('🎭 Curiosidades: usando dados já carregados');
-        }
+        // ✅ CORREÇÃO: Curiosities não processa dados aqui
+        // Flavor texts são carregados diretamente em loadFlavorTextsForTab
+        console.log('🎭 Curiosities: flavor texts carregados separadamente');
         break;
     }
   }
