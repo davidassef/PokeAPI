@@ -297,15 +297,16 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.updateCurrentCarouselImage();
     }
 
-    // Carregar dados da aba ativa (overview por padrão)
-    console.log('🎯 Carregando dados da aba ativa:', this.activeTab);
-    this.loadTabData(this.activeTab);
+    // ✅ CORREÇÃO CRÍTICA: Remover carregamento automático para evitar duplicação
+    // Dados serão carregados apenas quando aba for acessada (lazy loading)
+    console.log('🎯 Inicialização sem carregamento automático - usando lazy loading');
 
     console.log('✅ Inicialização completa. Estado final:', {
       pokemon: !!this.pokemon,
       activeTab: this.activeTab,
       tabDataLoaded: this.tabDataLoaded,
-      isOverviewDataReady: this.isOverviewDataReady()
+      isOverviewDataReady: this.isOverviewDataReady(),
+      note: 'Dados serão carregados via lazy loading'
     });
   }
 
@@ -1411,35 +1412,114 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     switch (tab) {
       case 'overview':
-        // ✅ OTIMIZAÇÃO: Carregar flavor texts apenas quando necessário
-        if (!this.flavorTexts || this.flavorTexts.length === 0) {
-          this.loadFlavorTextsLazy();
-        } else {
-          this.tabDataLoaded[tab] = true;
+        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
+        this.loadTabDataUnified(tab);
+        break;
+
+      case 'combat':
+        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
+        this.loadTabDataUnified(tab);
+        break;
+
+      case 'evolution':
+        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
+        this.loadTabDataUnified(tab);
+        break;
+
+      case 'curiosities':
+        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
+        this.loadTabDataUnified(tab);
+        break;
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Método unificado para carregamento de dados
+   * Elimina duplicação entre loadTabData, loadEvolutionDataOptimized, etc.
+   */
+  private async loadTabDataUnified(tab: string): Promise<void> {
+    if (!this.pokemon) {
+      console.warn(`❌ loadTabDataUnified: Pokemon não disponível para aba ${tab}`);
+      return;
+    }
+
+    // Verificar se dados já existem
+    if (this.hasValidDataForTab(tab)) {
+      console.log(`✅ Dados válidos já existem para aba ${tab}`);
+      this.tabDataLoaded[tab] = true;
+      return;
+    }
+
+    // Marcar como carregando
+    this.isLoadingTabData = true;
+
+    try {
+      console.log(`🔄 Carregando dados unificados para aba: ${tab}`);
+
+      const tabData = await this.pokemonDetailsManager
+        .loadTabData(tab, this.pokemon, this.speciesData)
+        .toPromise();
+
+      // Processar dados baseado na aba
+      this.processTabDataUnified(tab, tabData);
+      this.tabDataLoaded[tab] = true;
+
+      console.log(`✅ Dados da aba ${tab} carregados com sucesso`);
+
+    } catch (error) {
+      console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
+      this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
+    } finally {
+      this.isLoadingTabData = false;
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO: Verificar se dados válidos já existem para uma aba
+   */
+  private hasValidDataForTab(tab: string): boolean {
+    switch (tab) {
+      case 'overview':
+        return this.flavorTexts && this.flavorTexts.length > 0;
+      case 'combat':
+        return this.abilityDescriptions && Object.keys(this.abilityDescriptions).length > 0;
+      case 'evolution':
+        return this.evolutionChain && this.evolutionChain.length > 0;
+      case 'curiosities':
+        return this.flavorTexts && this.flavorTexts.length > 0;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO: Processar dados de forma unificada
+   */
+  private processTabDataUnified(tab: string, tabData: any): void {
+    switch (tab) {
+      case 'overview':
+        if (tabData && Array.isArray(tabData)) {
+          this.flavorTexts = tabData;
+          this.currentFlavorIndex = 0;
+          this.flavorText = this.flavorTexts[0] || '';
         }
         break;
 
       case 'combat':
-        if (!this.abilityDescriptions || Object.keys(this.abilityDescriptions).length === 0) {
-          this.loadCombatDataOptimized();
-        } else {
-          this.tabDataLoaded[tab] = true;
-        }
+        this.abilityDescriptions = tabData || {};
         break;
 
       case 'evolution':
-        if (!this.evolutionChain || this.evolutionChain.length === 0) {
-          this.loadEvolutionDataOptimized();
-        } else {
-          this.tabDataLoaded[tab] = true;
+        if (tabData && Array.isArray(tabData)) {
+          this.evolutionChain = tabData;
+          console.log('🔄 Cadeia de evolução carregada:', tabData.length, 'estágios');
         }
         break;
 
       case 'curiosities':
-        if (!this.flavorTexts || this.flavorTexts.length === 0) {
-          this.loadCuriositiesDataOptimized();
-        } else {
-          this.tabDataLoaded[tab] = true;
+        // Curiosities usa dados já carregados no enriquecimento
+        if (tabData === null) {
+          console.log('🎭 Curiosidades: usando dados já carregados');
         }
         break;
     }
@@ -1468,83 +1548,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   /**
    * ✅ OTIMIZAÇÃO: Métodos otimizados para carregamento de dados por aba
    */
-  private async loadCombatDataOptimized(): Promise<void> {
-    if (!this.pokemon?.abilities) return;
+  // ✅ CORREÇÃO: Método removido - usando loadTabDataUnified()
 
-    // ✅ OTIMIZAÇÃO: Verificar cache primeiro
-    if (this.abilityDescriptions && Object.keys(this.abilityDescriptions).length > 0) {
-      console.log('✅ Dados de combate já em cache');
-      return;
-    }
+  // ✅ CORREÇÃO: Método removido - usando loadTabDataUnified()
 
-    this.isLoadingTabData = true;
-    try {
-      console.log('🔮 Carregando dados de combate otimizados...');
-      const descriptions = await this.pokemonDetailsManager
-        .loadTabData('combat', this.pokemon, this.speciesData).toPromise();
-      this.abilityDescriptions = descriptions || {};
-      this.tabDataLoaded['combat'] = true;
-    } catch (error) {
-      console.error('❌ Erro ao carregar dados de combate:', error);
-      this.abilityDescriptions = {};
-    } finally {
-      this.isLoadingTabData = false;
-    }
-  }
-
-  private async loadEvolutionDataOptimized(): Promise<void> {
-    if (!this.speciesData?.evolution_chain?.url) {
-      console.log('⚠️ Pokémon sem evolução');
-      this.evolutionChain = [];
-      return;
-    }
-
-    // ✅ OTIMIZAÇÃO: Verificar cache primeiro
-    if (this.evolutionChain && this.evolutionChain.length > 0) {
-      console.log('✅ Dados de evolução já em cache');
-      return;
-    }
-
-    this.isLoadingTabData = true;
-    try {
-      console.log('🔮 Carregando dados de evolução otimizados...');
-      const evolution = await this.pokemonDetailsManager
-        .loadTabData('evolution', this.pokemon, this.speciesData).toPromise();
-      this.evolutionChain = evolution || [];
-      this.tabDataLoaded['evolution'] = true;
-    } catch (error) {
-      console.error('❌ Erro ao carregar evolução:', error);
-      this.evolutionChain = [];
-    } finally {
-      this.isLoadingTabData = false;
-    }
-  }
-
-  private async loadCuriositiesDataOptimized(): Promise<void> {
-    if (!this.pokemon?.id) return;
-
-    // ✅ OTIMIZAÇÃO: Verificar cache primeiro
-    if (this.flavorTexts && this.flavorTexts.length > 0) {
-      console.log('✅ Dados de curiosidades já em cache');
-      return;
-    }
-
-    this.isLoadingTabData = true;
-    try {
-      console.log('🔮 Carregando dados de curiosidades otimizados...');
-      this.flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
-      this.currentFlavorIndex = 0;
-      if (this.flavorTexts.length > 0) {
-        this.flavorText = this.flavorTexts[0];
-      }
-      this.tabDataLoaded['curiosities'] = true;
-    } catch (error) {
-      console.error('❌ Erro ao carregar curiosidades:', error);
-      this.flavorTexts = ['Descrição não disponível'];
-    } finally {
-      this.isLoadingTabData = false;
-    }
-  }
+  // ✅ CORREÇÃO: Método removido - usando loadTabDataUnified()
 
   /**
    * ✅ FASE 1: Método direto para carregar flavor texts PT-BR
