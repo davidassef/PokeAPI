@@ -86,6 +86,17 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     { value: 'weight', label: 'filters.sort_by_weight' }
   ];
 
+  /** Estados de ordenação: 'none' | 'asc' | 'desc' */
+  sortStates: { [key: string]: 'none' | 'asc' | 'desc' } = {
+    'id': 'none',
+    'name': 'none',
+    'height': 'none',
+    'weight': 'none'
+  };
+
+  /** Ordenação ativa atual */
+  activeSortField: string | null = null;
+
   /** Estado de exibição dos filtros avançados */
   isAdvancedFiltersOpen = false;
   /** Subject para controle de ciclo de vida dos observables */
@@ -121,6 +132,20 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
       this.filterForm.patchValue(this.currentFilters);
     }
     this.setupFormSubscriptions();
+    this.initializeSortStates();
+  }
+
+  /**
+   * Inicializa os estados de ordenação baseado nos valores atuais do formulário.
+   */
+  private initializeSortStates() {
+    const currentSortBy = this.filterForm.get('sortBy')?.value;
+    const currentSortOrder = this.filterForm.get('sortOrder')?.value;
+
+    if (currentSortBy && currentSortOrder) {
+      this.sortStates[currentSortBy] = currentSortOrder;
+      this.activeSortField = currentSortBy;
+    }
   }
 
   /**
@@ -324,20 +349,69 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Alterna a seleção de uma opção de ordenação (apenas uma pode ser selecionada por vez).
+   * Alterna entre os três estados de ordenação: none → asc → desc → none
    * @param sortValue Valor da opção de ordenação
    */
   onSortOptionToggle(sortValue: string) {
-    this.filterForm.get('sortBy')?.setValue(sortValue);
+    const currentState = this.sortStates[sortValue];
+
+    // Reset todos os outros campos para 'none'
+    Object.keys(this.sortStates).forEach(key => {
+      if (key !== sortValue) {
+        this.sortStates[key] = 'none';
+      }
+    });
+
+    // Cicla através dos três estados para o campo clicado
+    switch (currentState) {
+      case 'none':
+        this.sortStates[sortValue] = 'asc';
+        this.activeSortField = sortValue;
+        this.filterForm.get('sortBy')?.setValue(sortValue);
+        this.filterForm.get('sortOrder')?.setValue('asc');
+        break;
+      case 'asc':
+        this.sortStates[sortValue] = 'desc';
+        this.activeSortField = sortValue;
+        this.filterForm.get('sortBy')?.setValue(sortValue);
+        this.filterForm.get('sortOrder')?.setValue('desc');
+        break;
+      case 'desc':
+        this.sortStates[sortValue] = 'none';
+        this.activeSortField = null;
+        this.filterForm.get('sortBy')?.setValue(null);
+        this.filterForm.get('sortOrder')?.setValue(null);
+        break;
+    }
   }
 
   /**
-   * Verifica se uma opção de ordenação está selecionada.
+   * Verifica se uma opção de ordenação está ativa (asc ou desc).
    * @param sortValue Valor da opção de ordenação
    */
   isSortOptionSelected(sortValue: string): boolean {
-    const selectedSort = this.filterForm.get('sortBy')?.value;
-    return selectedSort === sortValue;
+    return this.sortStates[sortValue] !== 'none';
+  }
+
+  /**
+   * Obtém o estado atual de ordenação para um campo específico.
+   * @param sortValue Valor da opção de ordenação
+   */
+  getSortState(sortValue: string): 'none' | 'asc' | 'desc' {
+    return this.sortStates[sortValue];
+  }
+
+  /**
+   * Obtém o ícone de seta baseado no estado de ordenação.
+   * @param sortValue Valor da opção de ordenação
+   */
+  getSortIcon(sortValue: string): string {
+    const state = this.sortStates[sortValue];
+    switch (state) {
+      case 'asc': return '↑';
+      case 'desc': return '↓';
+      default: return '';
+    }
   }
 
   /**
@@ -414,14 +488,23 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
    * Limpa todos os filtros e reseta o formulário.
    */
   onClearFilters() {
+    // Reset dos estados de ordenação
+    this.sortStates = {
+      'id': 'none',
+      'name': 'none',
+      'height': 'none',
+      'weight': 'none'
+    };
+    this.activeSortField = null;
+
     this.filterForm.reset({
       searchTerm: '',
       selectedElementTypes: [],
       selectedMovementTypes: [],
       selectedHabitats: [],
       selectedGeneration: null,
-      sortBy: 'id',
-      sortOrder: 'asc'
+      sortBy: null,
+      sortOrder: null
     });
     this.clearFilters.emit();
   }

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Validação do Sistema de Ordenação com Três Estados</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .feature-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            background: #f8f9fa;
+        }
+        .badge-demo-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            margin: 15px 0;
+            padding: 4px;
+        }
+        .title-demo {
+            font-size: 16px;
+            font-weight: 700;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        /* Estilos das badges demonstrativas com sistema de três estados */
+        .demo-sort-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid;
+            cursor: pointer;
+            
+            /* Centralização perfeita e expansão automática */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 80px;
+            max-width: 200px;
+            width: auto;
+            min-height: 36px;
+            white-space: nowrap;
+            overflow: visible;
+            gap: 6px;
+        }
+        
+        .demo-sort-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .demo-sort-badge.selected {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.02);
+        }
+        
+        /* Estados visuais */
+        .demo-sort-badge.state-none {
+            background: transparent;
+            color: var(--badge-color);
+        }
+        
+        .demo-sort-badge.state-asc {
+            background: var(--badge-color);
+            color: white;
+        }
+        
+        .demo-sort-badge.state-desc {
+            background: var(--badge-color);
+            color: white;
+        }
+        
+        /* Estilo do ícone de seta */
+        .sort-icon {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 16px;
+            animation: sortIconPulse 0.3s ease-in-out;
+        }
+        
+        .demo-sort-badge:hover .sort-icon {
+            transform: scale(1.1);
+        }
+        
+        .demo-sort-badge.selected .sort-icon {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Animação para o ícone */
+        @keyframes sortIconPulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Cores específicas para cada tipo de ordenação */
+        .sort-id { --badge-color: #007bff; border-color: #007bff; }
+        .sort-name { --badge-color: #28a745; border-color: #28a745; }
+        .sort-height { --badge-color: #ffc107; border-color: #ffc107; }
+        .sort-weight { --badge-color: #dc3545; border-color: #dc3545; }
+        
+        .success { color: green; font-weight: bold; }
+        .info { color: blue; }
+        .feature { color: #007bff; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        
+        .state-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .state-card {
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+            text-align: center;
+        }
+        
+        .state-none-card {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+        }
+        
+        .state-asc-card {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .state-desc-card {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .click-counter {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .interaction-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔄 Validação do Sistema de Ordenação com Três Estados</h1>
+    
+    <div class="test-container">
+        <h2>✅ Funcionalidade Implementada</h2>
+        <div class="feature-section">
+            <h3 class="feature">SISTEMA DE TRÊS ESTADOS</h3>
+            <p><strong>1º clique:</strong> Ativa ordenação crescente (↑) - Badge selecionada + ícone para cima</p>
+            <p><strong>2º clique:</strong> Alterna para ordenação decrescente (↓) - Badge selecionada + ícone para baixo</p>
+            <p><strong>3º clique:</strong> Desativa ordenação - Badge volta ao estado normal</p>
+            <p class="warning">⚠️ Apenas UMA badge de ordenação pode estar ativa por vez</p>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>🎯 Demonstração Interativa</h2>
+        <p class="info">Clique nas badges abaixo para testar o sistema de três estados:</p>
+        
+        <div class="title-demo">Ordenar por</div>
+        <div class="badge-demo-container">
+            <div class="demo-sort-badge sort-id state-none" data-sort="id" data-state="none">
+                <span class="sort-text">Número</span>
+            </div>
+            <div class="demo-sort-badge sort-name state-none" data-sort="name" data-state="none">
+                <span class="sort-text">Nome</span>
+            </div>
+            <div class="demo-sort-badge sort-height state-none" data-sort="height" data-state="none">
+                <span class="sort-text">Altura</span>
+            </div>
+            <div class="demo-sort-badge sort-weight state-none" data-sort="weight" data-state="none">
+                <span class="sort-text">Peso</span>
+            </div>
+        </div>
+        
+        <div class="click-counter" id="clickCounter">
+            Cliques: 0 | Estado atual: Nenhuma ordenação ativa
+        </div>
+        
+        <div class="interaction-log" id="interactionLog">
+            <strong>Log de Interações:</strong><br>
+            Clique nas badges acima para ver o log de mudanças de estado...
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>📋 Estados Visuais Explicados</h2>
+        
+        <div class="state-demo">
+            <div class="state-card state-none-card">
+                <h4>Estado: NONE</h4>
+                <div class="demo-sort-badge sort-id state-none">
+                    <span class="sort-text">Número</span>
+                </div>
+                <p>• Badge transparente<br>• Texto colorido<br>• Sem ícone<br>• Sem ordenação ativa</p>
+            </div>
+            
+            <div class="state-card state-asc-card">
+                <h4>Estado: ASC (Crescente)</h4>
+                <div class="demo-sort-badge sort-name state-asc selected">
+                    <span class="sort-text">Nome</span>
+                    <span class="sort-icon">↑</span>
+                </div>
+                <p>• Badge preenchida<br>• Texto branco<br>• Ícone ↑<br>• Ordenação crescente</p>
+            </div>
+            
+            <div class="state-card state-desc-card">
+                <h4>Estado: DESC (Decrescente)</h4>
+                <div class="demo-sort-badge sort-height state-desc selected">
+                    <span class="sort-text">Altura</span>
+                    <span class="sort-icon">↓</span>
+                </div>
+                <p>• Badge preenchida<br>• Texto branco<br>• Ícone ↓<br>• Ordenação decrescente</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2>🔧 Especificações Técnicas Implementadas</h2>
+        <ul>
+            <li class="success">✅ <strong>Estados de ordenação:</strong> sortStates object com 'none' | 'asc' | 'desc'</li>
+            <li class="success">✅ <strong>Campo ativo:</strong> activeSortField para controle de exclusividade</li>
+            <li class="success">✅ <strong>Método toggle:</strong> onSortOptionToggle() com ciclo de três estados</li>
+            <li class="success">✅ <strong>Verificação de estado:</strong> getSortState() e getSortIcon()</li>
+            <li class="success">✅ <strong>Ícones dinâmicos:</strong> ↑ para asc, ↓ para desc, vazio para none</li>
+            <li class="success">✅ <strong>Formulário integrado:</strong> sortBy e sortOrder sincronizados</li>
+            <li class="success">✅ <strong>Reset em limpar:</strong> onClearFilters() reseta todos os estados</li>
+            <li class="success">✅ <strong>Exclusividade:</strong> Apenas uma badge ativa por vez</li>
+            <li class="success">✅ <strong>Animações:</strong> sortIconPulse para transições suaves</li>
+            <li class="success">✅ <strong>Responsividade:</strong> Adaptação para mobile e tablet</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>🎨 Melhorias Visuais</h2>
+        <ul>
+            <li class="success">✅ <strong>Gap entre texto e ícone:</strong> 6px para desktop, 4px tablet, 3px mobile</li>
+            <li class="success">✅ <strong>Ícone responsivo:</strong> 14px desktop, 12px tablet, 11px mobile</li>
+            <li class="success">✅ <strong>Animação de entrada:</strong> sortIconPulse ao aparecer/desaparecer</li>
+            <li class="success">✅ <strong>Hover effect:</strong> Ícone cresce 10% no hover</li>
+            <li class="success">✅ <strong>Text-shadow:</strong> Sombra no ícone quando selecionado</li>
+            <li class="success">✅ <strong>Largura expandida:</strong> max-width 200px para acomodar texto + ícone</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>✅ Status da Implementação</h2>
+        <div class="success">
+            <strong>SISTEMA DE ORDENAÇÃO COM TRÊS ESTADOS IMPLEMENTADO COM SUCESSO!</strong><br><br>
+            ✅ Ciclo completo: none → asc → desc → none<br>
+            ✅ Ícones visuais: ↑ (crescente), ↓ (decrescente)<br>
+            ✅ Exclusividade: apenas uma ordenação ativa por vez<br>
+            ✅ Integração com formulário: sortBy e sortOrder sincronizados<br>
+            ✅ Estados visuais distintos para cada fase<br>
+            ✅ Animações e transições suaves<br>
+            ✅ Responsividade completa<br>
+            ✅ Reset funcional ao limpar filtros<br>
+        </div>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        const sortStates = {
+            'id': 'none',
+            'name': 'none', 
+            'height': 'none',
+            'weight': 'none'
+        };
+        let activeSortField = null;
+
+        function updateClickCounter() {
+            const counter = document.getElementById('clickCounter');
+            const activeField = activeSortField;
+            const activeState = activeField ? sortStates[activeField] : 'none';
+            const stateText = activeField ? 
+                `${activeField.toUpperCase()} (${activeState === 'asc' ? 'Crescente ↑' : 'Decrescente ↓'})` : 
+                'Nenhuma ordenação ativa';
+            
+            counter.textContent = `Cliques: ${clickCount} | Estado atual: ${stateText}`;
+        }
+
+        function logInteraction(field, oldState, newState) {
+            const log = document.getElementById('interactionLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const stateNames = { 'none': 'Desativado', 'asc': 'Crescente ↑', 'desc': 'Decrescente ↓' };
+            
+            const message = `[${timestamp}] ${field.toUpperCase()}: ${stateNames[oldState]} → ${stateNames[newState]}`;
+            log.innerHTML += '<br>' + message;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function onSortToggle(sortValue) {
+            const badge = document.querySelector(`[data-sort="${sortValue}"]`);
+            const currentState = sortStates[sortValue];
+            const oldState = currentState;
+            
+            // Reset todos os outros campos
+            Object.keys(sortStates).forEach(key => {
+                if (key !== sortValue) {
+                    const otherBadge = document.querySelector(`[data-sort="${key}"]`);
+                    sortStates[key] = 'none';
+                    otherBadge.className = `demo-sort-badge sort-${key} state-none`;
+                    otherBadge.dataset.state = 'none';
+                    const icon = otherBadge.querySelector('.sort-icon');
+                    if (icon) icon.remove();
+                }
+            });
+            
+            // Cicla através dos três estados
+            let newState;
+            switch (currentState) {
+                case 'none':
+                    newState = 'asc';
+                    activeSortField = sortValue;
+                    break;
+                case 'asc':
+                    newState = 'desc';
+                    activeSortField = sortValue;
+                    break;
+                case 'desc':
+                    newState = 'none';
+                    activeSortField = null;
+                    break;
+            }
+            
+            sortStates[sortValue] = newState;
+            badge.className = `demo-sort-badge sort-${sortValue} state-${newState} ${newState !== 'none' ? 'selected' : ''}`;
+            badge.dataset.state = newState;
+            
+            // Atualiza ícone
+            const existingIcon = badge.querySelector('.sort-icon');
+            if (existingIcon) existingIcon.remove();
+            
+            if (newState !== 'none') {
+                const icon = document.createElement('span');
+                icon.className = 'sort-icon';
+                icon.textContent = newState === 'asc' ? '↑' : '↓';
+                badge.appendChild(icon);
+            }
+            
+            clickCount++;
+            updateClickCounter();
+            logInteraction(sortValue, oldState, newState);
+        }
+
+        // Adicionar event listeners
+        document.querySelectorAll('.demo-sort-badge').forEach(badge => {
+            badge.addEventListener('click', function() {
+                const sortValue = this.dataset.sort;
+                onSortToggle(sortValue);
+            });
+        });
+
+        console.log('🔄 Validação do sistema de ordenação com três estados carregada!');
+        console.log('✅ Clique nas badges para testar: none → asc → desc → none');
+    </script>
+</body>
+</html>

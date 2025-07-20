@@ -247,20 +247,47 @@
             justify-content: center;
             text-align: center;
             min-width: 80px; // Largura mínima para ordenação
-            max-width: 180px; // Largura máxima expandida para textos como "Pokédex Number"
+            max-width: 200px; // Largura máxima expandida para acomodar texto + ícone
             width: auto;
             min-height: 36px; // Altura mínima consistente
             white-space: nowrap; // Mantém texto em uma linha
             overflow: visible;
+            gap: 6px; // Espaçamento entre texto e ícone
+
+            // Estilo do texto da ordenação
+            .sort-text {
+              flex-shrink: 0; // Evita que o texto seja comprimido
+            }
+
+            // Estilo do ícone de seta
+            .sort-icon {
+              font-size: 14px; // Ligeiramente maior que o texto
+              font-weight: 700; // Mais bold para destaque
+              line-height: 1;
+              flex-shrink: 0; // Evita que o ícone seja comprimido
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-width: 16px; // Largura mínima para o ícone
+              animation: sortIconPulse 0.3s ease-in-out; // Animação ao aparecer
+            }
 
             &:hover {
               transform: scale(1.05);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+              .sort-icon {
+                transform: scale(1.1); // Ícone cresce ligeiramente no hover
+              }
             }
 
             &.selected {
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
               transform: scale(1.02);
+
+              .sort-icon {
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); // Sombra no ícone quando selecionado
+              }
             }
           }
 
@@ -297,6 +324,22 @@
         }
       }
 
+      // Animação para o ícone de ordenação
+      @keyframes sortIconPulse {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.7;
+          transform: scale(1.1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
       // Responsividade para diferentes tamanhos de tela
       @media (max-width: 768px) {
         .types-grid {
@@ -320,9 +363,15 @@
             }
 
             &.sort-badge {
-              max-width: 140px; // Largura máxima reduzida para ordenação
+              max-width: 160px; // Largura máxima reduzida para ordenação + ícone
               padding: 4px 12px;
               min-height: 32px;
+              gap: 4px; // Gap reduzido entre texto e ícone
+
+              .sort-icon {
+                font-size: 12px; // Ícone menor em tablet
+                min-width: 14px;
+              }
             }
 
             &:not(.auto-width-center):not(.generation-badge):not(.sort-badge) {
@@ -353,8 +402,14 @@
             }
 
             &.sort-badge {
-              max-width: 120px;
+              max-width: 140px; // Largura máxima reduzida para mobile + ícone
               padding: 3px 10px;
+              gap: 3px; // Gap ainda menor entre texto e ícone
+
+              .sort-icon {
+                font-size: 11px; // Ícone ainda menor em mobile
+                min-width: 12px;
+              }
             }
 
             &:not(.auto-width-center):not(.generation-badge):not(.sort-badge) {

@@ -132,7 +132,13 @@
             [style.border-color]="getSortColor(option.value)"
             (click)="onSortOptionToggle(option.value)"
             class="sort-badge">
-            {{ ('filters.sort_by_' + option.value) | translate }}
+            <span class="sort-text">{{ ('filters.sort_by_' + option.value) | translate }}</span>
+            <span
+              *ngIf="getSortIcon(option.value)"
+              class="sort-icon"
+              [attr.aria-label]="getSortState(option.value) === 'asc' ? 'Crescente' : 'Decrescente'">
+              {{ getSortIcon(option.value) }}
+            </span>
           </ion-chip>
         </div>
       </div>
