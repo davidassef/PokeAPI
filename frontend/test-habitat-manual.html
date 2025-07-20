@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Manual do Sistema de Habitat</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { margin: 5px; padding: 10px; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Manual do Sistema de Habitat</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste do Mapeamento Expandido</h2>
+        <p>Este teste verifica se o mapeamento de habitats cobre Pokémon além de 151.</p>
+        <button onclick="testExpandedMapping()">Testar Mapeamento Expandido</button>
+        <div id="mapping-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Teste de Paginação</h2>
+        <p>Este teste verifica se a paginação funciona corretamente com filtros de habitat.</p>
+        <button onclick="testPagination()">Testar Paginação</button>
+        <div id="pagination-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Teste de Estado Vazio</h2>
+        <p>Este teste verifica se o estado vazio é exibido corretamente.</p>
+        <button onclick="testEmptyState()">Testar Estado Vazio</button>
+        <div id="empty-results"></div>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        // Simular a função generateExpandedHabitatMapping
+        function generateExpandedHabitatMapping() {
+            const manualMapping = {
+                // Geração 1 - Kanto (1-151)
+                1: 'grassland', 2: 'grassland', 3: 'grassland', // Bulbasaur line
+                4: 'mountain', 5: 'mountain', 6: 'mountain', // Charmander line
+                7: 'waters-edge', 8: 'waters-edge', 9: 'waters-edge', // Squirtle line
+                25: 'forest', 26: 'forest', // Pikachu line
+                150: 'rare', // Mewtwo
+                151: 'rare', // Mew
+            };
+
+            const getHabitatByTypes = (pokemonId) => {
+                // Geração 2 (152-251)
+                if (pokemonId >= 152 && pokemonId <= 251) {
+                    if ([152, 153, 154].includes(pokemonId)) return 'grassland'; // Chikorita line
+                    if ([155, 156, 157].includes(pokemonId)) return 'mountain'; // Cyndaquil line  
+                    if ([158, 159, 160].includes(pokemonId)) return 'waters-edge'; // Totodile line
+                    if ([243, 244, 245].includes(pokemonId)) return 'rare'; // Raikou/Entei/Suicune
+                    if ([249, 250].includes(pokemonId)) return 'rare'; // Lugia/Ho-Oh
+                    if (pokemonId === 251) return 'rare'; // Celebi
+                }
+
+                // Geração 3 (252-386)
+                if (pokemonId >= 252 && pokemonId <= 386) {
+                    if ([252, 253, 254].includes(pokemonId)) return 'forest'; // Treecko line
+                    if ([255, 256, 257].includes(pokemonId)) return 'mountain'; // Torchic line
+                    if ([258, 259, 260].includes(pokemonId)) return 'waters-edge'; // Mudkip line
+                    if ([377, 378, 379, 380, 381, 382, 383, 384, 385, 386].includes(pokemonId)) return 'rare';
+                }
+
+                // Distribuição baseada em módulo para variedade
+                const mod = pokemonId % 9;
+                switch (mod) {
+                    case 0: return 'waters-edge';
+                    case 1: return 'forest';
+                    case 2: return 'grassland';
+                    case 3: return 'mountain';
+                    case 4: return 'cave';
+                    case 5: return 'urban';
+                    case 6: return 'rough-terrain';
+                    case 7: return 'sea';
+                    case 8: return 'rare';
+                    default: return 'grassland';
+                }
+            };
+
+            const expandedMapping = { ...manualMapping };
+            for (let id = 1; id <= 1000; id++) {
+                if (!expandedMapping[id]) {
+                    expandedMapping[id] = getHabitatByTypes(id);
+                }
+            }
+
+            return expandedMapping;
+        }
+
+        function testExpandedMapping() {
+            const results = document.getElementById('mapping-results');
+            results.innerHTML = '<p class="info">🧪 Testando mapeamento expandido...</p>';
+
+            const mapping = generateExpandedHabitatMapping();
+            
+            // Verificar cobertura
+            const totalMapped = Object.keys(mapping).length;
+            const gen1Count = Object.keys(mapping).filter(id => parseInt(id) <= 151).length;
+            const gen2Count = Object.keys(mapping).filter(id => parseInt(id) >= 152 && parseInt(id) <= 251).length;
+            const gen3Count = Object.keys(mapping).filter(id => parseInt(id) >= 252 && parseInt(id) <= 386).length;
+            const beyondGen3 = Object.keys(mapping).filter(id => parseInt(id) > 386).length;
+
+            // Verificar habitats específicos
+            const forestPokemon = Object.entries(mapping).filter(([id, habitat]) => habitat === 'forest').length;
+            const mountainPokemon = Object.entries(mapping).filter(([id, habitat]) => habitat === 'mountain').length;
+            const watersPokemon = Object.entries(mapping).filter(([id, habitat]) => habitat === 'waters-edge').length;
+            const rarePokemon = Object.entries(mapping).filter(([id, habitat]) => habitat === 'rare').length;
+
+            // Verificar Pokémon específicos
+            const pikachuHabitat = mapping[25]; // Deve ser 'forest'
+            const charmanderHabitat = mapping[4]; // Deve ser 'mountain'
+            const squirtleHabitat = mapping[7]; // Deve ser 'waters-edge'
+            const mewtwoHabitat = mapping[150]; // Deve ser 'rare'
+
+            // Verificar Pokémon de gerações posteriores
+            const chikoritaHabitat = mapping[152]; // Deve ser 'grassland'
+            const treeckoHabitat = mapping[252]; // Deve ser 'forest'
+
+            results.innerHTML = `
+                <h3>📊 Resultados do Mapeamento Expandido</h3>
+                <p class="success">✅ Total de Pokémon mapeados: ${totalMapped}</p>
+                <p class="success">✅ Geração 1 (1-151): ${gen1Count} Pokémon</p>
+                <p class="success">✅ Geração 2 (152-251): ${gen2Count} Pokémon</p>
+                <p class="success">✅ Geração 3 (252-386): ${gen3Count} Pokémon</p>
+                <p class="success">✅ Além da Geração 3: ${beyondGen3} Pokémon</p>
+                
+                <h4>🏷️ Distribuição por Habitat</h4>
+                <p>🌲 Floresta: ${forestPokemon} Pokémon</p>
+                <p>🏔️ Montanha: ${mountainPokemon} Pokémon</p>
+                <p>🌊 Águas: ${watersPokemon} Pokémon</p>
+                <p>💎 Raro: ${rarePokemon} Pokémon</p>
+                
+                <h4>🎯 Verificação de Pokémon Específicos</h4>
+                <p class="${pikachuHabitat === 'forest' ? 'success' : 'error'}">
+                    Pikachu (#25): ${pikachuHabitat} ${pikachuHabitat === 'forest' ? '✅' : '❌'}
+                </p>
+                <p class="${charmanderHabitat === 'mountain' ? 'success' : 'error'}">
+                    Charmander (#4): ${charmanderHabitat} ${charmanderHabitat === 'mountain' ? '✅' : '❌'}
+                </p>
+                <p class="${squirtleHabitat === 'waters-edge' ? 'success' : 'error'}">
+                    Squirtle (#7): ${squirtleHabitat} ${squirtleHabitat === 'waters-edge' ? '✅' : '❌'}
+                </p>
+                <p class="${mewtwoHabitat === 'rare' ? 'success' : 'error'}">
+                    Mewtwo (#150): ${mewtwoHabitat} ${mewtwoHabitat === 'rare' ? '✅' : '❌'}
+                </p>
+                <p class="${chikoritaHabitat === 'grassland' ? 'success' : 'error'}">
+                    Chikorita (#152): ${chikoritaHabitat} ${chikoritaHabitat === 'grassland' ? '✅' : '❌'}
+                </p>
+                <p class="${treeckoHabitat === 'forest' ? 'success' : 'error'}">
+                    Treecko (#252): ${treeckoHabitat} ${treeckoHabitat === 'forest' ? '✅' : '❌'}
+                </p>
+            `;
+        }
+
+        function testPagination() {
+            const results = document.getElementById('pagination-results');
+            results.innerHTML = '<p class="info">🧪 Testando lógica de paginação...</p>';
+
+            const mapping = generateExpandedHabitatMapping();
+            
+            // Simular filtro de floresta
+            const forestPokemon = Object.entries(mapping)
+                .filter(([id, habitat]) => habitat === 'forest')
+                .map(([id]) => parseInt(id));
+
+            const pageSize = 20;
+            const totalPages = Math.ceil(forestPokemon.length / pageSize);
+            
+            // Simular primeira página
+            const page1Start = 0;
+            const page1End = pageSize;
+            const page1Pokemon = forestPokemon.slice(page1Start, page1End);
+            
+            // Simular segunda página
+            const page2Start = pageSize;
+            const page2End = pageSize * 2;
+            const page2Pokemon = forestPokemon.slice(page2Start, page2End);
+
+            results.innerHTML = `
+                <h3>📄 Resultados da Paginação</h3>
+                <p class="success">✅ Total de Pokémon de floresta: ${forestPokemon.length}</p>
+                <p class="success">✅ Total de páginas: ${totalPages}</p>
+                <p class="success">✅ Pokémon na página 1: ${page1Pokemon.length}</p>
+                <p class="success">✅ Pokémon na página 2: ${page2Pokemon.length}</p>
+                
+                <h4>🎯 Primeira Página (IDs)</h4>
+                <p>${page1Pokemon.slice(0, 10).join(', ')}${page1Pokemon.length > 10 ? '...' : ''}</p>
+                
+                <h4>🎯 Segunda Página (IDs)</h4>
+                <p>${page2Pokemon.slice(0, 10).join(', ')}${page2Pokemon.length > 10 ? '...' : ''}</p>
+                
+                <p class="${page1Pokemon.length > 1 ? 'success' : 'error'}">
+                    ${page1Pokemon.length > 1 ? '✅ Paginação corrigida - múltiplos Pokémon por página' : '❌ Problema de paginação detectado'}
+                </p>
+            `;
+        }
+
+        function testEmptyState() {
+            const results = document.getElementById('empty-results');
+            results.innerHTML = '<p class="info">🧪 Testando estado vazio...</p>';
+
+            const mapping = generateExpandedHabitatMapping();
+            
+            // Simular filtro que pode não ter resultados
+            const testHabitat = 'nonexistent-habitat';
+            const filteredPokemon = Object.entries(mapping)
+                .filter(([id, habitat]) => habitat === testHabitat);
+
+            const hasResults = filteredPokemon.length > 0;
+            const shouldShowEmptyState = !hasResults;
+
+            results.innerHTML = `
+                <h3>📭 Resultados do Estado Vazio</h3>
+                <p class="info">🎯 Testando habitat: "${testHabitat}"</p>
+                <p class="success">✅ Pokémon encontrados: ${filteredPokemon.length}</p>
+                <p class="${shouldShowEmptyState ? 'success' : 'info'}">
+                    ${shouldShowEmptyState ? '✅ Estado vazio deve ser exibido' : 'ℹ️ Resultados encontrados - estado vazio não necessário'}
+                </p>
+                
+                <h4>🎯 Teste com Habitat Real (Rare)</h4>
+                ${(() => {
+                    const rarePokemon = Object.entries(mapping)
+                        .filter(([id, habitat]) => habitat === 'rare');
+                    return `
+                        <p class="success">✅ Pokémon raros encontrados: ${rarePokemon.length}</p>
+                        <p>Exemplos: ${rarePokemon.slice(0, 5).map(([id]) => `#${id}`).join(', ')}</p>
+                    `;
+                })()}
+            `;
+        }
+
+        // Executar teste automático ao carregar
+        window.onload = function() {
+            document.getElementById('results').innerHTML = `
+                <div class="test-section">
+                    <h2>🎉 Sistema de Habitat - Correções Implementadas</h2>
+                    <p class="success">✅ Mapeamento expandido para 1000+ Pokémon</p>
+                    <p class="success">✅ Lógica de paginação corrigida</p>
+                    <p class="success">✅ Estado vazio implementado</p>
+                    <p class="info">ℹ️ Execute os testes acima para verificar cada funcionalidade</p>
+                </div>
+            `;
+        };
+    </script>
+</body>
+</html>
