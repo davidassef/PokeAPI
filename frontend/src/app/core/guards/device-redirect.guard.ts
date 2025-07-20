@@ -16,19 +16,19 @@ export class DeviceRedirectGuard implements CanActivate {
     const currentUrl = state.url;
     const shouldUseMobile = this.deviceDetectionService.shouldUseMobileInterface();
 
-    console.log('🛡️ DeviceRedirectGuard - canActivate:', {
-      currentUrl,
-      shouldUseMobile,
-      routeData: route.data,
-      params: route.params
-    });
+    // console.log('🛡️ DeviceRedirectGuard - canActivate:', { // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
+    //   currentUrl,
+    //   shouldUseMobile,
+    //   routeData: route.data,
+    //   params: route.params
+    // });
 
     // Verificar se estamos em uma rota web e deveríamos estar em mobile
     if (currentUrl.startsWith('/tabs/') && shouldUseMobile) {
       // Mapear rotas web para mobile
       const mobileRoute = this.mapWebToMobileRoute(currentUrl);
       if (mobileRoute) {
-        console.log('🔄 Redirecionando WEB → MOBILE:', currentUrl, '→', mobileRoute);
+        // console.log('🔄 Redirecionando WEB → MOBILE:', currentUrl, '→', mobileRoute); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         this.router.navigate([mobileRoute]);
         return false;
       }
@@ -39,13 +39,13 @@ export class DeviceRedirectGuard implements CanActivate {
       // Mapear rotas mobile para web
       const webRoute = this.mapMobileToWebRoute(currentUrl);
       if (webRoute) {
-        console.log('🔄 Redirecionando MOBILE → WEB:', currentUrl, '→', webRoute);
+        // console.log('🔄 Redirecionando MOBILE → WEB:', currentUrl, '→', webRoute); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         this.router.navigate([webRoute]);
         return false;
       }
     }
 
-    console.log('✅ DeviceRedirectGuard - Permitindo acesso:', currentUrl);
+    // console.log('✅ DeviceRedirectGuard - Permitindo acesso:', currentUrl); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
     return true;
   }
 

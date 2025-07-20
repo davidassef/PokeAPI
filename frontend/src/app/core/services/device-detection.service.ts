@@ -66,30 +66,30 @@ export class DeviceDetectionService {
 
     // Escutar mudanças de conectividade
     window.addEventListener('online', () => {
-      console.log('🌐 Dispositivo ficou online');
+      // console.log('🌐 Dispositivo ficou online'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       this.updateDeviceInfo();
     });
 
     window.addEventListener('offline', () => {
-      console.log('📵 Dispositivo ficou offline');
+      // console.log('📵 Dispositivo ficou offline'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       this.updateDeviceInfo();
     });
 
     // Escutar mudanças de tema
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeQuery.addEventListener('change', () => {
-      console.log('🌙 Preferência de tema alterada:', darkModeQuery.matches ? 'dark' : 'light');
+      // console.log('🌙 Preferência de tema alterada:', darkModeQuery.matches ? 'dark' : 'light'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       this.updateDeviceInfo();
     });
 
     // Escutar mudanças de motion preference
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     motionQuery.addEventListener('change', () => {
-      console.log('🎭 Preferência de movimento alterada:', motionQuery.matches ? 'reduced' : 'normal');
+      // console.log('🎭 Preferência de movimento alterada:', motionQuery.matches ? 'reduced' : 'normal'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       this.updateDeviceInfo();
     });
 
-    console.log('🔍 DeviceDetectionService inicializado com monitoramento avançado');
+    // console.log('🔍 DeviceDetectionService inicializado com monitoramento avançado'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
   }
 
   /**
@@ -319,21 +319,21 @@ export class DeviceDetectionService {
     const shouldUse = deviceInfo.isMobile || (deviceInfo.isTablet && deviceInfo.screenWidth <= 768);
 
     // Debug log detalhado
-    console.log('🔍 DeviceDetection - shouldUseMobileInterface:', {
-      shouldUse,
-      deviceType: deviceInfo.type,
-      isMobile: deviceInfo.isMobile,
-      isTablet: deviceInfo.isTablet,
-      isDesktop: deviceInfo.isDesktop,
-      screenWidth: deviceInfo.screenWidth,
-      screenHeight: window.innerHeight,
-      hasTouch: deviceInfo.hasTouch,
-      maxTouchPoints: navigator.maxTouchPoints,
-      orientation: window.orientation,
-      userAgent: deviceInfo.userAgent.substring(0, 80) + '...',
-      currentURL: window.location.href,
-      timestamp: new Date().toISOString()
-    });
+    // console.log('🔍 DeviceDetection - shouldUseMobileInterface:', { // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
+    //   shouldUse,
+    //   deviceType: deviceInfo.type,
+    //   isMobile: deviceInfo.isMobile,
+    //   isTablet: deviceInfo.isTablet,
+    //   isDesktop: deviceInfo.isDesktop,
+    //   screenWidth: deviceInfo.screenWidth,
+    //   screenHeight: window.innerHeight,
+    //   hasTouch: deviceInfo.hasTouch,
+    //   maxTouchPoints: navigator.maxTouchPoints,
+    //   orientation: window.orientation,
+    //   userAgent: deviceInfo.userAgent.substring(0, 80) + '...',
+    //   currentURL: window.location.href,
+    //   timestamp: new Date().toISOString()
+    // });
 
     return shouldUse;
   }

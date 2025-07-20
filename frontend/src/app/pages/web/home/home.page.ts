@@ -99,14 +99,14 @@ export class HomePage implements OnInit, OnDestroy {
     this.authService.getAuthState()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAuthenticated => {
-        console.log('[HomePage] Estado de autenticação atualizado:', isAuthenticated);
+        // console.log('[HomePage] Estado de autenticação atualizado:', isAuthenticated); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         this.isAuthenticated = isAuthenticated;
         if (isAuthenticated) {
           this.user = this.authService.getCurrentUser();
-          console.log('[HomePage] Usuário carregado:', this.user);
+          // console.log('[HomePage] Usuário carregado:', this.user); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         } else {
           this.user = null;
-          console.log('[HomePage] Usuário deslogado');
+          // console.log('[HomePage] Usuário deslogado'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         }
       });
 
@@ -114,7 +114,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
-        console.log('[HomePage] Usuário atual atualizado:', user);
+        // console.log('[HomePage] Usuário atual atualizado:', user); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         this.user = user;
       });
 
@@ -155,12 +155,12 @@ export class HomePage implements OnInit, OnDestroy {
       habitats: this.currentFilters.habitats
     };
 
-    console.log('[HOME] Aplicando filtros:', filters);
+    // console.log('[HOME] Aplicando filtros:', filters); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
 
     this.pokeApiService.getPokemonsPaginated(this.currentPage, this.pokemonPerPage, filters)
       .pipe(takeUntil(this.destroy$))
       .subscribe(async (result) => {
-        console.log('[HOME] Resultado da busca:', result);
+        // console.log('[HOME] Resultado da busca:', result); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
         this.totalPokemons = result.total;
         this.totalPages = result.totalPages;
 
@@ -410,7 +410,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   abrirPerfil() {
     // TODO: Abrir modal de perfil do usuário
-    console.log('Abrir modal de perfil do usuário');
+    // console.log('Abrir modal de perfil do usuário'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
   }
 
   logout() {

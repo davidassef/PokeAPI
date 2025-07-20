@@ -83,14 +83,14 @@ export class CacheService implements OnDestroy {
       this.updateAccessOrder(key);
       this.stats.hits++;
       this.updateStats();
-      console.log(`🎯 Cache HIT: ${key}`);
+      // console.log(`🎯 Cache HIT: ${key}`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       return of(item.data);
     }
 
     // Cache miss
     this.stats.misses++;
     this.updateStats();
-    console.log(`❌ Cache MISS: ${key}`);
+    // console.log(`❌ Cache MISS: ${key}`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
 
     if (fallback) {
       return fallback().pipe(
@@ -139,7 +139,7 @@ export class CacheService implements OnDestroy {
     this.stats.totalSize += size;
     this.updateStats();
 
-    console.log(`💾 Cache SET: ${key} (${this.formatSize(size)})`);
+    // console.log(`💾 Cache SET: ${key} (${this.formatSize(size)})`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
     this.saveToLocalStorage();
   }
 
@@ -154,7 +154,7 @@ export class CacheService implements OnDestroy {
       this.stats.totalItems--;
       this.stats.totalSize -= item.size;
       this.updateStats();
-      console.log(`🗑️ Cache DELETE: ${key}`);
+      // console.log(`🗑️ Cache DELETE: ${key}`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       this.saveToLocalStorage();
       return true;
     }
@@ -272,7 +272,7 @@ export class CacheService implements OnDestroy {
     }
 
     if (oldestKey) {
-      console.log(`🚮 Cache EVICT (LRU): ${oldestKey}`);
+      // console.log(`🚮 Cache EVICT (LRU): ${oldestKey}`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       this.delete(oldestKey);
       this.stats.evictions++;
     }

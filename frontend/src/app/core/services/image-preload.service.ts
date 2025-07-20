@@ -66,7 +66,7 @@ export class ImagePreloadService {
     if (this.imageCache.has(url)) {
       this.stats.cacheHits++;
       this.updateStats();
-      console.log(`🎯 Image cache hit: ${url}`);
+      // console.log(`🎯 Image cache hit: ${url}`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
       return of(true);
     }
 
@@ -94,7 +94,7 @@ export class ImagePreloadService {
     this.stats.totalRequested++;
     this.updateStats();
 
-    console.log(`📥 Image queued for preload: ${url} (priority: ${priority})`);
+    // console.log(`📥 Image queued for preload: ${url} (priority: ${priority})`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
 
     return this.waitForLoad(url);
   }
@@ -135,7 +135,7 @@ export class ImagePreloadService {
    */
   clearCache(): void {
     this.imageCache.clear();
-    console.log('🧹 Image cache cleared');
+    // console.log('🧹 Image cache cleared'); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
   }
 
   /**
@@ -335,7 +335,7 @@ export class ImagePreloadService {
    */
   setMaxConcurrentLoads(max: number): void {
     this.maxConcurrentLoads = Math.max(1, Math.min(max, 10));
-    console.log(`⚙️ Max concurrent loads set to: ${this.maxConcurrentLoads}`);
+    // console.log(`⚙️ Max concurrent loads set to: ${this.maxConcurrentLoads}`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
   }
 
   /**
