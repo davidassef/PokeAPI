@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { LoggerService } from './logger.service';
 
 /**
  * Interface para itens do cache
@@ -67,7 +68,7 @@ export class CacheService implements OnDestroy {
 
   private cleanupTimer: any;
 
-  constructor() {
+  constructor(private logger: LoggerService) {
     this.startCleanupTimer();
     this.loadFromLocalStorage();
   }
@@ -368,7 +369,8 @@ export class CacheService implements OnDestroy {
         }
 
         this.updateStats();
-        console.log(`📥 Cache loaded: ${this.stats.totalItems} items (${this.formatSize(this.stats.totalSize)})`);
+        // ✅ OTIMIZAÇÃO: Log apenas em debug
+        this.logger.debug('cache', `Cache carregado: ${this.stats.totalItems} items (${this.formatSize(this.stats.totalSize)})`);
       }
     } catch (error) {
       console.warn('Failed to load cache from localStorage:', error);

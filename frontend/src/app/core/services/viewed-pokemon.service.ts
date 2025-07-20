@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { LoggerService } from './logger.service';
 
 export interface ViewedPokemonData {
   userId?: string;
@@ -22,7 +23,10 @@ export class ViewedPokemonService {
 
   public viewedPokemon$ = this.viewedPokemonSubject.asObservable();
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private logger: LoggerService
+  ) {
     this.loadViewedPokemon();
 
     // Listen to auth state changes to handle user switching
@@ -111,10 +115,11 @@ export class ViewedPokemonService {
         };
 
         this.viewedPokemonSubject.next(loadedData);
-        console.log(`[ViewedPokemonService] Loaded ${viewedIds.size} viewed Pokemon for user ${currentUser?.id || 'anonymous'}`);
+        // ✅ OTIMIZAÇÃO: Log apenas em debug
+        this.logger.debug('viewedPokemon', `Carregados ${viewedIds.size} Pokémon visualizados para usuário ${currentUser?.id || 'anonymous'}`);
       }
     } catch (error) {
-      console.error('[ViewedPokemonService] Error loading viewed Pokemon data:', error);
+      this.logger.error('viewedPokemon', 'Erro ao carregar dados de Pokémon visualizados', error);
       this.resetViewedPokemon();
     }
   }
@@ -151,7 +156,8 @@ export class ViewedPokemonService {
     };
 
     this.viewedPokemonSubject.next(clearedData);
-    console.log('[ViewedPokemonService] Cleared viewed Pokemon data');
+    // ✅ OTIMIZAÇÃO: Log apenas em debug
+    this.logger.debug('viewedPokemon', 'Dados de Pokémon visualizados limpos');
   }
 
   /**

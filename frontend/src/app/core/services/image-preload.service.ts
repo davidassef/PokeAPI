@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { LoggerService } from './logger.service';
 
 /**
  * Interface para estatísticas de preload
@@ -54,7 +55,7 @@ export class ImagePreloadService {
   private statsSubject = new BehaviorSubject<PreloadStats>(this.stats);
   public stats$ = this.statsSubject.asObservable();
 
-  constructor() {
+  constructor(private logger: LoggerService) {
     this.startProcessingQueue();
   }
 
@@ -94,7 +95,8 @@ export class ImagePreloadService {
     this.stats.totalRequested++;
     this.updateStats();
 
-    // console.log(`📥 Image queued for preload: ${url} (priority: ${priority})`); // ✅ OTIMIZAÇÃO: Log comentado para reduzir spam no console
+    // ✅ OTIMIZAÇÃO: Log apenas em debug
+    this.logger.debug('imagePreload', `Imagem adicionada à fila: ${url} (prioridade: ${priority})`);
 
     return this.waitForLoad(url);
   }
@@ -234,7 +236,7 @@ export class ImagePreloadService {
       item.status = 'failed';
       this.stats.totalFailed++;
 
-      console.error(`❌ Image preload failed: ${item.url}`, error);
+      this.logger.error('imagePreload', `Falha no preload da imagem: ${item.url}`, error);
     } finally {
       this.currentLoads--;
       this.removeFromQueue(item.url);
@@ -351,7 +353,8 @@ export class ImagePreloadService {
 
     const removed = initialLength - this.preloadQueue.length;
     if (removed > 0) {
-      console.log(`🧹 Cleaned up ${removed} old preload items`);
+      // ✅ OTIMIZAÇÃO: Log apenas em debug
+      this.logger.debug('imagePreload', `Limpeza de itens antigos: ${removed} itens removidos`);
     }
   }
 }

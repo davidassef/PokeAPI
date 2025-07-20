@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environment';
 import { APP_CONFIG } from '../config/app.config';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export type LogComponent = 'auth' | 'cache' | 'musicPlayer' | 'captured' | 'performance' | 'navigation' | 'startup' | 'general';
+export type LogComponent = 'auth' | 'cache' | 'musicPlayer' | 'captured' | 'performance' | 'navigation' | 'startup' | 'general' | 'pokeapi' | 'viewedPokemon' | 'app' | 'imagePreload' | 'theme';
 
 /**
  * ✅ OTIMIZAÇÃO: Serviço centralizado de logging com controle granular

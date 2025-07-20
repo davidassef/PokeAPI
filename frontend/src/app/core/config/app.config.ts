@@ -29,7 +29,12 @@ export const APP_CONFIG = {
       captured: false,       // Desabilitar logs de sincronização
       performance: false,    // Desabilitar logs de performance detalhados
       navigation: false,     // Desabilitar logs de navegação
-      startup: false         // Desabilitar logs de inicialização
+      startup: false,        // Desabilitar logs de inicialização
+      pokeapi: false,        // Desabilitar logs do PokeAPI service
+      viewedPokemon: false,  // Desabilitar logs do ViewedPokemon service
+      app: false,            // Desabilitar logs do App component
+      imagePreload: false,   // Desabilitar logs de preload de imagens
+      theme: false           // Desabilitar logs do theme service
     },
 
     // ✅ NOVO: Logs que devem sempre aparecer

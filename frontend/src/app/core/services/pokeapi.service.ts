@@ -11,6 +11,7 @@ import {
 import { environment } from '../../../environments/environment';
 import { CacheService } from './cache.service';
 import { ImagePreloadService } from './image-preload.service';
+import { LoggerService } from './logger.service';
 
 /**
  * Interface para configuração do PokeApiService
@@ -51,12 +52,12 @@ export class PokeApiService {
   constructor(
     private http: HttpClient,
     private cacheService: CacheService,
-    private imagePreloadService: ImagePreloadService
+    private imagePreloadService: ImagePreloadService,
+    private logger: LoggerService
   ) {
-    if (this.config.enableLogging) {
-      console.log('[PokeApiService] Backend URL configurada:', this.config.backendUrl);
-      console.log('[PokeApiService] Environment:', environment);
-    }
+    // ✅ OTIMIZAÇÃO: Log apenas em debug
+    this.logger.debug('pokeapi', `Backend URL configurada: ${this.config.backendUrl}`);
+    this.logger.debug('pokeapi', 'Environment configurado', environment);
   }
 
   /**
@@ -123,7 +124,8 @@ export class PokeApiService {
     this.imagePreloadService.preloadBatch(imageUrls, priority).subscribe(
       results => {
         const successCount = results.filter(success => success).length;
-        console.log(`📸 Preloaded ${successCount}/${imageUrls.length} Pokemon images`);
+        // ✅ OTIMIZAÇÃO: Log apenas em debug
+        this.logger.debug('pokeapi', `Preload de imagens: ${successCount}/${imageUrls.length} Pokémon`);
       }
     );
   }
