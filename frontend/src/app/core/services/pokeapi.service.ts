@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, from, of } from 'rxjs';
+import { Observable, from, of, forkJoin } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import {
   Pokemon,
@@ -731,29 +731,227 @@ export class PokeApiService {
         })
       );
     }
-    // Sem filtros complexos: paginação real da API
+    // Sem filtros complexos: aplicar ordenação ANTES da paginação
+    return this.handleGlobalSorting(page, pageSize, filters);
+  }
+
+  /**
+   * Aplica ordenação global antes da paginação para garantir que a ordenação
+   * afete toda a coleção de Pokémon, não apenas a página atual.
+   */
+  private handleGlobalSorting(
+    page: number,
+    pageSize: number,
+    filters: {
+      orderBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    }
+  ): Observable<{ pokemons: PokemonListItem[]; total: number; page: number; totalPages: number }> {
+
+    // Para ordenação por ID, podemos usar a API diretamente com offset calculado
+    if (!filters.orderBy || filters.orderBy === 'id') {
+      const total = 1010; // Total conhecido de Pokémon na API
+      const totalPages = Math.ceil(total / pageSize);
+
+      let offset: number;
+      if (filters.sortOrder === 'desc') {
+        // Para ordem decrescente, calcular offset do final
+        const reversePage = totalPages - page + 1;
+        offset = (reversePage - 1) * pageSize;
+      } else {
+        // Para ordem crescente (padrão), usar offset normal
+        offset = (page - 1) * pageSize;
+      }
+
+      return this.getPokemonList(pageSize, offset).pipe(
+        map(response => {
+          let pokemons = response.results;
+
+          // Se for ordem decrescente, reverter a ordem dos resultados da página
+          if (filters.sortOrder === 'desc') {
+            pokemons = pokemons.reverse();
+          }
+
+          return { pokemons, total, page, totalPages };
+        })
+      );
+    }
+
+    // Para ordenação por nome, altura ou peso, precisamos buscar todos os dados
+    // e aplicar ordenação global antes da paginação
+    return this.handleComplexGlobalSorting(page, pageSize, filters);
+  }
+
+  /**
+   * Aplica ordenação complexa (nome, altura, peso) buscando todos os dados necessários,
+   * ordenando globalmente e depois aplicando paginação.
+   */
+  private handleComplexGlobalSorting(
+    page: number,
+    pageSize: number,
+    filters: {
+      orderBy?: string;
+      sortOrder?: 'asc' | 'desc';
+    }
+  ): Observable<{ pokemons: PokemonListItem[]; total: number; page: number; totalPages: number }> {
+
+    // Para ordenação por nome, podemos usar a lista completa sem buscar detalhes
+    if (filters.orderBy === 'name') {
+      return this.getAllPokemonList().pipe(
+        map(allPokemons => {
+          // Ordenar por nome
+          let sorted = allPokemons.sort((a, b) => a.name.localeCompare(b.name));
+
+          // Aplicar ordem decrescente se necessário
+          if (filters.sortOrder === 'desc') {
+            sorted = sorted.reverse();
+          }
+
+          // Aplicar paginação após ordenação
+          const total = sorted.length;
+          const totalPages = Math.ceil(total / pageSize);
+          const start = (page - 1) * pageSize;
+          const end = start + pageSize;
+          const paginated = sorted.slice(start, end);
+
+          return { pokemons: paginated, total, page, totalPages };
+        })
+      );
+    }
+
+    // Para ordenação por altura ou peso, precisamos buscar detalhes
+    // Implementação otimizada: buscar apenas os dados necessários para ordenação
+    if (filters.orderBy === 'height' || filters.orderBy === 'weight') {
+      return this.getSortedPokemonsByPhysicalAttribute(page, pageSize, filters.orderBy, filters.sortOrder);
+    }
+
+    // Fallback: sem ordenação específica
     const offset = (page - 1) * pageSize;
     return this.getPokemonList(pageSize, offset).pipe(
       map(response => {
-        let pokemons = response.results;
-        if (filters.orderBy === 'name') {
-          pokemons = pokemons.sort((a, b) => a.name.localeCompare(b.name));
-        } else if (filters.orderBy === 'id') {
-          pokemons = pokemons.sort((a, b) => {
-            const idA = this.extractPokemonId(a.url);
-            const idB = this.extractPokemonId(b.url);
-            return idA - idB;
-          });
-        }
-        if (filters.sortOrder === 'desc') {
-          pokemons = pokemons.reverse();
-        }
         const total = response.count;
         const totalPages = Math.ceil(total / pageSize);
-        return { pokemons, total, page, totalPages };
+        return { pokemons: response.results, total, page, totalPages };
       })
     );
   }
+
+  /**
+   * Busca a lista completa de Pokémon para ordenação por nome.
+   * Usa cache para evitar múltiplas requisições.
+   */
+  private getAllPokemonList(): Observable<PokemonListItem[]> {
+    // Cache da lista completa
+    if (this.allPokemonListCache) {
+      return of(this.allPokemonListCache);
+    }
+
+    return this.getPokemonList(1010, 0).pipe(
+      map(response => {
+        this.allPokemonListCache = response.results;
+        return this.allPokemonListCache;
+      })
+    );
+  }
+
+  /**
+   * Cache para a lista completa de Pokémon
+   */
+  private allPokemonListCache: PokemonListItem[] | null = null;
+
+  /**
+   * Busca Pokémon ordenados por atributos físicos (altura ou peso).
+   * Implementação otimizada que busca dados em lotes para melhor performance.
+   */
+  private getSortedPokemonsByPhysicalAttribute(
+    page: number,
+    pageSize: number,
+    attribute: 'height' | 'weight',
+    sortOrder: 'asc' | 'desc' = 'asc'
+  ): Observable<{ pokemons: PokemonListItem[]; total: number; page: number; totalPages: number }> {
+
+    // Cache key para este tipo de ordenação
+    const cacheKey = `${attribute}_${sortOrder}`;
+
+    // Verificar se já temos os dados ordenados em cache
+    if (this.physicalAttributeCache[cacheKey]) {
+      const sortedList = this.physicalAttributeCache[cacheKey];
+      const total = sortedList.length;
+      const totalPages = Math.ceil(total / pageSize);
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      const paginated = sortedList.slice(start, end);
+
+      return of({ pokemons: paginated, total, page, totalPages });
+    }
+
+    // Buscar lista completa e detalhes necessários
+    return this.getAllPokemonList().pipe(
+      switchMap(allPokemons => {
+        // Buscar detalhes em lotes para melhor performance
+        const batchSize = 50;
+        const batches: Observable<(Pokemon | null)[]>[] = [];
+
+        for (let i = 0; i < allPokemons.length; i += batchSize) {
+          const batch = allPokemons.slice(i, i + batchSize);
+          const batchRequests = batch.map(item =>
+            this.getPokemon(item.name).pipe(
+              catchError(() => of(null)) // Ignorar erros de Pokémon específicos
+            )
+          );
+          batches.push(forkJoin(batchRequests));
+        }
+
+        return forkJoin(batches).pipe(
+          map(batchResults => {
+            // Combinar todos os resultados e filtrar nulos
+            const allDetails: Pokemon[] = [];
+            batchResults.forEach(batch => {
+              batch.forEach((p: Pokemon | null) => {
+                if (p !== null) {
+                  allDetails.push(p);
+                }
+              });
+            });
+
+            // Ordenar por atributo físico
+            const sorted = allDetails.sort((a, b) => {
+              const valueA = attribute === 'height' ? a.height : a.weight;
+              const valueB = attribute === 'height' ? b.height : b.weight;
+              return valueA - valueB;
+            });
+
+            // Aplicar ordem decrescente se necessário
+            if (sortOrder === 'desc') {
+              sorted.reverse();
+            }
+
+            // Converter para PokemonListItem e cachear
+            const sortedList = sorted.map(p => ({
+              name: p.name,
+              url: `https://pokeapi.co/api/v2/pokemon/${p.id}/`
+            }));
+
+            this.physicalAttributeCache[cacheKey] = sortedList;
+
+            // Aplicar paginação
+            const total = sortedList.length;
+            const totalPages = Math.ceil(total / pageSize);
+            const start = (page - 1) * pageSize;
+            const end = start + pageSize;
+            const paginated = sortedList.slice(start, end);
+
+            return { pokemons: paginated, total, page, totalPages };
+          })
+        );
+      })
+    );
+  }
+
+  /**
+   * Cache para listas ordenadas por atributos físicos
+   */
+  private physicalAttributeCache: { [key: string]: PokemonListItem[] } = {};
 
   /**
    * Busca ranking global de pokémons mais capturados do backend
