@@ -28,7 +28,10 @@
     "back_female": "Back Female Sprite",
     "front_shiny_female": "Front Shiny Female Sprite",
     "back_shiny_female": "Back Shiny Female Sprite",
-    "image_placeholder": "Default Image"
+    "image_placeholder": "Default Image",
+    "level": "Level",
+    "no_evolution": "This Pokémon does not evolve.",
+    "no_more_text": "No more descriptions available."
   },
   "mobile": {
     "title": "Details of {name}",
@@ -44,6 +47,14 @@
     "stats_short": "Stats",
     "evolution": "Evolution",
     "evolution_short": "Evolution",
+    "evolution_triggers": {
+      "level-up": "by level",
+      "trade": "by trade",
+      "use-item": "using item",
+      "happiness": "by happiness",
+      "special": "special evolution",
+      "stone": "evolution stone"
+    },
     "curiosities": "Curiosities",
     "curiosities_short": "Trivia",
     "carousel": {
@@ -708,7 +719,10 @@
     "removed_from_captured": "Pokémon removed from captured!",
     "error_loading": "Error loading Pokémon",
     "surpreenda_me": "Surprise me!",
-    "loading": "Loading Pokémon..."
+    "loading": "Loading Pokémon...",
+    "no_pokemon_habitat": "No Pokémon found in this habitat",
+    "no_pokemon_habitat_description": "There are no Pokémon available in the {{habitat}} habitat. Try selecting another habitat or clear the filter.",
+    "clear_habitat_filter": "Clear habitat filter"
   },
   "languages": {
     "pt-BR": "Portuguese",
@@ -814,6 +828,7 @@
   "evolution": {
     "triggers": {
       "level_up": "Level {{level}}",
+      "level-up": "by level",
       "trade": "Trade",
       "use_item": "Use {{item}}",
       "happiness": "Happiness {{happiness}}",

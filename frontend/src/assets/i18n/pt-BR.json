@@ -17,6 +17,14 @@
     "stats_short": "Stats",
     "evolution": "Evolução",
     "evolution_short": "Evolução",
+    "evolution_triggers": {
+      "level-up": "por nível",
+      "trade": "por troca",
+      "use-item": "usando item",
+      "happiness": "por felicidade",
+      "special": "evolução especial",
+      "stone": "pedra evolutiva"
+    },
     "curiosities": "Curiosidades",
     "curiosities_short": "Trivia",
     "carousel": {
@@ -448,6 +456,9 @@
     "egg_groups": "Grupos de Ovos",
     "growth_rate": "Taxa de Crescimento",
     "base_experience": "Experiência Base",
+    "level": "Nível",
+    "no_evolution": "Este Pokémon não evolui.",
+    "no_more_text": "Não há mais descrições disponíveis.",
     "official_artwork": "Arte Oficial",
     "dream_world": "Dream World",
     "home": "Pokémon Home",
@@ -724,7 +735,10 @@
     "removed_from_captured": "Pokémon removido dos capturados!",
     "error_loading": "Erro ao carregar Pokémons",
     "surpreenda_me": "Surpreenda-me!",
-    "loading": "Carregando Pokémons..."
+    "loading": "Carregando Pokémons...",
+    "no_pokemon_habitat": "Nenhum Pokémon encontrado neste habitat",
+    "no_pokemon_habitat_description": "Não há Pokémon disponíveis no habitat {{habitat}}. Tente selecionar outro habitat ou limpe o filtro.",
+    "clear_habitat_filter": "Limpar filtro de habitat"
   },
   "languages": {
     "pt-BR": "Português",
@@ -819,6 +833,7 @@
   "evolution": {
     "triggers": {
       "level_up": "Nível {{level}}",
+      "level-up": "por nível",
       "trade": "Troca",
       "use_item": "Usar {{item}}",
       "happiness": "Felicidade {{happiness}}",

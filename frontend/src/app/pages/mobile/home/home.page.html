@@ -76,8 +76,18 @@
       </app-pokemon-card>
     </div>
 
-    <!-- Empty State -->
-    <div *ngIf="!loading && paginatedPokemons.length === 0" class="empty-state-mobile">
+    <!-- Empty State for Habitat Filter -->
+    <div *ngIf="!loading && paginatedPokemons.length === 0 && hasHabitatFilter" class="empty-state-mobile">
+      <ion-icon name="location-outline" color="medium"></ion-icon>
+      <h3>{{ 'home.no_pokemon_habitat' | translate }}</h3>
+      <p>{{ 'home.no_pokemon_habitat_description' | translate:{ habitat: getSelectedHabitatName() } }}</p>
+      <ion-button (click)="clearHabitatFilter()" fill="outline" color="primary">
+        {{ 'home.clear_habitat_filter' | translate }}
+      </ion-button>
+    </div>
+
+    <!-- Empty State for General Filters -->
+    <div *ngIf="!loading && paginatedPokemons.length === 0 && !hasHabitatFilter && hasAnyFilter" class="empty-state-mobile">
       <ion-icon name="search-outline" color="medium"></ion-icon>
       <h3>{{ 'home.no_results' | translate }}</h3>
       <p>{{ 'home.try_different_search' | translate }}</p>
