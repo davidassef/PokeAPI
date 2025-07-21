@@ -1,0 +1,5 @@
+Requirement already satisfied: pytest in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (7.4.3)
+Requirement already satisfied: iniconfig in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest) (2.1.0)
+Requirement already satisfied: packaging in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest) (25.0)
+Requirement already satisfied: pluggy<2.0,>=0.12 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest) (1.6.0)
+Requirement already satisfied: colorama in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest) (0.4.6)

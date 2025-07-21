@@ -1,0 +1,7 @@
+Requirement already satisfied: pytest-cov in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (4.1.0)
+Requirement already satisfied: pytest>=4.6 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest-cov) (7.4.3)
+Requirement already satisfied: coverage>=5.2.1 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from coverage[toml]>=5.2.1->pytest-cov) (7.9.1)
+Requirement already satisfied: iniconfig in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest>=4.6->pytest-cov) (2.1.0)
+Requirement already satisfied: packaging in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest>=4.6->pytest-cov) (25.0)
+Requirement already satisfied: pluggy<2.0,>=0.12 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest>=4.6->pytest-cov) (1.6.0)
+Requirement already satisfied: colorama in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from pytest>=4.6->pytest-cov) (0.4.6)
