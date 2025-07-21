@@ -84,7 +84,28 @@
 
 ### 📱 Interface Mobile
 
-*� Screenshots mobile sendo atualizados - em breve novas imagens da interface mobile*
+<table>
+  <tr>
+    <td align="center">
+      <strong>📱 Home Mobile - Tema Claro</strong><br/>
+      <a href="frontend/src/assets/img/Home-Mobile-Light-Theme.png">
+        <img src="frontend/src/assets/img/Home-Mobile-Light-Theme.png" alt="Home Mobile Tema Claro" width="200"/>
+      </a>
+    </td>
+    <td align="center">
+      <strong>🌙 Home Mobile - Tema Escuro</strong><br/>
+      <a href="frontend/src/assets/img/Home-Mobile-Dark-Theme.png">
+        <img src="frontend/src/assets/img/Home-Mobile-Dark-Theme.png" alt="Home Mobile Tema Escuro" width="200"/>
+      </a>
+    </td>
+    <td align="center">
+      <strong>📋 Modal Mobile - Tema Escuro</strong><br/>
+      <a href="frontend/src/assets/img/Modal-Details-Mobile-Dark-Theme.png">
+        <img src="frontend/src/assets/img/Modal-Details-Mobile-Dark-Theme.png" alt="Modal Mobile Tema Escuro" width="200"/>
+      </a>
+    </td>
+  </tr>
+</table>
 
 *📌 Clique nas imagens para visualizar em tamanho completo*
 
