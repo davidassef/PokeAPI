@@ -84,22 +84,7 @@
 
 ### 📱 Interface Mobile
 
-<table>
-  <tr>
-    <td align="center">
-      <strong>📱 Home Mobile</strong><br/>
-      <a href="frontend/src/assets/screenshots/mobile-home.png">
-        <img src="frontend/src/assets/screenshots/mobile-home.png" alt="Home Mobile" width="200"/>
-      </a>
-    </td>
-    <td align="center">
-      <strong>💻 Desktop Home</strong><br/>
-      <a href="frontend/src/assets/screenshots/desktop-home.png">
-        <img src="frontend/src/assets/screenshots/desktop-home.png" alt="Desktop Home" width="300"/>
-      </a>
-    </td>
-  </tr>
-</table>
+*� Screenshots mobile sendo atualizados - em breve novas imagens da interface mobile*
 
 *📌 Clique nas imagens para visualizar em tamanho completo*
 
