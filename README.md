@@ -1,4 +1,7 @@
-# PokeAPIApp v1.5 - Pokédex Responsiva
+<div align="center">
+
+# 🎮 PokeAPIApp v1.5
+### Pokédex Responsiva Completa
 
 [![Version](https://img.shields.io/badge/Version-1.5-blue.svg)](https://github.com/davidassef/PokeAPI)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
@@ -10,7 +13,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/Tests-Playwright%20E2E-brightgreen.svg)](https://github.com/davidassef/PokeAPI)
 
-Uma aplicação web/mobile completa para explorar, capturar e gerenciar Pokémon com interface responsiva e sistema de autenticação robusto.
+**Uma aplicação web/mobile completa para explorar, capturar e gerenciar Pokémon**
+*Interface responsiva • Sistema de autenticação robusto • Testes E2E automatizados*
+
+</div>
+
+---
 
 ## 🚀 Acesso Rápido à Aplicação
 
@@ -21,9 +29,11 @@ Uma aplicação web/mobile completa para explorar, capturar e gerenciar Pokémon
 [![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://pokeapi-frontend.onrender.com)
 [![Backend Status](https://img.shields.io/badge/Backend-Online-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
 
-**Credenciais de Teste:**
-- **Email:** davidassef@gmail.com
-- **Senha:** Senha123
+### 🔑 Credenciais de Teste
+| Campo | Valor |
+|-------|-------|
+| **📧 Email** | `davidassef@gmail.com` |
+| **🔒 Senha** | `Senha123` |
 
 </div>
 
@@ -31,45 +41,78 @@ Uma aplicação web/mobile completa para explorar, capturar e gerenciar Pokémon
 
 <div align="center">
 
-### Tela Inicial - Lista de Pokémon
-![Lista de Pokémon](https://via.placeholder.com/800x400/4CAF50/FFFFFF?text=Lista+de+Pokemon+-+Interface+Responsiva)
+### 🏠 Tela Inicial - Lista de Pokémon
+<img src="frontend/src/assets/img/Home-Web-Light-Theme.png" alt="Lista de Pokémon - Tema Claro" width="800"/>
 
-### Modal de Detalhes
-![Modal de Detalhes](https://via.placeholder.com/800x400/2196F3/FFFFFF?text=Modal+de+Detalhes+-+Stats+e+Evolucoes)
+### 🌙 Interface com Tema Escuro
+<img src="frontend/src/assets/img/Home-Web-Dark-Theme.png" alt="Lista de Pokémon - Tema Escuro" width="800"/>
 
-### Sistema de Favoritos
-![Sistema de Favoritos](https://via.placeholder.com/800x400/FF9800/FFFFFF?text=Sistema+de+Favoritos+-+Captura+e+Gerenciamento)
+### 📋 Modal de Detalhes - Tema Claro
+<img src="frontend/src/assets/img/Modal-Details-Web-Light-Theme.png" alt="Modal de Detalhes - Tema Claro" width="800"/>
+
+### 🌑 Modal de Detalhes - Tema Escuro
+<img src="frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png" alt="Modal de Detalhes - Tema Escuro" width="800"/>
+
+### 🏆 Sistema de Rankings
+<img src="frontend/src/assets/img/Ranking-Web.png" alt="Sistema de Rankings" width="800"/>
 
 </div>
 
 ## ⚡ Quick Start para Desenvolvedores
 
+<div align="center">
+
+### 🛠️ Setup Rápido em 3 Passos
+
+</div>
+
+**1️⃣ Clone e Configuração Inicial**
 ```bash
-# Clone e setup
 git clone https://github.com/davidassef/PokeAPI.git
 cd PokeAPI_SYNC
+```
 
-# Backend
-cd backend && pip install -r requirements.txt
+**2️⃣ Backend (FastAPI)**
+```bash
+cd backend
+pip install -r requirements.txt
 python -m uvicorn main:app --reload
+```
 
-# Frontend (novo terminal)
-cd frontend && npm install
+**3️⃣ Frontend (Angular/Ionic) - Novo Terminal**
+```bash
+cd frontend
+npm install
 ng serve
 ```
 
-**Acesse:** Frontend em http://localhost:4200 | Backend em http://localhost:8000
+<div align="center">
+
+### 🌐 URLs de Acesso Local
+| Serviço | URL | Descrição |
+|---------|-----|-----------|
+| **🎨 Frontend** | http://localhost:4200 | Interface da aplicação |
+| **⚙️ Backend** | http://localhost:8000 | API REST |
+| **📚 Docs API** | http://localhost:8000/docs | Swagger interativo |
+
+</div>
 
 ## 🛠️ Stack Tecnológico Principal
 
-| Categoria | Tecnologia | Versão | Propósito |
-|-----------|------------|--------|-----------|
-| **Frontend** | Angular + Ionic | 17.x + 7.x | Interface responsiva web/mobile |
-| **Backend** | FastAPI | 0.104.x | API REST de alta performance |
-| **Linguagens** | TypeScript + Python | 5.x + 3.11+ | Desenvolvimento type-safe |
-| **Deploy** | Render | - | Hospedagem em produção |
-| **Testes** | Playwright E2E | Latest | Testes end-to-end automatizados |
-| **Database** | SQLite + SQLAlchemy | 3.x + 2.x | Persistência de dados |
+<div align="center">
+
+### 🏗️ Arquitetura Moderna e Robusta
+
+</div>
+
+| 🎯 Categoria | 🚀 Tecnologia | 📊 Versão | 💡 Propósito |
+|-------------|---------------|-----------|-------------|
+| **🎨 Frontend** | Angular + Ionic | 17.x + 7.x | Interface responsiva web/mobile |
+| **⚙️ Backend** | FastAPI | 0.104.x | API REST de alta performance |
+| **💻 Linguagens** | TypeScript + Python | 5.x + 3.11+ | Desenvolvimento type-safe |
+| **☁️ Deploy** | Render | - | Hospedagem em produção |
+| **🧪 Testes** | Playwright E2E | Latest | Testes end-to-end automatizados |
+| **💾 Database** | SQLite + SQLAlchemy | 3.x + 2.x | Persistência de dados |
 
 ---
 
