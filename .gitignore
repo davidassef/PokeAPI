@@ -491,3 +491,27 @@ augment_cache/
 # Logs do Augment
 augment.log
 augment_*.log
+
+# =============================================================================
+# TESTES E RELATÓRIOS TEMPORÁRIOS
+# =============================================================================
+
+# Playwright reports e arquivos temporários
+frontend/playwright-report/data/
+frontend/test-results/
+**/test-results/
+
+# Arquivos de debug temporários (conteúdo, não diretórios)
+frontend/docs/debug/*.png
+frontend/docs/debug/*.webm
+frontend/docs/investigations/*.md
+
+# Arquivos de validação temporários (conteúdo, não diretórios)
+frontend/tests/validation/*.html
+frontend/tests/scripts/*.js
+
+# Relatórios de teste
+*.webm
+*.png
+test-*.html
+test-*.js
