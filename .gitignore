@@ -512,6 +512,14 @@ frontend/tests/scripts/*.js
 
 # Relatórios de teste
 *.webm
-*.png
 test-*.html
 test-*.js
+
+# Ignorar apenas PNGs de debug/teste, mas permitir assets do projeto
+frontend/docs/debug/*.png
+frontend/tests/validation/*.png
+frontend/playwright-report/data/*.png
+frontend/test-results/**/*.png
+
+# Permitir explicitamente imagens de assets do projeto
+!frontend/src/assets/**/*.png
