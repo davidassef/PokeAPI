@@ -41,20 +41,67 @@
 
 <div align="center">
 
-### 🏠 Tela Inicial - Lista de Pokémon
-<img src="frontend/src/assets/img/Home-Web-Light-Theme.png" alt="Lista de Pokémon - Tema Claro" width="800"/>
+### 💻 Interface Web (Desktop)
 
-### 🌙 Interface com Tema Escuro
-<img src="frontend/src/assets/img/Home-Web-Dark-Theme.png" alt="Lista de Pokémon - Tema Escuro" width="800"/>
+<table>
+  <tr>
+    <td align="center">
+      <strong>🏠 Home - Tema Claro</strong><br/>
+      <a href="frontend/src/assets/img/Home-Web-Light-Theme.png">
+        <img src="frontend/src/assets/img/Home-Web-Light-Theme.png" alt="Home Tema Claro" width="300"/>
+      </a>
+    </td>
+    <td align="center">
+      <strong>🌙 Home - Tema Escuro</strong><br/>
+      <a href="frontend/src/assets/img/Home-Web-Dark-Theme.png">
+        <img src="frontend/src/assets/img/Home-Web-Dark-Theme.png" alt="Home Tema Escuro" width="300"/>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <strong>📋 Modal - Tema Claro</strong><br/>
+      <a href="frontend/src/assets/img/Modal-Details-Web-Light-Theme.png">
+        <img src="frontend/src/assets/img/Modal-Details-Web-Light-Theme.png" alt="Modal Tema Claro" width="300"/>
+      </a>
+    </td>
+    <td align="center">
+      <strong>🌑 Modal - Tema Escuro</strong><br/>
+      <a href="frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png">
+        <img src="frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png" alt="Modal Tema Escuro" width="300"/>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <strong>🏆 Sistema de Rankings</strong><br/>
+      <a href="frontend/src/assets/img/Ranking-Web.png">
+        <img src="frontend/src/assets/img/Ranking-Web.png" alt="Sistema de Rankings" width="400"/>
+      </a>
+    </td>
+  </tr>
+</table>
 
-### 📋 Modal de Detalhes - Tema Claro
-<img src="frontend/src/assets/img/Modal-Details-Web-Light-Theme.png" alt="Modal de Detalhes - Tema Claro" width="800"/>
+### 📱 Interface Mobile
 
-### 🌑 Modal de Detalhes - Tema Escuro
-<img src="frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png" alt="Modal de Detalhes - Tema Escuro" width="800"/>
+<table>
+  <tr>
+    <td align="center">
+      <strong>📱 Home Mobile</strong><br/>
+      <a href="frontend/src/assets/screenshots/mobile-home.png">
+        <img src="frontend/src/assets/screenshots/mobile-home.png" alt="Home Mobile" width="200"/>
+      </a>
+    </td>
+    <td align="center">
+      <strong>💻 Desktop Home</strong><br/>
+      <a href="frontend/src/assets/screenshots/desktop-home.png">
+        <img src="frontend/src/assets/screenshots/desktop-home.png" alt="Desktop Home" width="300"/>
+      </a>
+    </td>
+  </tr>
+</table>
 
-### 🏆 Sistema de Rankings
-<img src="frontend/src/assets/img/Ranking-Web.png" alt="Sistema de Rankings" width="800"/>
+*📌 Clique nas imagens para visualizar em tamanho completo*
 
 </div>
 
@@ -91,7 +138,7 @@ ng serve
 ### 🌐 URLs de Acesso Local
 | Serviço | URL | Descrição |
 |---------|-----|-----------|
-| **🎨 Frontend** | http://localhost:4200 | Interface da aplicação |
+| **🎨 Frontend** | http://localhost:8100 | Interface da aplicação |
 | **⚙️ Backend** | http://localhost:8000 | API REST |
 | **📚 Docs API** | http://localhost:8000/docs | Swagger interativo |
 
