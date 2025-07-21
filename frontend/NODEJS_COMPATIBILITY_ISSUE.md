@@ -106,7 +106,13 @@ services:
    npm --version   # Deve funcionar normalmente
    ```
 
-4. **Reinstalar dependências**:
+4. **Executar script automatizado**:
+   ```bash
+   cd frontend
+   node post-nodejs-downgrade.js
+   ```
+
+   **OU manualmente**:
    ```bash
    cd frontend
    rm -rf node_modules package-lock.json
@@ -141,10 +147,10 @@ services:
    ```bash
    # Windows CMD
    set NG_DISABLE_VERSION_CHECK=1
-   
+
    # Windows PowerShell
    $env:NG_DISABLE_VERSION_CHECK=1
-   
+
    # Git Bash
    export NG_DISABLE_VERSION_CHECK=1
    ```
