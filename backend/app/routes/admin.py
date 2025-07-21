@@ -3,7 +3,7 @@ Rotas administrativas da API.
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from core.database import get_db
+from app.core.database import get_db
 from app.models.models import User, PokemonRanking
 from app.models.models import FavoritePokemon as FavoritePokemonModel
 

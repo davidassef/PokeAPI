@@ -6,8 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 
-from core.database import get_db
-from core.auth_middleware import get_current_active_user
+from app.core.database import get_db
+from app.core.auth_middleware import get_current_active_user
 from app.services.auth_service import auth_service
 from app.schemas.auth_schemas import (
     UserCreate, UserLogin, UserResponse, TokenResponse,

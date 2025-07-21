@@ -4,8 +4,8 @@ Rotas da API para favoritos.
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
-from core.database import get_db
-from core.auth import get_current_active_user
+from app.core.database import get_db
+from app.core.auth_middleware import get_current_active_user
 from app.models.models import User
 from app.schemas.schemas import FavoritePokemon, FavoritePokemonCreate, Message, CheckCapturedRequest
 from app.services.favorite_service import FavoriteService

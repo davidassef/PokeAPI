@@ -8,10 +8,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from core.database import get_db
+from app.core.database import get_db
 from app.models.models import User, UserRole
 from app.core.rbac import require_admin, require_permission, Permission
-from core.auth_middleware import get_current_active_user
+from app.core.auth_middleware import get_current_active_user
 from app.schemas.pokemon_management_schemas import (
     PokemonCreate, PokemonUpdate, PokemonResponse,
     PokemonListResponse, PokemonDeleteResponse, ApiResponse,

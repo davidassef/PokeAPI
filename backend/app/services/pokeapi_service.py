@@ -3,7 +3,7 @@ Serviço para integração com a PokeAPI externa.
 """
 import httpx
 from typing import Dict, List, Optional
-from core.config import settings
+from app.core.config import settings
 
 
 class PokeAPIService:

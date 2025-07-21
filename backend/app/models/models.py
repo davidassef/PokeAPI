@@ -4,7 +4,7 @@ Modelos do banco de dados para o PokeAPI App.
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from core.database import Base
+from app.core.database import Base
 from enum import Enum
 
 

@@ -8,8 +8,8 @@ from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
 from app.models.models import User, UserRole
-from core.database import get_db
-from core.auth_middleware import get_current_active_user
+from app.core.database import get_db
+from app.core.auth_middleware import get_current_active_user
 
 
 class Permission(str, Enum):

@@ -3,7 +3,7 @@ Rota para sincronização de capturas/favoritos vindos do frontend offline.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from core.database import get_db
+from app.core.database import get_db
 from app.schemas.schemas import FavoritePokemonCreate, Message, SyncCaptureRequest, SyncBatchRequest, SyncBatchResponse
 from app.services.favorite_service import FavoriteService
 from app.utils.rate_limiter import check_sync_rate_limit, check_batch_rate_limit

@@ -7,7 +7,7 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from core.database import get_db
+from app.core.database import get_db
 from app.services.pull_sync_service import pull_service
 
 logger = logging.getLogger(__name__)
