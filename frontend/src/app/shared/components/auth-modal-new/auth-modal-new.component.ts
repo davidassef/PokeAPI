@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnDestroy, HostListener } from '@angular/core';
+import { Component, EventEmitter, Output, OnDestroy, HostListener, Input, OnInit } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -23,8 +23,9 @@ import { takeUntil } from 'rxjs/operators';
     ])
   ]
 })
-export class AuthModalNewComponent implements OnDestroy {
+export class AuthModalNewComponent implements OnInit, OnDestroy {
   @Output() closed = new EventEmitter<boolean>();
+  @Input() initialMode: 'login' | 'register' | 'forgot' = 'login';
 
   private destroy$ = new Subject<void>();
 
@@ -52,6 +53,9 @@ export class AuthModalNewComponent implements OnDestroy {
   usuarioEncontrado: any = null;
   podeRedefinirSenha = false;
 
+  // Debug info (remover em produção)
+  showDebugInfo = false;
+
   constructor(
     private authService: AuthService,
     private modalController: ModalController,
@@ -59,6 +63,14 @@ export class AuthModalNewComponent implements OnDestroy {
     private translate: TranslateService,
     private toastNotification: ToastNotificationService
   ) {}
+
+  ngOnInit() {
+    // Definir modo inicial se fornecido
+    if (this.initialMode) {
+      this.modo = this.initialMode;
+      console.log('[AuthModal] Modo inicial definido:', this.initialMode);
+    }
+  }
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -136,6 +148,20 @@ export class AuthModalNewComponent implements OnDestroy {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  /**
+   * Trata a mudança da pergunta de segurança
+   * Corrige o bug do ion-select não persistir a seleção
+   */
+  onSecurityQuestionChange(event: any) {
+    console.log('[AuthModal] Pergunta de segurança selecionada:', event.detail.value);
+    this.perguntaSeguranca = event.detail.value;
+
+    // Force change detection se necessário
+    if (this.showDebugInfo) {
+      console.log('[AuthModal] Valor atualizado para:', this.perguntaSeguranca);
+    }
+  }
+
   // Métodos de autenticação
   async login() {
     if (!this.email || !this.senha) {
@@ -187,6 +213,8 @@ export class AuthModalNewComponent implements OnDestroy {
     // Validar pergunta de segurança
     const validQuestions = ['pet', 'city', 'school', 'mother'];
     if (!validQuestions.includes(this.perguntaSeguranca)) {
+      console.error('[AuthModal] Pergunta de segurança inválida:', this.perguntaSeguranca);
+      console.error('[AuthModal] Perguntas válidas:', validQuestions);
       this.mostrarErro('auth.errors.invalid_security_question');
       return;
     }
@@ -357,6 +385,15 @@ export class AuthModalNewComponent implements OnDestroy {
     this.sucesso = '';
     this.usuarioEncontrado = null;
     this.podeRedefinirSenha = false;
+  }
+
+  /**
+   * Ativa debug temporário para diagnosticar problemas
+   * Remover em produção
+   */
+  enableDebug() {
+    this.showDebugInfo = true;
+    console.log('[AuthModal] Debug ativado');
   }
 
   private mostrarErro(mensagemKey: string) {

@@ -188,9 +188,14 @@
         --padding-start: 16px;
         --padding-end: 16px;
         --color: var(--text-color) !important;
+        --min-height: 48px;
         border: 2px solid var(--border-color);
         border-radius: var(--border-radius);
         transition: all 0.3s ease;
+        width: 100%;
+        position: relative;
+        z-index: 10;
+        cursor: pointer;
 
         // Ensure proper theme integration
         &::part(text) {
@@ -204,6 +209,40 @@
 
         &::part(placeholder) {
           color: var(--placeholder-color) !important;
+        }
+
+        &::part(container) {
+          pointer-events: auto;
+          cursor: pointer;
+        }
+
+        // Focus states
+        &:focus-within,
+        &.select-expanded {
+          --border-color: var(--primary);
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        // Validation states
+        &.ng-invalid.ng-touched {
+          --border-color: #dc3545;
+          border-color: #dc3545;
+        }
+      }
+
+      // Debug info styles (remover em produção)
+      .debug-info {
+        margin-top: 4px;
+        padding: 4px 8px;
+        background: rgba(37, 99, 235, 0.1);
+        border-radius: 4px;
+        border-left: 3px solid var(--primary);
+
+        small {
+          color: var(--primary);
+          font-size: 12px;
+          font-weight: 500;
         }
       }
 

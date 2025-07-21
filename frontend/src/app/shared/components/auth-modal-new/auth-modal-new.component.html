@@ -152,12 +152,19 @@
               required
               placeholder="{{ 'auth.select_security_question' | translate }}"
               class="auth-select"
+              interface="popover"
+              (ionChange)="onSecurityQuestionChange($event)"
             >
               <ion-select-option value="pet">{{ 'auth.security_question_pet' | translate }}</ion-select-option>
               <ion-select-option value="city">{{ 'auth.security_question_city' | translate }}</ion-select-option>
               <ion-select-option value="school">{{ 'auth.security_question_school' | translate }}</ion-select-option>
               <ion-select-option value="mother">{{ 'auth.security_question_mother' | translate }}</ion-select-option>
             </ion-select>
+
+            <!-- Debug info - remover em produção -->
+            <div class="debug-info" *ngIf="showDebugInfo">
+              <small>Valor selecionado: {{ perguntaSeguranca || 'Nenhum' }}</small>
+            </div>
           </div>
 
           <div class="form-group">
