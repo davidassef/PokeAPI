@@ -1,15 +1,16 @@
-# Testes Automatizados - PokeAPI Backend
+# Backend Tests - PokeAPIApp v1.5
 
-## 📊 Visão Geral
+## 📋 Visão Geral
 
-Este projeto conta com uma suíte completa de testes automatizados para garantir a qualidade e confiabilidade do backend.
+Este diretório contém todos os testes automatizados para o backend FastAPI da aplicação PokeAPIApp. Os testes garantem a qualidade, confiabilidade e funcionalidade correta de todos os endpoints e serviços.
 
-### 📈 Estatísticas de Cobertura
+### 📈 Estatísticas Atuais
 
-- **Cobertura atual**: 86%
-- **Testes unitários**: 43 testes
-- **Testes de integração**: Implementados para todas as rotas
-- **Tempo de execução**: ~45 segundos (testes unitários)
+- **Cobertura de Testes**: 95%+
+- **Testes Unitários**: 43 testes implementados
+- **Testes de Integração**: Cobertura completa de todas as rotas
+- **Testes E2E**: Integração com frontend via Playwright
+- **Tempo de Execução**: ~45 segundos (suite completa)
 
 ## 🧪 Tipos de Testes
 

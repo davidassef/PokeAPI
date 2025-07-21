@@ -1,53 +1,64 @@
-# 🚀 Frontend - Sistema Integrado
+# Frontend Documentation - PokeAPIApp v1.5
 
-## 📚 Documentação
+## 📋 Visão Geral
 
-**📖 Ver:** [`../docs/01_COMO_USAR_AMBIENTES.md`](../docs/01_COMO_USAR_AMBIENTES.md) para guia completo de ambientes
+Este documento descreve a arquitetura específica do frontend Angular/Ionic da aplicação PokeAPIApp, incluindo componentes principais, sistema de roteamento, navegação e guias de desenvolvimento.
 
-**🚀 Ver:** [`../docs/02_DEPLOY_PRODUCAO.md`](../docs/02_DEPLOY_PRODUCAO.md) para configuração de deploy
+## 🏗️ Arquitetura Frontend
 
-## Scripts Disponíveis
+### **Stack Tecnológico**
+- **Angular**: 17.x (Framework principal)
+- **Ionic**: 7.x (UI Components mobile)
+- **TypeScript**: 5.x (Linguagem type-safe)
+- **RxJS**: 7.x (Programação reativa)
+- **SCSS**: Estilização avançada
+- **Playwright**: Testes E2E
 
-### 🎯 Desenvolvimento Local
-```bash
-# Comando completo (frontend + client-server)
-npm start
+### **Padrões Arquiteturais**
+- **Component-based Architecture**: Componentes reutilizáveis e modulares
+- **Service-oriented**: Serviços injetáveis para lógica de negócio
+- **Reactive Programming**: RxJS para gerenciamento de estado
+- **Lazy Loading**: Carregamento sob demanda de módulos
+- **OnPush Strategy**: Otimização de change detection
 
-# Equivalente para desenvolvimento
-npm run start:dev
+## 📁 Estrutura de Componentes
+
 ```
-
-### 🌐 Deploy de Produção
-```bash
-# Build para deploy estático (sem client-server)
-npm run build:prod
-
-# Apenas frontend (para testes de produção)
-npm run start:frontend-only
+frontend/src/app/
+├── core/                    # 🔧 Serviços principais
+│   ├── services/           # Lógica de negócio
+│   │   ├── auth.service.ts
+│   │   ├── pokeapi.service.ts
+│   │   ├── captured.service.ts
+│   │   ├── favorites.service.ts
+│   │   ├── logger.service.ts
+│   │   └── settings.service.ts
+│   ├── guards/             # Proteção de rotas
+│   ├── interceptors/       # HTTP interceptors
+│   └── config/             # Configurações
+├── shared/                 # 🔄 Componentes compartilhados
+│   ├── components/         # UI Components
+│   │   ├── pokemon-card/
+│   │   ├── favorite-button/
+│   │   ├── music-player/
+│   │   └── loading-spinner/
+│   ├── pipes/              # Transformações de dados
+│   └── directives/         # Diretivas customizadas
+├── pages/                  # 📱 Páginas da aplicação
+│   ├── web/               # 💻 Versões desktop
+│   │   ├── home/
+│   │   ├── favorites/
+│   │   ├── captured/
+│   │   ├── ranking/
+│   │   └── settings/
+│   └── mobile/            # 📱 Versões mobile
+│       ├── home-mobile/
+│       ├── captured-mobile/
+│       ├── ranking-mobile/
+│       └── settings-mobile/
+├── models/                # 📊 Interfaces TypeScript
+└── tabs/                  # 🗂️ Sistema de navegação
 ```
-
-### 🔧 Comandos Individuais
-```bash
-# Apenas frontend
-npm run start:frontend
-
-# Apenas client-server
-npm run start:client-server
-```
-
-## 🏗️ Diferenças por Ambiente
-
-| Ambiente | Client-Server | Sincronização | URL Backend |
-|----------|---------------|---------------|-------------|
-| **Desenvolvimento** | ✅ Ativo (porta 3001) | Pull + Push | localhost:8000 |
-| **Produção** | ❌ Não disponível | Apenas Push | pokeapi-la6k.onrender.com |
-
-## 🌐 Portas e Serviços
-
-| Serviço | Porta | URL | Descrição |
-|---------|-------|-----|-----------|
-| Frontend | 8100 | http://localhost:8100 | Interface Angular/Ionic |
-| Client-Server | 3001 | http://localhost:3001 | API local para sincronização |
 | Backend | 8000 | http://localhost:8000 | API principal FastAPI |
 
 ## 🔄 Sistema de Sincronização
