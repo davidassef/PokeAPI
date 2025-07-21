@@ -1,5 +1,0 @@
-Requirement already satisfied: requests in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (2.32.4)
-Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from requests) (3.4.2)
-Requirement already satisfied: idna<4,>=2.5 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from requests) (2.10)
-Requirement already satisfied: urllib3<3,>=1.21.1 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from requests) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in c:\users\david\appdata\local\programs\python\python311\lib\site-packages (from requests) (2025.6.15)

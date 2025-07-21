@@ -141,10 +141,19 @@ ng serve
 
 <div align="center">
 
-### 🌐 URLs de Acesso Local
+### 🌐 URLs de Acesso
+
+#### 🚀 **Produção (Render)**
+| Serviço | URL | Status |
+|---------|-----|--------|
+| **🎨 Frontend** | [pokeapi-frontend.onrender.com](https://pokeapi-frontend.onrender.com) | [![Status](https://img.shields.io/badge/Status-Online-brightgreen.svg)](https://pokeapi-frontend.onrender.com) |
+| **⚙️ Backend** | [pokeapi-la6k.onrender.com](https://pokeapi-la6k.onrender.com) | [![Status](https://img.shields.io/badge/Status-Online-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health) |
+| **📚 API Docs** | [pokeapi-la6k.onrender.com/docs](https://pokeapi-la6k.onrender.com/docs) | [![Docs](https://img.shields.io/badge/Docs-Swagger-blue.svg)](https://pokeapi-la6k.onrender.com/docs) |
+
+#### 🏠 **Desenvolvimento Local**
 | Serviço | URL | Descrição |
 |---------|-----|-----------|
-| **🎨 Frontend** | http://localhost:8100 | Interface da aplicação |
+| **🎨 Frontend** | http://localhost:4200 | Interface da aplicação |
 | **⚙️ Backend** | http://localhost:8000 | API REST |
 | **📚 Docs API** | http://localhost:8000/docs | Swagger interativo |
 
