@@ -17,7 +17,7 @@ from app.schemas.auth_schemas import (
 )
 from app.models.models import User
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 security = HTTPBearer()
 
 

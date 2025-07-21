@@ -204,7 +204,7 @@ export class AuthService {
     tokenKey: 'jwt_token',
     refreshTokenKey: 'refresh_token',
     enableLogging: !environment.production,
-    apiUrl: '/api/v1',
+    apiUrl: `${environment.apiUrl}/api/v1`,
     requestTimeout: 30000
   };
 
@@ -430,7 +430,7 @@ export class AuthService {
       hasContact: !!dadosLimpos.contact
     });
 
-    return this.http.post<User>('/api/v1/auth/register', dadosLimpos, {
+    return this.http.post<User>(`${this.config.apiUrl}/auth/register`, dadosLimpos, {
       headers: {
         'Content-Type': 'application/json'
       }

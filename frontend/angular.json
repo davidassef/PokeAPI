@@ -81,7 +81,9 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "watch": true,
+              "poll": false
             },
             "ci": {
             }
@@ -92,7 +94,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "port": 8100,
-            "host": "localhost"
+            "host": "localhost",
+            "poll": false,
+            "liveReload": true,
+            "hmr": false
           },
           "configurations": {
             "production": {

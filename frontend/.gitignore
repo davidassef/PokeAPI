@@ -68,3 +68,16 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Arquivos que podem causar loops de recompilação
+test-results/
+playwright-report/
+*.webm
+debug-*.png
+debug-*.html
+*.temp
+.temp/
+
+# Cache adicional
+.cache/
+.parcel-cache/

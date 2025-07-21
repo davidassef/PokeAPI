@@ -176,7 +176,7 @@ try:
     Base.metadata.create_all(bind=engine)
 
     # Incluir rotas
-    app.include_router(auth.router, prefix="/api/v1")
+    app.include_router(auth.router, prefix="/api/v1/auth")
     app.include_router(favorites.router, prefix="/api/v1")
     app.include_router(ranking.router, prefix="/api/v1")
     app.include_router(pokemon.router, prefix="/api/v1")
