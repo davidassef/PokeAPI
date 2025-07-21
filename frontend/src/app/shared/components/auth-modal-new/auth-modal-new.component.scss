@@ -555,8 +555,27 @@
 
 // ===== AUTH MODAL SELECT DROPDOWN FIXES =====
 
-// Ensure auth modal select options have proper colors and auto-width
+// CRITICAL: Security Question Dropdown Width Fix
+// Using multiple approaches to ensure compatibility across Ionic versions
 :host ::ng-deep {
+
+  // Specific class for security question select
+  .security-question-select {
+    // Force the select to allow wider popovers
+    --width: auto !important;
+
+    &::part(container) {
+      width: 100% !important;
+    }
+
+    &::part(text) {
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+    }
+  }
+
+// Ensure auth modal select options have proper colors and auto-width
   // Light theme
   &:not(.dark-theme) {
     ion-select-option {
@@ -739,6 +758,68 @@
       ion-item {
         min-width: 260px !important;
       }
+    }
+  }
+}
+
+// ===== GLOBAL STYLES FOR SECURITY QUESTION POPOVER =====
+// These styles need to be global to affect the popover that's rendered outside the component
+
+// Target the specific popover class
+:host-context(.security-question-popover),
+.security-question-popover {
+  // Force auto width and proper sizing
+  --width: auto !important;
+  --min-width: 300px !important;
+  --max-width: min(500px, 95vw) !important;
+
+  .popover-content {
+    width: auto !important;
+    min-width: 300px !important;
+    max-width: min(500px, 95vw) !important;
+    padding: 0 !important;
+  }
+
+  ion-list {
+    width: auto !important;
+    min-width: 300px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  ion-radio-group {
+    width: auto !important;
+    min-width: 300px !important;
+  }
+
+  ion-item {
+    --min-height: 48px !important;
+    width: auto !important;
+    min-width: 300px !important;
+    white-space: nowrap !important;
+
+    .item-native {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+      width: auto !important;
+      min-width: 300px !important;
+    }
+
+    ion-label {
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+      width: auto !important;
+      flex: none !important;
+      margin-right: 16px !important;
+    }
+
+    ion-radio {
+      margin-left: auto !important;
+      flex-shrink: 0 !important;
     }
   }
 }

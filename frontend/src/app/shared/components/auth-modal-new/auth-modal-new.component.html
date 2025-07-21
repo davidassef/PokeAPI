@@ -151,9 +151,11 @@
               name="securityQuestion"
               required
               placeholder="{{ 'auth.select_security_question' | translate }}"
-              class="auth-select"
+              class="auth-select security-question-select"
               interface="popover"
               (ionChange)="onSecurityQuestionChange($event)"
+              (ionFocus)="onSecurityQuestionOpen()"
+              [interfaceOptions]="securityQuestionPopoverOptions"
             >
               <ion-select-option value="pet">{{ 'auth.security_question_pet' | translate }}</ion-select-option>
               <ion-select-option value="city">{{ 'auth.security_question_city' | translate }}</ion-select-option>

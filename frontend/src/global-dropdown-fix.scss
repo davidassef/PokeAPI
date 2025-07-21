@@ -1,0 +1,254 @@
+/**
+ * GLOBAL DROPDOWN WIDTH FIX
+ * 
+ * Este arquivo contém correções globais para o problema de truncamento
+ * de texto em dropdowns ion-select, especificamente para o dropdown
+ * "Pergunta de Segurança" no modal de autenticação.
+ * 
+ * IMPORTANTE: Este arquivo deve ser importado no global.scss
+ */
+
+// ===== SECURITY QUESTION POPOVER GLOBAL STYLES =====
+
+// Target the specific popover class globally
+.security-question-popover {
+  // Force auto width and proper sizing
+  --width: auto !important;
+  --min-width: 320px !important;
+  --max-width: min(600px, 95vw) !important;
+  
+  // Popover content container
+  .popover-content {
+    width: auto !important;
+    min-width: 320px !important;
+    max-width: min(600px, 95vw) !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  
+  // List container
+  ion-list {
+    width: auto !important;
+    min-width: 320px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  
+  // Radio group (used by ion-select)
+  ion-radio-group {
+    width: auto !important;
+    min-width: 320px !important;
+    overflow: visible !important;
+  }
+  
+  // Individual items
+  ion-item {
+    --min-height: 48px !important;
+    width: auto !important;
+    min-width: 320px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    
+    // Native item container
+    .item-native {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+      width: auto !important;
+      min-width: 320px !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+    
+    // Label text
+    ion-label {
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+      width: auto !important;
+      flex: none !important;
+      margin-right: 16px !important;
+      font-size: 16px !important;
+      line-height: 1.4 !important;
+    }
+    
+    // Radio button
+    ion-radio {
+      margin-left: auto !important;
+      flex-shrink: 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+}
+
+// ===== RESPONSIVE ADJUSTMENTS =====
+
+// Tablet and small desktop
+@media (max-width: 1024px) and (min-width: 601px) {
+  .security-question-popover {
+    --min-width: 300px !important;
+    --max-width: min(500px, 90vw) !important;
+    
+    .popover-content {
+      min-width: 300px !important;
+      max-width: min(500px, 90vw) !important;
+    }
+    
+    ion-list,
+    ion-radio-group {
+      min-width: 300px !important;
+    }
+    
+    ion-item {
+      min-width: 300px !important;
+      
+      .item-native {
+        min-width: 300px !important;
+      }
+    }
+  }
+}
+
+// Mobile devices
+@media (max-width: 600px) {
+  .security-question-popover {
+    --min-width: 280px !important;
+    --max-width: 95vw !important;
+    
+    .popover-content {
+      min-width: 280px !important;
+      max-width: 95vw !important;
+    }
+    
+    ion-list,
+    ion-radio-group {
+      min-width: 280px !important;
+    }
+    
+    ion-item {
+      min-width: 280px !important;
+      font-size: 16px !important; // Prevent zoom on iOS
+      
+      .item-native {
+        min-width: 280px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+      
+      ion-label {
+        font-size: 16px !important;
+        margin-right: 12px !important;
+      }
+    }
+  }
+}
+
+// Extra small screens
+@media (max-width: 320px) {
+  .security-question-popover {
+    --min-width: 260px !important;
+    --max-width: 98vw !important;
+    
+    .popover-content {
+      min-width: 260px !important;
+      max-width: 98vw !important;
+    }
+    
+    ion-list,
+    ion-radio-group {
+      min-width: 260px !important;
+    }
+    
+    ion-item {
+      min-width: 260px !important;
+      
+      .item-native {
+        min-width: 260px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
+      
+      ion-label {
+        font-size: 15px !important;
+        margin-right: 8px !important;
+      }
+    }
+  }
+}
+
+// ===== FALLBACK STYLES FOR DIFFERENT IONIC VERSIONS =====
+
+// Alternative selectors for different Ionic versions
+.select-popover.security-question-popover,
+ion-popover.security-question-popover,
+.popover-wrapper.security-question-popover {
+  // Apply the same styles as above
+  --width: auto !important;
+  --min-width: 320px !important;
+  --max-width: min(600px, 95vw) !important;
+  
+  .popover-content,
+  .popover-inner {
+    width: auto !important;
+    min-width: 320px !important;
+    max-width: min(600px, 95vw) !important;
+    overflow: visible !important;
+  }
+  
+  ion-list {
+    width: auto !important;
+    min-width: 320px !important;
+    overflow: visible !important;
+  }
+  
+  ion-item {
+    width: auto !important;
+    min-width: 320px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    
+    .item-inner,
+    .item-native {
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+      width: auto !important;
+      min-width: 320px !important;
+    }
+    
+    ion-label {
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: initial !important;
+      flex: none !important;
+    }
+  }
+}
+
+// ===== DEBUG STYLES (REMOVE IN PRODUCTION) =====
+
+// Uncomment for debugging
+/*
+.security-question-popover {
+  border: 2px solid red !important;
+  
+  .popover-content {
+    border: 2px solid blue !important;
+  }
+  
+  ion-list {
+    border: 2px solid green !important;
+  }
+  
+  ion-item {
+    border: 1px solid orange !important;
+    
+    ion-label {
+      background: yellow !important;
+    }
+  }
+}
+*/

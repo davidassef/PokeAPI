@@ -56,6 +56,13 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
   // Debug info (remover em produção)
   showDebugInfo = false;
 
+  // Opções do popover para pergunta de segurança
+  securityQuestionPopoverOptions = {
+    cssClass: 'security-question-popover',
+    showBackdrop: true,
+    backdropDismiss: true
+  };
+
   constructor(
     private authService: AuthService,
     private modalController: ModalController,
@@ -159,6 +166,76 @@ export class AuthModalNewComponent implements OnInit, OnDestroy {
     // Force change detection se necessário
     if (this.showDebugInfo) {
       console.log('[AuthModal] Valor atualizado para:', this.perguntaSeguranca);
+    }
+  }
+
+  /**
+   * Força o redimensionamento do popover quando aberto
+   * Workaround para problemas de largura do ion-select
+   */
+  onSecurityQuestionOpen() {
+    console.log('[AuthModal] Dropdown pergunta de segurança aberto');
+
+    // Aguardar o DOM ser renderizado
+    setTimeout(() => {
+      this.fixPopoverWidth();
+    }, 100);
+  }
+
+  /**
+   * Aplica correções de largura via JavaScript
+   * Backup para quando CSS não é suficiente
+   */
+  private fixPopoverWidth() {
+    try {
+      // Encontrar o popover da pergunta de segurança
+      const popover = document.querySelector('.security-question-popover') as HTMLElement;
+
+      if (popover) {
+        console.log('[AuthModal] Aplicando correções de largura via JS');
+
+        // Forçar largura automática
+        popover.style.width = 'auto';
+        popover.style.minWidth = '320px';
+        popover.style.maxWidth = 'min(600px, 95vw)';
+
+        // Corrigir conteúdo do popover
+        const content = popover.querySelector('.popover-content') as HTMLElement;
+        if (content) {
+          content.style.width = 'auto';
+          content.style.minWidth = '320px';
+          content.style.maxWidth = 'min(600px, 95vw)';
+        }
+
+        // Corrigir lista
+        const list = popover.querySelector('ion-list') as HTMLElement;
+        if (list) {
+          list.style.width = 'auto';
+          list.style.minWidth = '320px';
+        }
+
+        // Corrigir itens
+        const items = popover.querySelectorAll('ion-item');
+        items.forEach((item: any) => {
+          item.style.width = 'auto';
+          item.style.minWidth = '320px';
+          item.style.whiteSpace = 'nowrap';
+
+          const label = item.querySelector('ion-label');
+          if (label) {
+            label.style.whiteSpace = 'nowrap';
+            label.style.overflow = 'visible';
+            label.style.textOverflow = 'initial';
+            label.style.flex = 'none';
+          }
+        });
+
+        console.log('[AuthModal] Correções de largura aplicadas via JS');
+      } else {
+        console.warn('[AuthModal] Popover não encontrado para correção de largura');
+      }
+    } catch (error) {
+      console.error('[AuthModal] Erro ao aplicar correções de largura:', error);
     }
   }
 

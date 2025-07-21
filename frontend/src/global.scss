@@ -12,6 +12,9 @@
 /* Unified Theme System - Import first for variable availability */
 @import "app/shared/styles/unified-theme.scss";
 
+/* Global Dropdown Fix - Import early to ensure proper cascade */
+@import "global-dropdown-fix.scss";
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
