@@ -216,6 +216,12 @@
           cursor: pointer;
         }
 
+        // Ensure dropdown options have proper width
+        &.select-expanded {
+          // Force popover to recalculate width
+          --width: auto;
+        }
+
         // Focus states
         &:focus-within,
         &.select-expanded {
@@ -549,7 +555,7 @@
 
 // ===== AUTH MODAL SELECT DROPDOWN FIXES =====
 
-// Ensure auth modal select options have proper colors
+// Ensure auth modal select options have proper colors and auto-width
 :host ::ng-deep {
   // Light theme
   &:not(.dark-theme) {
@@ -558,21 +564,45 @@
       color: #000000 !important;
       --background: #ffffff !important;
       background: #ffffff !important;
+      // Fix width and text truncation
+      width: auto !important;
+      min-width: 200px !important;
+      max-width: none !important;
+      white-space: nowrap !important;
+      text-overflow: initial !important;
+      overflow: visible !important;
     }
 
     ion-popover.select-popover {
       --background: #ffffff !important;
       --color: #000000 !important;
+      // Auto-adjust popover width to content
+      --width: auto !important;
+      --min-width: 250px !important;
+      --max-width: 90vw !important;
 
       ion-list {
         background: #ffffff !important;
         color: #000000 !important;
+        // Allow list to expand with content
+        width: auto !important;
+        min-width: 250px !important;
       }
 
       ion-item {
         --background: #ffffff !important;
         --color: #000000 !important;
         color: #000000 !important;
+        // Fix item width and text display
+        width: auto !important;
+        min-width: 250px !important;
+        white-space: nowrap !important;
+
+        .item-native {
+          white-space: nowrap !important;
+          text-overflow: initial !important;
+          overflow: visible !important;
+        }
       }
     }
   }
@@ -584,21 +614,85 @@
       color: #ffffff !important;
       --background: #1a1a1a !important;
       background: #1a1a1a !important;
+      // Fix width and text truncation
+      width: auto !important;
+      min-width: 200px !important;
+      max-width: none !important;
+      white-space: nowrap !important;
+      text-overflow: initial !important;
+      overflow: visible !important;
     }
 
     ion-popover.select-popover {
       --background: #1a1a1a !important;
       --color: #ffffff !important;
+      // Auto-adjust popover width to content
+      --width: auto !important;
+      --min-width: 250px !important;
+      --max-width: 90vw !important;
 
       ion-list {
         background: #1a1a1a !important;
         color: #ffffff !important;
+        // Allow list to expand with content
+        width: auto !important;
+        min-width: 250px !important;
       }
 
       ion-item {
         --background: #1a1a1a !important;
         --color: #ffffff !important;
         color: #ffffff !important;
+        // Fix item width and text display
+        width: auto !important;
+        min-width: 250px !important;
+        white-space: nowrap !important;
+
+        .item-native {
+          white-space: nowrap !important;
+          text-overflow: initial !important;
+          overflow: visible !important;
+        }
+      }
+    }
+  }
+
+  // Global fixes for ion-select dropdown width issues
+  ion-popover {
+    &.select-popover {
+      // Ensure popover can expand to fit content
+      --width: auto !important;
+      --min-width: 250px !important;
+      --max-width: min(400px, 90vw) !important;
+
+      .popover-content {
+        width: auto !important;
+        min-width: 250px !important;
+        max-width: min(400px, 90vw) !important;
+      }
+    }
+  }
+
+  // Fix for different Ionic versions
+  .select-interface-popover {
+    ion-list {
+      width: auto !important;
+      min-width: 250px !important;
+    }
+
+    ion-radio-group {
+      width: auto !important;
+      min-width: 250px !important;
+    }
+
+    ion-item {
+      width: auto !important;
+      min-width: 250px !important;
+
+      ion-label {
+        white-space: nowrap !important;
+        text-overflow: initial !important;
+        overflow: visible !important;
       }
     }
   }
@@ -612,5 +706,39 @@
 
   .auth-modal-footer {
     padding: 15px;
+  }
+
+  // Mobile-specific dropdown adjustments
+  :host ::ng-deep {
+    ion-popover.select-popover {
+      --max-width: 95vw !important;
+      --min-width: 280px !important;
+
+      ion-list {
+        min-width: 280px !important;
+      }
+
+      ion-item {
+        min-width: 280px !important;
+        font-size: 16px !important; // Prevent zoom on iOS
+      }
+    }
+  }
+}
+
+// Extra small screens
+@media (max-width: 320px) {
+  :host ::ng-deep {
+    ion-popover.select-popover {
+      --min-width: 260px !important;
+
+      ion-list {
+        min-width: 260px !important;
+      }
+
+      ion-item {
+        min-width: 260px !important;
+      }
+    }
   }
 }
