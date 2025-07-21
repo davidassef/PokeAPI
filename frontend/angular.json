@@ -82,8 +82,7 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-              "watch": true,
-              "poll": false
+              "watch": true
             },
             "ci": {
             }
@@ -95,7 +94,6 @@
           "options": {
             "port": 8100,
             "host": "localhost",
-            "poll": false,
             "liveReload": true,
             "hmr": false
           },
