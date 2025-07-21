@@ -47,36 +47,36 @@
   <tr>
     <td align="center">
       <strong>🏠 Home - Tema Claro</strong><br/>
-      <a href="frontend/src/assets/img/Home-Web-Light-Theme.png">
-        <img src="frontend/src/assets/img/Home-Web-Light-Theme.png" alt="Home Tema Claro" width="300"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Home-Web-Light-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Home-Web-Light-Theme.png" alt="Home Tema Claro" width="300"/>
       </a>
     </td>
     <td align="center">
       <strong>🌙 Home - Tema Escuro</strong><br/>
-      <a href="frontend/src/assets/img/Home-Web-Dark-Theme.png">
-        <img src="frontend/src/assets/img/Home-Web-Dark-Theme.png" alt="Home Tema Escuro" width="300"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Home-Web-Dark-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Home-Web-Dark-Theme.png" alt="Home Tema Escuro" width="300"/>
       </a>
     </td>
   </tr>
   <tr>
     <td align="center">
       <strong>📋 Modal - Tema Claro</strong><br/>
-      <a href="frontend/src/assets/img/Modal-Details-Web-Light-Theme.png">
-        <img src="frontend/src/assets/img/Modal-Details-Web-Light-Theme.png" alt="Modal Tema Claro" width="300"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Modal-Details-Web-Light-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Modal-Details-Web-Light-Theme.png" alt="Modal Tema Claro" width="300"/>
       </a>
     </td>
     <td align="center">
       <strong>🌑 Modal - Tema Escuro</strong><br/>
-      <a href="frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png">
-        <img src="frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png" alt="Modal Tema Escuro" width="300"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Modal-Details-Web-Dark-Theme.png" alt="Modal Tema Escuro" width="300"/>
       </a>
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <strong>🏆 Sistema de Rankings</strong><br/>
-      <a href="frontend/src/assets/img/Ranking-Web.png">
-        <img src="frontend/src/assets/img/Ranking-Web.png" alt="Sistema de Rankings" width="400"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Ranking-Web.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Ranking-Web.png" alt="Sistema de Rankings" width="400"/>
       </a>
     </td>
   </tr>
@@ -88,20 +88,20 @@
   <tr>
     <td align="center">
       <strong>📱 Home Mobile - Tema Claro</strong><br/>
-      <a href="frontend/src/assets/img/Home-Mobile-Light-Theme.png">
-        <img src="frontend/src/assets/img/Home-Mobile-Light-Theme.png" alt="Home Mobile Tema Claro" width="200"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Home-Mobile-Light-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Home-Mobile-Light-Theme.png" alt="Home Mobile Tema Claro" width="200"/>
       </a>
     </td>
     <td align="center">
       <strong>🌙 Home Mobile - Tema Escuro</strong><br/>
-      <a href="frontend/src/assets/img/Home-Mobile-Dark-Theme.png">
-        <img src="frontend/src/assets/img/Home-Mobile-Dark-Theme.png" alt="Home Mobile Tema Escuro" width="200"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Home-Mobile-Dark-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Home-Mobile-Dark-Theme.png" alt="Home Mobile Tema Escuro" width="200"/>
       </a>
     </td>
     <td align="center">
       <strong>📋 Modal Mobile - Tema Escuro</strong><br/>
-      <a href="frontend/src/assets/img/Modal-Details-Mobile-Dark-Theme.png">
-        <img src="frontend/src/assets/img/Modal-Details-Mobile-Dark-Theme.png" alt="Modal Mobile Tema Escuro" width="200"/>
+      <a href="https://github.com/davidassef/PokeAPI/blob/main/frontend/src/assets/img/Modal-Details-Mobile-Dark-Theme.png">
+        <img src="https://github.com/davidassef/PokeAPI/raw/main/frontend/src/assets/img/Modal-Details-Mobile-Dark-Theme.png" alt="Modal Mobile Tema Escuro" width="200"/>
       </a>
     </td>
   </tr>
