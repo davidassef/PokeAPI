@@ -1212,44 +1212,26 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   ngOnChanges(changes: SimpleChanges) {
     console.log('DetailsModalComponent - ngOnChanges', changes);
 
+    // ✅ CORREÇÃO: Lógica simplificada baseada no padrão mobile
     if (changes['pokemonId'] && changes['pokemonId'].currentValue !== changes['pokemonId'].previousValue) {
       if (changes['pokemonId'].currentValue && changes['pokemonId'].currentValue > 0) {
         this.loadPokemonById(changes['pokemonId'].currentValue);
       }
     }
 
-    // ✅ OTIMIZAÇÃO CRÍTICA: Tratamento inteligente de reabertura do modal
+    // ✅ CORREÇÃO: Tratamento simples de reabertura sem recriação de Subject
     if (changes['isOpen'] && changes['isOpen'].currentValue === true &&
         changes['isOpen'].previousValue === false) {
-      console.log('🔄 Modal reaberto - verificando necessidade de recarregamento');
+      console.log('🔄 Modal reaberto');
 
-      // ✅ OTIMIZAÇÃO: Verificar se já temos dados válidos antes de recarregar
-      const hasValidData = this.pokemon && this.pokemon.id === this.pokemonId;
-      const hasValidSpecies = this.speciesData && this.isSpeciesDataReady;
-
-      if (hasValidData && hasValidSpecies) {
-        console.log('✅ Dados já válidos - reutilizando sem recarregar');
-        // Apenas reinicializar interface sem recarregar dados
-        this.initializePokemonData();
-      } else {
-        console.log('🔄 Dados inválidos ou ausentes - recarregando');
-
-        // ✅ CORREÇÃO: Limpar subscriptions existentes apenas se necessário
-        this.destroy$.next();
-        this.destroy$.complete();
-        this.destroy$ = new Subject<void>();
-
-        // Recarregar dados apenas se necessário
+      // Se não temos dados ou pokemonId mudou, recarregar
+      if (!this.pokemon || (this.pokemonId && this.pokemon.id !== this.pokemonId)) {
         if (this.pokemonId && this.pokemonId > 0) {
           this.loadPokemonById(this.pokemonId);
         }
-
-        // ✅ CORREÇÃO: Reconfigurar listener de mudança de idioma
-        this.translate.onLangChange
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            this.onLanguageChange();
-          });
+      } else {
+        // Dados válidos, apenas reinicializar interface
+        this.initializePokemonData();
       }
     }
   }
