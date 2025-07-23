@@ -154,18 +154,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    // ✅ OTIMIZAÇÃO: Debounce para evitar múltiplas requisições rápidas
-    if (this.loadingDebounceTimer) {
-      clearTimeout(this.loadingDebounceTimer);
-    }
-
-    this.loadingDebounceTimer = setTimeout(() => {
-      console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
-      this.loadPokemonDetailsDirectly(id);
-    }, 100); // 100ms de debounce
+    // ✅ CORREÇÃO: Carregamento direto sem debounce desnecessário
+    console.log(`🔍 Carregando dados do Pokémon ID: ${id}`);
+    this.loadPokemonDetailsDirectly(id);
   }
 
-  private loadingDebounceTimer: any;
+  // ✅ CORREÇÃO: Propriedade loadingDebounceTimer removida - carregamento direto implementado
 
   /**
    * ✅ OTIMIZAÇÃO: Método otimizado para carregar apenas dados essenciais inicialmente
@@ -1264,9 +1258,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     console.log('DetailsModalComponent - ngOnDestroy');
 
     // ✅ OTIMIZAÇÃO: Limpar timers para evitar memory leaks
-    if (this.loadingDebounceTimer) {
-      clearTimeout(this.loadingDebounceTimer);
-    }
+    // ✅ CORREÇÃO: loadingDebounceTimer removido - não é mais necessário
     if (this.tabChangeDebounceTimer) {
       clearTimeout(this.tabChangeDebounceTimer);
     }
