@@ -193,10 +193,11 @@ try:
     app.include_router(pull_sync.router, prefix="/api/v1")
 
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
-    print(f"Warning: Error importing modules: {e}")
+    print(f"❌ ERRO CRÍTICO: Falha ao importar rotas: {e}")
     import traceback
     traceback.print_exc()
-    # Continua a execução sem os módulos de rotas se houver erro
+    # ✅ CORREÇÃO CRÍTICA: Não continuar sem rotas - isso causa falha silenciosa
+    raise RuntimeError(f"Falha crítica na inicialização das rotas: {e}") from e
 
 
 @app.get("/")
