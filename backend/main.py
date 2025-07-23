@@ -222,7 +222,7 @@ async def cors_test():
     """✅ CORREÇÃO CRÍTICA: Endpoint para testar CORS com Vercel."""
     return {
         "message": "CORS funcionando!",
-        "timestamp": "2025-07-23T15:52:00Z",
+        "timestamp": "2025-07-23T16:10:00Z",
         "origin": "backend-render",
         "cors_enabled": True,
         "vercel_compatible": True
