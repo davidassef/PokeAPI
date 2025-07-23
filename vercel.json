@@ -1,34 +1,13 @@
 {
   "version": 2,
   "name": "pokeapiapp-frontend",
-  "builds": [
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/www",
+  "installCommand": "cd frontend && npm install",
+  "rewrites": [
     {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/www"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json",
-      "headers": {
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=86400"
-      }
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000"
-      }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -44,19 +23,7 @@
           "value": "public, max-age=86400"
         }
       ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000"
-        }
-      ]
     }
   ],
-  "public": true,
-  "functions": {},
-  "regions": ["iad1"],
   "framework": "angular"
 }
