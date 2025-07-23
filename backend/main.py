@@ -136,15 +136,17 @@ origins = [
     "http://localhost",
     "http://127.0.0.1:8100",  # Ionic (alternativo)
     "http://localhost:5173",   # Vite/React
-    "https://your-production-domain.com",
+    # ✅ CORREÇÃO CRÍTICA: Adicionar domínio da Vercel
+    "https://poke-dexqogvyl-david-assefs-projects.vercel.app",  # Frontend Vercel
+    "https://your-production-domain.com",  # Placeholder para outros domínios
 ]
 
-# Adiciona o middleware CORS
+# ✅ CORREÇÃO CRÍTICA: CORS otimizado para Vercel
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos os métodos
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Métodos específicos
     allow_headers=[
         "*",  # Permite todos os headers
         "Authorization",
@@ -154,11 +156,16 @@ app.add_middleware(
         "X-Requested-With",
         "X-CSRF-Token",
         "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Methods",
+        "Cache-Control",
+        "Pragma",
     ],
     expose_headers=[
         "Content-Disposition",
         "Content-Length",
         "X-Request-ID",
+        "Access-Control-Allow-Origin",
     ],
     max_age=86400,  # 24 horas
 )
@@ -207,6 +214,18 @@ async def root():
 async def health_check():
     """Health check da API."""
     return {"status": "healthy", "version": "1.5"}
+
+
+@app.get("/cors-test")
+async def cors_test():
+    """✅ CORREÇÃO CRÍTICA: Endpoint para testar CORS com Vercel."""
+    return {
+        "message": "CORS funcionando!",
+        "timestamp": "2025-07-23T15:52:00Z",
+        "origin": "backend-render",
+        "cors_enabled": True,
+        "vercel_compatible": True
+    }
 
 
 # REMOVED: Test endpoints for security

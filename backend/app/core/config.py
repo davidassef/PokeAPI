@@ -22,7 +22,9 @@ class Settings(BaseSettings):
         "http://localhost:4200",
         "http://localhost:8100",
         "http://127.0.0.1:4200",
-        "http://127.0.0.1:8100"
+        "http://127.0.0.1:8100",
+        # ✅ CORREÇÃO CRÍTICA: Adicionar domínio da Vercel
+        "https://poke-dexqogvyl-david-assefs-projects.vercel.app"
     ]
 
     # External APIs
