@@ -26,7 +26,7 @@ Este índice organiza toda a documentação do PokeAPIApp seguindo **padrões en
 - **🎮 Frontend**: http://localhost:4200
 - **🔌 Backend API**: http://localhost:8000
 - **📖 Documentação API**: http://localhost:8000/docs
-- **🌐 Produção**: https://pokeapi-frontend.onrender.com
+- **🌐 Produção**: https://poke-dexqogvyl-david-assefs-projects.vercel.app
 
 ### 🚀 **Fluxos de Navegação Recomendados**
 - **👨‍💻 Novo Desenvolvedor**: `01_01` → `01_02` → `10_01` → `50_01`

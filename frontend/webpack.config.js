@@ -26,10 +26,10 @@ module.exports = {
     aggregateTimeout: 300, // Aguarda 300ms antes de recompilar
 
     // Configurações específicas para Windows
-    followSymlinks: false,
+    followSymlinks: false
 
-    // Ignorar arquivos específicos que podem causar loops
-    ignored: /node_modules|www|dist|test-results|playwright-report|coverage|\.git|\.angular|logs|tmp|temp|\.log$|\.tmp$|\.temp$/
+    // ✅ CORREÇÃO: Removida duplicação da propriedade 'ignored' (linha regex)
+    // A configuração de array acima já cobre todos os casos necessários
   },
 
   // Configuração de cache para melhor performance
@@ -40,6 +40,9 @@ module.exports = {
       config: [__filename]
     }
   },
+
+  // ✅ CORREÇÃO: Configuração simplificada para evitar conflitos
+  // As configurações de devServer são gerenciadas pelo Angular CLI
 
   // Configuração de resolução de módulos
   resolve: {

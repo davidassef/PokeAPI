@@ -1,4 +1,4 @@
-# 🚀 Deploy Configuration - Render
+# 🚀 Deploy Configuration - Render + Vercel
 
 ## Arquitetura de Deploy
 
@@ -8,12 +8,12 @@
 - **Comando**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 - **URL**: https://pokeapi-la6k.onrender.com
 
-### Frontend (Static Site)
+### Frontend (Static Site - Vercel)
 - **Tipo**: Static Site
 - **Runtime**: Node.js
 - **Build**: `npm install && npm run build:prod`
 - **Publish**: `./www`
-- **URL**: https://pokeapi-frontend.onrender.com
+- **URL**: https://poke-dexqogvyl-david-assefs-projects.vercel.app
 
 ## ⚠️ Limitações do Deploy Estático
 
@@ -50,7 +50,7 @@ O sistema detecta automaticamente o ambiente:
 enableClientServer: true,
 syncMode: 'pull + push'
 
-// Produção (*.onrender.com, *.netlify.app, etc.)
+// Produção (*.onrender.com, *.vercel.app, *.netlify.app, etc.)
 enableClientServer: false,
 syncMode: 'push only'
 ```

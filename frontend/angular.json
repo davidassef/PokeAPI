@@ -94,8 +94,7 @@
           "options": {
             "port": 8100,
             "host": "localhost",
-            "liveReload": true,
-            "hmr": false
+            "poll": 2000
           },
           "configurations": {
             "production": {
