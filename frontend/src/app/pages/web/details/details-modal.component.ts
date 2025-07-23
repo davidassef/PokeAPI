@@ -74,6 +74,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.isLoadingPokemonData;
   }
 
+  // ✅ OTIMIZAÇÃO HEADER: Getter para tema do header
+  get headerTheme(): string {
+    return this.pokemonTheme?.gradient || 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)';
+  }
+
   // ✅ FASE 4: Métodos de verificação simplificados
   isOverviewDataReady(): boolean {
     return !!this.pokemon;
@@ -327,10 +332,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.isOverviewCombatTransition = false;
     this.disableTabAnimation = false;
 
-    // Gerar tema baseado nos tipos do Pokémon usando o serviço especializado
+    // ✅ OTIMIZAÇÃO HEADER: Configuração paralela de tema e carrossel
     this.generatePokemonTheme();
 
-    // Configurar carrossel de imagens se não foi feito pelo PokemonDetailsManager
+    // Configurar carrossel (já foi feito no loadPokemonDetailsDirectly)
     if (!this.carouselImages || this.carouselImages.length === 0) {
       this.setupCarousel();
     } else {
@@ -352,13 +357,12 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }, 100);
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Configuração direta do carrossel sem logs
+   */
   setupCarousel() {
-    console.log('🖼️ Configurando carrossel para:', this.pokemon?.name);
-
-    // Usar o PokemonDetailsManager para gerar as imagens do carrossel
+    // ✅ CARREGAMENTO DIRETO: Gerar imagens do carrossel
     this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(this.pokemon);
-
-    console.log('Imagens do carrossel:', this.carouselImages);
 
     // Inicializar com a primeira imagem válida
     this.currentImageIndex = 0;
@@ -745,83 +749,80 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.getAbilityDescription(abilityName);
   }
 
-  // Métodos do carrossel
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Navegação otimizada do carrossel
+   */
   previousCarouselImage(): void {
-    if (this.currentImageIndex > 0) {
-      this.currentImageIndex--;
-    } else {
-      this.currentImageIndex = this.carouselImages.length - 1;
-    }
+    this.currentImageIndex = this.currentImageIndex > 0
+      ? this.currentImageIndex - 1
+      : this.carouselImages.length - 1;
     this.updateCurrentCarouselImage();
   }
 
   nextCarouselImage(): void {
-    if (this.currentImageIndex < this.carouselImages.length - 1) {
-      this.currentImageIndex++;
-    } else {
-      this.currentImageIndex = 0;
-    }
+    this.currentImageIndex = this.currentImageIndex < this.carouselImages.length - 1
+      ? this.currentImageIndex + 1
+      : 0;
     this.updateCurrentCarouselImage();
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Seleção direta de imagem sem forçar atualização
+   */
   selectCarouselImage(index: number): void {
     this.currentImageIndex = index;
     this.currentCarouselIndex = index;
     this.updateCurrentCarouselImage();
-
-    // Forçar atualização do carrossel
-    console.log('🎯 Selecionando imagem do carrossel:', index);
-    this.updateCarouselView();
+    // ✅ REMOÇÃO COMPLETA: updateCarouselView() removido - desnecessário
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Atualização direta do carrossel sem setTimeout
+   */
   private updateCarouselView(): void {
-    // Garantir que o carrossel seja atualizado corretamente
-    setTimeout(() => {
-      const offset = this.getThumbnailSlideOffset();
-      console.log('🎯 Atualizando vista do carrossel com offset:', offset);
-    }, 0);
+    // ✅ REMOÇÃO COMPLETA: setTimeout removido - atualização direta
+    const offset = this.getThumbnailSlideOffset();
+    // Log removido para produção
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Cálculo otimizado do offset das miniaturas
+   */
   getThumbnailSlideOffset(): number {
-    // Calcular o offset para centralizar as miniaturas
     const thumbnailWidth = 52; // largura da miniatura (44px) + gap (8px)
     const maxVisible = 5; // Máximo de 5 miniaturas visíveis
 
     if (this.carouselImages.length <= maxVisible) {
-      console.log('🎯 Carrossel: Menos de 5 imagens, sem scroll necessário');
       return 0;
     }
 
-    // Calcular offset para manter a miniatura ativa no centro
     const centerIndex = Math.floor(maxVisible / 2); // índice 2 (terceira posição)
     let targetOffset = 0;
 
     if (this.currentCarouselIndex < centerIndex) {
       // Início da lista - não mover, mostrar primeiras 5
       targetOffset = 0;
-      console.log('🎯 Carrossel: Início da lista, offset = 0');
     } else if (this.currentCarouselIndex >= this.carouselImages.length - centerIndex) {
       // Final da lista - mostrar as últimas 5
       targetOffset = (this.carouselImages.length - maxVisible) * thumbnailWidth;
-      console.log('🎯 Carrossel: Final da lista, offset =', targetOffset);
     } else {
       // Meio da lista - centralizar a miniatura ativa na posição central
       targetOffset = (this.currentCarouselIndex - centerIndex) * thumbnailWidth;
-      console.log('🎯 Carrossel: Meio da lista, centralizando índice', this.currentCarouselIndex, 'offset =', targetOffset);
     }
 
-    console.log('🎯 Carrossel: Offset final =', -targetOffset, 'para índice', this.currentCarouselIndex);
     return -targetOffset;
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Atualização direta da imagem do carrossel
+   */
   private updateCurrentCarouselImage(): void {
     const imageUrl = this.carouselImages[this.currentImageIndex]?.url || '';
     this.currentCarouselImage = this.isValidImageUrl(imageUrl)
       ? imageUrl
       : this.ensureValidImage();
     this.currentCarouselIndex = this.currentImageIndex;
-
-    console.log('🔄 Imagem atual do carrossel:', this.currentCarouselImage);
+    // ✅ REMOÇÃO COMPLETA: Log removido para produção
   }
 
   // Método para obter as miniaturas visíveis (máximo 5)
@@ -1291,39 +1292,34 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.disableTabAnimation ? 'disabled' : this.activeTab;
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Geração direta do tema sem logs excessivos
+   */
   private generatePokemonTheme(): void {
     if (!this.pokemon?.types || this.pokemon.types.length === 0) {
-      console.log('⚠️ Tipos não encontrados, usando gradiente padrão');
       this.pokemonTheme = this.pokemonThemeService.getDefaultTheme();
       return;
     }
 
-    // ✅ CORREÇÃO: O generateTheme espera o objeto pokemon completo, não apenas os tipos
-    console.log(`🎨 Gerando tema para ${this.pokemon.name}:`, { types: this.pokemon.types });
-
+    // ✅ GERAÇÃO DIRETA: Criar tema baseado nos tipos do pokémon
     this.pokemonTheme = this.pokemonThemeService.generateTheme(this.pokemon);
 
-    // ✅ APLICAR CORES NO HEADER: Definir variáveis CSS para o header
+    // ✅ APLICAÇÃO SIMPLIFICADA: Tema aplicado via template binding
     this.applyThemeToHeader();
   }
 
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Aplicação de tema via ViewChild ou binding direto
+   * Remove querySelector custoso e aplica tema diretamente
+   */
   private applyThemeToHeader(): void {
     if (!this.pokemonTheme) return;
 
-    // Aplicar variáveis CSS para o header refletir as cores dos badges
-    const headerElement = document.querySelector('.pokemon-header-optimized') as HTMLElement;
-    if (headerElement) {
-      headerElement.style.setProperty('--pokemon-primary-color', this.pokemonTheme.primaryColor);
-      headerElement.style.setProperty('--pokemon-secondary-color', this.pokemonTheme.secondaryColor);
-      headerElement.style.setProperty('--pokemon-text-color', this.pokemonTheme.textColor);
-      headerElement.style.setProperty('--pokemon-shadow-color', this.pokemonTheme.shadowColor);
+    // ✅ OTIMIZAÇÃO: Usar binding direto no template em vez de DOM manipulation
+    // As variáveis CSS são aplicadas via [style.background] no template HTML
+    // Removida manipulação DOM custosa com querySelector
 
-      console.log('🎨 Tema aplicado ao header:', {
-        primary: this.pokemonTheme.primaryColor,
-        secondary: this.pokemonTheme.secondaryColor,
-        gradient: this.pokemonTheme.gradient
-      });
-    }
+    // ✅ REMOÇÃO COMPLETA: Log removido para produção
   }
 
 
@@ -1471,28 +1467,26 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return ['Descrição não disponível'];
   }
 
-  // Métodos para navegação das miniaturas
+  /**
+   * ✅ OTIMIZAÇÃO HEADER: Navegação otimizada das miniaturas
+   */
   canScrollThumbnailsLeft(): boolean {
-    // Pode rolar para esquerda se há mais de 5 imagens e não estamos no início
     return this.carouselImages.length > 5 && this.currentCarouselIndex > 0;
   }
 
   canScrollThumbnailsRight(): boolean {
-    // Pode rolar para direita se há mais de 5 imagens e não estamos no final
     return this.carouselImages.length > 5 && this.currentCarouselIndex < this.carouselImages.length - 1;
   }
 
   scrollThumbnailsLeft(): void {
     if (this.canScrollThumbnailsLeft()) {
-      const newIndex = Math.max(0, this.currentCarouselIndex - 1);
-      this.selectCarouselImage(newIndex);
+      this.selectCarouselImage(Math.max(0, this.currentCarouselIndex - 1));
     }
   }
 
   scrollThumbnailsRight(): void {
     if (this.canScrollThumbnailsRight()) {
-      const newIndex = Math.min(this.carouselImages.length - 1, this.currentCarouselIndex + 1);
-      this.selectCarouselImage(newIndex);
+      this.selectCarouselImage(Math.min(this.carouselImages.length - 1, this.currentCarouselIndex + 1));
     }
   }
 

@@ -4,9 +4,9 @@
      [@modalEnter]>
   <div class="details-modal-container" (click)="$event.stopPropagation()">
 
-    <!-- Header otimizado com layout lado a lado -->
+    <!-- ✅ OTIMIZAÇÃO HEADER: Binding direto com getter otimizado -->
     <div class="pokemon-header-optimized" [@headerPulse]="headerState"
-         [style.background]="pokemonTheme?.gradient">
+         [style.background]="headerTheme">
 
       <!-- Seção da imagem com carrossel -->
       <div class="pokemon-image-section">
