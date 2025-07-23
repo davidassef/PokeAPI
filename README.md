@@ -32,7 +32,7 @@
 ### 🔑 Credenciais de Teste
 | Campo | Valor |
 |-------|-------|
-| **📧 Email** | `teste@test.come` |
+| **📧 Email** | `teste@teste.com` |
 | **🔒 Senha** | `Teste123` |
 
 </div>
