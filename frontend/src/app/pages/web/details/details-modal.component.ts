@@ -1384,164 +1384,13 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     console.log(`🔄 Carregando dados necessários para aba: ${tab}`);
 
-    switch (tab) {
-      case 'overview':
-        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
-        this.loadTabDataUnified(tab);
-        break;
-
-      case 'combat':
-        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
-        this.loadTabDataUnified(tab);
-        break;
-
-      case 'evolution':
-        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
-        this.loadTabDataUnified(tab);
-        break;
-
-      case 'curiosities':
-        // ✅ CORREÇÃO: Usar método unificado para evitar duplicação
-        this.loadTabDataUnified(tab);
-        break;
-    }
+    // ✅ CORREÇÃO: Sistema unificado simples - usar apenas loadTabData
+    this.loadTabData(tab);
   }
 
-  /**
-   * ✅ CORREÇÃO CRÍTICA: Método unificado para carregamento de dados
-   * Elimina duplicação entre loadTabData, loadEvolutionDataOptimized, etc.
-   */
-  private async loadTabDataUnified(tab: string): Promise<void> {
-    if (!this.pokemon) {
-      console.warn(`❌ loadTabDataUnified: Pokemon não disponível para aba ${tab}`);
-      return;
-    }
+  // ✅ CORREÇÃO: Método loadTabDataUnified removido - usando apenas loadTabData para simplicidade
 
-    // Verificar se dados já existem
-    if (this.hasValidDataForTab(tab)) {
-      console.log(`✅ Dados válidos já existem para aba ${tab}`);
-      this.tabDataLoaded[tab] = true;
-      return;
-    }
-
-    // Marcar como carregando
-    this.isLoadingTabData = true;
-
-    try {
-      console.log(`🔄 Carregando dados unificados para aba: ${tab}`);
-
-      // ✅ CORREÇÃO: Tratamento específico para cada aba
-      switch (tab) {
-        case 'overview':
-        case 'curiosities':
-          // Para overview e curiosities, carregar flavor texts diretamente
-          await this.loadFlavorTextsForTab(tab);
-          break;
-
-        case 'combat':
-        case 'evolution':
-          // Para combat e evolution, usar PokemonDetailsManager
-          const tabData = await this.pokemonDetailsManager
-            .loadTabData(tab, this.pokemon, this.speciesData)
-            .toPromise();
-          this.processTabDataUnified(tab, tabData);
-          break;
-      }
-
-      this.tabDataLoaded[tab] = true;
-      console.log(`✅ Dados da aba ${tab} carregados com sucesso`);
-
-    } catch (error) {
-      console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
-      this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
-    } finally {
-      this.isLoadingTabData = false;
-    }
-  }
-
-  /**
-   * ✅ CORREÇÃO: Carregar flavor texts para abas específicas
-   */
-  private async loadFlavorTextsForTab(tab: string): Promise<void> {
-    if (!this.pokemon?.id) {
-      console.warn(`❌ loadFlavorTextsForTab: Pokemon ID não disponível para aba ${tab}`);
-      return;
-    }
-
-    try {
-      console.log(`🔮 Carregando flavor texts para aba: ${tab}`);
-
-      // Carregar flavor texts usando o método direto
-      const flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
-
-      if (flavorTexts && flavorTexts.length > 0) {
-        this.flavorTexts = flavorTexts;
-        this.currentFlavorIndex = 0;
-        this.flavorText = this.flavorTexts[0];
-        console.log(`✅ Flavor texts carregados para aba ${tab}:`, flavorTexts.length, 'textos');
-      } else {
-        this.flavorTexts = ['Descrição não disponível'];
-        this.currentFlavorIndex = 0;
-        this.flavorText = this.flavorTexts[0];
-        console.log(`⚠️ Nenhum flavor text encontrado para aba ${tab}`);
-      }
-
-    } catch (error) {
-      console.error(`❌ Erro ao carregar flavor texts para aba ${tab}:`, error);
-      this.flavorTexts = ['Descrição não disponível'];
-      this.currentFlavorIndex = 0;
-      this.flavorText = this.flavorTexts[0];
-    }
-  }
-
-  /**
-   * ✅ CORREÇÃO: Verificar se dados válidos já existem para uma aba
-   */
-  private hasValidDataForTab(tab: string): boolean {
-    switch (tab) {
-      case 'overview':
-        return this.flavorTexts && this.flavorTexts.length > 0;
-      case 'combat':
-        return this.abilityDescriptions && Object.keys(this.abilityDescriptions).length > 0;
-      case 'evolution':
-        return this.evolutionChain && this.evolutionChain.length > 0;
-      case 'curiosities':
-        return this.flavorTexts && this.flavorTexts.length > 0;
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * ✅ CORREÇÃO: Processar dados de forma unificada
-   */
-  private processTabDataUnified(tab: string, tabData: any): void {
-    switch (tab) {
-      case 'overview':
-        // ✅ CORREÇÃO: Overview não processa flavor texts aqui
-        // Flavor texts são carregados diretamente em loadFlavorTextsForTab
-        console.log('🎯 Overview: dados básicos processados');
-        break;
-
-      case 'combat':
-        this.abilityDescriptions = tabData || {};
-        console.log('⚔️ Combat: habilidades carregadas:', Object.keys(this.abilityDescriptions).length);
-        break;
-
-      case 'evolution':
-        if (tabData && Array.isArray(tabData)) {
-          this.evolutionChain = tabData;
-          console.log('🔄 Evolution: cadeia carregada:', tabData.length, 'estágios');
-        }
-        break;
-
-      case 'curiosities':
-        // ✅ CORREÇÃO: Curiosities não processa dados aqui
-        // Flavor texts são carregados diretamente em loadFlavorTextsForTab
-        console.log('🎭 Curiosities: flavor texts carregados separadamente');
-        break;
-    }
-  }
+  // ✅ CORREÇÃO: Métodos auxiliares do sistema unificado removidos - usando apenas loadTabData simples
 
   /**
    * ✅ OTIMIZAÇÃO: Carregamento lazy de flavor texts
@@ -1564,13 +1413,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   /**
-   * ✅ OTIMIZAÇÃO: Métodos otimizados para carregamento de dados por aba
+   * ✅ CORREÇÃO: Sistema unificado implementado - usando apenas loadTabData()
+   * Métodos específicos por aba removidos para eliminar duplicação
    */
-  // ✅ CORREÇÃO: Método removido - usando loadTabDataUnified()
-
-  // ✅ CORREÇÃO: Método removido - usando loadTabDataUnified()
-
-  // ✅ CORREÇÃO: Método removido - usando loadTabDataUnified()
 
   /**
    * ✅ FASE 1: Método direto para carregar flavor texts PT-BR
