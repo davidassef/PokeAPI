@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { takeUntil, shareReplay, retry } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
@@ -32,8 +32,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   private destroy$ = new Subject<void>();
 
-  // ✅ OTIMIZAÇÃO P4: Cache para flavor texts para evitar recarregamentos
-  private flavorTextsCache = new Map<string, string[]>();
+  // ✅ REMOÇÃO COMPLETA: Cache removido - consumo direto da API
 
   // Propriedades do carrossel
   carouselImages: any[] = [];
@@ -47,22 +46,14 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   isOverviewCombatTransition: boolean = false;
   disableTabAnimation: boolean = false;
 
-  // Controle de carregamento de dados por aba
-  tabDataLoaded: { [key: string]: boolean } = {
-    overview: false,
-    combat: false,
-    evolution: false,
-    curiosities: false
-  };
+  // ✅ REMOÇÃO COMPLETA: Sistema de cache de abas removido - carregamento direto
 
-  // ✅ FASE 4: Estados simplificados inspirados no mobile
-  isLoadingTabData: boolean = false;
+  // ✅ REMOÇÃO COMPLETA: Estados de loading simplificados
 
   // Propriedades dos flavor texts
   flavorText: string = '';
   flavorTexts: string[] = [];
   currentFlavorIndex: number = 0;
-  isLoadingFlavor: boolean = false;
   showScrollIndicator: boolean = false;
 
   // Propriedades de tema e animação
@@ -75,8 +66,13 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   abilityDescriptions: { [key: string]: string } = {};
   isSpeciesDataReady = false;
 
-  // Estados de loading
+  // ✅ ESTADO DE LOADING ÚNICO E SIMPLES
   private isLoadingPokemonData: boolean = false;
+
+  // Getter público para verificar estado de loading
+  get isLoading(): boolean {
+    return this.isLoadingPokemonData;
+  }
 
   // ✅ FASE 4: Métodos de verificação simplificados
   isOverviewDataReady(): boolean {
@@ -84,15 +80,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   isCombatDataReady(): boolean {
-    return !!this.pokemon && !this.isLoadingTabData;
+    return !!this.pokemon;
   }
 
   isEvolutionDataReady(): boolean {
-    return !!this.pokemon && !this.isLoadingTabData;
+    return !!this.pokemon;
   }
 
   isCuriositiesDataReady(): boolean {
-    return !!this.pokemon && !this.isLoadingTabData;
+    return !!this.pokemon && this.flavorTexts.length > 0;
   }
 
   shouldShowCombatData(): boolean {
@@ -166,88 +162,133 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   // ✅ CORREÇÃO: Propriedade loadingDebounceTimer removida - carregamento direto implementado
 
   /**
-   * ✅ OTIMIZAÇÃO: Método otimizado para carregar apenas dados essenciais inicialmente
-   * Implementa lazy loading para melhor performance
-   * ✅ CORREÇÃO P4: Migrado de toPromise() para firstValueFrom() e forkJoin para melhor performance
+   * ✅ REMOÇÃO COMPLETA: Método simplificado para carregamento direto da API
+   * Sem cache, preload ou lazy loading - consumo direto e imediato
    */
   private async loadPokemonDetailsDirectly(id: number): Promise<void> {
     this.isLoadingPokemonData = true;
 
     try {
-      // ✅ OTIMIZAÇÃO P4: Usar forkJoin com retry e shareReplay para melhor performance
-      const { pokemon, species } = await firstValueFrom(
-        forkJoin({
-          pokemon: this.pokeApiService.getPokemon(id).pipe(
-            retry(2),
-            shareReplay(1)
-          ),
-          species: this.pokeApiService.getPokemonSpecies(id).pipe(
-            retry(2),
-            shareReplay(1)
-          )
-        })
-      );
+      // ✅ CARREGAMENTO PARALELO SIMPLES: Pokemon + Species + Flavor Texts
+      const [pokemon, species] = await Promise.all([
+        firstValueFrom(this.pokeApiService.getPokemon(id)),
+        firstValueFrom(this.pokeApiService.getPokemonSpecies(id))
+      ]);
 
       this.pokemon = pokemon;
       this.speciesData = species;
 
-      // ✅ OTIMIZAÇÃO: Configurar carrossel apenas com dados básicos
+      // ✅ CONFIGURAR CARROSSEL
       this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(pokemon);
 
-      // ✅ OTIMIZAÇÃO: Não carregar flavor texts inicialmente - lazy load na aba
-      this.flavorTexts = [];
+      // ✅ CARREGAR FLAVOR TEXTS IMEDIATAMENTE
+      this.flavorTexts = await this.loadFlavorTextsDirectly(id);
       this.currentFlavorIndex = 0;
 
       this.isSpeciesDataReady = !!this.speciesData;
       this.initializePokemonData();
       this.isLoadingPokemonData = false;
 
-      // ✅ OTIMIZAÇÃO: Pré-carregar imagens em background
-      this.preloadCarouselImages();
-
     } catch (error) {
-      console.error('❌ Erro ao carregar detalhes:', error);
-      this.handleLoadingError(id);
+      console.error('❌ Erro ao carregar detalhes do Pokémon:', error);
+      this.handleLoadingError(id, error);
     }
+  }
+
+  // ✅ REMOÇÃO COMPLETA: Preload de imagens removido - carregamento sob demanda
+
+  /**
+   * ✅ GESTÃO DE ERRO ROBUSTA: Tratamento de erros sem dependência de cache
+   * Cria dados de fallback e notifica o usuário adequadamente
+   */
+  private handleLoadingError(id?: number, error?: any): void {
+    console.error('❌ Erro ao carregar dados do Pokémon:', error);
+
+    // Determinar tipo de erro para melhor tratamento
+    const errorType = this.determineErrorType(error);
+    console.log(`🔍 Tipo de erro identificado: ${errorType}`);
+
+    // Criar pokemon placeholder com dados básicos
+    if (id) {
+      this.pokemon = this.createPlaceholderPokemon(id);
+      this.speciesData = this.createPlaceholderSpecies(id);
+      this.flavorTexts = this.getErrorFlavorTexts(errorType);
+      this.currentFlavorIndex = 0;
+    }
+
+    // Configurar carrossel com imagem de erro
+    this.carouselImages = this.createErrorCarouselImages();
+
+    // Inicializar dados mesmo com erro
+    this.initializePokemonData();
+    this.isLoadingPokemonData = false;
+
+    // Log para debugging
+    console.log('🔧 Dados de fallback criados para recuperação de erro');
   }
 
   /**
-   * ✅ OTIMIZAÇÃO: Pré-carregamento de imagens em background
+   * ✅ GESTÃO DE ERRO: Determina o tipo de erro para tratamento adequado
    */
-  private preloadCarouselImages(): void {
-    if (!this.carouselImages || this.carouselImages.length === 0) return;
+  private determineErrorType(error: any): string {
+    if (!error) return 'unknown';
 
-    // Pré-carregar apenas as primeiras 3 imagens para não sobrecarregar
-    const imagesToPreload = this.carouselImages.slice(0, 3);
+    if (error.status === 404) return 'not_found';
+    if (error.status === 0 || error.name === 'NetworkError') return 'network';
+    if (error.status >= 500) return 'server';
+    if (error.name === 'TimeoutError') return 'timeout';
 
-    imagesToPreload.forEach((imageData, index) => {
-      if (imageData.url && this.isValidImageUrl(imageData.url)) {
-        const img = new Image();
-        img.onload = () => {
-          console.log(`✅ Imagem ${index + 1} pré-carregada:`, imageData.label);
-        };
-        img.onerror = () => {
-          console.warn(`❌ Erro ao pré-carregar imagem ${index + 1}:`, imageData.label);
-        };
-        img.src = imageData.url;
-      }
-    });
+    return 'unknown';
   }
 
-  private handleLoadingError(id?: number): void {
-    console.error('❌ Erro ao carregar dados do Pokémon');
-    if (id) {
-      this.pokemon = this.createPlaceholderPokemon(id);
-    }
-    this.initializePokemonData();
-    this.isLoadingPokemonData = false;
+  /**
+   * ✅ GESTÃO DE ERRO: Cria flavor texts apropriados para cada tipo de erro
+   */
+  private getErrorFlavorTexts(errorType: string): string[] {
+    const errorMessages: { [key: string]: string[] } = {
+      'not_found': ['Pokémon não encontrado na base de dados.'],
+      'network': ['Erro de conexão. Verifique sua internet e tente novamente.'],
+      'server': ['Servidor temporariamente indisponível. Tente novamente em alguns minutos.'],
+      'timeout': ['Tempo limite excedido. Tente novamente.'],
+      'unknown': ['Erro desconhecido ao carregar dados do Pokémon.']
+    };
+
+    return errorMessages[errorType] || errorMessages['unknown'];
+  }
+
+  /**
+   * ✅ GESTÃO DE ERRO: Cria species placeholder para dados de fallback
+   */
+  private createPlaceholderSpecies(id: number) {
+    return {
+      id: id,
+      name: 'pokemon-desconhecido',
+      flavor_text_entries: [],
+      egg_groups: [],
+      habitat: null,
+      generation: { name: 'unknown' }
+    };
+  }
+
+  /**
+   * ✅ GESTÃO DE ERRO: Cria imagens de carrossel para erro
+   */
+  private createErrorCarouselImages() {
+    const errorImage = this.ensureValidImage();
+    return [
+      {
+        url: errorImage,
+        label: 'Imagem não disponível',
+        type: 'error'
+      }
+    ];
   }
 
   private createPlaceholderPokemon(id: number) {
     const placeholderImage = this.ensureValidImage();
     return {
       id: id,
-      name: 'Pokemon Desconhecido',
+      name: 'Pokémon Desconhecido',
       sprites: {
         front_default: placeholderImage,
         back_default: placeholderImage,
@@ -278,15 +319,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     // Mark Pokemon as viewed when details are initialized
     this.viewedPokemonService.markPokemonAsViewed(this.pokemon.id);
 
-    // ✅ CORREÇÃO: Resetar dados de abas, mas manter curiosities se já temos flavor texts
-    this.tabDataLoaded = {
-      overview: false,
-      combat: false,
-      evolution: false,
-      curiosities: this.flavorTexts && this.flavorTexts.length > 0 // Marcar como carregado se já temos dados
-    };
-
-    console.log('📊 Estado inicial tabDataLoaded:', this.tabDataLoaded);
+    // ✅ REMOÇÃO COMPLETA: Sistema de cache de abas removido
 
     // Resetar estado das abas
     this.activeTab = 'overview';
@@ -304,16 +337,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.updateCurrentCarouselImage();
     }
 
-    // ✅ CORREÇÃO CRÍTICA: Remover carregamento automático para evitar duplicação
-    // Dados serão carregados apenas quando aba for acessada (lazy loading)
-    console.log('🎯 Inicialização sem carregamento automático - usando lazy loading');
-
-    console.log('✅ Inicialização completa. Estado final:', {
+    console.log('✅ Inicialização completa:', {
       pokemon: !!this.pokemon,
       activeTab: this.activeTab,
-      tabDataLoaded: this.tabDataLoaded,
       isOverviewDataReady: this.isOverviewDataReady(),
-      note: 'Dados serão carregados via lazy loading'
+      note: 'Dados carregados diretamente da API'
     });
   }
 
@@ -933,7 +961,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     // ✅ NÃO LIMPAR flavor texts aqui - eles são necessários para curiosities
     // this.flavorTexts = []; // REMOVIDO
     // this.flavorText = ''; // REMOVIDO
-    // this.isLoadingFlavor = false; // REMOVIDO
+    // ✅ REMOÇÃO COMPLETA: Estados de loading intermediários removidos
   }
 
   private cleanupDataForTabSwitch(fromTab: string, toTab: string): void {
@@ -942,11 +970,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     // Limpar apenas dados que NÃO pertencem à nova aba
     switch (toTab) {
       case 'overview':
-        // Dados básicos já carregados no initializePokemonData
-        // Apenas marcar como carregado se o pokemon existe
-        if (this.pokemon) {
-          this.tabDataLoaded['overview'] = true;
-        }
+        // Dados básicos já disponíveis
         break;
 
       case 'combat':
@@ -966,59 +990,49 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
+  /**
+   * ✅ REMOÇÃO COMPLETA: Carregamento direto e simples para todas as abas
+   * Sem cache, sem lazy loading - dados carregados sob demanda
+   */
   loadTabData(tab: string): void {
-    console.log(`🎯 Loading tab data for ${tab}`, {
-      pokemon: !!this.pokemon,
-      pokemonName: this.pokemon?.name,
-      currentTabDataLoaded: this.tabDataLoaded
-    });
+    console.log(`🎯 Carregando dados da aba: ${tab}`);
 
     if (!this.pokemon) {
       console.error('❌ loadTabData: Pokemon não disponível');
       return;
     }
 
-    // Se os dados já foram carregados, não recarregar
-    if (this.tabDataLoaded[tab]) {
-      console.log(`✅ Dados da aba ${tab} já carregados`);
-      return;
-    }
-
-    // ✅ CORREÇÃO URGENTE: Sistema híbrido para diferentes tipos de dados
+    // ✅ CARREGAMENTO DIRETO: Sempre carregar dados frescos da API
     switch (tab) {
       case 'overview':
+        // Overview já tem dados básicos carregados
+        console.log('✅ Overview: dados básicos já disponíveis');
+        break;
+
       case 'curiosities':
-        // Para overview e curiosities, carregar flavor texts diretamente
-        this.loadFlavorTextsForTab(tab).then(() => {
-          this.tabDataLoaded[tab] = true;
-          console.log(`✅ Flavor texts carregados para aba ${tab}`);
-        }).catch((error) => {
-          console.error(`❌ Erro ao carregar flavor texts para aba ${tab}:`, error);
-          this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
-        });
+        // Flavor texts já carregados no loadPokemonDetailsDirectly
+        console.log('✅ Curiosities: flavor texts já disponíveis');
         break;
 
       case 'combat':
       case 'evolution':
-        // Para combat e evolution, usar PokemonDetailsManager
+        // Carregar dados específicos via PokemonDetailsManager
         this.pokemonDetailsManager.loadTabData(tab, this.pokemon, this.speciesData)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (tabData) => {
               console.log(`✅ Dados da aba ${tab} carregados:`, tabData);
               this.processTabData(tab, tabData);
-              this.tabDataLoaded[tab] = true;
             },
             error: (error) => {
               console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
-              this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
+              this.handleTabLoadingError(tab, error);
             }
           });
         break;
 
       default:
         console.warn(`⚠️ Aba desconhecida: ${tab}`);
-        this.tabDataLoaded[tab] = true;
         break;
     }
   }
@@ -1060,7 +1074,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.evolutionChain = [];
         this.flavorTexts = [];
         this.flavorText = '';
-        this.isLoadingFlavor = false;
+        // ✅ REMOÇÃO COMPLETA: Estado de loading removido
         // Não limpar abilityDescriptions pois são dados pequenos e podem ser reutilizados
         break;
 
@@ -1069,14 +1083,14 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.evolutionChain = [];
         this.flavorTexts = [];
         this.flavorText = '';
-        this.isLoadingFlavor = false;
+        // ✅ REMOÇÃO COMPLETA: Estado de loading removido
         break;
 
       case 'evolution':
         // Limpar dados não relacionados à evolução
         this.flavorTexts = [];
         this.flavorText = '';
-        this.isLoadingFlavor = false;
+        // ✅ REMOÇÃO COMPLETA: Estado de loading removido
         // NÃO limpar evolutionChain aqui para evitar re-carregamento desnecessário
         // Manter speciesData pois é necessário para evolução
         break;
@@ -1227,9 +1241,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.flavorText = '';
       this.abilityDescriptions = {};
 
-      // Marcar abas como não carregadas para forçar reload com novo idioma
-      this.tabDataLoaded['combat'] = false;
-      this.tabDataLoaded['curiosities'] = false;
+      // ✅ REMOÇÃO COMPLETA: Cache removido - dados sempre recarregados
 
       // Recarregar dados da aba ativa
       this.loadTabData(this.activeTab);
@@ -1268,8 +1280,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     // ✅ CORREÇÃO P5: Timers de debounce removidos - não são mais necessários
 
-    // ✅ OTIMIZAÇÃO P4: Limpar cache para evitar memory leaks
-    this.flavorTextsCache.clear();
+    // ✅ REMOÇÃO COMPLETA: Cache removido - sem necessidade de limpeza
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -1321,7 +1332,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   private resetEvolutionData(): void {
     console.log('🔄 Resetando dados da evolução');
     this.evolutionChain = [];
-    this.tabDataLoaded['evolution'] = false;
   }
 
   // Método para resetar dados dos flavor texts quando necessário
@@ -1329,8 +1339,36 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     console.log('🔄 Resetando dados dos flavor texts');
     this.flavorTexts = [];
     this.flavorText = '';
-    this.isLoadingFlavor = false;
-    this.tabDataLoaded['curiosities'] = false;
+    // ✅ REMOÇÃO COMPLETA: Estado de loading removido
+    // ✅ REMOÇÃO COMPLETA: Cache removido
+  }
+
+  /**
+   * ✅ GESTÃO DE ERRO: Tratamento específico para erros de carregamento de abas
+   */
+  private handleTabLoadingError(tab: string, error: any): void {
+    const errorType = this.determineErrorType(error);
+    console.log(`🔍 Erro na aba ${tab} - Tipo: ${errorType}`);
+
+    // Definir dados de fallback específicos por aba
+    switch (tab) {
+      case 'combat':
+        // Para aba de combate, mostrar dados básicos se disponíveis
+        if (this.pokemon?.stats) {
+          console.log('✅ Usando dados básicos de stats para aba combat');
+        }
+        break;
+
+      case 'evolution':
+        // Para evolução, limpar dados e mostrar mensagem
+        this.evolutionChain = [];
+        console.log('🔄 Dados de evolução limpos devido ao erro');
+        break;
+
+      default:
+        console.log(`⚠️ Erro genérico na aba ${tab}`);
+        break;
+    }
   }
 
   /**
@@ -1345,79 +1383,20 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     console.log(`🎯 Mudando para aba: ${tab}`);
 
-    // ✅ CORREÇÃO P5: Mudança imediata da aba e carregamento direto
+    // ✅ REMOÇÃO COMPLETA: Mudança imediata da aba e carregamento direto
     this.activeTab = tab;
-    this.loadTabDataIfNeeded(tab);
+    this.loadTabData(tab);
   }
 
   // ✅ CORREÇÃO P5: tabChangeDebounceTimer removido - debounce desnecessário
 
   // ✅ CORREÇÃO P5: Método preloadNextTabData removido - pré-carregamento desnecessário para dados pequenos
 
-  /**
-   * ✅ OTIMIZAÇÃO CRÍTICA: Carregamento sob demanda com cache inteligente
-   */
-  private loadTabDataIfNeeded(tab: string): void {
-    if (!this.pokemon) {
-      console.warn('❌ loadTabDataIfNeeded: Pokemon não disponível');
-      return;
-    }
-
-    // ✅ OTIMIZAÇÃO: Verificar cache antes de carregar
-    if (this.tabDataLoaded[tab]) {
-      console.log(`✅ Dados da aba ${tab} já em cache`);
-      return;
-    }
-
-    // ✅ OTIMIZAÇÃO: Verificar se já está carregando para evitar duplicação
-    if (this.isLoadingTabData) {
-      console.log(`⚠️ Já carregando dados de aba, ignorando: ${tab}`);
-      return;
-    }
-
-    console.log(`🔄 Carregando dados necessários para aba: ${tab}`);
-
-    // ✅ CORREÇÃO: Sistema unificado simples - usar apenas loadTabData
-    this.loadTabData(tab);
-  }
+  // ✅ REMOÇÃO COMPLETA: Método loadTabDataIfNeeded removido - carregamento direto implementado
 
   // ✅ CORREÇÃO: Método loadTabDataUnified removido - usando apenas loadTabData para simplicidade
 
-  /**
-   * ✅ CORREÇÃO URGENTE: Restaurar carregamento de flavor texts para abas específicas
-   * Este método é essencial para overview e curiosities
-   */
-  private async loadFlavorTextsForTab(tab: string): Promise<void> {
-    if (!this.pokemon?.id) {
-      console.warn(`❌ loadFlavorTextsForTab: Pokemon ID não disponível para aba ${tab}`);
-      return;
-    }
-
-    try {
-      console.log(`🔮 Carregando flavor texts para aba: ${tab}`);
-
-      // Carregar flavor texts usando o método direto
-      const flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
-
-      if (flavorTexts && flavorTexts.length > 0) {
-        this.flavorTexts = flavorTexts;
-        this.currentFlavorIndex = 0;
-        this.flavorText = this.flavorTexts[0];
-        console.log(`✅ Flavor texts carregados para aba ${tab}:`, flavorTexts.length, 'textos');
-      } else {
-        this.flavorTexts = ['Descrição não disponível'];
-        this.currentFlavorIndex = 0;
-        this.flavorText = this.flavorTexts[0];
-        console.log(`⚠️ Nenhum flavor text encontrado para aba ${tab}`);
-      }
-
-    } catch (error) {
-      console.error(`❌ Erro ao carregar flavor texts para aba ${tab}:`, error);
-      this.flavorTexts = ['Descrição não disponível'];
-      this.currentFlavorIndex = 0;
-      this.flavorText = this.flavorTexts[0];
-    }
-  }
+  // ✅ REMOÇÃO COMPLETA: Método loadFlavorTextsForTab removido - dados carregados diretamente
 
   // ✅ CORREÇÃO P5: Método loadFlavorTextsLazy removido - redundante com loadFlavorTextsForTab
 
@@ -1427,33 +1406,20 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
    */
 
   /**
-   * ✅ FASE 1: Método direto para carregar flavor texts PT-BR
-   * Prioriza arquivo local antes da API, conforme especificado no plano
-   * ✅ CORREÇÃO P4: Migrado de toPromise() para firstValueFrom() com retry e cache
+   * ✅ REMOÇÃO COMPLETA: Método simplificado para carregar flavor texts PT-BR
+   * Sem cache - consumo direto da API e arquivo local
    */
   private async loadFlavorTextsDirectly(pokemonId: number): Promise<string[]> {
-    // ✅ OTIMIZAÇÃO P4: Verificar cache primeiro
-    const cacheKey = `${pokemonId}-${this.translate.currentLang}`;
-    if (this.flavorTextsCache.has(cacheKey)) {
-      console.log(`✅ Flavor texts carregados do cache para ${pokemonId}`);
-      return this.flavorTextsCache.get(cacheKey)!;
-    }
-
     // 1. Para português, tentar arquivo local PRIMEIRO
     if (this.translate.currentLang === 'pt-BR' || this.translate.currentLang === 'pt') {
       try {
         const localData = await firstValueFrom(
-          this.http.get<any>('./assets/data/flavors_ptbr.json').pipe(
-            retry(1),
-            shareReplay(1)
-          )
+          this.http.get<any>('./assets/data/flavors_ptbr.json')
         );
         const localTexts = localData[pokemonId] || localData[pokemonId.toString()];
 
         if (localTexts && Array.isArray(localTexts) && localTexts.length > 0) {
           console.log(`✅ Flavor texts pt-BR carregados: ${localTexts.length} textos`);
-          // ✅ OTIMIZAÇÃO P4: Armazenar no cache
-          this.flavorTextsCache.set(cacheKey, localTexts);
           return localTexts; // PARAR AQUI - não continuar para API
         }
       } catch (error) {
@@ -1464,21 +1430,14 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     // 2. Fallback para API apenas se necessário
     try {
       const species = await firstValueFrom(
-        this.pokeApiService.getPokemonSpecies(pokemonId).pipe(
-          retry(2),
-          shareReplay(1)
-        )
+        this.pokeApiService.getPokemonSpecies(pokemonId)
       );
       const apiTexts = this.extractFlavorTextsFromAPI(species);
-      // ✅ OTIMIZAÇÃO P4: Armazenar no cache
-      this.flavorTextsCache.set(cacheKey, apiTexts);
       return apiTexts;
     } catch (error) {
       console.error('❌ Erro ao carregar flavor texts:', error);
-      const fallbackTexts = ['Descrição não disponível'];
-      // ✅ OTIMIZAÇÃO P4: Cache também para fallback
-      this.flavorTextsCache.set(cacheKey, fallbackTexts);
-      return fallbackTexts;
+      const errorType = this.determineErrorType(error);
+      return this.getErrorFlavorTexts(errorType);
     }
   }
 

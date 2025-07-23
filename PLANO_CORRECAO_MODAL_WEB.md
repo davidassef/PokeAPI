@@ -29,6 +29,7 @@ Este documento detalha o plano estruturado para corrigir os problemas identifica
 - 🔧 **Correção Urgente Aplicada** ✅
 - ⚡ **Próximo**: Otimização de Subscriptions (melhora performance)
 - 🔄 **Interrupção**: Downgrade Node.js para versão par (requisito técnico)
+- 🚀 **Deploy**: Configuração Vercel corrigida - PWA funcionando
 
 ---
 
@@ -894,8 +895,186 @@ Metodologia: PREVC (Planejar-Revisar-Executar-Validar-Commitar)"
 
 ---
 
+## 🎯 **NOVA ESTRATÉGIA: OTIMIZAÇÃO DE CACHE E PRELOAD**
+
+### **📋 ANÁLISE DA PROPOSTA:**
+
+**Situação Atual:**
+- Modal web com cache e preload complexo
+- Carregamento sob demanda causa delays
+- UX inconsistente entre aberturas
+
+**Proposta do Usuário:**
+1. **Remover** todo cache e preload atual
+2. **Implementar** consumo completo da API no carregamento inicial
+3. **Preload inteligente** para dados do modal
+
+### **💡 SUGESTÃO TÉCNICA RECOMENDADA:**
+
+#### **🚀 ESTRATÉGIA HÍBRIDA OTIMIZADA:**
+
+**1️⃣ PRELOAD INTELIGENTE NO CARREGAMENTO INICIAL:**
+```typescript
+// No HomeService ou AppComponent
+async initializeAppData() {
+  // Carregar dados essenciais dos primeiros 20 pokémons
+  const essentialPokemons = await this.loadEssentialPokemonData(1, 20);
+
+  // Armazenar em cache otimizado (Map/WeakMap)
+  this.pokemonCacheService.preloadEssentialData(essentialPokemons);
+}
+```
+
+**2️⃣ CACHE ESTRATÉGICO (NÃO REMOVER TUDO):**
+```typescript
+// Cache apenas para dados já visualizados
+class PokemonCacheService {
+  private viewedPokemonCache = new Map<number, PokemonFullData>();
+  private preloadedBasicData = new Map<number, PokemonBasicData>();
+
+  // Cache inteligente com TTL
+  cacheWithTTL(pokemonId: number, data: any, ttl: number = 300000) {
+    // 5 minutos de cache para dados completos
+  }
+}
+```
+
+**3️⃣ MODAL COM CARREGAMENTO HÍBRIDO:**
+```typescript
+async openModal(pokemonId: number) {
+  // 1. Verificar cache primeiro (instantâneo)
+  const cachedData = this.cacheService.get(pokemonId);
+
+  if (cachedData) {
+    // Abrir modal imediatamente com dados em cache
+    this.showModalWithData(cachedData);
+  } else {
+    // 2. Mostrar loading e carregar dados
+    this.showModalLoading();
+    const freshData = await this.loadPokemonComplete(pokemonId);
+    this.updateModalWithData(freshData);
+  }
+
+  // 3. Background: atualizar cache se necessário
+  this.updateCacheInBackground(pokemonId);
+}
+```
+
+### **🎯 VANTAGENS DA ESTRATÉGIA HÍBRIDA:**
+
+#### **✅ BENEFÍCIOS:**
+- **Primeira abertura**: Dados básicos pré-carregados (instantâneo)
+- **Reaberturas**: Cache inteligente (instantâneo)
+- **Dados frescos**: Atualização em background
+- **Memory efficient**: Cache com TTL e limpeza automática
+- **UX consistente**: Sempre responsivo
+
+#### **⚡ IMPLEMENTAÇÃO SUGERIDA:**
+
+**FASE 1 - PRELOAD BÁSICO:**
+```typescript
+// Carregar no app.component.ts
+ngOnInit() {
+  this.preloadEssentialPokemonData();
+}
+
+private async preloadEssentialPokemonData() {
+  // Carregar dados básicos dos primeiros 50 pokémons
+  const basicData = await this.pokeApiService.getPokemonList(0, 50);
+
+  // Armazenar informações essenciais para modal
+  basicData.results.forEach((pokemon, index) => {
+    this.cacheService.preloadBasicInfo(index + 1, {
+      id: index + 1,
+      name: pokemon.name,
+      url: pokemon.url,
+      // Dados mínimos para abertura rápida do modal
+    });
+  });
+}
+```
+
+**FASE 2 - MODAL OTIMIZADO:**
+```typescript
+async loadPokemonForModal(id: number) {
+  // 1. Tentar cache primeiro
+  let pokemonData = this.cacheService.getFullData(id);
+
+  if (!pokemonData) {
+    // 2. Usar dados básicos pré-carregados se disponível
+    const basicData = this.cacheService.getBasicData(id);
+    if (basicData) {
+      this.showModalWithBasicData(basicData);
+    }
+
+    // 3. Carregar dados completos
+    pokemonData = await this.loadCompleteData(id);
+    this.updateModalWithCompleteData(pokemonData);
+
+    // 4. Armazenar em cache
+    this.cacheService.setFullData(id, pokemonData);
+  } else {
+    // Dados completos em cache - abertura instantânea
+    this.showModalWithData(pokemonData);
+  }
+}
+```
+
+### **🔧 ALTERNATIVA SIMPLES (SE PREFERIR):**
+
+#### **📦 REMOÇÃO COMPLETA DE CACHE:**
+```typescript
+// Remover todos os sistemas de cache
+// Carregar sempre dados frescos da API
+// Implementar loading states otimizados
+
+async openModal(pokemonId: number) {
+  this.showLoadingModal();
+
+  try {
+    // Carregamento paralelo otimizado
+    const [pokemon, species, evolution] = await Promise.all([
+      this.pokeApiService.getPokemon(pokemonId),
+      this.pokeApiService.getPokemonSpecies(pokemonId),
+      this.pokeApiService.getEvolutionChain(pokemonId)
+    ]);
+
+    this.showModalWithCompleteData({
+      pokemon,
+      species,
+      evolution
+    });
+
+  } catch (error) {
+    this.showErrorModal(error);
+  }
+}
+```
+
+### **🎯 RECOMENDAÇÃO FINAL:**
+
+**SUGIRO A ESTRATÉGIA HÍBRIDA** porque:
+
+1. **Melhor UX**: Primeira abertura rápida + reaberturas instantâneas
+2. **Eficiência**: Não sobrecarrega a API desnecessariamente
+3. **Flexibilidade**: Funciona offline para dados já vistos
+4. **Performance**: Balance entre velocidade e uso de recursos
+
+### **❓ QUAL ABORDAGEM PREFERE?**
+
+**A) ESTRATÉGIA HÍBRIDA** (recomendada)
+- Preload inteligente + cache otimizado
+
+**B) REMOÇÃO COMPLETA**
+- Sem cache, sempre API fresh
+
+**C) PRELOAD COMPLETO**
+- Carregar todos os dados no início (pode ser lento)
+
+---
+
 **Data de Criação**: 23 de Julho de 2025
 **Metodologia**: PREVC
-**Status**: Pronto para Execução
+**Status**: Aguardando Decisão de Estratégia
 **Estimativa Total**: 8-12 horas de desenvolvimento
 **Risco**: Baixo (com rollback plan definido)

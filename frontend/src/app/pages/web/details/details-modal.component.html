@@ -400,7 +400,8 @@
             <div class="flavor-container">
 
               <!-- Loading state para flavor texts -->
-              <div class="flavor-loading" *ngIf="isLoadingFlavor">
+              <!-- ✅ REMOÇÃO COMPLETA: Loading state removido -->
+              <div class="flavor-loading" *ngIf="isLoading">
                 <div class="loading-spinner">
                   <ion-spinner name="crescent"></ion-spinner>
                 </div>
@@ -408,7 +409,7 @@
               </div>
 
               <!-- Flavor texts carregados -->
-              <div class="flavor-text-display" *ngIf="!isLoadingFlavor && flavorTexts && flavorTexts.length > 0">
+              <div class="flavor-text-display" *ngIf="!isLoading && flavorTexts && flavorTexts.length > 0">
                 <div class="flavor-text-wrapper"
                      #flavorTextWrapper
                      (scroll)="onFlavorTextScroll($event)">
@@ -438,7 +439,7 @@
               </div>
 
               <!-- Estado quando não há flavor texts -->
-              <div class="no-flavor" *ngIf="!isLoadingFlavor && (!flavorTexts || flavorTexts.length === 0)">
+              <div class="no-flavor" *ngIf="!isLoading && (!flavorTexts || flavorTexts.length === 0)">
                 <i class="fas fa-info-circle"></i>
                 <p>{{ 'modal.NO_FLAVOR_TEXT_AVAILABLE' | translate }}</p>
               </div>
