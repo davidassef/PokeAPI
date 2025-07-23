@@ -3,7 +3,8 @@ import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, shareReplay, retry } from 'rxjs/operators';
+import { firstValueFrom, forkJoin } from 'rxjs';
 import { modalAnimations } from './modal.animations';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
 import { PokemonDetailsManager } from '../../../core/services/pokemon-details-manager.service';
@@ -30,6 +31,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   private destroy$ = new Subject<void>();
+
+  // ✅ OTIMIZAÇÃO P4: Cache para flavor texts para evitar recarregamentos
+  private flavorTextsCache = new Map<string, string[]>();
 
   // Propriedades do carrossel
   carouselImages: any[] = [];
@@ -164,16 +168,25 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   /**
    * ✅ OTIMIZAÇÃO: Método otimizado para carregar apenas dados essenciais inicialmente
    * Implementa lazy loading para melhor performance
+   * ✅ CORREÇÃO P4: Migrado de toPromise() para firstValueFrom() e forkJoin para melhor performance
    */
   private async loadPokemonDetailsDirectly(id: number): Promise<void> {
     this.isLoadingPokemonData = true;
 
     try {
-      // ✅ OTIMIZAÇÃO: Carregar dados básicos e species em paralelo
-      const [pokemon, species] = await Promise.all([
-        this.pokeApiService.getPokemon(id).toPromise(),
-        this.pokeApiService.getPokemonSpecies(id).toPromise()
-      ]);
+      // ✅ OTIMIZAÇÃO P4: Usar forkJoin com retry e shareReplay para melhor performance
+      const { pokemon, species } = await firstValueFrom(
+        forkJoin({
+          pokemon: this.pokeApiService.getPokemon(id).pipe(
+            retry(2),
+            shareReplay(1)
+          ),
+          species: this.pokeApiService.getPokemonSpecies(id).pipe(
+            retry(2),
+            shareReplay(1)
+          )
+        })
+      );
 
       this.pokemon = pokemon;
       this.speciesData = species;
@@ -1259,6 +1272,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       clearTimeout(this.tabChangeDebounceTimer);
     }
 
+    // ✅ OTIMIZAÇÃO P4: Limpar cache para evitar memory leaks
+    this.flavorTextsCache.clear();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -1468,16 +1484,31 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   /**
    * ✅ FASE 1: Método direto para carregar flavor texts PT-BR
    * Prioriza arquivo local antes da API, conforme especificado no plano
+   * ✅ CORREÇÃO P4: Migrado de toPromise() para firstValueFrom() com retry e cache
    */
   private async loadFlavorTextsDirectly(pokemonId: number): Promise<string[]> {
+    // ✅ OTIMIZAÇÃO P4: Verificar cache primeiro
+    const cacheKey = `${pokemonId}-${this.translate.currentLang}`;
+    if (this.flavorTextsCache.has(cacheKey)) {
+      console.log(`✅ Flavor texts carregados do cache para ${pokemonId}`);
+      return this.flavorTextsCache.get(cacheKey)!;
+    }
+
     // 1. Para português, tentar arquivo local PRIMEIRO
     if (this.translate.currentLang === 'pt-BR' || this.translate.currentLang === 'pt') {
       try {
-        const localData = await this.http.get<any>('./assets/data/flavors_ptbr.json').toPromise();
+        const localData = await firstValueFrom(
+          this.http.get<any>('./assets/data/flavors_ptbr.json').pipe(
+            retry(1),
+            shareReplay(1)
+          )
+        );
         const localTexts = localData[pokemonId] || localData[pokemonId.toString()];
 
         if (localTexts && Array.isArray(localTexts) && localTexts.length > 0) {
           console.log(`✅ Flavor texts pt-BR carregados: ${localTexts.length} textos`);
+          // ✅ OTIMIZAÇÃO P4: Armazenar no cache
+          this.flavorTextsCache.set(cacheKey, localTexts);
           return localTexts; // PARAR AQUI - não continuar para API
         }
       } catch (error) {
@@ -1487,11 +1518,22 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     // 2. Fallback para API apenas se necessário
     try {
-      const species = await this.pokeApiService.getPokemonSpecies(pokemonId).toPromise();
-      return this.extractFlavorTextsFromAPI(species);
+      const species = await firstValueFrom(
+        this.pokeApiService.getPokemonSpecies(pokemonId).pipe(
+          retry(2),
+          shareReplay(1)
+        )
+      );
+      const apiTexts = this.extractFlavorTextsFromAPI(species);
+      // ✅ OTIMIZAÇÃO P4: Armazenar no cache
+      this.flavorTextsCache.set(cacheKey, apiTexts);
+      return apiTexts;
     } catch (error) {
       console.error('❌ Erro ao carregar flavor texts:', error);
-      return ['Descrição não disponível'];
+      const fallbackTexts = ['Descrição não disponível'];
+      // ✅ OTIMIZAÇÃO P4: Cache também para fallback
+      this.flavorTextsCache.set(cacheKey, fallbackTexts);
+      return fallbackTexts;
     }
   }
 
