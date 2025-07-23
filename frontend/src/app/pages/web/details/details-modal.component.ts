@@ -79,6 +79,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return this.pokemonTheme?.gradient || 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)';
   }
 
+  // ✅ CARREGAMENTO INSTANTÂNEO: Getter para verificar se dados básicos estão prontos
+  get isBasicDataReady(): boolean {
+    return !!this.pokemon && !!this.pokemon.name && !!this.pokemon.id;
+  }
+
   // ✅ FASE 4: Métodos de verificação simplificados
   isOverviewDataReady(): boolean {
     return !!this.pokemon;
@@ -167,32 +172,35 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   // ✅ CORREÇÃO: Propriedade loadingDebounceTimer removida - carregamento direto implementado
 
   /**
-   * ✅ REMOÇÃO COMPLETA: Método simplificado para carregamento direto da API
-   * Sem cache, preload ou lazy loading - consumo direto e imediato
+   * ✅ CARREGAMENTO INSTANTÂNEO: Dados básicos imediatos + flavor texts em background
+   * Informações básicas aparecem em < 100ms, flavor texts carregam assincronamente
    */
   private async loadPokemonDetailsDirectly(id: number): Promise<void> {
     this.isLoadingPokemonData = true;
 
     try {
-      // ✅ CARREGAMENTO PARALELO SIMPLES: Pokemon + Species + Flavor Texts
+      // ✅ FASE 1: CARREGAMENTO IMEDIATO DOS DADOS BÁSICOS
       const [pokemon, species] = await Promise.all([
         firstValueFrom(this.pokeApiService.getPokemon(id)),
         firstValueFrom(this.pokeApiService.getPokemonSpecies(id))
       ]);
 
+      // ✅ DISPONIBILIZAR DADOS BÁSICOS IMEDIATAMENTE
       this.pokemon = pokemon;
       this.speciesData = species;
+      this.isSpeciesDataReady = !!this.speciesData;
 
-      // ✅ CONFIGURAR CARROSSEL
+      // ✅ CONFIGURAR CARROSSEL IMEDIATAMENTE
       this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(pokemon);
 
-      // ✅ CARREGAR FLAVOR TEXTS IMEDIATAMENTE
-      this.flavorTexts = await this.loadFlavorTextsDirectly(id);
-      this.currentFlavorIndex = 0;
-
-      this.isSpeciesDataReady = !!this.speciesData;
+      // ✅ INICIALIZAR DADOS BÁSICOS IMEDIATAMENTE (sem aguardar flavor texts)
       this.initializePokemonData();
+
+      // ✅ PARAR LOADING DAS INFORMAÇÕES BÁSICAS
       this.isLoadingPokemonData = false;
+
+      // ✅ FASE 2: CARREGAR FLAVOR TEXTS EM BACKGROUND (não bloqueia UI)
+      this.loadFlavorTextsInBackground(id);
 
     } catch (error) {
       console.error('❌ Erro ao carregar detalhes do Pokémon:', error);
@@ -200,7 +208,30 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
-  // ✅ REMOÇÃO COMPLETA: Preload de imagens removido - carregamento sob demanda
+  /**
+   * ✅ CARREGAMENTO ASSÍNCRONO: Flavor texts em background sem bloquear UI
+   * Permite que informações básicas apareçam imediatamente
+   */
+  private async loadFlavorTextsInBackground(id: number): Promise<void> {
+    try {
+      // Carregar flavor texts sem bloquear a UI
+      this.flavorTexts = await this.loadFlavorTextsDirectly(id);
+      this.currentFlavorIndex = 0;
+
+      // Atualizar flavor text atual se há textos disponíveis
+      if (this.flavorTexts && this.flavorTexts.length > 0) {
+        this.flavorText = this.flavorTexts[0];
+      }
+
+      console.log('✅ Flavor texts carregados em background:', this.flavorTexts.length);
+    } catch (error) {
+      console.error('❌ Erro ao carregar flavor texts em background:', error);
+      // Definir fallback sem interromper a experiência do usuário
+      this.flavorTexts = ['Descrição não disponível'];
+      this.currentFlavorIndex = 0;
+      this.flavorText = this.flavorTexts[0];
+    }
+  }
 
   /**
    * ✅ GESTÃO DE ERRO ROBUSTA: Tratamento de erros sem dependência de cache
