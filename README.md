@@ -32,8 +32,8 @@
 ### 🔑 Credenciais de Teste
 | Campo | Valor |
 |-------|-------|
-| **📧 Email** | `davidassef@gmail.com` |
-| **🔒 Senha** | `Senha123` |
+| **📧 Email** | `teste@test.come` |
+| **🔒 Senha** | `Teste123` |
 
 </div>
 
