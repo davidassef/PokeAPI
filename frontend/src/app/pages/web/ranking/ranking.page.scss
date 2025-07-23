@@ -1113,6 +1113,23 @@ body.dark-theme {
   max-width: 600px;
 }
 
+// ✅ CORREÇÃO CRÍTICA: Estilos para controles de debug
+.debug-controls {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+
+  ion-button {
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 0.85rem;
+
+    &[disabled] {
+      opacity: 0.5;
+    }
+  }
+}
+
 .champion-banner {
   position: absolute;
   bottom: 40px;

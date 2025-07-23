@@ -28,6 +28,19 @@
       <ion-icon name="information-circle" color="primary"></ion-icon>
       <span>{{ 'ranking_page.global_ranking_info' | translate }}</span>
     </div>
+
+    <!-- ✅ CORREÇÃO CRÍTICA: Botão de debug permanente para testes -->
+    <div class="debug-controls">
+      <ion-button
+        fill="outline"
+        size="small"
+        color="secondary"
+        (click)="debugRefreshRanking()"
+        [disabled]="loading">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Atualizar Ranking (Debug)
+      </ion-button>
+    </div>
   </div>
 
   <div class="ranking-list" *ngIf="!loading && currentRanking.length > 0">

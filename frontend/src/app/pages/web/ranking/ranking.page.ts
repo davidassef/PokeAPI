@@ -672,23 +672,36 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega os estados de captura dos Pokémons
+   * ✅ CORREÇÃO CRÍTICA: Carrega estados de captura com sincronização inteligente
    */
   private async loadCapturedStates(): Promise<void> {
     try {
-      const capturedPokemons = await firstValueFrom(this.capturedService.getCaptured());
-      this.capturedCache.clear();
-      this.capturedStates.clear();
+      // ✅ CORREÇÃO: Usar sincronização inteligente que preserva dados locais
+      const capturedPokemons = await firstValueFrom(this.capturedService.smartSync());
+
+      // ✅ CORREÇÃO: Não limpar cache - apenas atualizar
+      console.log(`[Ranking] Atualizando estados de captura: ${capturedPokemons.length} pokémons`);
 
       capturedPokemons.forEach(pokemon => {
         this.capturedCache.set(pokemon.pokemon_id, true);
         this.capturedStates.set(pokemon.pokemon_id, true);
       });
 
+      // ✅ CORREÇÃO: Remover pokémons que não estão mais capturados
+      const capturedIds = new Set(capturedPokemons.map(p => p.pokemon_id));
+      for (const [pokemonId] of this.capturedStates) {
+        if (!capturedIds.has(pokemonId)) {
+          this.capturedStates.delete(pokemonId);
+          this.capturedCache.delete(pokemonId);
+        }
+      }
+
       this.cdRef.detectChanges();
+      console.log(`[Ranking] ✅ Estados de captura atualizados: ${this.capturedStates.size} pokémons capturados`);
     } catch (error) {
-      console.error('[Ranking] Erro ao carregar estados de captura:', error);
-      throw error; // Propaga o erro para ser tratado pelo chamador
+      console.error('[Ranking] ❌ Erro ao carregar estados de captura:', error);
+      // ✅ CORREÇÃO: Não propagar erro - manter funcionamento
+      console.warn('[Ranking] Continuando com estados de captura existentes');
     }
   }
 
@@ -788,12 +801,16 @@ export class RankingPage implements OnInit, OnDestroy {
       // Executa a ação de forma assíncrona
       await this.capturedService.toggleCaptured(pokemon);
 
-      // Atualiza os estados de captura e ranking
-      console.log('[Ranking] Atualizando estados de captura e ranking...');
-      await Promise.all([
-        this.loadCapturedStates(),
-        this.loadRanking()
-      ]);
+      // ✅ CORREÇÃO CRÍTICA: Evitar race condition - atualizar apenas estados locais
+      console.log('[Ranking] Atualizando estado local de captura...');
+
+      // Atualiza apenas o estado local sem recarregar do backend
+      this.capturedCache.set(pokemonId, isCaptured);
+      this.capturedStates.set(pokemonId, isCaptured);
+      this.updateCurrentRankingWithCapturedStates();
+
+      // ✅ CORREÇÃO: Não recarregar ranking completo - preserva dados de captura
+      console.log('[Ranking] Estado local atualizado, evitando recarregamento desnecessário');
 
       // Feedback visual de sucesso
       const successMessage = isCaptured ? 'pokemon_captured' : 'pokemon_released';
@@ -868,5 +885,32 @@ export class RankingPage implements OnInit, OnDestroy {
   closeDetailsModal() {
     this.showDetailsModal = false;
     this.selectedPokemonId = null;
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Método de debug para atualizar ranking manualmente
+   * Permite testes de desenvolvimento e debugging de problemas de sincronização
+   */
+  async debugRefreshRanking(): Promise<void> {
+    console.log('[Ranking] 🔧 DEBUG: Atualizando ranking manualmente...');
+
+    try {
+      // Força limpeza do cache
+      localStorage.removeItem(`ranking_${this.viewMode}_${new Date().toISOString().split('T')[0]}`);
+
+      // Recarrega estados de captura primeiro
+      await this.loadCapturedStates();
+
+      // Recarrega ranking completo
+      await this.loadRanking();
+
+      // Mostra feedback de sucesso
+      await this.showToast('debug_refresh_success');
+
+      console.log('[Ranking] ✅ DEBUG: Ranking atualizado com sucesso');
+    } catch (error) {
+      console.error('[Ranking] ❌ DEBUG: Erro ao atualizar ranking:', error);
+      await this.showErrorToast('debug_refresh_error');
+    }
   }
 }

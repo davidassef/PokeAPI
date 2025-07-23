@@ -111,25 +111,46 @@ export class CapturedService {
       throw new Error('Usuário não autenticado');
     }
 
+    // ✅ CORREÇÃO CRÍTICA: Atualização otimista do estado local
+    const currentCaptured = this.capturedSubject.value;
+    const newCapture: FavoritePokemon = {
+      id: Date.now(), // ID temporário
+      pokemon_id: pokemon.id,
+      pokemon_name: pokemon.name,
+      user_id: Number(this.authService.getCurrentUser()?.id) || 0,
+      created_at: new Date().toISOString()
+    };
+
+    // Atualiza estado local imediatamente (otimistic update)
+    this.capturedSubject.next([...currentCaptured, newCapture]);
+    console.log(`[CapturedService] ✅ Estado local atualizado otimisticamente para ${pokemon.name}`);
+
     // Inclui user_id para compatibilidade com o backend
     const currentUser = this.authService.getCurrentUser();
     const body = {
       pokemon_id: pokemon.id,
       pokemon_name: pokemon.name,
-      user_id: currentUser?.id || 0
+      user_id: Number(currentUser?.id) || 0
     };
 
     console.log('[CapturedService] Enviando dados para captura:', body);
 
     return this.http.post<FavoritePokemon>(`${this.apiUrl}/`, body).pipe(
-      tap((newCapture) => {
-        // Atualiza o estado local sem fazer nova requisição
+      tap((serverCapture) => {
+        // ✅ CORREÇÃO: Substituir captura temporária pela do servidor
         const currentCaptured = this.capturedSubject.value;
-        const updatedCaptured = [...currentCaptured, newCapture];
+        const updatedCaptured = currentCaptured
+          .filter(c => c.pokemon_id !== pokemon.id) // Remove temporária
+          .concat(serverCapture); // Adiciona a do servidor
         this.capturedSubject.next(updatedCaptured);
+        console.log(`[CapturedService] ✅ Captura confirmada pelo servidor para ${pokemon.name}`);
       }),
       catchError(error => {
-        console.error('Erro ao adicionar captura:', error);
+        console.error('[CapturedService] ❌ Erro ao adicionar captura, revertendo estado:', error);
+        // ✅ CORREÇÃO CRÍTICA: Reverter atualização otimista em caso de erro
+        const currentCaptured = this.capturedSubject.value;
+        const revertedCaptured = currentCaptured.filter(c => c.pokemon_id !== pokemon.id);
+        this.capturedSubject.next(revertedCaptured);
         throw error;
       })
     );
@@ -141,15 +162,27 @@ export class CapturedService {
       throw new Error('Usuário não autenticado');
     }
 
+    // ✅ CORREÇÃO CRÍTICA: Atualização otimista do estado local
+    const currentCaptured = this.capturedSubject.value;
+    const captureToRemove = currentCaptured.find(c => c.pokemon_id === pokemonId);
+    const optimisticCaptured = currentCaptured.filter(cap => cap.pokemon_id !== pokemonId);
+
+    // Atualiza estado local imediatamente (otimistic update)
+    this.capturedSubject.next(optimisticCaptured);
+    console.log(`[CapturedService] ✅ Estado local atualizado otimisticamente - removido pokémon ${pokemonId}`);
+
     return this.http.delete<void>(`${this.apiUrl}/${pokemonId}`).pipe(
       tap(() => {
-        // Atualiza o estado local sem fazer nova requisição
-        const currentCaptured = this.capturedSubject.value;
-        const updatedCaptured = currentCaptured.filter(cap => cap.pokemon_id !== pokemonId);
-        this.capturedSubject.next(updatedCaptured);
+        console.log(`[CapturedService] ✅ Remoção confirmada pelo servidor para pokémon ${pokemonId}`);
+        // Estado já foi atualizado otimisticamente, não precisa fazer nada
       }),
       catchError(error => {
-        console.error('Erro ao remover captura:', error);
+        console.error('[CapturedService] ❌ Erro ao remover captura, revertendo estado:', error);
+        // ✅ CORREÇÃO CRÍTICA: Reverter atualização otimista em caso de erro
+        if (captureToRemove) {
+          const revertedCaptured = [...optimisticCaptured, captureToRemove];
+          this.capturedSubject.next(revertedCaptured);
+        }
         throw error;
       })
     );
@@ -193,10 +226,65 @@ export class CapturedService {
   /** Força uma sincronização completa com o backend */
   forceSyncWithBackend(): Observable<FavoritePokemon[]> {
     console.log('[CapturedService] Forçando sincronização completa com o backend');
-    // Limpa o estado local
-    this.capturedSubject.next([]);
-    // Recarrega do backend
+    // ✅ CORREÇÃO CRÍTICA: Não limpar estado local para evitar perda de dados
+    // Apenas recarrega do backend e mescla com estado local
     return this.fetchCaptured();
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Sincronização inteligente que preserva dados locais
+   * Mescla dados do backend com estado local para evitar perda de capturas
+   */
+  smartSync(): Observable<FavoritePokemon[]> {
+    console.log('[CapturedService] 🔄 Iniciando sincronização inteligente...');
+
+    if (!this.authService.isAuthenticated()) {
+      console.warn('[CapturedService] Usuário não autenticado, mantendo estado local');
+      return this.captured$;
+    }
+
+    const localCaptured = this.capturedSubject.value;
+    console.log(`[CapturedService] Estado local: ${localCaptured.length} capturas`);
+
+    return this.fetchCaptured().pipe(
+      tap((serverCaptured) => {
+        console.log(`[CapturedService] Estado servidor: ${serverCaptured.length} capturas`);
+
+        // ✅ CORREÇÃO: Mesclar dados locais e do servidor
+        const mergedCaptured = this.mergeCapturedData(localCaptured, serverCaptured);
+        console.log(`[CapturedService] ✅ Dados mesclados: ${mergedCaptured.length} capturas`);
+
+        this.capturedSubject.next(mergedCaptured);
+      }),
+      catchError((error) => {
+        console.error('[CapturedService] ❌ Erro na sincronização, mantendo dados locais:', error);
+        // Em caso de erro, mantém dados locais
+        return of(localCaptured);
+      })
+    );
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Mescla dados locais e do servidor de forma inteligente
+   */
+  private mergeCapturedData(localData: FavoritePokemon[], serverData: FavoritePokemon[]): FavoritePokemon[] {
+    const merged = new Map<number, FavoritePokemon>();
+
+    // Adiciona dados do servidor primeiro (fonte de verdade)
+    serverData.forEach(capture => {
+      merged.set(capture.pokemon_id, capture);
+    });
+
+    // Adiciona dados locais que não estão no servidor (capturas recentes)
+    localData.forEach(capture => {
+      if (!merged.has(capture.pokemon_id)) {
+        // Captura local que ainda não foi sincronizada
+        console.log(`[CapturedService] 📤 Mantendo captura local não sincronizada: ${capture.pokemon_name}`);
+        merged.set(capture.pokemon_id, capture);
+      }
+    });
+
+    return Array.from(merged.values());
   }
 
   /** Limpa TODOS os dados de captura do usuário (EMERGÊNCIA) */
