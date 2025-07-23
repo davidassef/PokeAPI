@@ -1266,11 +1266,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   ngOnDestroy() {
     console.log('DetailsModalComponent - ngOnDestroy');
 
-    // ✅ OTIMIZAÇÃO: Limpar timers para evitar memory leaks
-    // ✅ CORREÇÃO: loadingDebounceTimer removido - não é mais necessário
-    if (this.tabChangeDebounceTimer) {
-      clearTimeout(this.tabChangeDebounceTimer);
-    }
+    // ✅ CORREÇÃO P5: Timers de debounce removidos - não são mais necessários
 
     // ✅ OTIMIZAÇÃO P4: Limpar cache para evitar memory leaks
     this.flavorTextsCache.clear();
@@ -1338,8 +1334,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   /**
-   * ✅ OTIMIZAÇÃO CRÍTICA: Método otimizado com lazy loading e debounce agressivo
-   * Carrega dados apenas quando necessário para melhor performance
+   * ✅ CORREÇÃO P5: Método simplificado - removido debounce e pré-carregamento desnecessários
+   * Carregamento direto para melhor responsividade
    */
   setActiveTab(tab: string): void {
     if (this.activeTab === tab) {
@@ -1347,49 +1343,16 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    console.log(`🔄 Mudança de aba: ${this.activeTab} -> ${tab}`);
+    console.log(`🎯 Mudando para aba: ${tab}`);
 
-    // ✅ OTIMIZAÇÃO CRÍTICA: Debounce mais agressivo para mudanças rápidas
-    if (this.tabChangeDebounceTimer) {
-      clearTimeout(this.tabChangeDebounceTimer);
-    }
-
-    // ✅ OTIMIZAÇÃO: Mudança imediata da aba para responsividade visual
+    // ✅ CORREÇÃO P5: Mudança imediata da aba e carregamento direto
     this.activeTab = tab;
-
-    // ✅ OTIMIZAÇÃO: Debounce apenas para carregamento de dados
-    this.tabChangeDebounceTimer = setTimeout(() => {
-      // ✅ OTIMIZAÇÃO: Lazy loading - carregar dados apenas quando necessário
-      this.loadTabDataIfNeeded(tab);
-
-      // ✅ OTIMIZAÇÃO: Pré-carregar próxima aba provável (com delay maior)
-      setTimeout(() => {
-        this.preloadNextTabData(tab);
-      }, 500); // Delay maior para não interferir com carregamento atual
-    }, 100); // 100ms de debounce para carregamento de dados
+    this.loadTabDataIfNeeded(tab);
   }
 
-  private tabChangeDebounceTimer: any;
+  // ✅ CORREÇÃO P5: tabChangeDebounceTimer removido - debounce desnecessário
 
-  /**
-   * ✅ OTIMIZAÇÃO: Pré-carregamento inteligente da próxima aba
-   */
-  private preloadNextTabData(currentTab: string): void {
-    const tabSequence = ['overview', 'combat', 'evolution', 'curiosities'];
-    const currentIndex = tabSequence.indexOf(currentTab);
-
-    if (currentIndex >= 0 && currentIndex < tabSequence.length - 1) {
-      const nextTab = tabSequence[currentIndex + 1];
-
-      // Pré-carregar próxima aba em background após um delay
-      setTimeout(() => {
-        if (!this.tabDataLoaded[nextTab]) {
-          console.log(`🔮 Pré-carregando dados da próxima aba: ${nextTab}`);
-          this.loadTabDataIfNeeded(nextTab);
-        }
-      }, 1000); // 1 segundo de delay para não interferir com a aba atual
-    }
-  }
+  // ✅ CORREÇÃO P5: Método preloadNextTabData removido - pré-carregamento desnecessário para dados pequenos
 
   /**
    * ✅ OTIMIZAÇÃO CRÍTICA: Carregamento sob demanda com cache inteligente
@@ -1456,25 +1419,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
-  /**
-   * ✅ OTIMIZAÇÃO: Carregamento lazy de flavor texts
-   */
-  private async loadFlavorTextsLazy(): Promise<void> {
-    if (!this.pokemon?.id) return;
-
-    try {
-      console.log('🔮 Carregando flavor texts em lazy loading...');
-      this.flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
-      this.currentFlavorIndex = 0;
-
-      if (this.flavorTexts.length > 0) {
-        this.flavorText = this.flavorTexts[0];
-      }
-    } catch (error) {
-      console.error('❌ Erro ao carregar flavor texts:', error);
-      this.flavorTexts = [];
-    }
-  }
+  // ✅ CORREÇÃO P5: Método loadFlavorTextsLazy removido - redundante com loadFlavorTextsForTab
 
   /**
    * ✅ CORREÇÃO: Sistema unificado implementado - usando apenas loadTabData()
