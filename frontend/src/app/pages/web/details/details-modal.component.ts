@@ -971,56 +971,70 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       return;
     }
 
-    // ✅ CORREÇÃO CRÍTICA: Usar o PokemonDetailsManager com parâmetros corretos
-    this.pokemonDetailsManager.loadTabData(tab, this.pokemon, this.speciesData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (tabData) => {
-          console.log(`✅ Dados da aba ${tab} carregados:`, tabData);
-
-          // ✅ CORREÇÃO: Processar dados corretamente baseado no tipo retornado
-          switch (tab) {
-            case 'overview':
-              // Overview retorna dados básicos do pokemon
-              if (tabData && typeof tabData === 'object') {
-                console.log('📊 Dados de overview processados:', Object.keys(tabData));
-              }
-              this.tabDataLoaded['overview'] = true;
-              break;
-
-            case 'combat':
-              // Combat retorna diretamente as descrições das habilidades
-              if (tabData && typeof tabData === 'object') {
-                this.abilityDescriptions = { ...this.abilityDescriptions, ...tabData };
-                console.log('⚔️ Habilidades carregadas:', Object.keys(tabData));
-              }
-              this.tabDataLoaded['combat'] = true;
-              break;
-
-            case 'evolution':
-              // Evolution retorna diretamente o array da cadeia
-              if (tabData && Array.isArray(tabData)) {
-                this.evolutionChain = tabData;
-                console.log('🔄 Cadeia de evolução carregada:', tabData.length, 'estágios');
-              }
-              this.tabDataLoaded['evolution'] = true;
-              break;
-
-            case 'curiosities':
-              // ✅ CORREÇÃO: Curiosities retorna null, dados já estão no pokemon enriquecido
-              if (tabData === null) {
-                console.log('🎭 Curiosidades: usando dados já carregados no enriquecimento');
-              }
-              this.tabDataLoaded['curiosities'] = true;
-              break;
-          }
-        },
-        error: (error) => {
-          console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
-          // Marcar como carregado mesmo com erro para evitar loops
+    // ✅ CORREÇÃO URGENTE: Sistema híbrido para diferentes tipos de dados
+    switch (tab) {
+      case 'overview':
+      case 'curiosities':
+        // Para overview e curiosities, carregar flavor texts diretamente
+        this.loadFlavorTextsForTab(tab).then(() => {
           this.tabDataLoaded[tab] = true;
+          console.log(`✅ Flavor texts carregados para aba ${tab}`);
+        }).catch((error) => {
+          console.error(`❌ Erro ao carregar flavor texts para aba ${tab}:`, error);
+          this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
+        });
+        break;
+
+      case 'combat':
+      case 'evolution':
+        // Para combat e evolution, usar PokemonDetailsManager
+        this.pokemonDetailsManager.loadTabData(tab, this.pokemon, this.speciesData)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (tabData) => {
+              console.log(`✅ Dados da aba ${tab} carregados:`, tabData);
+              this.processTabData(tab, tabData);
+              this.tabDataLoaded[tab] = true;
+            },
+            error: (error) => {
+              console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
+              this.tabDataLoaded[tab] = true; // Marcar como carregado para evitar loops
+            }
+          });
+        break;
+
+      default:
+        console.warn(`⚠️ Aba desconhecida: ${tab}`);
+        this.tabDataLoaded[tab] = true;
+        break;
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO URGENTE: Processar dados de abas específicas
+   */
+  private processTabData(tab: string, tabData: any): void {
+    switch (tab) {
+      case 'combat':
+        // Combat retorna diretamente as descrições das habilidades
+        if (tabData && typeof tabData === 'object') {
+          this.abilityDescriptions = { ...this.abilityDescriptions, ...tabData };
+          console.log('⚔️ Habilidades carregadas:', Object.keys(tabData));
         }
-      });
+        break;
+
+      case 'evolution':
+        // Evolution retorna diretamente o array da cadeia
+        if (tabData && Array.isArray(tabData)) {
+          this.evolutionChain = tabData;
+          console.log('🔄 Cadeia de evolução carregada:', tabData.length, 'estágios');
+        }
+        break;
+
+      default:
+        console.log(`📊 Dados processados para aba ${tab}:`, tabData);
+        break;
+    }
   }
 
   private clearNonTabData(currentTab: string): void {
@@ -1390,7 +1404,41 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   // ✅ CORREÇÃO: Método loadTabDataUnified removido - usando apenas loadTabData para simplicidade
 
-  // ✅ CORREÇÃO: Métodos auxiliares do sistema unificado removidos - usando apenas loadTabData simples
+  /**
+   * ✅ CORREÇÃO URGENTE: Restaurar carregamento de flavor texts para abas específicas
+   * Este método é essencial para overview e curiosities
+   */
+  private async loadFlavorTextsForTab(tab: string): Promise<void> {
+    if (!this.pokemon?.id) {
+      console.warn(`❌ loadFlavorTextsForTab: Pokemon ID não disponível para aba ${tab}`);
+      return;
+    }
+
+    try {
+      console.log(`🔮 Carregando flavor texts para aba: ${tab}`);
+
+      // Carregar flavor texts usando o método direto
+      const flavorTexts = await this.loadFlavorTextsDirectly(this.pokemon.id);
+
+      if (flavorTexts && flavorTexts.length > 0) {
+        this.flavorTexts = flavorTexts;
+        this.currentFlavorIndex = 0;
+        this.flavorText = this.flavorTexts[0];
+        console.log(`✅ Flavor texts carregados para aba ${tab}:`, flavorTexts.length, 'textos');
+      } else {
+        this.flavorTexts = ['Descrição não disponível'];
+        this.currentFlavorIndex = 0;
+        this.flavorText = this.flavorTexts[0];
+        console.log(`⚠️ Nenhum flavor text encontrado para aba ${tab}`);
+      }
+
+    } catch (error) {
+      console.error(`❌ Erro ao carregar flavor texts para aba ${tab}:`, error);
+      this.flavorTexts = ['Descrição não disponível'];
+      this.currentFlavorIndex = 0;
+      this.flavorText = this.flavorTexts[0];
+    }
+  }
 
   /**
    * ✅ OTIMIZAÇÃO: Carregamento lazy de flavor texts
