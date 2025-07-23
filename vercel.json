@@ -4,6 +4,7 @@
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/www",
   "installCommand": "cd frontend && npm install",
+  "public": true,
   "rewrites": [
     {
       "source": "/(.*)",
@@ -21,6 +22,27 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
       ]
     }
