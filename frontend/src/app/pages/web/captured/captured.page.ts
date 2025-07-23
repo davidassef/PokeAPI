@@ -306,10 +306,13 @@ export class CapturedPage implements OnInit, OnDestroy {
   };
 
   logout = () => {
+    console.log('[CapturedPage] Realizando logout sem perda de dados');
     this.authService.logout();
     this.isAuthenticated = false;
     this.user = null;
+    // ✅ CORREÇÃO CRÍTICA: Não limpar dados locais - apenas interface
     this.capturedPokemon = [];
+    console.log('[CapturedPage] ✅ Logout concluído, dados preservados');
   };
 
   toggleUserMenu = () => {

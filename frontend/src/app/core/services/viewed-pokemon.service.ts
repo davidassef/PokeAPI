@@ -29,12 +29,13 @@ export class ViewedPokemonService {
   ) {
     this.loadViewedPokemon();
 
-    // Listen to auth state changes to handle user switching
+    // ✅ CORREÇÃO CRÍTICA: Não limpar dados no logout, apenas recarregar quando logar
     this.authService.getAuthState().subscribe((isAuthenticated: boolean) => {
       if (isAuthenticated) {
         this.loadViewedPokemon();
       } else {
-        this.clearViewedPokemon();
+        // ✅ CORREÇÃO: Não limpar dados no logout - preservar para próximo login
+        console.log('[ViewedPokemonService] Logout detectado, mantendo dados visualizados');
       }
     });
   }

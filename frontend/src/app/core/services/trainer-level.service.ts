@@ -21,6 +21,17 @@ export interface TrainerStats {
   level: TrainerLevel;
 }
 
+/**
+ * ✅ CORREÇÃO CRÍTICA: Interface para histórico de XP persistente
+ */
+export interface XPHistory {
+  userId: string;
+  viewedPokemonXP: Set<number>; // IDs dos pokémons que já deram XP por visualização
+  capturedPokemonXP: Set<number>; // IDs dos pokémons que já deram XP por captura
+  totalAccumulatedXP: number; // XP total acumulado (nunca diminui)
+  lastUpdated: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,6 +41,9 @@ export class TrainerLevelService {
   private readonly XP_PER_CAPTURED = 50;  // XP por Pokémon capturado
   private readonly BASE_XP_REQUIRED = 100; // XP base para o nível 1
   private readonly XP_MULTIPLIER = 1.5;   // Multiplicador de XP por nível
+
+  // ✅ CORREÇÃO CRÍTICA: Chave para persistir histórico de XP
+  private readonly XP_HISTORY_KEY = 'trainer_xp_history';
 
   // Títulos por nível
   private readonly LEVEL_TITLES = [
@@ -45,6 +59,15 @@ export class TrainerLevelService {
     'Deus Pokémon'      // Nível 46+
   ];
 
+  // ✅ CORREÇÃO CRÍTICA: Histórico de XP persistente
+  private xpHistory: XPHistory = {
+    userId: '',
+    viewedPokemonXP: new Set<number>(),
+    capturedPokemonXP: new Set<number>(),
+    totalAccumulatedXP: 0,
+    lastUpdated: new Date().toISOString()
+  };
+
   private trainerStatsSubject = new BehaviorSubject<TrainerStats>({
     viewedCount: 0,
     capturedCount: 0,
@@ -59,11 +82,13 @@ export class TrainerLevelService {
     private capturedService: CapturedService,
     private authService: AuthService
   ) {
+    this.loadXPHistory();
     this.setupStatsSubscription();
+    this.setupAuthStateListener();
   }
 
   /**
-   * Configura a subscription para atualizar automaticamente as estatísticas
+   * ✅ CORREÇÃO CRÍTICA: Configura subscription com sistema de XP persistente
    */
   private setupStatsSubscription(): void {
     // Combina os observables de Pokémon visualizados e capturados
@@ -74,7 +99,11 @@ export class TrainerLevelService {
       map(([viewedData, capturedList]) => {
         const viewedCount = viewedData.viewedPokemonIds.size;
         const capturedCount = capturedList.length;
-        const totalXP = this.calculateTotalXP(viewedCount, capturedCount);
+
+        // ✅ CORREÇÃO: Atualizar XP baseado em histórico, não contagem atual
+        this.updateXPFromCurrentData(viewedData.viewedPokemonIds, capturedList.map(c => c.pokemon_id));
+
+        const totalXP = this.xpHistory.totalAccumulatedXP;
         const level = this.calculateLevel(totalXP);
 
         return {
@@ -90,9 +119,128 @@ export class TrainerLevelService {
   }
 
   /**
-   * Calcula o XP total baseado nas estatísticas
+   * ✅ CORREÇÃO CRÍTICA: Carrega histórico de XP do localStorage
+   */
+  private loadXPHistory(): void {
+    try {
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        console.log('[TrainerLevelService] Usuário não autenticado, usando histórico vazio');
+        return;
+      }
+
+      const storageKey = `${this.XP_HISTORY_KEY}_${currentUser.id}`;
+      const storedHistory = localStorage.getItem(storageKey);
+
+      if (storedHistory) {
+        const parsedHistory = JSON.parse(storedHistory);
+        this.xpHistory = {
+          userId: parsedHistory.userId,
+          viewedPokemonXP: new Set(parsedHistory.viewedPokemonXP || []),
+          capturedPokemonXP: new Set(parsedHistory.capturedPokemonXP || []),
+          totalAccumulatedXP: parsedHistory.totalAccumulatedXP || 0,
+          lastUpdated: parsedHistory.lastUpdated || new Date().toISOString()
+        };
+        console.log(`[TrainerLevelService] ✅ Histórico carregado: ${this.xpHistory.totalAccumulatedXP} XP total`);
+      } else {
+        // Inicializa histórico para usuário atual
+        this.xpHistory.userId = currentUser.id;
+        this.saveXPHistory();
+        console.log('[TrainerLevelService] Novo histórico criado para usuário:', currentUser.id);
+      }
+    } catch (error) {
+      console.error('[TrainerLevelService] ❌ Erro ao carregar histórico de XP:', error);
+      this.resetXPHistory();
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Salva histórico de XP no localStorage
+   */
+  private saveXPHistory(): void {
+    try {
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) return;
+
+      const storageKey = `${this.XP_HISTORY_KEY}_${currentUser.id}`;
+      const historyToSave = {
+        userId: this.xpHistory.userId,
+        viewedPokemonXP: Array.from(this.xpHistory.viewedPokemonXP),
+        capturedPokemonXP: Array.from(this.xpHistory.capturedPokemonXP),
+        totalAccumulatedXP: this.xpHistory.totalAccumulatedXP,
+        lastUpdated: new Date().toISOString()
+      };
+
+      localStorage.setItem(storageKey, JSON.stringify(historyToSave));
+      console.log(`[TrainerLevelService] 💾 Histórico salvo: ${this.xpHistory.totalAccumulatedXP} XP`);
+    } catch (error) {
+      console.error('[TrainerLevelService] ❌ Erro ao salvar histórico de XP:', error);
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Atualiza XP baseado nos dados atuais (sem diminuir)
+   */
+  private updateXPFromCurrentData(viewedIds: Set<number>, capturedIds: number[]): void {
+    let xpGained = 0;
+
+    // Adiciona XP por pokémons visualizados (apenas novos)
+    viewedIds.forEach(pokemonId => {
+      if (!this.xpHistory.viewedPokemonXP.has(pokemonId)) {
+        this.xpHistory.viewedPokemonXP.add(pokemonId);
+        xpGained += this.XP_PER_VIEWED;
+      }
+    });
+
+    // Adiciona XP por pokémons capturados (apenas novos)
+    capturedIds.forEach(pokemonId => {
+      if (!this.xpHistory.capturedPokemonXP.has(pokemonId)) {
+        this.xpHistory.capturedPokemonXP.add(pokemonId);
+        xpGained += this.XP_PER_CAPTURED;
+      }
+    });
+
+    // ✅ CORREÇÃO: XP nunca diminui, apenas aumenta
+    if (xpGained > 0) {
+      this.xpHistory.totalAccumulatedXP += xpGained;
+      this.saveXPHistory();
+      console.log(`[TrainerLevelService] ✅ XP ganho: +${xpGained} (Total: ${this.xpHistory.totalAccumulatedXP})`);
+    }
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Reseta histórico de XP
+   */
+  private resetXPHistory(): void {
+    const currentUser = this.authService.getCurrentUser();
+    this.xpHistory = {
+      userId: currentUser?.id || '',
+      viewedPokemonXP: new Set<number>(),
+      capturedPokemonXP: new Set<number>(),
+      totalAccumulatedXP: 0,
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Listener para mudanças de autenticação
+   */
+  private setupAuthStateListener(): void {
+    this.authService.getAuthState().subscribe(isAuthenticated => {
+      if (isAuthenticated) {
+        this.loadXPHistory();
+      } else {
+        // ✅ CORREÇÃO: Não resetar XP no logout, apenas parar de atualizar
+        console.log('[TrainerLevelService] Logout detectado, mantendo XP atual');
+      }
+    });
+  }
+
+  /**
+   * ✅ OBSOLETO: Método antigo mantido para compatibilidade
    */
   private calculateTotalXP(viewedCount: number, capturedCount: number): number {
+    // Este método não é mais usado, mas mantido para compatibilidade
     return (viewedCount * this.XP_PER_VIEWED) + (capturedCount * this.XP_PER_CAPTURED);
   }
 
@@ -161,7 +309,7 @@ export class TrainerLevelService {
   getLevelDescription(): string {
     const stats = this.getCurrentStats();
     const level = stats.level;
-    
+
     return `Nível ${level.level} - ${level.title}\n${level.currentXP}/${level.requiredXP} XP (${level.progressPercentage}%)`;
   }
 
@@ -171,7 +319,7 @@ export class TrainerLevelService {
   getPokemonNeededForNextLevel(): { viewed: number; captured: number } {
     const stats = this.getCurrentStats();
     const xpNeeded = stats.level.requiredXP - stats.level.currentXP;
-    
+
     return {
       viewed: Math.ceil(xpNeeded / this.XP_PER_VIEWED),
       captured: Math.ceil(xpNeeded / this.XP_PER_CAPTURED)

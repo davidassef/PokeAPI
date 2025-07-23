@@ -27,8 +27,10 @@ export class AppComponent implements OnInit {
   };
 
   logout = () => {
+    console.log('[AppComponent] Realizando logout preservando dados');
     this.authService.logout();
     this.fecharPerfilModal();
+    console.log('[AppComponent] ✅ Logout concluído');
   };
 
   constructor(

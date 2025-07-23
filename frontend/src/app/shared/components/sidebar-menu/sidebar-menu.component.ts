@@ -282,12 +282,17 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
   }
 
   async confirmLogout() {
-    // TODO: Implementar confirmação de logout
-    console.log('Confirmando logout');
+    console.log('[SidebarMenu] Confirmando logout');
     this.showUserProfileMenu = false;
+
+    // ✅ CORREÇÃO CRÍTICA: Logout sem reload para preservar dados
     this.authService.logout();
     await this.menuController.close();
-    window.location.reload();
+
+    // ✅ CORREÇÃO: Navegar para home em vez de reload
+    this.router.navigate(['/home']);
+
+    console.log('[SidebarMenu] ✅ Logout concluído sem perda de dados');
   }
 
   abrirPerfil() {
