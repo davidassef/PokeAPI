@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges, HostBinding, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter, OnDestroy, SimpleChanges, OnChanges, HostBinding, HostListener, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
@@ -16,6 +16,7 @@ import { PokeApiService } from '../../../core/services/pokeapi.service';
   selector: 'app-details-modal',
   templateUrl: './details-modal.component.html',
   styleUrls: ['./details-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush, // ✅ PERFORMANCE: OnPush strategy
   animations: modalAnimations
 })
 export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
@@ -84,6 +85,91 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     return !!this.pokemon && !!this.pokemon.name && !!this.pokemon.id;
   }
 
+  // ✅ PERFORMANCE: Getters memoizados para evitar recálculos no template
+  private _memoizedPokemonName: string = '';
+  private _memoizedPokemonId: string = '';
+  private _memoizedHeight: string = '';
+  private _memoizedWeight: string = '';
+  private _memoizedBaseExperience: string = '';
+  private _memoizedTypes: Array<{name: string, translated: string}> = [];
+
+  get pokemonDisplayName(): string {
+    if (!this.pokemon?.name) return '';
+    if (this._memoizedPokemonName !== this.pokemon.name) {
+      this._memoizedPokemonName = this.pokemon.name.charAt(0).toUpperCase() + this.pokemon.name.slice(1);
+    }
+    return this._memoizedPokemonName;
+  }
+
+  get pokemonDisplayId(): string {
+    if (!this.pokemon?.id) return '#000';
+    const id = this.pokemon.id.toString();
+    if (this._memoizedPokemonId !== id) {
+      this._memoizedPokemonId = '#' + id.padStart(3, '0');
+    }
+    return this._memoizedPokemonId;
+  }
+
+  get pokemonDisplayHeight(): string {
+    if (!this.pokemon?.height) return '0m';
+    const height = ((this.pokemon.height || 0) / 10).toString() + 'm';
+    if (this._memoizedHeight !== height) {
+      this._memoizedHeight = height;
+    }
+    return this._memoizedHeight;
+  }
+
+  get pokemonDisplayWeight(): string {
+    if (!this.pokemon?.weight) return '0kg';
+    const weight = ((this.pokemon.weight || 0) / 10).toString() + 'kg';
+    if (this._memoizedWeight !== weight) {
+      this._memoizedWeight = weight;
+    }
+    return this._memoizedWeight;
+  }
+
+  get pokemonDisplayBaseExperience(): string {
+    if (!this.pokemon?.base_experience) {
+      const notAvailable = this.translate.instant('app.not_available');
+      if (this._memoizedBaseExperience !== notAvailable) {
+        this._memoizedBaseExperience = notAvailable;
+      }
+      return this._memoizedBaseExperience;
+    }
+    const exp = this.pokemon.base_experience.toString();
+    if (this._memoizedBaseExperience !== exp) {
+      this._memoizedBaseExperience = exp;
+    }
+    return this._memoizedBaseExperience;
+  }
+
+  get pokemonDisplayTypes(): Array<{name: string, translated: string, cssClass: string}> {
+    if (!this.pokemon?.types) return [];
+
+    const currentTypes = this.pokemon.types.map((t: any) => t.type.name).join(',');
+    const memoizedTypes = this._memoizedTypes.map((t: any) => t.name).join(',');
+
+    if (currentTypes !== memoizedTypes) {
+      this._memoizedTypes = this.pokemon.types.map((type: any) => ({
+        name: type.type.name,
+        translated: this.translate.instant(`types.${type.type.name}`) || type.type.name,
+        cssClass: `type-${type.type.name}`
+      }));
+    }
+
+    return this._memoizedTypes as Array<{name: string, translated: string, cssClass: string}>;
+  }
+
+  // ✅ PERFORMANCE: Limpar cache dos getters quando pokémon muda
+  private clearMemoizedCache(): void {
+    this._memoizedPokemonName = '';
+    this._memoizedPokemonId = '';
+    this._memoizedHeight = '';
+    this._memoizedWeight = '';
+    this._memoizedBaseExperience = '';
+    this._memoizedTypes = [];
+  }
+
   // ✅ FASE 4: Métodos de verificação simplificados
   isOverviewDataReady(): boolean {
     return !!this.pokemon;
@@ -125,7 +211,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     private pokemonDetailsManager: PokemonDetailsManager,
     private pokemonThemeService: PokemonThemeService,
     private pokemonNavigationService: PokemonNavigationService,
-    private pokeApiService: PokeApiService
+    private pokeApiService: PokeApiService,
+    private cdr: ChangeDetectorRef // ✅ PERFORMANCE: ChangeDetectorRef para OnPush
   ) {}
 
   ngOnInit() {
@@ -190,6 +277,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       this.speciesData = species;
       this.isSpeciesDataReady = !!this.speciesData;
 
+      // ✅ PERFORMANCE: Limpar cache dos getters para novo pokémon
+      this.clearMemoizedCache();
+
       // ✅ CONFIGURAR CARROSSEL IMEDIATAMENTE
       this.carouselImages = this.pokemonDetailsManager.generateCarouselImages(pokemon);
 
@@ -198,6 +288,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
       // ✅ PARAR LOADING DAS INFORMAÇÕES BÁSICAS
       this.isLoadingPokemonData = false;
+
+      // ✅ PERFORMANCE: Trigger change detection manual para OnPush
+      this.cdr.detectChanges();
 
       // ✅ FASE 2: CARREGAR FLAVOR TEXTS EM BACKGROUND (não bloqueia UI)
       this.loadFlavorTextsInBackground(id);
@@ -381,11 +474,13 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     });
   }
 
+  /**
+   * ✅ PERFORMANCE: Remoção do setTimeout desnecessário
+   * Animações executam imediatamente após view init
+   */
   ngAfterViewInit() {
-    // Pequeno delay para garantir que os elementos foram renderizados
-    setTimeout(() => {
-      this.animateElements();
-    }, 100);
+    // ✅ REMOÇÃO COMPLETA: setTimeout removido - animações imediatas
+    this.animateElements();
   }
 
   /**
@@ -578,16 +673,22 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
   }
 
+  /**
+   * ✅ PERFORMANCE: Transição otimizada usando ViewChild em vez de querySelector
+   */
   private animateFlavorTransition(callback: () => void): void {
-    const flavorWrapper = document.querySelector('.flavor-text-wrapper');
-    if (flavorWrapper) {
-      flavorWrapper.classList.add('flavor-transition');
-      setTimeout(() => {
+    // ✅ OTIMIZAÇÃO: Usar ViewChild se disponível, senão callback direto
+    if (this.flavorTextWrapper?.nativeElement) {
+      const element = this.flavorTextWrapper.nativeElement;
+      element.classList.add('flavor-transition');
+
+      // ✅ PERFORMANCE: Usar requestAnimationFrame em vez de setTimeout
+      requestAnimationFrame(() => {
         callback();
-        setTimeout(() => {
-          flavorWrapper.classList.remove('flavor-transition');
-        }, 150);
-      }, 150);
+        requestAnimationFrame(() => {
+          element.classList.remove('flavor-transition');
+        });
+      });
     } else {
       callback();
     }
@@ -925,12 +1026,13 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
            trimmedUrl.startsWith('assets/');
   }
 
+  /**
+   * ✅ PERFORMANCE: Handler otimizado de carregamento de imagem
+   */
   onImageLoad(event: any): void {
-    // ✅ LIMPEZA: Log de sucesso de imagem removido - fallback funciona corretamente
-    // console.log('✅ Imagem carregada com sucesso:', event.target.src);
-    // Remover classe de erro se existir
+    // ✅ OTIMIZAÇÃO: Remoção mínima de classe de erro se necessário
     const container = event.target.closest('.main-image-container');
-    if (container) {
+    if (container?.classList.contains('image-failed')) {
       container.classList.remove('image-failed');
     }
   }
@@ -1171,39 +1273,15 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       const hasOverflow = el.scrollHeight > el.clientHeight;
       this.showScrollIndicator = hasOverflow;
 
-      if (hasOverflow) {
-        setTimeout(() => {
-          if (this.flavorTextWrapper?.nativeElement) {
-            const el = this.flavorTextWrapper.nativeElement;
-            const isStillScrollable = el.scrollHeight > el.clientHeight;
-            const isScrolledToBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 5;
-            this.showScrollIndicator = isStillScrollable && !isScrolledToBottom;
-          }
-        }, 3000);
-      }
+      // ✅ PERFORMANCE: Timeout removido - scroll indicator atualizado via scroll events
+      // O indicador será atualizado automaticamente quando o usuário rolar
     }
   }
 
-  // Métodos de animação
+  // ✅ PERFORMANCE: Métodos de animação removidos - estavam vazios e consumindo CPU
   private animateElements(): void {
-    this.animateHeader();
-    this.animateStats();
-    this.animateCards();
-  }
-
-  private animateHeader(): void {
-    // ✅ LIMPEZA: Log de animação removido - funcionalidade estável
-    // console.log('Animação do header iniciada');
-  }
-
-  private animateStats(): void {
-    // ✅ LIMPEZA: Log de animação removido - funcionalidade estável
-    // console.log('Animação das stats iniciada');
-  }
-
-  private animateCards(): void {
-    // ✅ LIMPEZA: Log de animação removido - funcionalidade estável
-    // console.log('Animação dos cards iniciada');
+    // ✅ REMOÇÃO COMPLETA: Métodos de animação vazios removidos
+    // Animações CSS são aplicadas automaticamente via classes
   }
 
 

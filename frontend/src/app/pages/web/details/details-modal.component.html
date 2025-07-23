@@ -19,13 +19,15 @@
             <i class="fas fa-chevron-left"></i>
           </button>
 
-          <!-- Imagem principal -->
+          <!-- ✅ PERFORMANCE: Imagem principal otimizada -->
           <div class="main-image-container">
             <img
               *ngIf="currentCarouselImage && isValidImageUrl(currentCarouselImage)"
               [src]="currentCarouselImage"
-              [alt]="pokemon?.name || 'Pokémon'"
+              [alt]="pokemonDisplayName || 'Pokémon'"
               class="pokemon-main-image-large"
+              loading="eager"
+              decoding="async"
               (error)="onImageError($event)"
               (load)="onImageLoad($event)"
             />
@@ -66,10 +68,12 @@
                 (click)="selectCarouselImage(i)"
                 [attr.aria-label]="'Ver ' + image.label"
                 [style.display]="isThumbnailVisible(i) ? 'block' : 'none'">
+                <!-- ✅ PERFORMANCE: Lazy loading para miniaturas -->
                 <img
                   *ngIf="isValidImageUrl(image.url)"
                   [src]="image.url"
                   [alt]="image.label"
+                  loading="lazy"
                   (error)="onImageError($event)">
                 <div
                   *ngIf="!isValidImageUrl(image.url)"
@@ -93,39 +97,39 @@
 
       <!-- Seção das informações dividida em duas partes -->
       <div class="pokemon-info-section">
-        <!-- Info Section 1: Nome e Badges -->
+        <!-- ✅ PERFORMANCE: Info Section 1 otimizada com getters memoizados -->
         <div class="pokemon-info-section-1">
           <div class="pokemon-name-header">
-            <h1>{{ pokemon?.name | titlecase }}</h1>
-            <div class="pokemon-id-badge">#{{ (pokemon?.id ?? 0) | pokemonId }}</div>
+            <h1>{{ pokemonDisplayName }}</h1>
+            <div class="pokemon-id-badge">{{ pokemonDisplayId }}</div>
           </div>
 
           <div class="pokemon-types-container">
             <span
-              *ngFor="let type of pokemon?.types"
+              *ngFor="let type of pokemonDisplayTypes"
               class="type-badge interactive-element"
-              [ngClass]="'type-' + type.type.name">
-              {{ getTranslatedTypeName(type.type.name) }}
+              [ngClass]="type.cssClass">
+              {{ type.translated }}
             </span>
           </div>
         </div>
 
-        <!-- Info Section 2: Informações Básicas -->
+        <!-- ✅ PERFORMANCE: Info Section 2 otimizada com getters memoizados -->
         <div class="pokemon-info-section-2">
           <div class="pokemon-info-horizontal">
             <div class="info-item">
               <i class="fas fa-ruler-vertical"></i>
-              <span class="info-value">{{ (pokemon?.height ?? 0) / 10 }}m</span>
+              <span class="info-value">{{ pokemonDisplayHeight }}</span>
               <span class="info-label">{{ 'pokemon.height' | translate }}</span>
             </div>
             <div class="info-item">
               <i class="fas fa-weight"></i>
-              <span class="info-value">{{ (pokemon?.weight ?? 0) / 10 }}kg</span>
+              <span class="info-value">{{ pokemonDisplayWeight }}</span>
               <span class="info-label">{{ 'pokemon.weight' | translate }}</span>
             </div>
             <div class="info-item">
               <i class="fas fa-star"></i>
-              <span class="info-value">{{ getBaseExperience() }}</span>
+              <span class="info-value">{{ pokemonDisplayBaseExperience }}</span>
               <span class="info-label">{{ 'pokemon.base_experience' | translate }}</span>
             </div>
           </div>
