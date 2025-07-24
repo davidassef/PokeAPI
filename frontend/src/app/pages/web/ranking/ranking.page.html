@@ -54,6 +54,7 @@
         </span>
         <app-pokemon-card
           [pokemon]="currentRanking[1].pokemon"
+          [isCaptured]="isCaptured(currentRanking[1].pokemon.id)"
           (cardClick)="openDetailsModal(currentRanking[1].pokemon.id)"
           (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
@@ -66,6 +67,7 @@
         </span>
         <app-pokemon-card
           [pokemon]="currentRanking[0].pokemon"
+          [isCaptured]="isCaptured(currentRanking[0].pokemon.id)"
           (cardClick)="openDetailsModal(currentRanking[0].pokemon.id)"
           (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
@@ -79,6 +81,7 @@
         </span>
         <app-pokemon-card
           [pokemon]="currentRanking[2].pokemon"
+          [isCaptured]="isCaptured(currentRanking[2].pokemon.id)"
           (cardClick)="openDetailsModal(currentRanking[2].pokemon.id)"
           (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
@@ -93,6 +96,7 @@
           </div>
           <app-pokemon-card
             [pokemon]="item.pokemon"
+            [isCaptured]="isCaptured(item.pokemon.id)"
             [favoriteCount]="item.favoriteCount"
             (cardClick)="openDetailsModal(item.pokemon.id)"
             (captureToggle)="onCaptureToggle($event)">

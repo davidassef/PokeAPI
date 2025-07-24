@@ -47,6 +47,12 @@ export class RankingPage implements OnInit, OnDestroy {
   debounceTimer: any = null;
   toggleDebounceTimer: { [key: number]: any } = {};
 
+  // ✅ NOVO: Sistema de refresh automático
+  private autoRefreshEnabled = true;
+  private autoRefreshInterval = 60 * 1000; // 1 minuto
+  private autoRefreshTimer: any = null;
+  private destroy$ = new Subject<void>();
+
   // Métodos auxiliares para ranking - Implementações mantidas no final da classe
 
   // Cache para evitar chamadas repetidas
@@ -193,10 +199,6 @@ export class RankingPage implements OnInit, OnDestroy {
     { pokemonId: 149, favoriteCount: 6900, rank: 10, trend: 'down' as const } // Dragonite
   ];
 
-
-
-  private destroy$ = new Subject<void>();
-
   showDetailsModal = false;
   selectedPokemonId: number | null = null;
 
@@ -276,8 +278,14 @@ export class RankingPage implements OnInit, OnDestroy {
       });
 
     this.loadRanking();
-    this.loadLocalRanking('default-region');
+    // ✅ CORREÇÃO: Removida chamada para ranking local (endpoint não existe mais)
+    // this.loadLocalRanking('default-region');
     this.loadCapturedStates();
+
+    // ✅ NOVO: Inicia auto-refresh após carregamento inicial
+    setTimeout(() => {
+      this.startAutoRefresh();
+    }, 2000); // Aguarda 2 segundos após carregamento inicial
   }
 
   ionViewWillEnter() {
@@ -291,6 +299,43 @@ export class RankingPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    this.stopAutoRefresh();
+  }
+
+  // ✅ NOVO: Métodos para controle de auto-refresh
+  private startAutoRefresh() {
+    if (!this.autoRefreshEnabled) return;
+
+    this.stopAutoRefresh(); // Para qualquer timer existente
+
+    console.log(`🔄 [Ranking] Auto-refresh iniciado (intervalo: ${this.autoRefreshInterval / 1000}s)`);
+
+    this.autoRefreshTimer = setInterval(async () => {
+      if (this.autoRefreshEnabled && !this.loading) {
+        console.log('🔄 [Ranking] Auto-refresh executando...');
+        await this.loadRanking(false); // Não força refresh, usa cache inteligente
+      }
+    }, this.autoRefreshInterval);
+  }
+
+  private stopAutoRefresh() {
+    if (this.autoRefreshTimer) {
+      clearInterval(this.autoRefreshTimer);
+      this.autoRefreshTimer = null;
+      console.log('⏹️ [Ranking] Auto-refresh parado');
+    }
+  }
+
+  public toggleAutoRefresh() {
+    this.autoRefreshEnabled = !this.autoRefreshEnabled;
+
+    if (this.autoRefreshEnabled) {
+      this.startAutoRefresh();
+    } else {
+      this.stopAutoRefresh();
+    }
+
+    console.log(`🔄 [Ranking] Auto-refresh ${this.autoRefreshEnabled ? 'HABILITADO' : 'DESABILITADO'}`);
   }
 
   // Refatoração: Simplificar métodos de carregamento e validação de dados
@@ -345,8 +390,8 @@ export class RankingPage implements OnInit, OnDestroy {
     throw new Error('Retry failed'); // This should never be reached
   }
 
-  // Carrega o ranking global ou local com cache e otimizações
-  async loadRanking() {
+  // Carrega o ranking global com dados em tempo real
+  async loadRanking(forceRefresh: boolean = false) {
     // Mostra o indicador de carregamento apenas se não estiver em atualização rápida
     const isQuickUpdate = this.globalRanking.length > 0;
     let loading: HTMLIonLoadingElement | null = null;
@@ -362,27 +407,39 @@ export class RankingPage implements OnInit, OnDestroy {
     }
 
     try {
-      console.log('🚀 Iniciando carregamento do ranking...');
+      console.log(`🚀 Iniciando carregamento do ranking... ${forceRefresh ? '(REFRESH FORÇADO)' : ''}`);
 
-      // Usa cache local para dados recentes se disponível
+      // ✅ CORREÇÃO: Cache local apenas para otimização, não para substituir dados da API
       const cacheKey = `ranking_${this.viewMode}_${new Date().toISOString().split('T')[0]}`;
       const cachedData = localStorage.getItem(cacheKey);
 
       let backendRanking: BackendRankingItem[] = [];
 
-      if (cachedData && !isQuickUpdate) {
-        console.log('📦 Usando dados em cache para ranking');
-        backendRanking = JSON.parse(cachedData);
-      } else {
-        console.log('🌐 Buscando dados atualizados do ranking no backend...');
+      // ✅ CORREÇÃO: Se forceRefresh ou não há cache, sempre buscar dados frescos da API
+      if (forceRefresh || !cachedData || isQuickUpdate) {
+        console.log(`🌐 Buscando dados ${forceRefresh ? 'FRESCOS' : 'atualizados'} do ranking na API...`);
+
+        // ✅ CORREÇÃO: Limpa cache local se forceRefresh
+        if (forceRefresh) {
+          localStorage.removeItem(cacheKey);
+          console.log('🗑️ Cache local do ranking limpo');
+        }
+
         backendRanking = await this.retryWithBackoff(async () => {
           const data = await firstValueFrom(
-            this.pokeApiService.getGlobalRankingFromBackend(15).pipe(timeout(30000))
+            this.pokeApiService.getGlobalRankingFromBackend(15, forceRefresh).pipe(timeout(30000))
           );
-          // Atualiza o cache local
-          localStorage.setItem(cacheKey, JSON.stringify(data));
+
+          // ✅ CORREÇÃO: Atualiza cache local apenas para otimização (TTL curto)
+          if (!forceRefresh) {
+            localStorage.setItem(cacheKey, JSON.stringify(data));
+          }
+
           return data;
         }, 3, 2000); // 3 tentativas, começando com 2s de delay
+      } else {
+        console.log('📦 Usando dados em cache para otimização (dados recentes)');
+        backendRanking = JSON.parse(cachedData);
       }
 
       if (!backendRanking || backendRanking.length === 0) {
@@ -524,10 +581,18 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Carrega o ranking local para uma região específica
+   * ❌ DESABILITADO: Carrega o ranking local para uma região específica
+   * Endpoint /api/v1/ranking/local foi removido do backend
    * @param region Região para carregar o ranking
    */
   private async loadLocalRanking(region: string): Promise<void> {
+    // ✅ CORREÇÃO: Método desabilitado - endpoint não existe mais no backend
+    console.warn('[Ranking] ⚠️ loadLocalRanking desabilitado - endpoint /api/v1/ranking/local removido');
+    return;
+
+    /* CÓDIGO ORIGINAL COMENTADO:
+    try {
+    /* CÓDIGO ORIGINAL COMENTADO:
     try {
       const response: LocalRankingItem[] = await firstValueFrom(
         this.pokeApiService.getLocalRanking(region).pipe(timeout(30000))
@@ -580,6 +645,7 @@ export class RankingPage implements OnInit, OnDestroy {
       this.showErrorToast('ERROR_LOADING_LOCAL_RANKING');
       this.localRanking = [];
     }
+    */
   }
 
   /**
@@ -703,6 +769,14 @@ export class RankingPage implements OnInit, OnDestroy {
       // ✅ CORREÇÃO: Não propagar erro - manter funcionamento
       console.warn('[Ranking] Continuando com estados de captura existentes');
     }
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Método para verificar se um Pokémon foi capturado
+   * Necessário para o template HTML usar [isCaptured]="isCaptured(pokemon.id)"
+   */
+  isCaptured(pokemonId: number): boolean {
+    return this.capturedStates.get(pokemonId) || false;
   }
 
   /**
@@ -888,28 +962,70 @@ export class RankingPage implements OnInit, OnDestroy {
   }
 
   /**
+   * ✅ Calcula o TTL restante do cache em minutos
+   */
+  private calculateCacheTTLMinutes(): number {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const remainingMs = tomorrow.getTime() - now.getTime();
+    const remainingMinutes = Math.floor(remainingMs / (1000 * 60));
+
+    return Math.max(0, remainingMinutes);
+  }
+
+  /**
+   * ✅ Verifica se existe cache válido para o ranking
+   */
+  private hasCacheData(): boolean {
+    const cacheKey = `ranking_${this.viewMode}_${new Date().toISOString().split('T')[0]}`;
+    return localStorage.getItem(cacheKey) !== null;
+  }
+
+  /**
    * ✅ CORREÇÃO CRÍTICA: Método de debug para atualizar ranking manualmente
    * Permite testes de desenvolvimento e debugging de problemas de sincronização
+   * Agora exibe o TTL restante do cache em minutos
    */
   async debugRefreshRanking(): Promise<void> {
-    console.log('[Ranking] 🔧 DEBUG: Atualizando ranking manualmente...');
+    console.log('[WEB-RANKING] 🔧 DEBUG: Atualizando ranking manualmente...');
 
     try {
+      // Calcula TTL antes da limpeza do cache
+      const ttlMinutes = this.calculateCacheTTLMinutes();
+      const hasCacheData = this.hasCacheData();
+      const cacheKey = `ranking_${this.viewMode}_${new Date().toISOString().split('T')[0]}`;
+
+      // Log detalhado do estado do cache
+      console.log('[WEB-RANKING] 📊 DEBUG: Estado do cache antes da limpeza:', {
+        cacheExists: hasCacheData,
+        ttlMinutes: ttlMinutes,
+        cacheKey: cacheKey
+      });
+
       // Força limpeza do cache
-      localStorage.removeItem(`ranking_${this.viewMode}_${new Date().toISOString().split('T')[0]}`);
+      localStorage.removeItem(cacheKey);
+      console.log('[WEB-RANKING] 🗑️ DEBUG: Cache limpo');
 
       // Recarrega estados de captura primeiro
       await this.loadCapturedStates();
 
-      // Recarrega ranking completo
-      await this.loadRanking();
+      // ✅ CORREÇÃO: Recarrega ranking com dados frescos da API
+      await this.loadRanking(true); // forceRefresh = true
 
-      // Mostra feedback de sucesso
-      await this.showToast('debug_refresh_success');
+      // Mostra feedback de sucesso com informações do TTL
+      const cacheStatusMessage = hasCacheData
+        ? `Cache anterior expirava em ${ttlMinutes} min`
+        : 'Sem cache anterior';
 
-      console.log('[Ranking] ✅ DEBUG: Ranking atualizado com sucesso');
+      const successMessage = `Ranking atualizado! (${cacheStatusMessage})`;
+
+      // Mostra toast com informação do TTL
+      await this.showToast(successMessage);
+
+      console.log(`[WEB-RANKING] ✅ DEBUG: ${successMessage}`);
     } catch (error) {
-      console.error('[Ranking] ❌ DEBUG: Erro ao atualizar ranking:', error);
+      console.error('[WEB-RANKING] ❌ DEBUG: Erro ao atualizar ranking:', error);
       await this.showErrorToast('debug_refresh_error');
     }
   }
