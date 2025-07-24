@@ -44,7 +44,7 @@ export class PokeApiService {
       pokemon: 2 * 60 * 60 * 1000,    // 2 horas
       species: 2 * 60 * 60 * 1000,    // 2 horas
       list: 30 * 60 * 1000,           // 30 minutos
-      ranking: 5 * 60 * 1000          // 5 minutos
+      ranking: 30 * 1000              // ✅ CORREÇÃO: 30 segundos - dados em tempo real
     },
     enableLogging: !environment.production
   };
@@ -381,7 +381,7 @@ export class PokeApiService {
           })
         );
       },
-      5 * 60 * 1000 // 5 minutos TTL para rankings (dados mais dinâmicos)
+      30 * 1000 // ✅ CORREÇÃO: 30 segundos TTL para rankings (dados em tempo real)
     );
   }
 
@@ -404,11 +404,18 @@ export class PokeApiService {
   }
 
   /**
-   * Obtém o ranking local de jogadores
+   * ❌ DESABILITADO: Obtém o ranking local de jogadores
+   * Endpoint /api/v1/ranking/local foi removido do backend
    * @param region Região para o ranking local
-   * @returns Observable com lista de rankings locais
+   * @returns Observable com lista vazia
    */
   getLocalRanking(region: string): Observable<any[]> {
+    // ✅ CORREÇÃO: Endpoint removido do backend - retorna array vazio
+    console.warn('[PokeApiService] ⚠️ getLocalRanking desabilitado - endpoint /api/v1/ranking/local removido');
+    return of([]);
+
+    /* CÓDIGO ORIGINAL COMENTADO:
+    /* CÓDIGO ORIGINAL COMENTADO:
     const cacheKey = `ranking_local_${region}`;
 
     return this.cacheService.get<any[]>(
@@ -436,6 +443,7 @@ export class PokeApiService {
       },
       3 * 60 * 1000 // 3 minutos TTL para ranking local
     );
+    */
   }
 
   /**
@@ -958,10 +966,17 @@ export class PokeApiService {
   /**
    * Busca ranking global de pokémons mais capturados do backend
    * @param limit Número máximo de itens a serem retornados
+   * @param forceRefresh Se true, ignora cache e busca dados frescos da API
    * @returns Observable com array de objetos contendo pokemon_id, pokemon_name e favorite_count
    */
-  getGlobalRankingFromBackend(limit: number = 10): Observable<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>> {
+  getGlobalRankingFromBackend(limit: number = 10, forceRefresh: boolean = false): Observable<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>> {
     const cacheKey = `ranking_backend_global_${limit}`;
+
+    // ✅ CORREÇÃO: Se forceRefresh for true, invalida cache e busca dados frescos
+    if (forceRefresh) {
+      console.log('🔄 [PokeApiService] Forçando refresh do ranking - invalidando cache');
+      this.cacheService.delete(cacheKey);
+    }
 
     return this.cacheService.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
       cacheKey,
@@ -974,17 +989,22 @@ export class PokeApiService {
           headers['Authorization'] = `Bearer ${token}`;
         }
 
+        console.log(`🌐 [PokeApiService] Buscando dados ${forceRefresh ? 'FRESCOS' : 'atualizados'} do ranking da API`);
+
         return this.http.get<Array<{ pokemon_id: number; pokemon_name: string; favorite_count: number; }>>(
           `${this.config.backendUrl}/ranking/?limit=${limit}`,
           { headers }
         ).pipe(
+          tap(data => {
+            console.log(`✅ [PokeApiService] API retornou ${data.length} itens de ranking ${forceRefresh ? '(REFRESH FORÇADO)' : ''}`);
+          }),
           catchError(error => {
-            console.error('Erro ao buscar ranking global:', error);
+            console.error('❌ [PokeApiService] Erro ao buscar ranking global:', error);
             return of([]); // Retorna array vazio em caso de erro
           })
         );
       },
-      5 * 60 * 1000 // 5 minutos TTL para ranking do backend
+      forceRefresh ? 0 : 30 * 1000 // ✅ CORREÇÃO: Se forceRefresh, TTL = 0 (sem cache)
     );
   }
 

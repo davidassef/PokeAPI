@@ -7,6 +7,8 @@ import { SettingsService } from './core/services/settings.service';
 import { User } from 'src/app/models/user.model';
 import { AuthService } from './core/services/auth.service';
 import { filter } from 'rxjs/operators';
+import { CapturedMonitorService } from './core/services/captured-monitor.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -39,10 +41,12 @@ export class AppComponent implements OnInit {
     private storage: Storage,
     private router: Router,
     private settingsService: SettingsService, // injetar serviço de configurações
-    private authService: AuthService // injetar serviço de autenticação
+    private authService: AuthService, // injetar serviço de autenticação
+    private capturedMonitor: CapturedMonitorService // ✅ NOVO: Serviço de monitoramento
   ) {
     this.initializeApp();
     this.setupRouteListener();
+    this.initializeMonitoring(); // ✅ NOVO: Inicializar monitoramento
   }
 
   async ngOnInit() {
@@ -53,6 +57,24 @@ export class AppComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.user = user;
     });
+  }
+
+  /**
+   * ✅ NOVO: Inicializa o sistema de monitoramento contínuo
+   */
+  private initializeMonitoring(): void {
+    console.log('[AppComponent] 🔍 Inicializando monitoramento do sistema de capturados...');
+
+    // Habilita debug global em desenvolvimento
+    if (!environment.production) {
+      this.capturedMonitor.enableGlobalDebug();
+      console.log('[AppComponent] 🔧 Debug global habilitado - use window.capturedMonitor.printReport()');
+    }
+
+    // Inicia monitoramento automático
+    this.capturedMonitor.startPeriodicMonitoring();
+
+    console.log('[AppComponent] ✅ Monitoramento inicializado com sucesso');
   }
 
   async initializeApp() {

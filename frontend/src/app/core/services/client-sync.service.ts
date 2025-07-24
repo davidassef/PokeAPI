@@ -162,20 +162,31 @@ export class ClientSyncService {
 
     try {
       const existingData: CaptureData[] = await this.storage.get(this.SYNC_DATA_KEY) || [];
-      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      // ✅ CORREÇÃO: Aumentado de 7 para 30 dias para maior segurança
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      // Manter apenas dados sincronizados dos últimos 7 dias e todos os não sincronizados
+      // Manter apenas dados sincronizados dos últimos 30 dias e todos os não sincronizados
+      // ✅ CORREÇÃO: Adicionar verificação extra de segurança
       const filteredData = existingData.filter(capture => {
         const captureDate = new Date(capture.timestamp);
-        return !capture.synced || captureDate > oneWeekAgo;
+        // Manter se: não foi sincronizado OU foi sincronizado há menos de 30 dias OU tem menos de 100 itens totais
+        return !capture.synced ||
+               captureDate > thirtyDaysAgo ||
+               existingData.length < 100; // Proteção adicional para poucos dados
       });
 
       if (filteredData.length !== existingData.length) {
+        const removedCount = existingData.length - filteredData.length;
+        console.log(`[ClientSyncService] ✅ Limpeza conservadora: ${removedCount} dados antigos removidos (${filteredData.length} mantidos)`);
+
+        // ✅ CORREÇÃO: Backup antes de limpar
+        await this.storage.set(`${this.SYNC_DATA_KEY}_backup_${Date.now()}`, existingData.slice(0, 50));
         await this.storage.set(this.SYNC_DATA_KEY, filteredData);
-        console.log('[ClientSyncService] Dados antigos removidos:', existingData.length - filteredData.length);
+      } else {
+        console.log('[ClientSyncService] ✅ Nenhum dado antigo para remover');
       }
     } catch (error) {
-      console.error('[ClientSyncService] Erro no cleanup:', error);
+      console.error('[ClientSyncService] ❌ Erro no cleanup (dados preservados):', error);
     }
   }
 

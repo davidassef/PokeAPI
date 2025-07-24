@@ -39,7 +39,7 @@ export class CacheInterceptor implements HttpInterceptor {
     '/type/': 24 * 60 * 60 * 1000,          // 24 horas - dados muito estáticos
     '/ability/': 24 * 60 * 60 * 1000,       // 24 horas - dados muito estáticos
     '/move/': 24 * 60 * 60 * 1000,          // 24 horas - dados muito estáticos
-    '/ranking/': 5 * 60 * 1000,             // 5 minutos - dados dinâmicos
+    '/ranking/': 30 * 1000,                 // ✅ CORREÇÃO: 30 segundos - dados em tempo real
     '/item/': 12 * 60 * 60 * 1000,          // 12 horas - dados semi-estáticos
     '/location/': 12 * 60 * 60 * 1000,      // 12 horas - dados semi-estáticos
     '/region/': 24 * 60 * 60 * 1000,        // 24 horas - dados muito estáticos
@@ -65,7 +65,7 @@ export class CacheInterceptor implements HttpInterceptor {
     // Verificar se existe no cache
     if (this.cacheService.has(cacheKey)) {
       console.log(`🎯 HTTP Cache HIT: ${req.url}`);
-      
+
       // Retornar do cache usando o método get
       return this.cacheService.get(cacheKey, () => {
         // Este fallback nunca deve ser chamado pois já verificamos que existe
@@ -109,7 +109,7 @@ export class CacheInterceptor implements HttpInterceptor {
    */
   private generateCacheKey(req: HttpRequest<any>): string {
     let key = `http_${req.method}_${req.url}`;
-    
+
     // Incluir parâmetros de query na chave
     if (req.params.keys().length > 0) {
       const params = req.params.keys()
@@ -152,7 +152,7 @@ export class CacheInterceptor implements HttpInterceptor {
   invalidateCache(urlPattern: string): void {
     const keys = this.cacheService.keys();
     const keysToDelete = keys.filter(key => key.includes(urlPattern));
-    
+
     keysToDelete.forEach(key => {
       this.cacheService.delete(key);
     });
@@ -168,7 +168,7 @@ export class CacheInterceptor implements HttpInterceptor {
   invalidateAllCache(): void {
     const keys = this.cacheService.keys();
     const httpKeys = keys.filter(key => key.startsWith('http_'));
-    
+
     httpKeys.forEach(key => {
       this.cacheService.delete(key);
     });

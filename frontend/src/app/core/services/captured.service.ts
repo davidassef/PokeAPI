@@ -30,18 +30,58 @@ export class CapturedService {
     private errorHandler: ErrorHandlerService,
     private connectionService: ConnectionService,
     private authService: AuthService
-  ) {}
+  ) {
+    // ✅ NOVO: Limpar cache quando usuário faz logout
+    this.authService.getAuthState().subscribe(isAuthenticated => {
+      if (!isAuthenticated) {
+        console.log('[CapturedService] Usuário deslogado, limpando cache');
+        this.clearCache();
+      }
+    });
+  }
 
   /**
-   * Lista capturas do usuário autenticado
-   * @returns Observable com a lista de favoritos ou array vazio em caso de erro
+   * ✅ NOVO: Log detalhado do estado das capturas
+   */
+  private logCaptureState(action: string, count: number): void {
+    console.log(`[CapturedService] ${action}: ${count} capturas`, {
+      timestamp: new Date().toISOString(),
+      authenticated: this.authService.isAuthenticated(),
+      userId: this.authService.getCurrentUser()?.id,
+      cacheSize: this.cachedCaptured.length,
+      lastFetch: new Date(this.lastSuccessfulFetch).toISOString()
+    });
+  }
+
+  // Cache inteligente para preservar dados
+  private cachedCaptured: FavoritePokemon[] = [];
+  private lastSuccessfulFetch: number = 0;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+  /**
+   * Lista capturas do usuário autenticado com cache inteligente
+   * @returns Observable com a lista de favoritos, cache, ou array vazio
    */
   fetchCaptured(): Observable<FavoritePokemon[]> {
     console.log('[CapturedService] Buscando capturas do usuário');
 
     if (!this.authService.isAuthenticated()) {
-      console.warn('[CapturedService] Usuário não autenticado, retornando lista vazia');
+      // ✅ CORREÇÃO CRÍTICA: Retorna cache se disponível, mesmo sem autenticação
+      if (this.cachedCaptured.length > 0) {
+        console.log('[CapturedService] Usuário não autenticado, retornando cache:', this.cachedCaptured.length);
+        this.capturedSubject.next(this.cachedCaptured);
+        return of(this.cachedCaptured);
+      }
+      console.warn('[CapturedService] Usuário não autenticado, sem cache disponível');
       return of([]);
+    }
+
+    // Verifica se cache ainda é válido
+    const now = Date.now();
+    if (this.cachedCaptured.length > 0 && (now - this.lastSuccessfulFetch) < this.CACHE_DURATION) {
+      console.log('[CapturedService] Retornando dados do cache válido:', this.cachedCaptured.length);
+      this.capturedSubject.next(this.cachedCaptured);
+      return of(this.cachedCaptured);
     }
 
     const url = `${this.apiUrl}/my-favorites`;
@@ -51,6 +91,9 @@ export class CapturedService {
       tap({
         next: (captured) => {
           console.log(`[CapturedService] ${captured.length} capturas carregadas com sucesso`);
+          // ✅ Atualiza cache e estado
+          this.cachedCaptured = captured;
+          this.lastSuccessfulFetch = now;
           this.capturedSubject.next(captured);
         },
         error: (error) => {
@@ -61,15 +104,25 @@ export class CapturedService {
             error: error.error
           });
 
-          // Se for erro de autenticação, limpa o estado
+          // ✅ CORREÇÃO CRÍTICA: NÃO limpa dados em erro de autenticação
           if (error.status === 401 || error.status === 403) {
-            console.warn('[CapturedService] Erro de autenticação, limpando estado');
-            this.capturedSubject.next([]);
+            console.warn('[CapturedService] Erro de autenticação, MANTENDO dados locais/cache');
+            // Mantém cache se disponível
+            if (this.cachedCaptured.length > 0) {
+              console.log('[CapturedService] Usando cache após erro de auth:', this.cachedCaptured.length);
+              this.capturedSubject.next(this.cachedCaptured);
+            }
+            // NÃO executa: this.capturedSubject.next([]); - ISSO CAUSAVA O PROBLEMA
           }
         }
       }),
       catchError(error => {
         console.error('[CapturedService] Erro capturado ao buscar capturas:', error);
+        // ✅ CORREÇÃO: Retorna cache em caso de erro
+        if (this.cachedCaptured.length > 0) {
+          console.log('[CapturedService] Retornando cache após erro:', this.cachedCaptured.length);
+          return of(this.cachedCaptured);
+        }
         return of([]);
       })
     );
@@ -111,6 +164,9 @@ export class CapturedService {
       throw new Error('Usuário não autenticado');
     }
 
+    // ✅ Log estado antes da captura
+    this.logCaptureState('Antes da captura', this.capturedSubject.value.length);
+
     // ✅ CORREÇÃO CRÍTICA: Atualização otimista do estado local
     const currentCaptured = this.capturedSubject.value;
     const newCapture: FavoritePokemon = {
@@ -122,8 +178,14 @@ export class CapturedService {
     };
 
     // Atualiza estado local imediatamente (otimistic update)
-    this.capturedSubject.next([...currentCaptured, newCapture]);
+    const updatedCaptured = [...currentCaptured, newCapture];
+    this.capturedSubject.next(updatedCaptured);
+
+    // ✅ CORREÇÃO: Atualiza cache também
+    this.cachedCaptured = updatedCaptured;
+
     console.log(`[CapturedService] ✅ Estado local atualizado otimisticamente para ${pokemon.name}`);
+    this.logCaptureState('Após atualização otimista', updatedCaptured.length);
 
     // Inclui user_id para compatibilidade com o backend
     const currentUser = this.authService.getCurrentUser();
@@ -139,11 +201,17 @@ export class CapturedService {
       tap((serverCapture) => {
         // ✅ CORREÇÃO: Substituir captura temporária pela do servidor
         const currentCaptured = this.capturedSubject.value;
-        const updatedCaptured = currentCaptured
+        const finalCaptured = currentCaptured
           .filter(c => c.pokemon_id !== pokemon.id) // Remove temporária
           .concat(serverCapture); // Adiciona a do servidor
-        this.capturedSubject.next(updatedCaptured);
+
+        this.capturedSubject.next(finalCaptured);
+        // ✅ CORREÇÃO: Atualiza cache com dados do servidor
+        this.cachedCaptured = finalCaptured;
+        this.lastSuccessfulFetch = Date.now();
+
         console.log(`[CapturedService] ✅ Captura confirmada pelo servidor para ${pokemon.name}`);
+        this.logCaptureState('Após confirmação do servidor', finalCaptured.length);
       }),
       catchError(error => {
         console.error('[CapturedService] ❌ Erro ao adicionar captura, revertendo estado:', error);
@@ -151,6 +219,10 @@ export class CapturedService {
         const currentCaptured = this.capturedSubject.value;
         const revertedCaptured = currentCaptured.filter(c => c.pokemon_id !== pokemon.id);
         this.capturedSubject.next(revertedCaptured);
+        // ✅ CORREÇÃO: Reverte cache também
+        this.cachedCaptured = revertedCaptured;
+
+        this.logCaptureState('Após reversão por erro', revertedCaptured.length);
         throw error;
       })
     );
@@ -239,29 +311,55 @@ export class CapturedService {
     console.log('[CapturedService] 🔄 Iniciando sincronização inteligente...');
 
     if (!this.authService.isAuthenticated()) {
-      console.warn('[CapturedService] Usuário não autenticado, mantendo estado local');
-      return this.captured$;
+      console.warn('[CapturedService] Usuário não autenticado, mantendo estado local e cache');
+      const currentState = this.capturedSubject.value;
+      // Mescla estado atual com cache
+      const mergedData = this.mergeCapturedData(currentState, this.cachedCaptured);
+      this.capturedSubject.next(mergedData);
+      return of(mergedData);
     }
 
     const localCaptured = this.capturedSubject.value;
     console.log(`[CapturedService] Estado local: ${localCaptured.length} capturas`);
+    console.log(`[CapturedService] Cache: ${this.cachedCaptured.length} capturas`);
 
     return this.fetchCaptured().pipe(
       tap((serverCaptured) => {
         console.log(`[CapturedService] Estado servidor: ${serverCaptured.length} capturas`);
 
-        // ✅ CORREÇÃO: Mesclar dados locais e do servidor
-        const mergedCaptured = this.mergeCapturedData(localCaptured, serverCaptured);
-        console.log(`[CapturedService] ✅ Dados mesclados: ${mergedCaptured.length} capturas`);
+        // ✅ CORREÇÃO: Mesclar dados locais, cache e do servidor
+        const step1 = this.mergeCapturedData(localCaptured, this.cachedCaptured);
+        const finalMerged = this.mergeCapturedData(step1, serverCaptured);
+        console.log(`[CapturedService] ✅ Dados mesclados: ${finalMerged.length} capturas`);
 
-        this.capturedSubject.next(mergedCaptured);
+        this.capturedSubject.next(finalMerged);
       }),
       catchError((error) => {
-        console.error('[CapturedService] ❌ Erro na sincronização, mantendo dados locais:', error);
-        // Em caso de erro, mantém dados locais
-        return of(localCaptured);
+        console.error('[CapturedService] ❌ Erro na sincronização, mantendo dados locais e cache:', error);
+        // Em caso de erro, mescla dados locais com cache
+        const mergedData = this.mergeCapturedData(localCaptured, this.cachedCaptured);
+        this.capturedSubject.next(mergedData);
+        return of(mergedData);
       })
     );
+  }
+
+  /**
+   * ✅ NOVO: Limpa cache quando necessário (ex: logout)
+   */
+  clearCache(): void {
+    console.log('[CapturedService] 🧹 Limpando cache');
+    this.cachedCaptured = [];
+    this.lastSuccessfulFetch = 0;
+  }
+
+  /**
+   * ✅ NOVO: Força atualização do cache
+   */
+  refreshCache(): Observable<FavoritePokemon[]> {
+    console.log('[CapturedService] 🔄 Forçando atualização do cache');
+    this.lastSuccessfulFetch = 0; // Invalida cache
+    return this.fetchCaptured();
   }
 
   /**

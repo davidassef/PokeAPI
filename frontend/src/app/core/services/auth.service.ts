@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
-import { tap, catchError, map, switchMap, timeout, retryWhen, delay, take, retry } from 'rxjs/operators';
+import { tap, catchError, map, switchMap, timeout, retryWhen, delay, take, retry, scan } from 'rxjs/operators';
 import { User } from '../../models/user.model';
 import { UserRole, getDefaultRole, isValidRole } from '../../models/user-role.enum';
 import { environment } from '../../../environments/environment';
@@ -270,10 +270,11 @@ export class AuthService {
 
       if (refreshIn > 0) {
         this.refreshTokenTimer = setTimeout(() => {
-          this.refreshToken().subscribe({
+          this.refreshTokenWithRetry().subscribe({
             next: () => this.logIfEnabled('Token renovado com sucesso'),
             error: (err) => {
-              this.logIfEnabled('Falha ao renovar token:', err);
+              this.logIfEnabled('Falha crítica ao renovar token após tentativas:', err);
+              // ✅ CORREÇÃO: Só fazer logout após múltiplas tentativas falharem
               this.logout();
             }
           });
@@ -607,6 +608,36 @@ export class AuthService {
   }
 
   /**
+   * ✅ NOVO: Renova o token com retry automático para maior robustez
+   * @param maxRetries Número máximo de tentativas (padrão: 3)
+   * @returns Observable com o novo token
+   */
+  refreshTokenWithRetry(maxRetries: number = 3): Observable<{ token: string; user: User }> {
+    return this.refreshToken().pipe(
+      retryWhen(errors =>
+        errors.pipe(
+          scan((retryCount, error) => {
+            this.logIfEnabled(`Tentativa ${retryCount + 1} de renovação falhou:`, error);
+
+            // Se excedeu tentativas ou erro é de autenticação (401/403), não tentar mais
+            if (retryCount >= maxRetries - 1 ||
+                (error.status === 401 || error.status === 403)) {
+              throw error;
+            }
+
+            return retryCount + 1;
+          }, 0),
+          delay(1000) // Aguarda 1 segundo entre tentativas
+        )
+      ),
+      catchError(error => {
+        this.logIfEnabled('Todas as tentativas de renovação falharam:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Renova o token usando o refresh token
    * @returns Observable com o novo token
    */
@@ -639,8 +670,8 @@ export class AuthService {
         user: this.getCurrentUser() as User
       })),
       catchError(error => {
-        console.error('Erro ao renovar token:', error);
-        this.clearAuthState();
+        this.logIfEnabled('Erro ao renovar token:', error);
+        // ✅ CORREÇÃO: Não limpar estado imediatamente - deixar para o retry decidir
         return throwError(() => error);
       })
     );
