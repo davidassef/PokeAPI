@@ -48,7 +48,44 @@ export class RankingPage implements OnInit, OnDestroy {
   isMobile = true;
   showCompactView = true;
 
+  // ✅ NOVO: Sistema de refresh automático
+  private autoRefreshEnabled = true;
+  private autoRefreshInterval = 60 * 1000; // 1 minuto
+  private autoRefreshTimer: any = null;
   private destroy$ = new Subject<void>();
+
+  // Objeto placeholder estático para evitar loop infinito
+  private static readonly PLACEHOLDER_POKEMON: Pokemon = {
+    id: 0,
+    name: 'Unknown',
+    types: [],
+    stats: [],
+    height: 0,
+    weight: 0,
+    base_experience: 0,
+    order: 0,
+    sprites: {
+      front_default: 'assets/img/placeholder.png',
+      front_shiny: 'assets/img/placeholder.png',
+      back_default: 'assets/img/placeholder.png',
+      back_shiny: 'assets/img/placeholder.png',
+      other: {
+        'official-artwork': {
+          front_default: 'assets/img/placeholder.png'
+        },
+        home: {
+          front_default: 'assets/img/placeholder.png',
+          front_shiny: 'assets/img/placeholder.png'
+        }
+      }
+    },
+    abilities: [],
+    species: {
+      name: 'Unknown',
+      url: ''
+    },
+    moves: [],
+  };
 
   showDetailsModal = false;
   selectedPokemonId: number | null = null;
@@ -75,20 +112,36 @@ export class RankingPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Verificar autenticação
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.user = this.authService.getCurrentUser();
-    }
+    // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo
+    this.authService.getAuthState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuthenticated => {
+        console.log('[MobileRanking] Estado de autenticação atualizado:', isAuthenticated);
+        this.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+          this.user = this.authService.getCurrentUser();
+          console.log('[MobileRanking] Usuário carregado:', this.user);
+        } else {
+          this.user = null;
+          console.log('[MobileRanking] Usuário deslogado');
+        }
+      });
 
-    // Inscrever para mudanças de autenticação
-    this.authService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
-      this.user = user;
-      this.isAuthenticated = !!user;
-    });
+    // Inscrever-se no usuário atual
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        console.log('[MobileRanking] Usuário atual atualizado:', user);
+        this.user = user;
+      });
 
     this.loadRanking();
     this.loadCapturedStates();
+
+    // ✅ NOVO: Inicia auto-refresh após carregamento inicial
+    setTimeout(() => {
+      this.startAutoRefresh();
+    }, 2000); // Aguarda 2 segundos após carregamento inicial
   }
 
   ionViewWillEnter() {
@@ -102,215 +155,475 @@ export class RankingPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    this.stopAutoRefresh();
   }
 
-  // ✅ CORREÇÃO: Método para carregar dados de ranking com debug melhorado
-  private async loadRankingData(endpoint: 'getGlobalRanking' | 'getLocalRanking', region?: string): Promise<PokemonRanking[]> {
+  // ✅ NOVO: Métodos para controle de auto-refresh
+  private startAutoRefresh() {
+    if (!this.autoRefreshEnabled) return;
+
+    this.stopAutoRefresh(); // Para qualquer timer existente
+
+    console.log(`🔄 [MOBILE-Ranking] Auto-refresh iniciado (intervalo: ${this.autoRefreshInterval / 1000}s)`);
+
+    this.autoRefreshTimer = setInterval(async () => {
+      if (this.autoRefreshEnabled && !this.loading) {
+        console.log('🔄 [MOBILE-Ranking] Auto-refresh executando...');
+        await this.loadRanking(false); // Não força refresh, usa cache inteligente
+      }
+    }, this.autoRefreshInterval);
+  }
+
+  private stopAutoRefresh() {
+    if (this.autoRefreshTimer) {
+      clearInterval(this.autoRefreshTimer);
+      this.autoRefreshTimer = null;
+      console.log('⏹️ [MOBILE-Ranking] Auto-refresh parado');
+    }
+  }
+
+  public toggleAutoRefresh() {
+    this.autoRefreshEnabled = !this.autoRefreshEnabled;
+
+    if (this.autoRefreshEnabled) {
+      this.startAutoRefresh();
+    } else {
+      this.stopAutoRefresh();
+    }
+
+    console.log(`🔄 [MOBILE-Ranking] Auto-refresh ${this.autoRefreshEnabled ? 'HABILITADO' : 'DESABILITADO'}`);
+  }
+
+  /**
+   * Calcula o TTL (Time To Live) restante do cache em minutos
+   * @returns Número de minutos restantes até a expiração do cache
+   */
+  private calculateCacheTTLMinutes(): number {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Adiciona 24 horas
+    const remainingMs = tomorrow.getTime() - now.getTime();
+    const remainingMinutes = Math.floor(remainingMs / (1000 * 60));
+
+    return Math.max(0, remainingMinutes); // Garante que não seja negativo
+  }
+
+  /**
+   * Verifica se existe cache válido para o ranking
+   * @returns true se existe cache válido, false caso contrário
+   */
+  private hasCacheData(): boolean {
+    const cacheKey = `ranking_global_${new Date().toISOString().split('T')[0]}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    return cachedData !== null && cachedData !== undefined;
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Método de debug para atualizar ranking manualmente
+   * Permite testes de desenvolvimento e debugging de problemas de sincronização
+   * Exibe informações detalhadas sobre o estado do cache e TTL
+   */
+  async debugRefreshRanking(): Promise<void> {
+    console.log('[MOBILE-RANKING] 🔧 DEBUG: Atualizando ranking manualmente...');
+
     try {
-      console.log(`📡 [MOBILE-RANKING] Chamando ${endpoint}${region ? ` para região ${region}` : ''}`);
+      // Calcula informações do cache antes da limpeza
+      const ttlMinutes = this.calculateCacheTTLMinutes();
+      const hasCacheData = this.hasCacheData();
+      const cacheKey = `ranking_global_${new Date().toISOString().split('T')[0]}`;
 
-      const response = endpoint === 'getGlobalRanking'
-        ? await this.pokeApiService.getGlobalRanking().toPromise()
-        : await this.pokeApiService.getLocalRanking(region!).toPromise();
+      console.log(`[MOBILE-RANKING] 📊 DEBUG: Estado do cache antes da limpeza:`);
+      console.log(`  - Cache existe: ${hasCacheData}`);
+      console.log(`  - TTL restante: ${ttlMinutes} minutos`);
+      console.log(`  - Chave do cache: ${cacheKey}`);
 
-      console.log(`📥 [MOBILE-RANKING] Resposta recebida do ${endpoint}:`, response);
+      // Força limpeza do cache
+      localStorage.removeItem(cacheKey);
+      console.log('[MOBILE-RANKING] 🗑️ DEBUG: Cache limpo');
 
-      if (!response || !Array.isArray(response)) {
-        console.warn(`⚠️ [MOBILE-RANKING] Resposta inválida do ${endpoint}:`, response);
-        console.warn(`⚠️ [MOBILE-RANKING] Tipo da resposta: ${typeof response}, É array: ${Array.isArray(response)}`);
-        return [];
+      // Recarrega estados de captura primeiro
+      await this.loadCapturedStates();
+
+      // ✅ CORREÇÃO: Recarrega ranking com dados frescos da API
+      await this.loadRanking(true); // forceRefresh = true
+
+      // Mostra feedback de sucesso com informações do TTL
+      const cacheStatusMessage = hasCacheData
+        ? `Cache anterior expirava em ${ttlMinutes} min`
+        : 'Sem cache anterior';
+
+      const successMessage = `Ranking atualizado! (${cacheStatusMessage})`;
+
+      // Cria toast personalizado com duração maior para mensagens com TTL
+      try {
+        const toast = await this.toastController.create({
+          message: successMessage,
+          duration: 4000, // Duração maior para ler a informação do TTL
+          position: 'top',
+          color: 'success',
+          buttons: [{
+            icon: 'close',
+            role: 'cancel'
+          }]
+        });
+        await toast.present();
+      } catch (error) {
+        console.error('[MOBILE-RANKING] Erro ao exibir toast de debug:', error);
+        // Fallback para toast simples
+        await this.showToast('Ranking atualizado com sucesso!');
       }
 
-      console.log(`✅ [MOBILE-RANKING] Resposta válida: ${response.length} itens`);
+      console.log(`[MOBILE-RANKING] ✅ DEBUG: ${successMessage}`);
+    } catch (error) {
+      console.error('[MOBILE-RANKING] ❌ DEBUG: Erro ao atualizar ranking:', error);
+      await this.showErrorToast('Erro ao atualizar ranking. Tente novamente.');
+    }
+  }
 
-      if (response.length === 0) {
-        console.warn(`⚠️ [MOBILE-RANKING] ${endpoint} retornou array vazio`);
-        return [];
+  // Método para retry com backoff
+  private async retryWithBackoff<T>(
+    operation: () => Promise<T>,
+    maxRetries: number = 3,
+    baseDelay: number = 1000
+  ): Promise<T> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        console.warn(`🔄 [MOBILE-RANKING] Tentativa ${attempt}/${maxRetries} falhou:`, error);
+
+        if (attempt === maxRetries) {
+          throw error; // Re-throw on last attempt
+        }
+
+        // Exponential backoff
+        const delay = baseDelay * Math.pow(2, attempt - 1);
+        console.log(`⏳ [MOBILE-RANKING] Aguardando ${delay}ms antes da próxima tentativa...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
+    }
+    throw new Error('Retry failed'); // This should never be reached
+  }
 
-      // ✅ CORREÇÃO: Mapeamento com melhor validação e debug
-      const mappedRanking = response
-        .filter(item => {
-          const isValid = item && item.pokemon_id && typeof item.pokemon_id === 'number';
-          if (!isValid) {
-            console.warn(`⚠️ [MOBILE-RANKING] Item inválido filtrado:`, item);
+  // ✅ CORREÇÃO: Carrega ranking global com dados em tempo real
+  async loadRanking(forceRefresh: boolean = false) {
+    // Mostra o indicador de carregamento apenas se não estiver em atualização rápida
+    const isQuickUpdate = this.globalRanking.length > 0;
+    let loading: HTMLIonLoadingElement | null = null;
+
+    if (!isQuickUpdate) {
+      this.loading = true;
+      loading = await this.loadingController.create({
+        message: await this.translate.get('ranking_page.loading_ranking').toPromise(),
+        duration: 30000, // Timeout de 30 segundos
+        spinner: 'crescent'
+      });
+      await loading.present().catch(console.error);
+    }
+
+    try {
+      console.log(`🚀 [MOBILE-RANKING] Iniciando carregamento do ranking... ${forceRefresh ? '(REFRESH FORÇADO)' : ''}`);
+
+      // ✅ CORREÇÃO: Cache local apenas para otimização, não para substituir dados da API
+      const cacheKey = `ranking_global_${new Date().toISOString().split('T')[0]}`;
+      const cachedData = localStorage.getItem(cacheKey);
+
+      let backendRanking: BackendRankingItem[] = [];
+
+      // ✅ CORREÇÃO: Se forceRefresh ou não há cache, sempre buscar dados frescos da API
+      if (forceRefresh || !cachedData || isQuickUpdate) {
+        console.log(`🌐 [MOBILE-RANKING] Buscando dados ${forceRefresh ? 'FRESCOS' : 'atualizados'} do ranking na API...`);
+
+        // ✅ CORREÇÃO: Limpa cache local se forceRefresh
+        if (forceRefresh) {
+          localStorage.removeItem(cacheKey);
+          console.log('🗑️ [MOBILE-RANKING] Cache local do ranking limpo');
+        }
+
+        backendRanking = await this.retryWithBackoff(async () => {
+          const data = await firstValueFrom(
+            this.pokeApiService.getGlobalRankingFromBackend(15, forceRefresh).pipe(timeout(30000))
+          );
+
+          // ✅ CORREÇÃO: Atualiza cache local apenas para otimização (TTL curto)
+          if (!forceRefresh) {
+            localStorage.setItem(cacheKey, JSON.stringify(data));
           }
-          return isValid;
-        })
+
+          return data;
+        }, 3, 2000); // 3 tentativas, começando com 2s de delay
+      } else {
+        console.log('📦 [MOBILE-RANKING] Usando dados em cache para otimização (dados recentes)');
+        backendRanking = JSON.parse(cachedData);
+      }
+
+      if (!backendRanking || backendRanking.length === 0) {
+        console.warn('⚠️ [MOBILE-RANKING] Backend retornou dados vazios');
+        this.globalRanking = [];
+        return;
+      }
+
+      console.log(`✅ [MOBILE-RANKING] Backend retornou ${backendRanking.length} itens de ranking`);
+
+      // Mapeamento snake_case -> camelCase com tratamento de erros
+      const mappedRanking = backendRanking
+        .filter(item => item && item.pokemon_id)
         .map((item: BackendRankingItem, idx: number) => {
+          // Garante que o trend seja um dos valores válidos
           const validTrends = ['up', 'down', 'stable'] as const;
           const trend = validTrends.includes(item.trend as any)
             ? item.trend as 'up' | 'down' | 'stable'
             : 'stable';
 
-          const mapped = {
+          return {
             pokemonId: item.pokemon_id,
             favoriteCount: item.favorite_count || 0,
             rank: idx + 1,
             trend: trend,
+            // Adiciona timestamp para controle de atualização
             updatedAt: new Date().toISOString()
           };
-
-          console.log(`📋 [MOBILE-RANKING] Item ${idx + 1} mapeado:`, mapped);
-          return mapped;
         });
 
-      console.log(`🗂️ [MOBILE-RANKING] Total de itens mapeados: ${mappedRanking.length}`);
+      // Busca os detalhes dos Pokémons com cache local
+      console.log('📋 [MOBILE-RANKING] Buscando detalhes dos Pokémons...');
 
-      // ✅ CORREÇÃO: Carregamento de Pokémon com melhor debug e error handling
-      console.log(`🔄 [MOBILE-RANKING] Iniciando carregamento de ${mappedRanking.length} Pokémon...`);
-
-      const pokemonPromises = mappedRanking.map(async (item: any, index: number) => {
+      const pokemonPromises = mappedRanking.map(async (item: any) => {
         try {
-          console.log(`🔍 [MOBILE-RANKING] Carregando Pokémon ${item.pokemonId} (${index + 1}/${mappedRanking.length})`);
-
+          // Tenta obter do cache primeiro
           const cacheKey = `pokemon_${item.pokemonId}`;
           const cachedPokemon = localStorage.getItem(cacheKey);
 
           let pokemon: Pokemon;
 
           if (cachedPokemon) {
-            console.log(`💾 [MOBILE-RANKING] Pokémon ${item.pokemonId} encontrado no cache`);
             pokemon = JSON.parse(cachedPokemon);
+            console.log(`🔄 [MOBILE-RANKING] Usando Pokémon ${item.pokemonId} do cache`);
           } else {
-            console.log(`📡 [MOBILE-RANKING] Buscando Pokémon ${item.pokemonId} da API...`);
             pokemon = await firstValueFrom(this.pokeApiService.getPokemon(item.pokemonId));
+            // Armazena no cache por 1 dia
             localStorage.setItem(cacheKey, JSON.stringify(pokemon));
-            console.log(`✅ [MOBILE-RANKING] Pokémon ${item.pokemonId} carregado e cacheado`);
           }
 
-          const result = {
+          return {
             pokemon: pokemon || this.getPlaceholderPokemon(item.pokemonId),
             favoriteCount: item.favoriteCount,
             rank: item.rank,
             trend: item.trend,
             updatedAt: item.updatedAt
           };
-
-          console.log(`✅ [MOBILE-RANKING] Resultado para Pokémon ${item.pokemonId}:`, result);
-          return result;
-
         } catch (error) {
           console.error(`❌ [MOBILE-RANKING] Erro ao carregar Pokémon ${item.pokemonId}:`, error);
-          const fallbackResult = {
+          return {
             pokemon: this.getPlaceholderPokemon(item.pokemonId),
             favoriteCount: item.favoriteCount,
             rank: item.rank,
             trend: 'stable' as const,
-            updatedAt: item.updatedAt
-          };
-
-          console.log(`🔄 [MOBILE-RANKING] Usando placeholder para Pokémon ${item.pokemonId}:`, fallbackResult);
-          return fallbackResult;
+            updatedAt: item.updatedAt,
+            error: true
+          } as PokemonRanking & { error: boolean };
         }
       });
 
-      console.log(`⏳ [MOBILE-RANKING] Aguardando carregamento de todos os Pokémon...`);
-      const results = await Promise.all(pokemonPromises);
+      // Atualiza o ranking com os novos dados
+      const newRanking = await Promise.all(pokemonPromises);
 
-      const validResults = results.filter(item => item.pokemon);
-      console.log(`🎯 [MOBILE-RANKING] Resultados válidos: ${validResults.length}/${results.length}`);
+      // Filtra itens inválidos e mapeia para o tipo correto
+      const validRanking: PokemonRanking[] = [];
 
-      return validResults;
+      for (const item of newRanking) {
+        // Pula itens com erro ou sem dados obrigatórios
+        if ('error' in item || !item.pokemon || item.favoriteCount === undefined || item.rank === undefined) {
+          continue;
+        }
 
-    } catch (error) {
-      console.error(`❌ [MOBILE-RANKING] Erro crítico ao carregar ${endpoint}:`, error);
-      console.error(`❌ [MOBILE-RANKING] Stack trace:`, error);
-      return [];
-    }
-  }
+        // Cria o item do ranking com a tipagem correta
+        const rankingItem: PokemonRanking = {
+          pokemon: item.pokemon,
+          favoriteCount: item.favoriteCount,
+          rank: item.rank,
+          trend: this.getSafeTrend(item.trend)
+        };
 
-  // ✅ CORREÇÃO: Carrega ranking global com debug melhorado
-  async loadRanking() {
-    if (this.loading) {
-      console.log('⚠️ [MOBILE-RANKING] Já carregando ranking, ignorando chamada duplicada');
-      return;
-    }
+        // Adiciona updatedAt se existir
+        if ('updatedAt' in item) {
+          rankingItem.updatedAt = item.updatedAt as string;
+        }
 
-    console.log('🚀 [MOBILE-RANKING] Iniciando carregamento do ranking global');
-    this.loading = true;
-
-    try {
-      console.log('📡 [MOBILE-RANKING] Chamando loadRankingData...');
-      this.globalRanking = await this.loadRankingData('getGlobalRanking');
-
-      console.log(`✅ [MOBILE-RANKING] Ranking global carregado: ${this.globalRanking.length} itens`);
-      console.log('📊 [MOBILE-RANKING] Primeiros 3 itens:', this.globalRanking.slice(0, 3));
-
-      // ✅ CORREÇÃO: Verificar se temos dados válidos
-      if (this.globalRanking.length === 0) {
-        console.warn('⚠️ [MOBILE-RANKING] Ranking vazio - pode ser problema de API ou dados');
+        validRanking.push(rankingItem);
       }
 
-    } catch (error) {
-      console.error('❌ [MOBILE-RANKING] Erro ao carregar ranking global:', error);
-      console.error('🔗 [MOBILE-RANKING] Stack trace:', error);
-      this.showErrorToast('ranking_page.error_loading_global');
+      // Mantém o estado de captura dos Pokémons
+      const updatedRanking = await this.updateCapturedStates(validRanking);
 
-      // ✅ CORREÇÃO: Garantir que globalRanking seja array vazio em caso de erro
+      // Atualiza as propriedades reativas
+      this.globalRanking = updatedRanking.filter(item => item.pokemon && item.pokemon.id > 0);
+
+      console.log(`🎯 [MOBILE-RANKING] Ranking atualizado: ${this.globalRanking.length} Pokémons carregados`);
+    } catch (error) {
+      console.error('🚨 [MOBILE-RANKING] Erro detalhado ao carregar ranking:', error);
+      console.error('🔗 [MOBILE-RANKING] URL do backend:', `${environment.apiUrl}/api/v1/ranking/`);
+
+      if (error instanceof Error) {
+        if (error.name === 'TimeoutError') {
+          console.error('⏰ [MOBILE-RANKING] Timeout após 30 segundos - Backend pode estar lento ou fora do ar');
+          await this.showErrorToast('Timeout: Backend não respondeu em 30s. Tente novamente.');
+        } else if (error.message.includes('ERR_NETWORK')) {
+          console.error('🌐 [MOBILE-RANKING] Erro de rede - Possível problema de conectividade');
+          await this.showErrorToast('Erro de rede: Verifique sua conexão com a internet.');
+        } else if (error.message.includes('CORS')) {
+          console.error('🔒 [MOBILE-RANKING] Erro de CORS - Backend não está aceitando requisições do frontend');
+          await this.showErrorToast('Erro de CORS: Backend não autorizado.');
+        } else {
+          console.error('❌ [MOBILE-RANKING] Erro genérico:', error.message);
+          await this.showErrorToast(`Erro: ${error.message}`);
+        }
+      } else {
+        console.error('❓ [MOBILE-RANKING] Erro desconhecido:', error);
+        await this.showErrorToast('Erro desconhecido ao carregar ranking.');
+      }
+
       this.globalRanking = [];
     } finally {
       this.loading = false;
-      console.log(`🏁 [MOBILE-RANKING] Carregamento finalizado. Loading: ${this.loading}, Items: ${this.globalRanking.length}`);
-      this.cdr.detectChanges();
-    }
-  }
-
-
-
-  // Carrega estados de captura
-  private async loadCapturedStates() {
-    try {
-      const captured = await this.capturedService.getCaptured().toPromise();
-      this.capturedStates.clear();
-
-      if (captured && Array.isArray(captured)) {
-        captured.forEach(pokemon => {
-          if (pokemon && pokemon.id) {
-            this.capturedStates.set(pokemon.id, true);
-          }
-        });
+      if (loading) {
+        await loading.dismiss().catch(console.error);
       }
-    } catch (error) {
-      console.error('Erro ao carregar estados de captura:', error);
     }
   }
+
+
+
+  /**
+   * Atualiza o estado de captura dos Pokémons no ranking
+   * @param ranking Lista de itens do ranking
+   */
+  private async updateCapturedStates(ranking: PokemonRanking[]): Promise<PokemonRanking[]> {
+    if (!ranking || ranking.length === 0) return [];
+
+    try {
+      // Verifica se o usuário está autenticado
+      if (!this.authService.isAuthenticated()) {
+        return ranking;
+      }
+
+      // Obtém os estados de captura em lote para melhor desempenho
+      const pokemonIds = ranking.map(item => item.pokemon.id);
+      const capturedStates = await this.capturedService.getCapturedStates(pokemonIds);
+
+      // Atualiza o cache local de estados de captura
+      Object.entries(capturedStates).forEach(([pokemonId, isCaptured]) => {
+        const id = parseInt(pokemonId, 10);
+        if (!isNaN(id)) {
+          this.capturedStates.set(id, isCaptured);
+        }
+      });
+
+      // Atualiza os itens do ranking com o estado de captura
+      return ranking.map(item => ({
+        ...item,
+        pokemon: {
+          ...item.pokemon,
+          isCaptured: this.capturedStates.get(item.pokemon.id) || false
+        }
+      }));
+    } catch (error) {
+      console.error('[MOBILE-RANKING] Erro ao atualizar estados de captura:', error);
+      return ranking; // Retorna o ranking sem alterações em caso de erro
+    }
+  }
+
+  /**
+   * Atualiza o ranking global com os estados de captura mais recentes
+   */
+  private updateGlobalRankingWithCapturedStates(): void {
+    if (!this.globalRanking) {
+      return;
+    }
+
+    this.globalRanking = this.globalRanking.map(item => ({
+      ...item,
+      pokemon: {
+        ...item.pokemon,
+        isCaptured: this.capturedStates.get(item.pokemon.id) || false
+      }
+    }));
+
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * ✅ CORREÇÃO CRÍTICA: Carrega estados de captura com sincronização inteligente
+   */
+  private async loadCapturedStates(): Promise<void> {
+    try {
+      // ✅ CORREÇÃO: Usar sincronização inteligente que preserva dados locais
+      const capturedPokemons = await firstValueFrom(this.capturedService.smartSync());
+
+      // ✅ CORREÇÃO: Não limpar cache - apenas atualizar
+      console.log(`[MOBILE-RANKING] Atualizando estados de captura: ${capturedPokemons.length} pokémons`);
+
+      capturedPokemons.forEach(pokemon => {
+        this.capturedCache.set(pokemon.pokemon_id, true);
+        this.capturedStates.set(pokemon.pokemon_id, true);
+      });
+
+      // ✅ CORREÇÃO: Remover pokémons que não estão mais capturados
+      const capturedIds = new Set(capturedPokemons.map(p => p.pokemon_id));
+      for (const [pokemonId] of this.capturedStates) {
+        if (!capturedIds.has(pokemonId)) {
+          this.capturedStates.delete(pokemonId);
+          this.capturedCache.delete(pokemonId);
+        }
+      }
+
+      this.cdr.detectChanges();
+      console.log(`[MOBILE-RANKING] ✅ Estados de captura atualizados: ${this.capturedStates.size} pokémons capturados`);
+    } catch (error) {
+      console.error('[MOBILE-RANKING] ❌ Erro ao carregar estados de captura:', error);
+      // ✅ CORREÇÃO: Não propagar erro - manter funcionamento
+      console.warn('[MOBILE-RANKING] Continuando com estados de captura existentes');
+    }
+  }
+
+
 
   // Verifica se um Pokémon foi capturado
   isCaptured(pokemonId: number): boolean {
     return this.capturedStates.get(pokemonId) || false;
   }
 
-  // Placeholder para Pokémon com erro
+  /**
+   * Cria um Pokémon de placeholder com um ID específico
+   * @param id ID do Pokémon
+   */
   private getPlaceholderPokemon(id: number): Pokemon {
     return {
-      id: id,
-      name: `pokemon-${id}`,
-      order: id,
-      species: { name: `pokemon-${id}`, url: '' },
+      ...RankingPage.PLACEHOLDER_POKEMON,
+      id,
+      name: `Pokémon #${id}`,
       sprites: {
-        front_default: '/assets/images/pokemon-placeholder.png',
-        front_shiny: '/assets/images/pokemon-placeholder.png',
-        back_default: '/assets/images/pokemon-placeholder.png',
-        back_shiny: '/assets/images/pokemon-placeholder.png',
+        ...RankingPage.PLACEHOLDER_POKEMON.sprites,
         other: {
           'official-artwork': {
-            front_default: '/assets/images/pokemon-placeholder.png'
+            front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
           },
           home: {
-            front_default: '/assets/images/pokemon-placeholder.png',
-            front_shiny: '/assets/images/pokemon-placeholder.png'
+            front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`,
+            front_shiny: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/${id}.png`
           }
         }
-      },
-      types: [{ type: { name: 'unknown', url: '' }, slot: 1 }],
-      height: 0,
-      weight: 0,
-      base_experience: 0,
-      abilities: [],
-      stats: [],
-      moves: []
-    } as Pokemon;
+      }
+    };
+  }
+
+  /**
+   * Obtém um valor seguro para a tendência do ranking
+   * @param trend Valor da tendência que pode ser nulo ou indefinido
+   * @returns Valor numérico da tendência ou 0 se for nulo/indefinido
+   */
+  private getSafeTrend(trend: 'up' | 'down' | 'stable' | null | undefined): 'up' | 'down' | 'stable' {
+    return trend || 'stable';
   }
 
   // Abre modal de detalhes (mobile)
@@ -325,44 +638,138 @@ export class RankingPage implements OnInit, OnDestroy {
     this.selectedPokemonId = null;
   }
 
-  // Handle capture toggle
-  async onCaptureToggle(event: { pokemon: Pokemon; isCaptured: boolean }) {
-    const pokemonId = event.pokemon.id;
-    const captured = event.isCaptured;
-
-    // Debounce para evitar múltiplos cliques
-    if (this.toggleDebounceTimer[pokemonId]) {
-      clearTimeout(this.toggleDebounceTimer[pokemonId]);
-    }
-
-    this.toggleDebounceTimer[pokemonId] = setTimeout(async () => {
-      try {
-        if (captured) {
-          // Precisamos do objeto Pokemon completo para addToCaptured
-          const pokemon = await firstValueFrom(this.pokeApiService.getPokemon(pokemonId));
-          await this.capturedService.addToCaptured(pokemon).toPromise();
-          this.capturedStates.set(pokemonId, true);
-        } else {
-          await this.capturedService.removeFromCaptured(pokemonId).toPromise();
-          this.capturedStates.set(pokemonId, false);
-        }
-
-        // Play sound effect (removido - método não existe no AudioService)
-
-      } catch (error) {
-        console.error('Erro ao alterar captura:', error);
-        this.showErrorToast('ranking_page.error_capture');
-      }
-
-      delete this.toggleDebounceTimer[pokemonId];
-    }, 300);
+  getCurrentRanking(): PokemonRanking[] {
+    return this.globalRanking;
   }
 
-  // Classe CSS para badge de ranking
+  /**
+   * Manipulador para alternar o estado de captura de um Pokémon
+   * @param event Objeto contendo o Pokémon e o novo estado de captura
+   */
+  async onCaptureToggle(event: { pokemon: Pokemon, isCaptured: boolean }): Promise<void> {
+    if (!event?.pokemon) {
+      console.error('[MOBILE-RANKING] Evento de captura inválido:', event);
+      return;
+    }
+
+    const { pokemon, isCaptured } = event;
+    const pokemonId = pokemon.id;
+    const action = isCaptured ? 'capturado' : 'liberado';
+
+    // Se já existe um debounce em andamento para este Pokémon, ignora o novo evento
+    if (this.toggleDebounceTimer[pokemonId]) {
+      console.log(`[MOBILE-RANKING] Ignorando clique rápido para o Pokémon ${pokemonId}`);
+      return;
+    }
+
+    // Configura o debounce
+    this.toggleDebounceTimer[pokemonId] = window.setTimeout(() => {
+      delete this.toggleDebounceTimer[pokemonId];
+    }, 1000);
+
+    const loadingMessage = isCaptured ? 'capturing_pokemon' : 'releasing_pokemon';
+    console.log(`[MOBILE-RANKING] Iniciando processo para ${action} o Pokémon ${pokemon.name} (ID: ${pokemonId})`);
+
+    let loading: HTMLIonLoadingElement | null = null;
+
+    try {
+      // Mostra feedback visual imediato
+      const translatedMessage = await firstValueFrom(this.translate.get(loadingMessage));
+      loading = await this.loadingController.create({
+        message: translatedMessage,
+        duration: 5000,
+        spinner: 'crescent',
+        backdropDismiss: false
+      });
+
+      await loading.present();
+
+      // Atualização otimista da UI
+      this.capturedCache.set(pokemonId, isCaptured);
+      this.capturedStates.set(pokemonId, isCaptured);
+      this.cdr.detectChanges();
+
+      // Executa a ação de captura/liberação
+      console.log(`[MOBILE-RANKING] Executando ação de ${action} no servidor...`);
+
+      // Executa a ação de forma assíncrona
+      await this.capturedService.toggleCaptured(pokemon);
+
+      // ✅ CORREÇÃO CRÍTICA: Evitar race condition - atualizar apenas estados locais
+      console.log('[MOBILE-RANKING] Atualizando estado local de captura...');
+
+      // Atualiza apenas o estado local sem recarregar do backend
+      this.capturedCache.set(pokemonId, isCaptured);
+      this.capturedStates.set(pokemonId, isCaptured);
+      this.updateGlobalRankingWithCapturedStates();
+
+      // ✅ CORREÇÃO: Não recarregar ranking completo - preserva dados de captura
+      console.log('[MOBILE-RANKING] Estado local atualizado, evitando recarregamento desnecessário');
+
+      // Feedback visual de sucesso
+      const successMessage = isCaptured ? 'pokemon_captured' : 'pokemon_released';
+      await this.showToast(successMessage, { name: pokemon.name });
+
+    } catch (error: unknown) {
+      console.error(`[MOBILE-RANKING] Erro ao ${action} o Pokémon:`, error);
+
+      // Reverte a atualização otimista em caso de erro
+      this.capturedCache.set(pokemonId, !isCaptured);
+      this.capturedStates.set(pokemonId, !isCaptured);
+      this.cdr.detectChanges();
+
+      // Tratamento de erros específicos
+      if (error instanceof Error) {
+        if (error.name === 'TimeoutError') {
+          await this.showErrorToast('network_timeout');
+          return;
+        }
+
+        // Verifica se é um erro HTTP
+        const httpError = error as { status?: number };
+        if (httpError.status === 401) {
+          await this.showErrorToast('auth_required');
+          return;
+        }
+      }
+
+      // Erro genérico
+      const errorMessage = isCaptured ? 'capture_error' : 'release_error';
+      await this.showErrorToast(errorMessage, { name: pokemon.name });
+
+    } finally {
+      // Limpa o loading se ainda estiver aberto
+      if (loading) {
+        try {
+          await loading.dismiss();
+        } catch (e) {
+          console.error('[MOBILE-RANKING] Erro ao fechar loading:', e);
+        }
+      }
+
+      // Remove o debounce após a conclusão
+      if (this.toggleDebounceTimer[pokemonId]) {
+        clearTimeout(this.toggleDebounceTimer[pokemonId]);
+        delete this.toggleDebounceTimer[pokemonId];
+      }
+
+      // Força uma nova verificação de rede
+      try {
+        await this.syncService.forceSyncNow();
+      } catch (e) {
+        console.error('[MOBILE-RANKING] Erro ao sincronizar:', e);
+      }
+    }
+
+    console.log(`[MOBILE-RANKING] Processo de ${action} concluído para o Pokémon ${pokemon.name}`);
+  }
+
+  // Classe CSS para badge de ranking - atualizado para as novas classes
   getRankingBadgeClass(rank: number): string {
-    if (rank <= 3) return 'ranking-badge-gold';
-    if (rank <= 10) return 'ranking-badge-silver';
-    return 'ranking-badge-bronze';
+    if (rank === 4 || rank === 5) return 'rank-4';
+    if (rank >= 6 && rank <= 8) return 'rank-6';
+    if (rank === 9 || rank === 10) return 'rank-9';
+    return 'rank-default'; // Para posições maiores que 10
   }
 
   // Métodos de autenticação
@@ -388,16 +795,70 @@ export class RankingPage implements OnInit, OnDestroy {
     console.log('Abrir perfil');
   };
 
-  // Métodos de toast
-  private async showErrorToast(messageKey: string) {
-    const message = await this.translate.get(messageKey).toPromise();
+  /**
+   * Exibe uma mensagem de sucesso
+   */
+  private async showToast(message: string, params?: any): Promise<void> {
+    try {
+      const translatedMessage = await this.translate.get(message, params).toPromise();
+      const toast = await this.toastController.create({
+        message: translatedMessage,
+        duration: 3000,
+        position: 'top',
+        color: 'success',
+        buttons: [{
+          icon: 'close',
+          role: 'cancel'
+        }]
+      });
+      await toast.present();
+    } catch (error) {
+      console.error('[MOBILE-RANKING] Erro ao exibir toast:', error);
+    }
+  }
+
+  /**
+   * Exibe uma mensagem de erro
+   */
+  private async showErrorToast(message: string, params?: any): Promise<void> {
     const toast = await this.toastController.create({
-      message,
+      message: await this.translate.get(message, params).toPromise(),
       duration: 3000,
       position: 'top',
       color: 'danger'
     });
     await toast.present();
+  }
+
+  // Implementações dos métodos auxiliares para ranking
+  getRankBadgeColor(rank: number): string {
+    if (rank === 1) return '#FFD700'; // Ouro
+    if (rank === 2) return '#C0C0C0'; // Prata
+    if (rank === 3) return '#CD7F32'; // Bronze
+    return '#6C757D'; // Cinza
+  }
+
+  getRankIcon(rank: number): string {
+    if (rank === 1) return '🏆';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return `#${rank}`;
+  }
+
+  getTrendIcon(trend: 'up' | 'down' | 'stable'): string {
+    switch (trend) {
+      case 'up': return '📈';
+      case 'down': return '📉';
+      default: return '➡️';
+    }
+  }
+
+  getTrendColor(trend: 'up' | 'down' | 'stable'): string {
+    switch (trend) {
+      case 'up': return '#28a745';
+      case 'down': return '#dc3545';
+      default: return '#6c757d';
+    }
   }
 
   toggleSearch() {

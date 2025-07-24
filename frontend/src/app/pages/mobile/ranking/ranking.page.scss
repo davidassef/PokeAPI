@@ -4,354 +4,532 @@ ion-content {
   --background: var(--ranking-bg);
 }
 
+// ===== CABEÇALHO DO RANKING MOBILE =====
+
+// Header visual do ranking - adaptado da versão web para mobile
 .ranking-header {
   text-align: center;
-  margin-top: 40px;
-  margin-bottom: 110px;
+  margin-top: 20px; // Reduzido de 40px para mobile
+  margin-bottom: 40px; // Reduzido de 110px para mobile
   color: #fff;
   text-shadow: 0 4px 16px rgba(0,0,0,0.22), 0 1px 0 #ffd700;
   position: relative;
   z-index: 10;
-  
+  padding: 0 16px; // Padding lateral para mobile
+
   .ranking-title-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 12px; // Reduzido de 14px para mobile
     margin-bottom: 0;
+    flex-direction: column; // Mantém layout vertical no mobile
   }
-  
+
   .ranking-title-icon {
-    font-size: 2.5rem;
+    font-size: 2rem; // Reduzido de 2.5rem para mobile
     color: #ffd700;
     filter: drop-shadow(0 2px 8px #0008);
     margin-bottom: 4px;
     text-shadow: 0 2px 8px #000a;
   }
-  
+
   h2 {
-    font-size: 2.8rem;
+    font-size: 2.2rem; // Reduzido de 2.8rem para mobile
     font-weight: 900;
     margin-bottom: 0;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px; // Reduzido de 1.5px para mobile
     background: linear-gradient(90deg, #ffd700 30%, #ff8c00 70%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: 0 4px 16px #000a, 0 1px 0 #ffd700, 0 0 2px #222;
     line-height: 1.1;
+    text-align: center; // Garantir centralização no mobile
   }
-  
+
   p {
-    font-size: 1.18rem;
+    font-size: 1rem; // Reduzido de 1.18rem para mobile
     opacity: 0.98;
     margin-bottom: 0;
     font-style: italic;
-    color: #fff;
     text-shadow: 0 2px 8px rgba(0,0,0,0.18);
     margin-top: 8px;
+    text-align: center; // Garantir centralização no mobile
+    padding: 0 8px; // Padding lateral para melhor leitura
   }
-  
+
   .ranking-title-underline {
-    width: 120px;
-    height: 5px;
-    margin: 18px auto 0 auto;
+    width: 100px; // Reduzido de 120px para mobile
+    height: 4px; // Reduzido de 5px para mobile
+    margin: 16px auto 0 auto; // Reduzido de 18px para mobile
     border-radius: 3px;
     background: linear-gradient(90deg, #ffd700 30%, #ff8c00 70%);
     opacity: 0.85;
     box-shadow: 0 2px 8px #0002;
   }
-  
-  .ranking-info-discreet {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    color: #b3b3b3;
-    font-size: 0.95rem;
-    font-style: italic;
-    opacity: 0.95;
+}
+
+// Informação discreta do ranking - adaptada para mobile
+.ranking-info-discreet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; // Reduzido para mobile
+  margin-top: 16px; // Espaçamento superior
+  font-size: 0.85rem; // Reduzido para mobile
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  padding: 0 16px; // Padding lateral
+
+  ion-icon {
+    font-size: 1rem; // Tamanho do ícone reduzido para mobile
+  }
+
+  span {
+    text-align: center;
+    line-height: 1.3;
   }
 }
 
-.mobile-ranking-container {
-  padding: 8px;
-  min-height: 100vh;
-  background: var(--ranking-bg);
-  width: 100%;
-  max-width: 100vw;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  padding-bottom: 80px; // Espaço para tab bar
-}
-
-.mobile-ranking-container, .ranking-header, .ranking-title-row, .ranking-title-icon, .ranking-header h2, .ranking-header p, .ranking-title-underline, .ranking-info-discreet {
-  color: #fff !important;
-}
-
-// Header mobile otimizado
-.header-center {
-  flex: 1;
-  text-align: center;
-
-  ion-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--ion-color-warning-contrast);
-  }
-}
-
-.header-auth-btn-mobile {
-  min-width: 70px;
-
-  app-auth-button {
-    ion-button {
-      --padding-start: 6px;
-      --padding-end: 6px;
-      font-size: 12px;
-      min-height: 36px;
-
-      .user-greeting {
-        font-size: 11px;
-
-        @media (max-width: 480px) {
-          display: none;
-        }
-      }
-
-      .admin-badge {
-        font-size: 8px;
-        padding: 1px 3px;
-      }
-    }
-  }
-}
-
-// Toggle de modo (Global/Local)
-.ranking-mode-toggle-mobile {
-  padding: 12px 16px;
-  background: var(--card-bg);
-  margin-bottom: 16px;
-  border-radius: 12px;
-  margin: 8px;
-
-  ion-segment {
-    --background: transparent;
-    --color: var(--text-color);
-    --color-checked: var(--ion-color-warning);
-    --border-radius: 8px;
-    --indicator-color: var(--ion-color-warning);
-
-    ion-segment-button {
-      --color: var(--text-color);
-      --color-checked: var(--ion-color-warning-contrast);
-      --background-checked: var(--ion-color-warning);
-      font-size: 14px;
-      font-weight: 600;
-      min-height: 40px;
-
-      ion-label {
-        margin: 0;
-      }
-    }
-  }
-}
-
-// Lista de ranking mobile
-.ranking-list-mobile {
-  padding: 0 8px;
-}
-
-// Pódio mobile (Top 3)
-.mobile-podium {
+// Controles de debug - adaptados para mobile
+.debug-controls-mobile {
+  margin-top: 20px;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  gap: 8px;
-  margin-bottom: 24px;
-  padding: 16px 8px;
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
-  border-radius: 16px;
+
+  ion-button {
+    --font-size: 0.8rem;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Responsividade para telas muito pequenas
+@media (max-width: 360px) {
+  .ranking-header {
+    margin-top: 16px;
+    margin-bottom: 32px;
+    padding: 0 12px;
+
+    .ranking-title-icon {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+
+    p {
+      font-size: 0.9rem;
+      padding: 0 4px;
+    }
+
+    .ranking-title-underline {
+      width: 80px;
+      height: 3px;
+      margin: 12px auto 0 auto;
+    }
+  }
+
+  .ranking-info-discreet {
+    font-size: 0.8rem;
+    padding: 0 12px;
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+  }
+
+  // Ajustes do pódio para telas pequenas
+  .ranking-podium-container-mobile {
+    min-height: 550px;
+    padding: 0 2px;
+  }
+
+  .podium-first-container {
+    top: 0;
+
+    .podium-card {
+      transform: scale(0.55);
+    }
+  }
+
+  .podium-second-container {
+    top: 160px;
+    left: 0;
+
+    .podium-card {
+      transform: scale(0.45);
+    }
+  }
+
+  .podium-third-container {
+    top: 280px;
+    right: 0;
+
+    .podium-card {
+      transform: scale(0.4);
+    }
+  }
+}
+
+// ===== PÓDIO MOBILE ESCALONADO =====
+
+// Container principal do pódio mobile - layout escalonado para simular pódio real
+.ranking-podium-container-mobile {
   position: relative;
-  overflow: hidden;
+  width: 100%;
+  min-height: 600px; // Altura aumentada para acomodar melhor o layout escalonado
+  margin-bottom: 30px;
+  padding: 0 4px;
+  overflow: visible;
+}
+
+// ✅ CONTAINERS INDIVIDUAIS PARA CADA POSIÇÃO DO PÓDIO
+
+// 1º lugar - Container centralizado no topo
+.podium-first-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  transition: all 0.3s ease;
+
+  // Reduzir significativamente o tamanho do card do campeão
+  .podium-card {
+    transform: scale(0.6);
+    transform-origin: center;
+  }
+}
+
+// 2º lugar - Container à esquerda, mais baixo
+.podium-second-container {
+  position: absolute;
+  top: 180px; // Mais espaço do 1º lugar
+  left: 0; // Colado na borda esquerda
+  transform: translateX(0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 8;
+  transition: all 0.3s ease;
+
+  // Reduzir mais o tamanho do 2º lugar
+  .podium-card {
+    transform: scale(0.5);
+    transform-origin: center;
+  }
+}
+
+// 3º lugar - Container à direita, mais baixo que o 2º
+.podium-third-container {
+  position: absolute;
+  top: 320px; // Muito mais baixo que o 2º lugar
+  right: 0; // Colado na borda direita
+  transform: translateX(0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 6;
+  transition: all 0.3s ease;
+
+  // Reduzir ainda mais o tamanho do 3º lugar
+  .podium-card {
+    transform: scale(0.45);
+    transform-origin: center;
+  }
+}
+
+// ✅ NOVO: Bordas decorativas aplicadas diretamente ao app-pokemon-card
+.podium-card {
+  position: relative;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+
+  // Efeito de hover sutil
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  // Estado ativo
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+// ✅ NOVO: Bordas decorativas para cada posição do pódio
+
+// 1º lugar - Borda dourada (Campeão)
+.podium-first {
+  border: 3px solid #ffd700;
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.4),
+    0 4px 16px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at center, rgba(255, 193, 7, 0.05) 0%, transparent 70%);
-    pointer-events: none;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    z-index: -1;
+    opacity: 0.6;
+    animation: goldGlow 2s ease-in-out infinite alternate;
   }
-}
-
-.podium-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
-
-  &.podium-first-mobile {
-    order: 2;
-    transform: scale(1.1);
-    z-index: 3;
-
-    .podium-pokemon-card {
-      border: 3px solid var(--ion-color-warning);
-      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
-    }
-  }
-
-  &.podium-second-mobile {
-    order: 1;
-    transform: scale(0.95);
-  }
-
-  &.podium-third-mobile {
-    order: 3;
-    transform: scale(0.95);
-  }
-}
-
-.podium-medal-mobile,
-.podium-crown-mobile {
-  font-size: 24px;
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.capture-count-badge-mobile {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: var(--ion-color-danger);
-  color: white;
-  border-radius: 12px;
-  padding: 2px 6px;
-  font-size: 10px;
-  font-weight: 600;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-
-  ion-icon {
-    font-size: 10px;
-  }
-}
-
-.champion-banner-mobile {
-  background: linear-gradient(135deg, var(--ion-color-warning) 0%, var(--ion-color-warning-shade) 100%);
-  color: var(--ion-color-warning-contrast);
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-top: 8px;
-  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
-}
-
-// Grid de ranking mobile (4º em diante)
-.mobile-ranking-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.ranking-item-mobile {
-  display: flex;
-  align-items: center;
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: var(--card-shadow);
-  position: relative;
-  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--card-shadow-hover);
+    box-shadow:
+      0 0 30px rgba(255, 215, 0, 0.6),
+      0 6px 20px rgba(255, 215, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px) scale(1.03);
   }
 }
 
-.ranking-badge-mobile {
-  min-width: 32px;
-  height: 32px;
-  border-radius: 50%;
+// 2º lugar - Borda prateada (Vice-campeão)
+.podium-second {
+  border: 3px solid #c0c0c0;
+  box-shadow:
+    0 0 16px rgba(192, 192, 192, 0.4),
+    0 4px 12px rgba(192, 192, 192, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8, #c0c0c0);
+    z-index: -1;
+    opacity: 0.5;
+    animation: silverGlow 2.5s ease-in-out infinite alternate;
+  }
+
+  &:hover {
+    box-shadow:
+      0 0 24px rgba(192, 192, 192, 0.6),
+      0 6px 16px rgba(192, 192, 192, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px) scale(1.02);
+  }
+}
+
+// 3º lugar - Borda bronze (Terceiro lugar)
+.podium-third {
+  border: 3px solid #cd7f32;
+  box-shadow:
+    0 0 14px rgba(205, 127, 50, 0.4),
+    0 4px 10px rgba(205, 127, 50, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #cd7f32, #daa520, #cd7f32);
+    z-index: -1;
+    opacity: 0.4;
+    animation: bronzeGlow 3s ease-in-out infinite alternate;
+  }
+
+  &:hover {
+    box-shadow:
+      0 0 20px rgba(205, 127, 50, 0.6),
+      0 6px 14px rgba(205, 127, 50, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px) scale(1.01);
+  }
+}
+
+// ✅ NOVO: Animações de brilho para cada posição
+@keyframes goldGlow {
+  0% { opacity: 0.4; }
+  100% { opacity: 0.8; }
+}
+
+@keyframes silverGlow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes bronzeGlow {
+  0% { opacity: 0.2; }
+  100% { opacity: 0.6; }
+}
+
+// ✅ NOVO: Estilos para elementos do pódio (medalhas, coroa, badges)
+
+// Medalhas e coroa - posicionadas acima do card
+.podium-medal,
+.podium-crown {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.8rem;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: float 2s ease-in-out infinite alternate;
+}
+
+.podium-crown {
+  font-size: 2rem;
+  animation: crownGlow 2s ease-in-out infinite alternate;
+}
+
+// Badge de contagem de capturas - posicionado acima do card
+.capture-count-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+  font-size: 0.75rem;
   font-weight: 700;
-  font-size: 14px;
-  margin-right: 12px;
-  flex-shrink: 0;
+  color: var(--ion-color-danger);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
 
-  &.ranking-badge-gold {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    color: #8B4513;
+// Banner de campeão - posicionado abaixo do card
+.champion-banner {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #333;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  z-index: 10;
+  animation: championBannerGlow 2s ease-in-out infinite alternate;
+}
+
+// Animações
+@keyframes float {
+  0% { transform: translateX(-50%) translateY(0px); }
+  100% { transform: translateX(-50%) translateY(-3px); }
+}
+
+@keyframes crownGlow {
+  0% { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)); }
+  100% { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 16px rgba(255, 215, 0, 0.8)); }
+}
+
+@keyframes championBannerGlow {
+  0% {
     box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
-
-  &.ranking-badge-silver {
-    background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
-    color: #404040;
-    box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
-  }
-
-  &.ranking-badge-bronze {
-    background: linear-gradient(135deg, #CD7F32 0%, #B8860B 100%);
-    color: white;
-    box-shadow: 0 2px 8px rgba(205, 127, 50, 0.4);
+  100% {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.6);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
 }
 
-.ranking-content-mobile {
-  flex: 1;
-  min-width: 0;
+// ✅ NOVO: Otimizações para telas pequenas com nova estrutura
+@media (max-width: 360px) {
+  .ranking-podium-vertical-mobile {
+    gap: 8px;
+    padding: 0 4px;
+  }
 
-  .ranking-pokemon-card-mobile {
-    width: 100%;
+  .podium-position {
+    margin: 4px 2px;
+  }
+
+  .podium-medal,
+  .podium-crown {
+    font-size: 1.4rem;
+    top: -12px;
+  }
+
+  .capture-count-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    top: -8px;
+    right: -8px;
+  }
+
+  .champion-banner {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    bottom: -16px;
+  }
+
+  .podium-card {
+    border-width: 2px;
+
+    &::before {
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+    }
   }
 }
 
-// Estados de loading e empty
+// ===== ESTADOS DE LOADING E EMPTY STATE MOBILE =====
+
+// Loading state - adaptado para mobile
 .loading-container-mobile {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 60px 20px;
   text-align: center;
 
   ion-spinner {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    --color: #ffd700;
+    transform: scale(1.2);
   }
 
   p {
-    color: var(--ion-color-medium);
-    font-size: 14px;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     margin: 0;
+    font-weight: 500;
   }
 }
 
+// Empty state - adaptado para mobile
 .empty-state-mobile {
   display: flex;
   flex-direction: column;
@@ -359,148 +537,160 @@ ion-content {
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
-  color: #fff;
 
   ion-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    font-size: 4rem;
     color: #ffd700;
-    opacity: 0.8;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
   }
 
   h2 {
-    color: #fff;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 8px;
-    text-shadow: 0 2px 4px #ff8c00, 0 0 2px #222;
+    color: #fff;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   p {
-    color: #fff;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
     margin-bottom: 24px;
-    line-height: 1.5;
-    text-shadow: 0 2px 4px #ff8c00, 0 0 2px #222;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    line-height: 1.4;
+    padding: 0 16px;
   }
 
   ion-button {
-    --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
-    --color: #fff;
-    --border-radius: 22px;
-    --box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10), 0 1.5px 4px rgba(66, 165, 245, 0.10);
-    font-weight: 700;
-    font-size: 16px;
-    min-width: 130px;
-    height: 40px;
-    margin-left: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: box-shadow 0.18s cubic-bezier(.4,0,.2,1), transform 0.18s cubic-bezier(.4,0,.2,1), background 0.18s, color 0.18s;
-    letter-spacing: 0.5px;
-    border: none;
-    padding: 0 26px;
-    box-shadow: var(--box-shadow);
-    outline: none;
-    transform: translateY(-2px) scale(1.04);
-  }
-  ion-button:hover,
-  ion-button:focus {
-    --background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
-    box-shadow: 0 8px 28px 0 rgba(25, 118, 210, 0.22), 0 4px 16px 0 rgba(66, 165, 245, 0.16);
-    filter: brightness(1.05);
-    transform: translateY(-4px) scale(1.07);
-  }
-  ion-button:active {
-    --background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
-    box-shadow: 0 2px 6px 0 rgba(25, 118, 210, 0.12);
-    filter: brightness(0.98);
-    transform: scale(0.97);
-  }
-}
+    --font-size: 0.9rem;
+    --padding-start: 20px;
+    --padding-end: 20px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --border-radius: 12px;
 
-// Responsividade para telas muito pequenas
-@media (max-width: 480px) {
-  .mobile-podium {
-    gap: 4px;
-    padding: 12px 4px;
-
-    .podium-card {
-      &.podium-first-mobile {
-        transform: scale(1.05);
-      }
-
-      &.podium-second-mobile,
-      &.podium-third-mobile {
-        transform: scale(0.9);
-      }
+    ion-icon {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      margin-right: 8px;
     }
   }
+}
 
-  .podium-medal-mobile,
-  .podium-crown-mobile {
-    font-size: 20px;
-    width: 28px;
-    height: 28px;
+// ===== GRID 2x2 DOS DEMAIS RANKINGS MOBILE =====
+
+// Grid 2x2 para rankings 4º em diante - mesmo estilo da home
+.mobile-ranking-grid-horizontal {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 12px;
+  margin-top: 20px;
+  max-width: 100%;
+}
+
+.ranking-item-horizontal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 200px; // Altura mínima para consistência
+}
+
+// Badge de ranking posicionado no canto superior esquerdo
+.ranking-badge-horizontal {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+
+  // Cores baseadas na posição
+  &.rank-4, &.rank-5 {
+    background: linear-gradient(145deg, #9c27b0, #7b1fa2);
   }
 
-  .capture-count-badge-mobile {
-    font-size: 9px;
-    padding: 1px 4px;
+  &.rank-6, &.rank-7, &.rank-8 {
+    background: linear-gradient(145deg, #2196f3, #1976d2);
   }
 
-  .champion-banner-mobile {
-    font-size: 9px;
-    padding: 3px 8px;
+  &.rank-9, &.rank-10 {
+    background: linear-gradient(145deg, #4caf50, #388e3c);
   }
 
-  .ranking-item-mobile {
-    padding: 8px;
-  }
-
-  .ranking-badge-mobile {
-    min-width: 28px;
-    height: 28px;
-    font-size: 12px;
-    margin-right: 8px;
+  // Padrão para posições maiores
+  &:not(.rank-4):not(.rank-5):not(.rank-6):not(.rank-7):not(.rank-8):not(.rank-9):not(.rank-10) {
+    background: linear-gradient(145deg, #757575, #424242);
   }
 }
 
-// Landscape mode
-@media (max-width: 768px) and (orientation: landscape) {
-  .mobile-ranking-container {
-    padding-bottom: 140px; // Espaço para music player + tab bar
-  }
+// Card do Pokémon ocupa toda a área disponível
+.ranking-pokemon-card-horizontal {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
 
-  .mobile-podium {
-    padding: 12px 8px;
-  }
+// Badge de favoritos no canto superior direito
+.ranking-favorite-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ion-color-danger);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.8);
 
-  .mobile-ranking-grid {
-    grid-template-columns: repeat(2, 1fr);
+  ion-icon {
+    font-size: 0.9rem;
+  }
+}
+
+// Responsividade para grid 2x2
+@media (max-width: 360px) {
+  .mobile-ranking-grid-horizontal {
     gap: 8px;
-  }
-}
-
-// Dark theme adjustments
-@media (prefers-color-scheme: dark) {
-  .ranking-mode-toggle-mobile {
-    background: var(--ion-color-dark-shade);
-    border: 1px solid var(--ion-color-dark-tint);
+    padding: 0 8px;
   }
 
-  .mobile-podium {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.15) 100%);
+  .ranking-item-horizontal {
+    min-height: 180px;
   }
 
-  .ranking-item-mobile {
-    background: var(--ion-color-dark-shade);
-    border: 1px solid var(--ion-color-dark-tint);
+  .ranking-badge-horizontal {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+    top: 6px;
+    left: 6px;
   }
-}
 
-// Safe area para iPhone
-.mobile-ranking-container {
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  .ranking-favorite-badge {
+    top: 6px;
+    right: 6px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+  }
 }

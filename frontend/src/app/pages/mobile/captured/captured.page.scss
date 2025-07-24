@@ -169,76 +169,98 @@
   }
 }
 
-// Paginação mobile
+// ✅ NOVO: Paginação mobile padronizada (igual à home)
 .pagination-mobile {
-  padding: 8px 0;
-  background: rgba(10, 18, 40, 0.98);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  max-width: 98vw;
-  margin: 16px auto 8px auto;
   display: flex;
-  justify-content: center;
-}
-
-.pagination-controls-mobile {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 0 8px;
+  justify-content: center;
+  gap: 20px; // Aumentado de 16px para 20px
+  background: #232323;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  padding: 16px 20px; // Aumentado padding
+  margin: 20px auto 20px auto; // Aumentado margin
+  max-width: 99vw;
+  min-height: 58px; // Aumentado altura mínima
 }
 
-.pagination-controls-mobile ion-button {
-  min-width: 36px;
-  min-height: 36px;
-  --background: #232b3e;
+.pagination-btn {
+  min-width: 48px; // Aumentado de 44px para 48px
+  min-height: 42px; // Aumentado de 38px para 42px
+  background: #42a5f5 !important;
+  color: #fff !important;
+  border-radius: 10px !important; // Aumentado border-radius
+  font-size: 20px;
+  font-weight: 600;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  --background: #42a5f5;
   --color: #fff;
   --border-radius: 8px;
   --box-shadow: none;
-  font-size: 18px;
-  padding: 0 4px;
-  transition: background 0.2s;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --ripple-color: #fff8;
 }
 
-.pagination-controls-mobile ion-button[disabled] {
+.pagination-btn[disabled] {
   opacity: 0.5;
+  background: #27496d !important;
+  --background: #27496d;
 }
 
-.pagination-controls-mobile ion-button:hover:not([disabled]),
-.pagination-controls-mobile ion-button:active:not([disabled]) {
-  --background: #31406a;
+.pagination-btn:hover:not([disabled]),
+.pagination-btn:active:not([disabled]) {
+  background: #1976d2 !important;
+  --background: #1976d2;
+}
+
+.pagination-btn ion-icon {
+  color: #fff;
+  font-size: 22px;
 }
 
 .page-info-mobile {
-  flex: 1;
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
   color: #fff;
+  font-size: 16px; // Reduzido de 18px para 16px para melhor proporção
+  font-weight: 700;
+  text-align: center;
+  min-width: 120px;
+  letter-spacing: 0.5px;
   margin: 0 8px;
-  min-width: 60px;
 }
 
-.pagination-info-mobile {
-  text-align: center;
-  font-size: 13px;
-  color: #fff;
-  opacity: 0.7;
-  margin-top: 2px;
+@media (max-width: 500px) {
+  .pagination-mobile {
+    gap: 8px;
+    padding: 8px 4px;
+  }
+  .page-info-mobile {
+    font-size: 15px;
+    min-width: 80px;
+    margin: 0 2px;
+  }
+  .pagination-btn {
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 16px;
+  }
 }
 
-// ===== ESPAÇAMENTO INFERIOR =====
-// Para visualização completa do conteúdo acima dos elementos fixos
+// ===== ESPAÇAMENTO INFERIOR REDUZIDO =====
+// Espaçamento mínimo para visualização do conteúdo
 .content-container {
-  padding-bottom: var(--bottom-spacing-mobile);
+  padding-bottom: 80px; // Reduzido de var(--bottom-spacing-mobile) para valor fixo menor
 }
 
-// Aplicar espaçamento ao ion-content
+// Aplicar espaçamento reduzido ao ion-content
 ion-content {
-  --padding-bottom: var(--bottom-spacing-mobile);
+  --padding-bottom: 80px; // Reduzido para mostrar apenas o conteúdo necessário
 }
 
 // Animações mobile
@@ -323,11 +345,11 @@ ion-content {
   }
 }
 
-// Safe area para iPhone
+// Safe area para iPhone - ajustado para espaçamento reduzido
 .page-container-mobile {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)); // Reduzido para espaçamento mínimo
 }
 
 .scroll-top-fab-mobile {
-  margin-bottom: calc(160px + env(safe-area-inset-bottom)); // Ajustado para evitar sobreposição
+  margin-bottom: calc(100px + env(safe-area-inset-bottom)); // Reduzido de 160px para 100px
 }

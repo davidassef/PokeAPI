@@ -48,48 +48,19 @@
 
     <!-- Mobile Pagination (Moved to Top) -->
     <div *ngIf="isAuthenticated && !loading && paginatedCaptured.length > 0" class="pagination-mobile">
-      <div class="pagination-controls-mobile">
-        <ion-button
-          (click)="firstPage()"
-          [disabled]="currentPage === 1"
-          fill="clear"
-          size="small">
-          <ion-icon name="play-back-outline"></ion-icon>
-        </ion-button>
-
-        <ion-button
-          (click)="prevPage()"
-          [disabled]="currentPage === 1"
-          fill="clear"
-          size="small">
-          <ion-icon name="chevron-back-outline"></ion-icon>
-        </ion-button>
-
-        <div class="page-info-mobile">
-          {{ currentPage }} / {{ totalPages }}
-        </div>
-
-        <ion-button
-          (click)="nextPage()"
-          [disabled]="currentPage === totalPages"
-          fill="clear"
-          size="small">
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </ion-button>
-
-        <ion-button
-          (click)="lastPage()"
-          [disabled]="currentPage === totalPages"
-          fill="clear"
-          size="small">
-          <ion-icon name="play-forward-outline"></ion-icon>
-        </ion-button>
-      </div>
-
-      <div class="pagination-info-mobile">
-        {{ 'pagination.showing' | translate }} {{ (currentPage - 1) * capturedPerPage + 1 }} -
-        {{ Math.min(currentPage * capturedPerPage, capturedPokemon.length) }} {{ 'pagination.of' | translate }} {{ capturedPokemon.length }}
-      </div>
+      <ion-button (click)="firstPage()" [disabled]="currentPage === 1" class="pagination-btn">
+        <ion-icon name="play-back-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <span class="page-info-mobile">{{ 'captured.pagination' | translate: { currentPage: currentPage, totalPages: totalPages } }}</span>
+      <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="lastPage()" [disabled]="currentPage === totalPages" class="pagination-btn">
+        <ion-icon name="play-forward-outline"></ion-icon>
+      </ion-button>
     </div>
 
     <!-- Pokemon Grid Mobile -->

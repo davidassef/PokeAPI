@@ -36,76 +36,95 @@
     </div>
     <p>{{ 'ranking_page.global_popularity_desc' | translate }}</p>
     <div class="ranking-title-underline"></div>
+
     <div class="ranking-info-discreet">
       <ion-icon name="information-circle" color="primary"></ion-icon>
       <span>{{ 'ranking_page.global_ranking_info' | translate }}</span>
+    </div>
+
+    <!-- Botão de debug (apenas em desenvolvimento) -->
+    <div class="debug-controls-mobile" *ngIf="!loading">
+      <ion-button fill="clear" size="small" (click)="debugRefreshRanking()">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        Atualizar Ranking (Debug)
+      </ion-button>
     </div>
   </div>
 
   <!-- Lista de ranking (pódio + grid) -->
   <div class="ranking-list-mobile" *ngIf="!loading && globalRanking.length > 0">
-    <!-- Pódio (Top 3) -->
-    <div class="mobile-podium" *ngIf="globalRanking.length >= 3">
-      <div class="podium-card podium-second-mobile" *ngIf="globalRanking[1]?.pokemon">
-        <span class="podium-medal-mobile">🥈</span>
-        <span class="capture-count-badge-mobile">
-          <ion-icon name="heart" color="danger"></ion-icon>
-          {{ globalRanking[1].favoriteCount }}
-        </span>
-        <app-pokemon-card
-          [pokemon]="globalRanking[1].pokemon"
-          [isCaptured]="isCaptured(globalRanking[1].pokemon.id)"
-          (cardClick)="openDetailsModal(globalRanking[1].pokemon.id)"
-          (captureToggle)="onCaptureToggle($event)"
-          class="podium-pokemon-card">
-        </app-pokemon-card>
-      </div>
-      <div class="podium-card podium-first-mobile" *ngIf="globalRanking[0]?.pokemon">
-        <span class="podium-crown-mobile">👑</span>
-        <span class="capture-count-badge-mobile">
+
+    <!-- Container principal do pódio -->
+    <div class="ranking-podium-container-mobile">
+
+      <!-- 1º lugar - Container separado -->
+      <div *ngIf="globalRanking.length > 0 && globalRanking[0].pokemon && globalRanking[0].pokemon.id > 0" class="podium-first-container">
+        <span class="podium-crown floating" title="Campeão">👑</span>
+        <span class="capture-count-badge">
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ globalRanking[0].favoriteCount }}
         </span>
         <app-pokemon-card
+          class="podium-card podium-first"
           [pokemon]="globalRanking[0].pokemon"
           [isCaptured]="isCaptured(globalRanking[0].pokemon.id)"
           (cardClick)="openDetailsModal(globalRanking[0].pokemon.id)"
-          (captureToggle)="onCaptureToggle($event)"
-          class="podium-pokemon-card champion-card">
+          (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
-        <div class="champion-banner-mobile">{{ 'ranking_page.champion' | translate }}</div>
+        <div class="champion-banner">{{ 'ranking_page.champion' | translate }}</div>
       </div>
-      <div class="podium-card podium-third-mobile" *ngIf="globalRanking[2]?.pokemon">
-        <span class="podium-medal-mobile">🥉</span>
-        <span class="capture-count-badge-mobile">
+
+      <!-- 2º lugar - Container separado -->
+      <div *ngIf="globalRanking.length > 1 && globalRanking[1].pokemon && globalRanking[1].pokemon.id > 0" class="podium-second-container">
+        <span class="podium-medal floating" title="Medalha de Prata">🥈</span>
+        <span class="capture-count-badge">
+          <ion-icon name="heart" color="danger"></ion-icon>
+          {{ globalRanking[1].favoriteCount }}
+        </span>
+        <app-pokemon-card
+          class="podium-card podium-second"
+          [pokemon]="globalRanking[1].pokemon"
+          [isCaptured]="isCaptured(globalRanking[1].pokemon.id)"
+          (cardClick)="openDetailsModal(globalRanking[1].pokemon.id)"
+          (captureToggle)="onCaptureToggle($event)">
+        </app-pokemon-card>
+      </div>
+
+      <!-- 3º lugar - Container separado -->
+      <div *ngIf="globalRanking.length > 2 && globalRanking[2].pokemon && globalRanking[2].pokemon.id > 0" class="podium-third-container">
+        <span class="podium-medal floating" title="Medalha de Bronze">🥉</span>
+        <span class="capture-count-badge">
           <ion-icon name="heart" color="danger"></ion-icon>
           {{ globalRanking[2].favoriteCount }}
         </span>
         <app-pokemon-card
+          class="podium-card podium-third"
           [pokemon]="globalRanking[2].pokemon"
           [isCaptured]="isCaptured(globalRanking[2].pokemon.id)"
           (cardClick)="openDetailsModal(globalRanking[2].pokemon.id)"
-          (captureToggle)="onCaptureToggle($event)"
-          class="podium-pokemon-card">
+          (captureToggle)="onCaptureToggle($event)">
         </app-pokemon-card>
       </div>
+
     </div>
-    <!-- Grid dos demais rankings (4º em diante) -->
-    <div class="mobile-ranking-grid" *ngIf="globalRanking.length > 3">
-      <div *ngFor="let item of globalRanking.slice(3); let i = index" class="ranking-item-mobile">
-        <div class="ranking-badge-mobile" [ngClass]="getRankingBadgeClass(i + 4)">
+
+    <!-- Grid 2x2 dos demais rankings (4º em diante) -->
+    <div class="mobile-ranking-grid-horizontal" *ngIf="globalRanking.length > 3">
+      <div *ngFor="let item of globalRanking.slice(3); let i = index" class="ranking-item-horizontal">
+        <div class="ranking-badge-horizontal" [ngClass]="getRankingBadgeClass(i + 4)">
           {{ i + 4 }}
         </div>
-        <div class="ranking-content-mobile">
-          <app-pokemon-card
-            [pokemon]="item.pokemon"
-            [isCaptured]="isCaptured(item.pokemon.id)"
-            [favoriteCount]="item.favoriteCount"
-            (cardClick)="openDetailsModal(item.pokemon.id)"
-            (captureToggle)="onCaptureToggle($event)"
-            class="ranking-pokemon-card-mobile">
-          </app-pokemon-card>
+        <div class="ranking-favorite-badge">
+          <ion-icon name="heart" color="danger"></ion-icon>
+          {{ item.favoriteCount }}
         </div>
+        <app-pokemon-card
+          [pokemon]="item.pokemon"
+          [isCaptured]="isCaptured(item.pokemon.id)"
+          (cardClick)="openDetailsModal(item.pokemon.id)"
+          (captureToggle)="onCaptureToggle($event)"
+          class="ranking-pokemon-card-horizontal">
+        </app-pokemon-card>
       </div>
     </div>
   </div>
@@ -121,8 +140,9 @@
     <ion-icon name="trophy" size="large" color="warning"></ion-icon>
     <h2>{{ 'ranking_page.no_global_ranking' | translate }}</h2>
     <p>{{ 'ranking_page.no_global_ranking_desc' | translate }}</p>
-    <ion-button fill="solid" routerLink="/mobile/home" color="primary">
-      {{ 'ranking_page.EXPLORE_POKEMON' | translate }}
+    <ion-button fill="solid" (click)="debugRefreshRanking()" color="primary">
+      <ion-icon name="refresh" slot="start"></ion-icon>
+      {{ 'ranking_page.try_again' | translate }}
     </ion-button>
   </div>
 
