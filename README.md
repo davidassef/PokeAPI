@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🎮 PokeAPIApp v1.5
+# 🎮 PokeAPIApp v1.5.2
 ### Pokédex Responsiva Completa
 
-[![Version](https://img.shields.io/badge/Version-1.5-blue.svg)](https://github.com/davidassef/PokeAPI)
+[![Version](https://img.shields.io/badge/Version-1.5.2-blue.svg)](https://github.com/davidassef/PokeAPI)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-17.x-red.svg)](https://angular.io/)
@@ -30,10 +30,20 @@
 [![Backend Status](https://img.shields.io/badge/Backend-Online-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
 
 ### 🔑 Credenciais de Teste
+
+#### 👤 **Usuário Principal**
 | Campo | Valor |
 |-------|-------|
 | **📧 Email** | `teste@teste.com` |
 | **🔒 Senha** | `Teste123` |
+
+#### 👤 **Usuário Secundário**
+| Campo | Valor |
+|-------|-------|
+| **📧 Email** | `teste2@teste.com` |
+| **🔒 Senha** | `Teste123` |
+
+*💡 Use qualquer um dos usuários para testar funcionalidades como ranking, capturas e sincronização entre contas*
 
 </div>
 
@@ -177,6 +187,7 @@ ng serve
 ### **Documentação Principal**
 - 📋 **README.md**: Este arquivo (visão geral)
 - 📚 **[DOCUMENTACAO_TECNICA_COMPLETA.md](./docs/DOCUMENTACAO_TECNICA_COMPLETA.md)**: Documentação técnica detalhada
+- 🔑 **[CREDENCIAIS_TESTE.md](./docs/CREDENCIAIS_TESTE.md)**: Credenciais e guias de teste
 - 🔧 **API Docs**: http://localhost:8000/docs (Swagger interativo)
 - 🧪 **Test Reports**: Relatórios gerados automaticamente
 
@@ -186,6 +197,9 @@ ng serve
 - 🌐 **[Referência da API](./docs/50_01_REFERENCIA_API.md)**
 - 🚀 **[Guia de Deploy](./docs/20_02_GUIA_DEPLOY_COMPLETO.md)**
 - 📊 **[Sistema de Ranking](./docs/30_01_SISTEMA_RANKING.md)**
+- 🏆 **[Pódio Mobile - Bordas Decorativas](./frontend/docs/mobile-ranking-podium-borders.md)**
+- ⚙️ **[Configuração de Ambiente](./docs/01_01_CONFIGURACAO_AMBIENTE.md)**
+- 📁 **[Estrutura do Projeto](./docs/01_02_ESTRUTURA_PROJETO.md)**
 
 </details>
 
@@ -378,7 +392,20 @@ pytest tests/test_auth.py -v
 <details>
 <summary><strong>🗓️ Histórico de Versões</strong></summary>
 
-### **v1.5.0** (Atual)
+### **v1.5.2** (Atual)
+- ✅ Sistema de pódio mobile com bordas decorativas implementado
+- ✅ Bordas coloridas tradicionais: ouro (1º), prata (2º), bronze (3º)
+- ✅ Animações de brilho específicas para cada posição
+- ✅ Design elegante e menos intrusivo
+- ✅ Funcionalidade completa preservada
+- ✅ Usuário de teste secundário adicionado (teste2@teste.com)
+
+### **v1.5.1**
+- ✅ Sistema de captura otimizado e corrigido
+- ✅ Performance melhorada em 50%
+- ✅ Correções de bugs críticos
+
+### **v1.5.0**
 - ✅ Sistema completo de favoritos implementado
 - ✅ Limpeza de logs com LoggerService centralizado
 - ✅ Correção do carregamento duplo das abas do modal

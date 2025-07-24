@@ -1,8 +1,8 @@
-# 📚 **DOCUMENTAÇÃO TÉCNICA COMPLETA - PokeAPIApp v1.5.1**
+# 📚 **DOCUMENTAÇÃO TÉCNICA COMPLETA - PokeAPIApp v1.5.2**
 
-🗓️ **Última atualização**: 15 de Julho de 2025
+🗓️ **Última atualização**: 24 de Julho de 2025
 📋 **Status**: Projeto finalizado - 100% funcional
-🔧 **Versão**: 1.5.1 (Sistema de captura corrigido)
+🔧 **Versão**: 1.5.2 (Pódio mobile com bordas decorativas implementado)
 
 ## 📋 **ÍNDICE**
 
@@ -18,7 +18,8 @@
 10. [Testes Automatizados](#testes-automatizados)
 11. [Deploy e Produção](#deploy-e-produção)
 12. [Auditoria e Limpeza do Projeto](#auditoria-e-limpeza-do-projeto)
-13. [Manutenção e Troubleshooting](#manutenção-e-troubleshooting)
+13. [Sistema de Pódio Mobile com Bordas Decorativas (v1.5.2)](#sistema-de-pódio-mobile-com-bordas-decorativas-v152)
+14. [Manutenção e Troubleshooting](#manutenção-e-troubleshooting)
 
 ---
 
@@ -30,6 +31,7 @@ O **PokeAPIApp** é uma aplicação web/mobile completa para explorar e gerencia
 - **6 Fases**: Todas implementadas com sucesso
 - **Mobile**: Paridade completa com versão web
 - **Sistema de Captura**: ✅ Corrigido e otimizado (v1.5.1)
+- **Pódio Mobile**: ✅ Bordas decorativas implementadas (v1.5.2)
 - **Testes**: 95%+ de cobertura
 - **Documentação**: Completa e atualizada
 - **Performance**: Otimizada para produção
@@ -568,6 +570,152 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ---
 
-**Última atualização**: 12 de Julho de 2025
-**Versão da documentação**: 1.5
-**Versão do projeto**: 1.5
+---
+
+## 🏆 **SISTEMA DE PÓDIO MOBILE COM BORDAS DECORATIVAS (v1.5.2)**
+
+### **📋 Visão Geral da Modificação**
+
+Na versão 1.5.2, implementamos uma melhoria significativa no sistema de pódio da página de ranking mobile, transformando o design de containers grandes em bordas decorativas elegantes que destacam os top 3 pokémons com as cores tradicionais de pódio.
+
+### **🎯 Objetivos Alcançados**
+
+#### **Antes (v1.5.1):**
+- `.podium-card` funcionava como container grande ao redor do pokémon
+- Layout ocupava muito espaço visual
+- Aparência menos elegante e mais intrusiva
+
+#### **Depois (v1.5.2):**
+- `.podium-card` aplicado diretamente ao `app-pokemon-card` como borda decorativa
+- Bordas coloridas tradicionais: 🥇 ouro, 🥈 prata, 🥉 bronze
+- Design mais elegante e menos intrusivo
+- Funcionalidade completa preservada
+
+### **🔧 Implementação Técnica**
+
+#### **Estrutura HTML Modificada:**
+```html
+<!-- ANTES: Container grande -->
+<div class="podium-card podium-first">
+  <div class="pokemon-image-container">
+    <app-pokemon-card [pokemon]="..."></app-pokemon-card>
+  </div>
+</div>
+
+<!-- DEPOIS: Borda decorativa -->
+<div class="podium-position">
+  <span class="podium-crown">👑</span>
+  <span class="capture-count-badge">2</span>
+  <app-pokemon-card
+    class="podium-card podium-first"
+    [pokemon]="...">
+  </app-pokemon-card>
+  <div class="champion-banner">Campeão!</div>
+</div>
+```
+
+#### **Sistema de Estilos CSS:**
+
+**Bordas Específicas por Posição:**
+```scss
+// 1º lugar - Borda dourada
+.podium-first {
+  border: 3px solid #ffd700;
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.4),
+    0 4px 16px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  &::before {
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    animation: goldGlow 2s ease-in-out infinite alternate;
+  }
+}
+
+// 2º lugar - Borda prateada
+.podium-second {
+  border: 3px solid #c0c0c0;
+  animation: silverGlow 2.5s ease-in-out infinite alternate;
+}
+
+// 3º lugar - Borda bronze
+.podium-third {
+  border: 3px solid #cd7f32;
+  animation: bronzeGlow 3s ease-in-out infinite alternate;
+}
+```
+
+#### **Animações de Brilho:**
+```scss
+@keyframes goldGlow {
+  0% { opacity: 0.4; }
+  100% { opacity: 0.8; }
+}
+
+@keyframes silverGlow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes bronzeGlow {
+  0% { opacity: 0.2; }
+  100% { opacity: 0.6; }
+}
+```
+
+### **📱 Responsividade**
+
+**Adaptação para Telas Pequenas (≤360px):**
+```scss
+@media (max-width: 360px) {
+  .podium-card {
+    border-width: 2px; // Reduzido de 3px
+  }
+
+  .podium-medal, .podium-crown {
+    font-size: 1.4rem; // Reduzido de 1.8rem
+    top: -12px; // Ajustado de -15px
+  }
+
+  .capture-count-badge {
+    font-size: 0.65rem; // Reduzido de 0.75rem
+    top: -8px; right: -8px; // Ajustado de -10px
+  }
+}
+```
+
+### **✅ Validações Realizadas**
+
+#### **Estrutura e Funcionalidade:**
+- ✅ Classes aplicadas: `podium-card podium-first` detectadas
+- ✅ Borda dourada: `3px solid rgb(255, 215, 0)` funcionando
+- ✅ Box-shadow: Múltiplas camadas de brilho ativas
+- ✅ Animações: Efeitos de brilho pulsante funcionando
+- ✅ Funcionalidade preservada: Captura/liberação intacta
+
+#### **Performance e UX:**
+- ✅ Hover effects: Transformações suaves (scale + translateY)
+- ✅ Responsividade: Adaptação perfeita para mobile
+- ✅ Acessibilidade: Contraste e legibilidade mantidos
+- ✅ Compatibilidade: Funciona em todos os navegadores testados
+
+### **🎨 Resultado Visual**
+
+O pódio mobile agora apresenta:
+- **Design elegante**: Bordas sutis ao invés de containers grandes
+- **Cores tradicionais**: Ouro, prata e bronze para destacar vencedores
+- **Aparência "premium"**: Efeitos de brilho e animações suaves
+- **Funcionalidade completa**: Todos os recursos originais preservados
+
+**As bordas funcionam como "molduras de vitória" que destacam os pokémons campeões de forma elegante e não intrusiva!** 🏆
+
+### **📁 Arquivos Modificados**
+- ✅ `frontend/src/app/pages/mobile/ranking/ranking.page.html`
+- ✅ `frontend/src/app/pages/mobile/ranking/ranking.page.scss`
+- ✅ `frontend/docs/mobile-ranking-podium-borders.md` (documentação específica)
+
+---
+
+**Última atualização**: 24 de Julho de 2025
+**Versão da documentação**: 1.5.2
+**Versão do projeto**: 1.5.2
