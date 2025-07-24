@@ -44,15 +44,23 @@ class FavoriteService:
     @staticmethod
     def remove_favorite(db: Session, user_id: int, pokemon_id: int) -> bool:
         """Remove Pokémon dos favoritos."""
+        import logging
+        logger = logging.getLogger(__name__)
+
         favorite = db.query(FavoritePokemon).filter(
             FavoritePokemon.user_id == user_id,
             FavoritePokemon.pokemon_id == pokemon_id
         ).first()
 
         if not favorite:
+            logger.info(f"🔍 Tentativa de remover favorito inexistente: User {user_id}, Pokemon {pokemon_id}")
             return False
 
         pokemon_name = favorite.pokemon_name
+
+        # ✅ NOVO: Log detalhado da remoção para auditoria
+        logger.warning(f"🗑️ REMOÇÃO DE FAVORITO: User {user_id} removeu {pokemon_name} (ID: {pokemon_id})")
+
         db.delete(favorite)
 
         # Atualiza ranking baseado em capturas (não favoritos)
@@ -60,6 +68,8 @@ class FavoriteService:
             db, pokemon_id, pokemon_name, increment=False)
 
         db.commit()
+
+        logger.info(f"✅ Favorito removido com sucesso: {pokemon_name}")
         return True
 
     @staticmethod

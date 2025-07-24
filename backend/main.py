@@ -192,6 +192,10 @@ try:
     app.include_router(admin.router, prefix="/api/v1")
     app.include_router(pull_sync.router, prefix="/api/v1")
 
+    # ✅ NOVO: Rotas de monitoramento de integridade de dados
+    from app.routes import data_integrity
+    app.include_router(data_integrity.router, prefix="/api/v1/data-integrity")
+
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     print(f"❌ ERRO CRÍTICO: Falha ao importar rotas: {e}")
     import traceback

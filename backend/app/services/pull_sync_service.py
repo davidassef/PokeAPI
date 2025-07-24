@@ -360,20 +360,23 @@ class PullSyncService:
             except Exception as e:
                 logger.error(f"❌ Erro ao adicionar {pokemon_id}: {e}")
 
-        # 5. Remover Pokémons que estão no banco mas não nos clientes
-        for user_id, pokemon_id in to_remove:
-            try:
-                # Buscar nome antes de remover
-                fav = next((f for f in db_favorites if f.pokemon_id == pokemon_id), None)
-                pokemon_name = fav.pokemon_name if fav else f"pokemon_{pokemon_id}"
+        # ✅ CORREÇÃO CRÍTICA: NÃO remover dados do banco automaticamente
+        # O servidor deve ser a fonte da verdade, não os clientes
+        # Apenas registrar discrepâncias para investigação manual
+        if to_remove:
+            logger.warning(f"🔍 DISCREPÂNCIA DETECTADA: {len(to_remove)} pokémons no banco mas não nos clientes")
+            for user_id, pokemon_id in to_remove:
+                try:
+                    fav = next((f for f in db_favorites if f.pokemon_id == pokemon_id), None)
+                    pokemon_name = fav.pokemon_name if fav else f"pokemon_{pokemon_id}"
+                    logger.warning(f"📊 Discrepância: {pokemon_name} (ID: {pokemon_id}) - Usuário: {user_id}")
+                except Exception as e:
+                    logger.error(f"❌ Erro ao registrar discrepância {pokemon_id}: {e}")
 
-                result = FavoriteService.remove_favorite(db, user_id, pokemon_id)
-                if result:
-                    removed_count += 1
-                    logger.info(f"➖ Removido: {pokemon_name} (ID: {pokemon_id})")
+            logger.info("✅ DADOS PRESERVADOS: Nenhum pokémon foi removido automaticamente do banco")
 
-            except Exception as e:
-                logger.error(f"❌ Erro ao remover {pokemon_id}: {e}")
+        # ❌ REMOVIDO: Lógica de remoção automática que causava perda de dados
+        # removed_count permanece 0 para indicar que nenhum dado foi perdido
 
         processing_time = time.time() - start_time
 
@@ -644,20 +647,20 @@ class PullSyncService:
                         # Processar capturas cronologicamente para determinar estado final
                         # Ordenar por timestamp para processar em ordem cronológica
                         sorted_captures = sorted(captures, key=lambda c: c.get('timestamp', ''))
-                        
+
                         # Determinar estado final de cada pokémon
                         pokemon_states = {}
                         for capture in sorted_captures:
                             pokemon_id = capture['pokemon_id']
                             metadata = capture.get('metadata', {})
                             is_removed = metadata.get('removed', False)
-                            
+
                             if capture.get('action') in ('capture', 'favorite'):
                                 if is_removed:
                                     pokemon_states[pokemon_id] = False  # Removido
                                 else:
                                     pokemon_states[pokemon_id] = True   # Capturado
-                        
+
                         # Criar lista apenas com pokémons ativos (capturados)
                         active_captures = []
                         for pokemon_id, is_captured in pokemon_states.items():
@@ -737,13 +740,18 @@ class PullSyncService:
         """
         logger.info("🔄 Sincronizando favoritos com storage")
 
-        # Limpar favoritos atuais
+        # ✅ CORREÇÃO CRÍTICA: NÃO limpar todos os favoritos automaticamente
+        # Esta operação causava perda total de dados do usuário
         current_favorites = FavoriteService.get_user_favorites(db, 1)
         removed_count = 0
 
-        for favorite in current_favorites:
-            FavoriteService.remove_favorite(db, favorite.user_id, favorite.pokemon_id)
-            removed_count += 1
+        logger.warning("🚨 OPERAÇÃO PERIGOSA DESABILITADA: Limpeza total de favoritos foi impedida")
+        logger.info(f"✅ DADOS PRESERVADOS: {len(current_favorites)} favoritos mantidos no banco")
+
+        # ❌ REMOVIDO: Lógica que removia TODOS os favoritos
+        # for favorite in current_favorites:
+        #     FavoriteService.remove_favorite(db, favorite.user_id, favorite.pokemon_id)
+        #     removed_count += 1
 
         # Adicionar favoritos baseados no storage
         pokemon_counts = self.storage_service.get_pokemon_counts()
