@@ -148,10 +148,9 @@ ion-content {
     }
   }
 
-  // Ajustes do pódio para telas pequenas
-  .ranking-podium-container-mobile {
+  // Ajustes da lista de ranking para telas pequenas
+  .ranking-list-mobile {
     min-height: 440px; // Altura ajustada para nova estrutura
-    padding: 0 2px;
   }
 
   .podium-first-container {
@@ -215,19 +214,18 @@ ion-content {
 
 // ===== PÓDIO MOBILE OTIMIZADO =====
 
-// Container principal do pódio mobile - layout otimizado para mobile
-.ranking-podium-container-mobile {
+// Container da lista de ranking mobile - agora apenas um wrapper simples
+.ranking-list-mobile {
   position: relative;
   width: 100%;
-  min-height: 480px; // Altura aumentada para evitar sobreposição
+  // Altura mínima para acomodar os containers independentes do pódium
+  min-height: 480px;
   margin-bottom: 20px;
-  padding: 0 4px;
-  overflow: visible;
 }
 
-// ✅ CONTAINERS INDIVIDUAIS PARA CADA POSIÇÃO DO PÓDIO
+// ✅ CONTAINERS INDEPENDENTES PARA CADA POSIÇÃO DO PÓDIO
 
-// 1º lugar - Container centralizado no topo
+// 1º lugar - Container independente centralizado no topo
 .podium-first-container {
   position: absolute;
   top: 0;
@@ -248,10 +246,10 @@ ion-content {
   }
 }
 
-// 2º lugar - Container à esquerda, mais baixo
+// 2º lugar - Container independente à esquerda
 .podium-second-container {
   position: absolute;
-  top: 240px; // Posicionado mais abaixo para evitar sobreposição
+  top: 240px; // Posicionado abaixo do 1º lugar
   left: 15px; // Espaçamento adequado da borda
   display: flex;
   flex-direction: column;
@@ -268,7 +266,7 @@ ion-content {
   }
 }
 
-// 3º lugar - Container à direita, mesma altura do 2º
+// 3º lugar - Container independente à direita
 .podium-third-container {
   position: absolute;
   top: 240px; // Mesma altura do 2º lugar para criar simetria
@@ -630,13 +628,13 @@ ion-content {
 
 // ===== GRID 2x2 DOS DEMAIS RANKINGS MOBILE =====
 
-// Grid 2x2 para rankings 4º em diante - mesmo estilo da home
+// Grid 2x2 para rankings 4º em diante - posicionado após containers independentes do pódium
 .mobile-ranking-grid-horizontal {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 0 12px;
-  margin-top: 20px;
+  margin-top: 480px; // Espaço suficiente para os containers independentes do pódium
   max-width: 100%;
 }
 
@@ -723,6 +721,7 @@ ion-content {
   .mobile-ranking-grid-horizontal {
     gap: 8px;
     padding: 0 8px;
+    margin-top: 440px; // Ajustado para telas pequenas
   }
 
   .ranking-item-horizontal {
