@@ -820,7 +820,9 @@
     "error_loading_local_ranking": "Erro ao carregar ranking local",
     "error_toggle_capture": "Erro ao alternar captura",
     "added_to_captured": "Pokémon adicionado aos capturados!",
-    "removed_from_captured": "Pokémon removido dos capturados!"
+    "removed_from_captured": "Pokémon removido dos capturados!",
+    "try_again": "TENTAR NOVAMENTE",
+    "try_again": "TENTAR NOVAMENTE"
   },
   "sync_with_server": "Sincronização com o servidor",
   "synced": "Sincronizado",
