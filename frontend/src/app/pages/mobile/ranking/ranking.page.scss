@@ -150,7 +150,7 @@ ion-content {
 
   // Ajustes do pódio para telas pequenas
   .ranking-podium-container-mobile {
-    min-height: 400px; // Altura otimizada para telas pequenas
+    min-height: 440px; // Altura ajustada para nova estrutura
     padding: 0 2px;
   }
 
@@ -158,27 +158,57 @@ ion-content {
     width: 140px; // Largura reduzida para telas pequenas
 
     .podium-card {
-      min-height: 180px; // Altura reduzida para telas pequenas
+      min-height: 180px !important; // Altura igual aos cards normais em telas pequenas
+      width: 100% !important;
+      max-width: none !important;
+      transform: none !important;
+
+      app-pokemon-card {
+        min-height: 180px !important;
+        width: 100% !important;
+        max-width: none !important;
+        transform: none !important;
+      }
     }
   }
 
   .podium-second-container {
-    top: 200px; // Ajustado para nova estrutura
-    left: 5px;
+    top: 220px; // Ajustado para nova estrutura
+    left: 8px;
     width: 140px; // Largura reduzida para telas pequenas
 
     .podium-card {
-      min-height: 180px; // Altura reduzida para telas pequenas
+      min-height: 180px !important; // Altura igual aos cards normais em telas pequenas
+      width: 100% !important;
+      max-width: none !important;
+      transform: none !important;
+
+      app-pokemon-card {
+        min-height: 180px !important;
+        width: 100% !important;
+        max-width: none !important;
+        transform: none !important;
+      }
     }
   }
 
   .podium-third-container {
-    top: 200px; // Mesma altura do 2º lugar
-    right: 5px;
+    top: 220px; // Mesma altura do 2º lugar
+    right: 8px;
     width: 140px; // Largura reduzida para telas pequenas
 
     .podium-card {
-      min-height: 180px; // Altura reduzida para telas pequenas
+      min-height: 180px !important; // Altura igual aos cards normais em telas pequenas
+      width: 100% !important;
+      max-width: none !important;
+      transform: none !important;
+
+      app-pokemon-card {
+        min-height: 180px !important;
+        width: 100% !important;
+        max-width: none !important;
+        transform: none !important;
+      }
     }
   }
 }
@@ -189,7 +219,7 @@ ion-content {
 .ranking-podium-container-mobile {
   position: relative;
   width: 100%;
-  min-height: 440px; // Altura otimizada para o novo layout
+  min-height: 480px; // Altura aumentada para evitar sobreposição
   margin-bottom: 20px;
   padding: 0 4px;
   overflow: visible;
@@ -210,18 +240,19 @@ ion-content {
   z-index: 10;
   transition: all 0.3s ease;
 
-  // Card do campeão agora mantém tamanho padrão
+  // Card do campeão mantém tamanho padrão dos cards normais
   .podium-card {
     width: 100%;
-    min-height: 200px; // Mesma altura dos cards normais
+    min-height: 200px; // Exatamente igual aos cards normais
+    max-width: none; // Remove limitação de largura máxima
   }
 }
 
 // 2º lugar - Container à esquerda, mais baixo
 .podium-second-container {
   position: absolute;
-  top: 220px; // Posicionado abaixo do 1º lugar
-  left: 10px; // Pequeno espaçamento da borda
+  top: 240px; // Posicionado mais abaixo para evitar sobreposição
+  left: 15px; // Espaçamento adequado da borda
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -229,18 +260,19 @@ ion-content {
   z-index: 8;
   transition: all 0.3s ease;
 
-  // Card do 2º lugar agora mantém tamanho padrão
+  // Card do 2º lugar mantém tamanho padrão dos cards normais
   .podium-card {
     width: 100%;
-    min-height: 200px; // Mesma altura dos cards normais
+    min-height: 200px; // Exatamente igual aos cards normais
+    max-width: none; // Remove limitação de largura máxima
   }
 }
 
 // 3º lugar - Container à direita, mesma altura do 2º
 .podium-third-container {
   position: absolute;
-  top: 220px; // Mesma altura do 2º lugar para criar simetria
-  right: 10px; // Pequeno espaçamento da borda
+  top: 240px; // Mesma altura do 2º lugar para criar simetria
+  right: 15px; // Espaçamento adequado da borda
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -248,29 +280,44 @@ ion-content {
   z-index: 6;
   transition: all 0.3s ease;
 
-  // Card do 3º lugar agora mantém tamanho padrão
+  // Card do 3º lugar mantém tamanho padrão dos cards normais
   .podium-card {
     width: 100%;
-    min-height: 200px; // Mesma altura dos cards normais
+    min-height: 200px; // Exatamente igual aos cards normais
+    max-width: none; // Remove limitação de largura máxima
   }
 }
 
-// ✅ NOVO: Bordas decorativas aplicadas diretamente ao app-pokemon-card
+// ✅ GARANTIA DE TAMANHO PADRÃO PARA CARDS DO PÓDIUM
 .podium-card {
   position: relative;
   border-radius: 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
 
-  // Efeito de hover sutil
+  // FORÇA o mesmo tamanho dos cards normais do ranking
+  width: 100% !important;
+  min-height: 200px !important;
+  max-width: none !important;
+  transform: none !important; // Remove qualquer transform que possa reduzir o tamanho
+
+  // Efeito de hover sutil (sem scale para manter consistência)
   &:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-2px);
   }
 
   // Estado ativo
   &:active {
-    transform: scale(0.98);
+    transform: translateY(-1px);
     transition: transform 0.1s ease;
+  }
+
+  // Garante que o componente pokemon-card interno também mantenha o tamanho
+  app-pokemon-card {
+    width: 100% !important;
+    min-height: 200px !important;
+    max-width: none !important;
+    transform: none !important;
   }
 }
 
