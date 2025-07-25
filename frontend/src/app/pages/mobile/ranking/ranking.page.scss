@@ -150,45 +150,47 @@ ion-content {
 
   // Ajustes do pódio para telas pequenas
   .ranking-podium-container-mobile {
-    min-height: 550px;
+    min-height: 400px; // Altura otimizada para telas pequenas
     padding: 0 2px;
   }
 
   .podium-first-container {
-    top: 0;
+    width: 140px; // Largura reduzida para telas pequenas
 
     .podium-card {
-      transform: scale(0.55);
+      min-height: 180px; // Altura reduzida para telas pequenas
     }
   }
 
   .podium-second-container {
-    top: 160px;
-    left: 0;
+    top: 200px; // Ajustado para nova estrutura
+    left: 5px;
+    width: 140px; // Largura reduzida para telas pequenas
 
     .podium-card {
-      transform: scale(0.45);
+      min-height: 180px; // Altura reduzida para telas pequenas
     }
   }
 
   .podium-third-container {
-    top: 280px;
-    right: 0;
+    top: 200px; // Mesma altura do 2º lugar
+    right: 5px;
+    width: 140px; // Largura reduzida para telas pequenas
 
     .podium-card {
-      transform: scale(0.4);
+      min-height: 180px; // Altura reduzida para telas pequenas
     }
   }
 }
 
-// ===== PÓDIO MOBILE ESCALONADO =====
+// ===== PÓDIO MOBILE OTIMIZADO =====
 
-// Container principal do pódio mobile - layout escalonado para simular pódio real
+// Container principal do pódio mobile - layout otimizado para mobile
 .ranking-podium-container-mobile {
   position: relative;
   width: 100%;
-  min-height: 600px; // Altura aumentada para acomodar melhor o layout escalonado
-  margin-bottom: 30px;
+  min-height: 440px; // Altura otimizada para o novo layout
+  margin-bottom: 20px;
   padding: 0 4px;
   overflow: visible;
 }
@@ -204,51 +206,52 @@ ion-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 160px; // Largura fixa similar aos cards normais
   z-index: 10;
   transition: all 0.3s ease;
 
-  // Reduzir significativamente o tamanho do card do campeão
+  // Card do campeão agora mantém tamanho padrão
   .podium-card {
-    transform: scale(0.6);
-    transform-origin: center;
+    width: 100%;
+    min-height: 200px; // Mesma altura dos cards normais
   }
 }
 
 // 2º lugar - Container à esquerda, mais baixo
 .podium-second-container {
   position: absolute;
-  top: 180px; // Mais espaço do 1º lugar
-  left: 0; // Colado na borda esquerda
-  transform: translateX(0);
+  top: 220px; // Posicionado abaixo do 1º lugar
+  left: 10px; // Pequeno espaçamento da borda
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 160px; // Largura fixa similar aos cards normais
   z-index: 8;
   transition: all 0.3s ease;
 
-  // Reduzir mais o tamanho do 2º lugar
+  // Card do 2º lugar agora mantém tamanho padrão
   .podium-card {
-    transform: scale(0.5);
-    transform-origin: center;
+    width: 100%;
+    min-height: 200px; // Mesma altura dos cards normais
   }
 }
 
-// 3º lugar - Container à direita, mais baixo que o 2º
+// 3º lugar - Container à direita, mesma altura do 2º
 .podium-third-container {
   position: absolute;
-  top: 320px; // Muito mais baixo que o 2º lugar
-  right: 0; // Colado na borda direita
-  transform: translateX(0);
+  top: 220px; // Mesma altura do 2º lugar para criar simetria
+  right: 10px; // Pequeno espaçamento da borda
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 160px; // Largura fixa similar aos cards normais
   z-index: 6;
   transition: all 0.3s ease;
 
-  // Reduzir ainda mais o tamanho do 3º lugar
+  // Card do 3º lugar agora mantém tamanho padrão
   .podium-card {
-    transform: scale(0.45);
-    transform-origin: center;
+    width: 100%;
+    min-height: 200px; // Mesma altura dos cards normais
   }
 }
 
