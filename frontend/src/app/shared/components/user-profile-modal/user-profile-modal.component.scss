@@ -37,8 +37,14 @@
     --color: var(--text-color-secondary);
     --background: transparent;
     --background-hover: var(--surface-bg);
-    width: 40px;
-    height: 40px;
+    width: 48px; // Aumentado de 40px para 48px
+    height: 48px; // Aumentado de 40px para 48px
+    min-width: 48px; // Garantir tamanho mínimo
+    min-height: 48px; // Garantir tamanho mínimo
+
+    ion-icon {
+      font-size: 24px; // Ícone proporcionalmente maior
+    }
   }
 }
 

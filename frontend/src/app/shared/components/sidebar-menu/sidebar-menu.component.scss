@@ -48,12 +48,14 @@ ion-menu {
       .close-btn {
         --color: white;
         --background: rgba(255, 255, 255, 0.1);
-        --border-radius: 20px;
-        width: 40px;
-        height: 40px;
+        --border-radius: 24px;
+        width: 48px; // Aumentado de 40px para 48px
+        height: 48px; // Aumentado de 40px para 48px
+        min-width: 48px; // Garantir tamanho mínimo
+        min-height: 48px; // Garantir tamanho mínimo
 
         ion-icon {
-          font-size: 20px;
+          font-size: 24px; // Aumentado de 20px para 24px
         }
       }
     }
@@ -530,8 +532,14 @@ ion-menu {
         }
 
         .close-btn {
-          width: 36px;
-          height: 36px;
+          width: 44px; // Aumentado de 36px para 44px (tamanho mínimo recomendado para mobile)
+          height: 44px; // Aumentado de 36px para 44px
+          min-width: 44px; // Garantir tamanho mínimo
+          min-height: 44px; // Garantir tamanho mínimo
+
+          ion-icon {
+            font-size: 22px; // Ícone proporcionalmente maior
+          }
         }
       }
     }
