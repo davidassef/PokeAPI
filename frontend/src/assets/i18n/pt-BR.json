@@ -658,7 +658,8 @@
     "auth_required": "Você precisa estar logado para acessar suas capturas.",
     "login": "Fazer Login",
     "create_account_hint": "Não tem conta?",
-    "create_account_link": "Crie uma agora"
+    "create_account_link": "Crie uma agora",
+    "pagination": "Página {{currentPage}} de {{totalPages}}"
   },
   "captured_page": {
     "search_captured": "Buscar nos capturados",
