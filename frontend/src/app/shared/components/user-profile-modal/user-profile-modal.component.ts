@@ -66,12 +66,83 @@ export class UserProfileModalComponent implements OnInit, OnDestroy {
   }
 
   private loadSecurityQuestionText() {
+    if (this.user?.email) {
+      console.log('[UserProfile] Buscando pergunta de segurança do backend para:', this.user.email);
+
+      // ✅ CORREÇÃO: Usar a mesma abordagem da recuperação de senha
+      // Buscar pergunta de segurança diretamente do backend
+      this.authService.requestPasswordReset(this.user.email)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            console.log('[UserProfile] Resposta do backend:', response);
+            if (response.security_question) {
+              // Usar a mesma lógica de tradução da recuperação de senha
+              const questionKey = `auth.security_questions.${response.security_question}`;
+              const translatedText = this.translate.instant(questionKey);
+
+              if (translatedText && translatedText !== questionKey) {
+                this.securityQuestionText = translatedText;
+                console.log('[UserProfile] Pergunta de segurança carregada:', translatedText);
+              } else {
+                // Fallback se a tradução não for encontrada
+                this.securityQuestionText = this.getSecurityQuestionFallback(response.security_question);
+                console.warn('[UserProfile] Usando fallback para:', response.security_question);
+              }
+            } else {
+              this.securityQuestionText = 'Pergunta de segurança não encontrada no backend';
+            }
+          },
+          error: (error) => {
+            console.error('[UserProfile] Erro ao buscar pergunta de segurança:', error);
+            // Fallback para dados locais se a API falhar
+            this.loadSecurityQuestionFromLocalData();
+          }
+        });
+    } else {
+      console.warn('[UserProfile] Usuário não possui email definido');
+      this.securityQuestionText = 'Email do usuário não disponível';
+    }
+  }
+
+  /**
+   * ✅ NOVO: Fallback para carregar pergunta de segurança dos dados locais
+   */
+  private loadSecurityQuestionFromLocalData() {
     if (this.user?.security_question) {
       const questionKey = `auth.security_question_${this.user.security_question}`;
+      console.log('[UserProfile] Fallback: Carregando pergunta local:', questionKey);
+
       this.translate.get(questionKey).subscribe(translatedText => {
-        this.securityQuestionText = translatedText;
+        if (translatedText && translatedText !== questionKey) {
+          this.securityQuestionText = translatedText;
+          console.log('[UserProfile] Pergunta local carregada:', translatedText);
+        } else {
+          const securityQuestion = this.user?.security_question;
+          if (securityQuestion) {
+            this.securityQuestionText = this.getSecurityQuestionFallback(securityQuestion);
+          } else {
+            this.securityQuestionText = 'Pergunta de segurança não definida';
+          }
+        }
       });
+    } else {
+      this.securityQuestionText = 'Pergunta de segurança não definida nos dados locais';
     }
+  }
+
+  /**
+   * ✅ NOVO: Fallback para perguntas de segurança quando tradução não é encontrada
+   */
+  private getSecurityQuestionFallback(questionKey: string): string {
+    const fallbackQuestions: { [key: string]: string } = {
+      'pet': 'Qual era o nome do seu primeiro animal de estimação?',
+      'city': 'Em que cidade você nasceu?',
+      'school': 'Qual era o nome da sua primeira escola?',
+      'mother': 'Qual é o nome de solteira da sua mãe?'
+    };
+
+    return fallbackQuestions[questionKey] || 'Pergunta de segurança não reconhecida';
   }
 
   async onSaveChanges() {
