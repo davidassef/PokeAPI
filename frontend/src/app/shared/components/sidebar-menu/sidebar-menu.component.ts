@@ -179,10 +179,13 @@ export class SidebarMenuComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: Método getCaptureRate temporariamente comentado - aguardando implementação de lógica adequada
+  /*
   getCaptureRate(): number {
     if (this.userStats.viewedCount === 0) return 0;
     return Math.round((this.userStats.capturedCount / this.userStats.viewedCount) * 100);
   }
+  */
 
   async onMenuItemClick(item: MenuItem) {
     if (item.url) {
