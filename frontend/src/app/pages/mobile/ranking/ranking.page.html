@@ -130,15 +130,17 @@
     <p>{{ 'ranking_page.loading_ranking' | translate }}</p>
   </div>
 
-  <!-- Empty State - Global -->
-  <div *ngIf="!loading && globalRanking.length === 0" class="empty-state-mobile">
-    <ion-icon name="trophy" size="large" color="warning"></ion-icon>
-    <h2>{{ 'ranking_page.no_global_ranking' | translate }}</h2>
-    <p>{{ 'ranking_page.no_global_ranking_desc' | translate }}</p>
-    <ion-button fill="solid" (click)="debugRefreshRanking()" color="primary">
-      <ion-icon name="refresh" slot="start"></ion-icon>
-      {{ 'ranking_page.try_again' | translate }}
-    </ion-button>
+  <!-- Empty State - Global (sem altura mínima para evitar espaço vazio) -->
+  <div *ngIf="!loading && globalRanking.length === 0" class="empty-state-container">
+    <div class="empty-state-mobile">
+      <ion-icon name="trophy" size="large" color="warning"></ion-icon>
+      <h2>{{ 'ranking_page.no_global_ranking' | translate }}</h2>
+      <p>{{ 'ranking_page.no_global_ranking_desc' | translate }}</p>
+      <ion-button fill="solid" (click)="debugRefreshRanking()" color="primary">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        {{ 'ranking_page.try_again' | translate }}
+      </ion-button>
+    </div>
   </div>
 
   <!-- Modal de detalhes mobile -->

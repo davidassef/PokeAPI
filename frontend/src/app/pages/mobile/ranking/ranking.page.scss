@@ -10,7 +10,7 @@ ion-content {
 .ranking-header {
   text-align: center;
   margin-top: 20px; // Reduzido de 40px para mobile
-  margin-bottom: 40px; // Reduzido de 110px para mobile
+  margin-bottom: 20px; // Reduzido ainda mais para diminuir espaço vazio
   color: #fff;
   text-shadow: 0 4px 16px rgba(0,0,0,0.22), 0 1px 0 #ffd700;
   position: relative;
@@ -172,7 +172,7 @@ ion-content {
   }
 
   .podium-second-container {
-    top: 220px; // Ajustado para nova estrutura
+    top: 180px; // Ajustado para nova estrutura compacta
     left: 8px;
     width: 140px; // Largura reduzida para telas pequenas
 
@@ -192,7 +192,7 @@ ion-content {
   }
 
   .podium-third-container {
-    top: 220px; // Mesma altura do 2º lugar
+    top: 180px; // Mesma altura do 2º lugar
     right: 8px;
     width: 140px; // Largura reduzida para telas pequenas
 
@@ -219,8 +219,13 @@ ion-content {
   position: relative;
   width: 100%;
   // Altura mínima para acomodar os containers independentes do pódium
-  min-height: 480px;
+  min-height: 400px; // Reduzido para diminuir espaço vazio
   margin-bottom: 20px;
+
+  // Remove altura mínima quando não há dados para evitar espaço vazio
+  &.no-data {
+    min-height: 0;
+  }
 }
 
 // ✅ CONTAINERS INDEPENDENTES PARA CADA POSIÇÃO DO PÓDIO
@@ -249,7 +254,7 @@ ion-content {
 // 2º lugar - Container independente à esquerda
 .podium-second-container {
   position: absolute;
-  top: 240px; // Posicionado abaixo do 1º lugar
+  top: 200px; // Reduzido para diminuir espaço vazio
   left: 15px; // Espaçamento adequado da borda
   display: flex;
   flex-direction: column;
@@ -269,7 +274,7 @@ ion-content {
 // 3º lugar - Container independente à direita
 .podium-third-container {
   position: absolute;
-  top: 240px; // Mesma altura do 2º lugar para criar simetria
+  top: 200px; // Reduzido para manter simetria com 2º lugar
   right: 15px; // Espaçamento adequado da borda
   display: flex;
   flex-direction: column;
@@ -577,13 +582,19 @@ ion-content {
   }
 }
 
+// Container do estado vazio - sem altura mínima para evitar espaço vazio
+.empty-state-container {
+  width: 100%;
+  margin-top: 0; // Remove qualquer margem superior
+}
+
 // Empty state - adaptado para mobile
 .empty-state-mobile {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 40px 20px; // Reduzido de 60px para diminuir espaço
   text-align: center;
 
   ion-icon {
@@ -634,7 +645,7 @@ ion-content {
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 0 12px;
-  margin-top: 480px; // Espaço suficiente para os containers independentes do pódium
+  margin-top: 400px; // Reduzido para acompanhar a redução do min-height
   max-width: 100%;
 }
 
@@ -721,7 +732,7 @@ ion-content {
   .mobile-ranking-grid-horizontal {
     gap: 8px;
     padding: 0 8px;
-    margin-top: 440px; // Ajustado para telas pequenas
+    margin-top: 360px; // Ajustado para nova estrutura compacta
   }
 
   .ranking-item-horizontal {
