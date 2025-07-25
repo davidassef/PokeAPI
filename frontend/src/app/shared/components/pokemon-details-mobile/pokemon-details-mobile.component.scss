@@ -125,7 +125,7 @@
   gap: 16px;
 
   p {
-    color: var(--ion-color-medium);
+    color: white !important; // Força cor branca independente do tema
     margin: 0;
   }
 }
@@ -255,7 +255,7 @@
       .label {
         display: block;
         font-size: 0.8rem;
-        color: var(--ion-color-medium);
+        color: white !important; // Força cor branca independente do tema
         margin-bottom: 4px;
       }
 
@@ -263,7 +263,7 @@
         display: block;
         font-size: 1.1rem;
         font-weight: 600;
-        color: var(--ion-color-dark);
+        color: white !important; // Força cor branca independente do tema
       }
     }
   }
@@ -391,7 +391,7 @@
       border-radius: 12px;
       margin: 8px 0;
       line-height: 1.5;
-      color: var(--ion-color-dark);
+      color: white !important; // Força cor branca independente do tema
     }
   }
 
@@ -412,7 +412,7 @@
         min-width: 80px;
         font-size: 0.9rem;
         font-weight: 500;
-        color: var(--ion-color-dark);
+        color: white !important; // Força cor branca independente do tema
       }
 
       .stat-bar {
@@ -434,7 +434,7 @@
         min-width: 40px;
         text-align: right;
         font-weight: 600;
-        color: var(--ion-color-dark);
+        color: white !important; // Força cor branca independente do tema
       }
     }
   }
@@ -471,7 +471,7 @@
 
       .ability-name {
         font-weight: 600;
-        color: var(--ion-color-dark);
+        color: white !important; // Força cor branca independente do tema
         margin-bottom: 8px;
         display: flex;
         align-items: center;
@@ -488,7 +488,7 @@
       }
 
       .ability-description {
-        color: var(--ion-color-medium);
+        color: white !important; // Força cor branca independente do tema
         font-size: 0.9rem;
         line-height: 1.4;
       }

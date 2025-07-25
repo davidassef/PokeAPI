@@ -278,7 +278,7 @@
 .stat-label {
   display: block;
   font-size: 0.9rem;
-  color: var(--text-color-secondary);
+  color: white !important; // Força cor branca independente do tema
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -453,7 +453,7 @@
 
       .total-label {
         font-size: 1rem;
-        color: var(--text-color-secondary);
+        color: white !important; // Força cor branca independente do tema
       }
 
       .total-value {
@@ -497,7 +497,7 @@
         .stat-name {
           width: 120px;
           font-size: 0.9rem;
-          color: var(--text-color-secondary);
+          color: white !important; // Força cor branca independente do tema
         }
 
         .stat-progress {
@@ -925,7 +925,7 @@
         .bio-label {
           display: block;
           font-size: 0.85rem;
-          color: var(--text-color-secondary);
+          color: white !important; // Força cor branca independente do tema
           margin-bottom: 5px;
         }
 
@@ -970,7 +970,7 @@
         .capture-label {
           display: block;
           font-size: 0.85rem;
-          color: var(--text-color-secondary);
+          color: white !important; // Força cor branca independente do tema
           margin-bottom: 5px;
         }
 
@@ -1697,11 +1697,11 @@
     border: 1px solid rgba(0, 0, 0, 0.12);
 
     .bio-label {
-      color: var(--text-color-secondary);
+      color: white !important; // Força cor branca independente do tema
     }
 
     .bio-value {
-      color: var(--text-color);
+      color: white !important; // Força cor branca independente do tema
     }
   }
 
@@ -1711,11 +1711,11 @@
     border: 1px solid rgba(0, 0, 0, 0.12);
 
     .stat-label {
-      color: var(--text-color-secondary) !important;
+      color: white !important; // Força cor branca independente do tema
     }
 
     .stat-value {
-      color: var(--text-color) !important;
+      color: white !important; // Força cor branca independente do tema
     }
   }
 
@@ -1765,7 +1765,7 @@
     border: 1px solid rgba(0, 0, 0, 0.12);
 
     .capture-label {
-      color: var(--text-color-secondary);
+      color: white !important; // Força cor branca independente do tema
     }
 
     .capture-value {
