@@ -136,7 +136,8 @@
   <app-pokemon-details-mobile
     *ngIf="showDetailsModal"
     [pokemonId]="selectedPokemonId || 0"
-    (close)="closeDetailsModal()">
+    [isOpen]="showDetailsModal"
+    (modalClosed)="closeDetailsModal()">
   </app-pokemon-details-mobile>
 
 </ion-content>

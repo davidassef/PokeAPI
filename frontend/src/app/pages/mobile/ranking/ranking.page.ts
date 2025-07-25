@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController, LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, firstValueFrom, takeUntil, timeout } from 'rxjs';
+import { Subject, firstValueFrom, takeUntil, timeout, distinctUntilChanged } from 'rxjs';
 import { AudioService } from '../../../core/services/audio.service';
 import { CapturedService } from '../../../core/services/captured.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
@@ -112,15 +112,27 @@ export class RankingPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo
+    // ✅ CORREÇÃO: Inscrever-se no estado de autenticação reativo com refresh automático
     this.authService.getAuthState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isAuthenticated => {
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged() // Só emite quando o estado realmente muda
+      )
+      .subscribe(async (isAuthenticated) => {
         console.log('[MobileRanking] Estado de autenticação atualizado:', isAuthenticated);
+
+        const wasAuthenticated = this.isAuthenticated;
         this.isAuthenticated = isAuthenticated;
+
         if (isAuthenticated) {
           this.user = this.authService.getCurrentUser();
           console.log('[MobileRanking] Usuário carregado:', this.user);
+
+          // ✅ NOVO: Refresh automático quando usuário faz login
+          if (!wasAuthenticated && isAuthenticated) {
+            console.log('[MobileRanking] 🔄 Login detectado - iniciando refresh automático...');
+            await this.refreshDataAfterLogin();
+          }
         } else {
           this.user = null;
           console.log('[MobileRanking] Usuário deslogado');
@@ -640,6 +652,58 @@ export class RankingPage implements OnInit, OnDestroy {
 
   getCurrentRanking(): PokemonRanking[] {
     return this.globalRanking;
+  }
+
+  /**
+   * ✅ NOVO: Refresh automático de dados após login do usuário
+   * Atualiza ranking e estados de captura para refletir dados do usuário logado
+   */
+  private async refreshDataAfterLogin(): Promise<void> {
+    try {
+      console.log('[MobileRanking] 🔄 Iniciando refresh automático após login...');
+
+      // Mostrar indicador de carregamento
+      const loading = await this.loadingController.create({
+        message: await firstValueFrom(this.translate.get('ranking_page.updating_data')),
+        duration: 10000,
+        spinner: 'crescent'
+      });
+      await loading.present();
+
+      // 1. Recarregar estados de captura do usuário
+      console.log('[MobileRanking] 📥 Atualizando estados de captura...');
+      await this.loadCapturedStates();
+
+      // 2. Forçar refresh do ranking com dados frescos
+      console.log('[MobileRanking] 🏆 Atualizando ranking...');
+      await this.loadRanking(true); // forceRefresh = true
+
+      // 3. Atualizar UI
+      this.cdr.detectChanges();
+
+      await loading.dismiss();
+
+      // Feedback de sucesso
+      await this.showToast('ranking_page.data_updated_after_login');
+
+      console.log('[MobileRanking] ✅ Refresh automático após login concluído');
+
+    } catch (error) {
+      console.error('[MobileRanking] ❌ Erro no refresh automático após login:', error);
+
+      // Tentar fechar loading se ainda estiver aberto
+      try {
+        const loading = await this.loadingController.getTop();
+        if (loading) {
+          await loading.dismiss();
+        }
+      } catch (dismissError) {
+        console.warn('[MobileRanking] Erro ao fechar loading:', dismissError);
+      }
+
+      // Mostrar erro para o usuário
+      await this.showToast('ranking_page.error_updating_data');
+    }
   }
 
   /**
