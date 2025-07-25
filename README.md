@@ -1,11 +1,11 @@
 <div align="center">
 
-# 🎮 PokeAPIApp v2.0.0 - PROJETO COMPLETO
+# 🎮 PokeAPIApp v2.0.0 - PROJETO FUNCIONAL
 ### Pokédex Responsiva Completa
 
 [![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)](https://github.com/davidassef/PokeAPI)
-[![Status](https://img.shields.io/badge/Status-COMPLETO-brightgreen.svg)](https://github.com/davidassef/PokeAPI)
-[![Maintenance](https://img.shields.io/badge/Maintenance-Ativo-yellow.svg)](https://github.com/davidassef/PokeAPI)
+[![Status](https://img.shields.io/badge/Status-100%25%20FUNCIONAL-brightgreen.svg)](https://github.com/davidassef/PokeAPI)
+[![Development](https://img.shields.io/badge/Development-ATIVO-green.svg)](https://github.com/davidassef/PokeAPI)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-17.x-red.svg)](https://angular.io/)
@@ -55,19 +55,20 @@
 
 <div align="center">
 
-### 🎉 **PROJETO 100% COMPLETO**
+### 🎉 **PROJETO 100% FUNCIONAL**
 
-**Data de Conclusão:** Janeiro 2025
+**Meta Inicial Cumprida:** Janeiro 2025
 
-Este projeto atingiu seu estado final de desenvolvimento com todas as funcionalidades planejadas implementadas, testadas e em produção.
+Este projeto atingiu 100% de suas funcionalidades planejadas iniciais, estando completamente funcional e em produção. O desenvolvimento continua ativo para expansões e melhorias.
 
-#### 🔧 Modo de Manutenção Ativo
-- ✅ Correções de bugs críticos
+#### � Desenvolvimento Ativo
+- ✅ Correções de bugs e melhorias
 - ✅ Otimizações de performance
 - ✅ Atualizações de segurança
-- ❌ Novas funcionalidades (desenvolvimento encerrado)
+- ✅ Novas funcionalidades bem-vindas
+- ✅ Contribuições da comunidade aceitas
 
-#### 📈 Estatísticas Finais
+#### 📈 Estatísticas Atuais
 - **25+ Funcionalidades** implementadas
 - **100% Responsivo** (Mobile + Desktop)
 - **Testes E2E** automatizados
@@ -550,28 +551,27 @@ Este projeto é desenvolvido de forma independente e não possui afiliação ofi
 
 ---
 
-## 🔧 Modo de Manutenção
+## � Desenvolvimento Ativo
 
-### 📋 **Política de Manutenção**
+### 📋 **Política de Desenvolvimento**
 
-Este projeto está oficialmente **COMPLETO** e em modo de manutenção. As seguintes atividades são realizadas:
+Este projeto está **100% FUNCIONAL** com desenvolvimento ativo. Todas as funcionalidades iniciais foram implementadas com sucesso, mas o projeto permanece aberto para expansões e melhorias.
 
-#### ✅ **Atividades Mantidas**
-- 🐛 **Correção de Bugs Críticos** - Problemas que afetam funcionalidade core
-- ⚡ **Otimizações de Performance** - Melhorias de velocidade e responsividade
-- 🔒 **Atualizações de Segurança** - Patches de segurança e dependências
-- 📚 **Manutenção de Documentação** - Correções e atualizações necessárias
-
-#### ❌ **Atividades Descontinuadas**
-- 🚀 **Novas Funcionalidades** - Desenvolvimento de features encerrado
-- 🎨 **Redesigns Visuais** - Interface considerada finalizada
-- 🔄 **Refatorações Maiores** - Arquitetura estável e consolidada
+#### ✅ **Atividades Ativas**
+- 🐛 **Correção de Bugs** - Resolução rápida de problemas reportados
+- ⚡ **Otimizações de Performance** - Melhorias contínuas de velocidade e responsividade
+- 🔒 **Atualizações de Segurança** - Patches de segurança e dependências sempre atualizadas
+- 🚀 **Novas Funcionalidades** - Desenvolvimento de features adicionais bem-vindas
+- 🎨 **Melhorias de UI/UX** - Refinamentos visuais e de experiência do usuário
+- 🔄 **Refatorações** - Melhorias arquiteturais quando necessárias
+- 📚 **Documentação** - Manutenção e expansão da documentação
 
 ### 📞 **Suporte e Contribuições**
 
 - **🐛 Reportar Bugs:** [Issues do GitHub](https://github.com/davidassef/PokeAPI/issues)
-- **💡 Sugestões:** Bem-vindas, mas implementação não garantida
-- **🤝 Pull Requests:** Aceitos apenas para correções de bugs
+- **💡 Sugestões de Features:** Bem-vindas e consideradas para implementação
+- **🤝 Pull Requests:** Aceitos para correções, melhorias e novas funcionalidades
+- **🌟 Contribuições:** Comunidade encorajada a participar do desenvolvimento
 
 ---
 
