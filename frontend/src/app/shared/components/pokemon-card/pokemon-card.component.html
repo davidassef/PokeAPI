@@ -1,12 +1,14 @@
+<!-- Badge de favoritos posicionado como overlay externo -->
+<span *ngIf="favoriteCount !== undefined" class="capture-count-badge">
+  <ion-icon name="heart" color="danger"></ion-icon>
+  {{ favoriteCount }}
+</span>
+
 <div class="pokemon-card"
      [style.animation-delay]="animationDelay + 'ms'"
      (click)="onCardClick($event)">
 
-  <!-- Badges de ranking -->
-  <span *ngIf="favoriteCount !== undefined" class="capture-count-badge">
-    <ion-icon name="heart" color="danger"></ion-icon>
-    {{ favoriteCount }}
-  </span>
+  <!-- Badge de ranking customizado -->
   <div *ngIf="customBadge !== undefined" class="grid-badge" [title]="customBadge + 'º Lugar'">
     <span>{{ customBadge }}</span>
   </div>

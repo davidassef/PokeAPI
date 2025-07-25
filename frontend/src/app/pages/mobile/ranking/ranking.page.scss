@@ -148,161 +148,216 @@ ion-content {
     }
   }
 
-  // Ajustes da lista de ranking para telas pequenas
-  .ranking-list-mobile {
-    min-height: 440px; // Altura ajustada para nova estrutura
-  }
-
-  .podium-first-container {
-    width: 140px; // Largura reduzida para telas pequenas
+  // Ajustes dos containers individuais para telas pequenas
+  .first-container-mobile,
+  .second-container-mobile,
+  .third-container-mobile {
+    padding: 15px 8px; // Padding reduzido para telas pequenas
+    margin-top: 20px; // Espaçamento reduzido
+    margin-bottom: 20px;
 
     .podium-card {
-      min-height: 180px !important; // Altura igual aos cards normais em telas pequenas
-      width: 100% !important;
-      max-width: none !important;
-      transform: none !important;
+      max-width: 140px; // Largura máxima proporcional para telas pequenas
+      min-height: 180px; // Altura igual aos cards normais em telas pequenas
 
       app-pokemon-card {
-        min-height: 180px !important;
-        width: 100% !important;
-        max-width: none !important;
-        transform: none !important;
+        min-height: 180px;
+        width: 100%;
       }
+    }
+
+    // Ajustes dos elementos decorativos para telas pequenas
+    .first-container-mobile .podium-crown {
+      font-size: 1.8rem; // Tamanho reduzido para telas pequenas
+      top: -12px;
+    }
+
+    .second-container-mobile .podium-medal,
+    .third-container-mobile .podium-medal {
+      font-size: 1.6rem; // Tamanho reduzido para telas pequenas
+      top: -12px;
+    }
+
+    // Ajuste do posicionamento para cards menores (180px em telas pequenas)
+    .second-container-mobile .podium-medal {
+      left: calc(20px + 90px); // padding (20px) + metade da largura do card pequeno (180px/2 = 90px)
+    }
+
+    .third-container-mobile .podium-medal {
+      right: calc(20px + 90px); // padding (20px) + metade da largura do card pequeno (180px/2 = 90px)
     }
   }
 
-  .podium-second-container {
-    top: 180px; // Ajustado para nova estrutura compacta
-    left: 8px;
-    width: 140px; // Largura reduzida para telas pequenas
+  .first-container-mobile {
+    margin-top: 25px; // Espaçamento específico do header para telas pequenas
+    justify-content: center; // Mantém centralizado em telas pequenas
 
-    .podium-card {
-      min-height: 180px !important; // Altura igual aos cards normais em telas pequenas
-      width: 100% !important;
-      max-width: none !important;
-      transform: none !important;
-
-      app-pokemon-card {
-        min-height: 180px !important;
-        width: 100% !important;
-        max-width: none !important;
-        transform: none !important;
-      }
+    .champion-banner {
+      font-size: 0.65rem;
+      padding: 3px 10px;
+      top: 20px; // Ajustado para telas pequenas (coroa está em top: -12px)
+      border-radius: 14px;
     }
   }
 
-  .podium-third-container {
-    top: 180px; // Mesma altura do 2º lugar
-    right: 8px;
-    width: 140px; // Largura reduzida para telas pequenas
+  .second-container-mobile {
+    justify-content: flex-start; // Mantém à esquerda em telas pequenas
+  }
 
-    .podium-card {
-      min-height: 180px !important; // Altura igual aos cards normais em telas pequenas
-      width: 100% !important;
-      max-width: none !important;
-      transform: none !important;
-
-      app-pokemon-card {
-        min-height: 180px !important;
-        width: 100% !important;
-        max-width: none !important;
-        transform: none !important;
-      }
-    }
+  .third-container-mobile {
+    justify-content: flex-end; // Mantém à direita em telas pequenas
   }
 }
 
-// ===== PÓDIO MOBILE OTIMIZADO =====
+// ===== CONTAINERS INDIVIDUAIS PARA CADA POSIÇÃO DO PÓDIO =====
 
-// Container da lista de ranking mobile - agora apenas um wrapper simples
-.ranking-list-mobile {
+// Container individual para 1º lugar - centralizado
+.first-container-mobile {
   position: relative;
   width: 100%;
-  // Altura mínima para acomodar os containers independentes do pódium
-  min-height: 400px; // Reduzido para diminuir espaço vazio
+  padding: 20px 12px; // Padding interno para espaçamento
+  margin-top: 30px; // Maior espaçamento do header
+  margin-bottom: 30px; // Espaçamento do próximo container
+  display: flex;
+  justify-content: center; // 1º lugar mantém centralizado
+  align-items: center;
+}
+
+// Container individual para 2º lugar - posicionado à esquerda
+.second-container-mobile {
+  position: relative;
+  width: 100%;
+  padding: 20px 12px; // Padding interno para espaçamento
+  margin-bottom: 30px; // Espaçamento do próximo container
+  display: flex;
+  justify-content: flex-start; // 2º lugar posicionado à esquerda
+  align-items: center;
+}
+
+// Container individual para 3º lugar - posicionado à direita
+.third-container-mobile {
+  position: relative;
+  width: 100%;
+  padding: 20px 12px; // Padding interno para espaçamento
+  margin-bottom: 30px; // Espaçamento do grid 2x2
+  display: flex;
+  justify-content: flex-end; // 3º lugar posicionado à direita
+  align-items: center;
+}
+
+// Container do grid 2x2 - separado dos containers individuais
+.ranking-grid-container-mobile {
+  width: 100%;
+  margin-top: 0; // Remove espaçamento superior desnecessário
   margin-bottom: 20px;
-
-  // Remove altura mínima quando não há dados para evitar espaço vazio
-  &.no-data {
-    min-height: 0;
-  }
 }
 
-// ✅ CONTAINERS INDEPENDENTES PARA CADA POSIÇÃO DO PÓDIO
+// ✅ ESTILOS PARA OS CARDS DO PÓDIO NOS CONTAINERS INDIVIDUAIS
 
-// 1º lugar - Container independente centralizado no topo
-.podium-first-container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 160px; // Largura fixa similar aos cards normais
-  z-index: 10;
-  transition: all 0.3s ease;
+// Estilos comuns para todos os cards do pódio
+.first-container-mobile,
+.second-container-mobile,
+.third-container-mobile {
 
-  // Card do campeão mantém tamanho padrão dos cards normais
+  // Card do pódio com tamanho específico solicitado
   .podium-card {
-    width: 100%;
-    min-height: 200px; // Exatamente igual aos cards normais
-    max-width: none; // Remove limitação de largura máxima
+    width: 210px; // Largura fixa conforme solicitado
+    height: 342px; // Altura fixa conforme solicitado
+    max-width: 210px; // Garante que não ultrapasse o tamanho definido
+    min-height: 342px; // Garante altura mínima
+    position: relative; // Para posicionamento dos elementos decorativos
+    margin: 0; // Remove margin auto pois agora usamos justify-content nos containers
+    overflow: visible; // Permite que elementos decorativos saiam do card
+  }
+
+  // ✅ Elementos decorativos removidos do escopo comum
+  // Serão posicionados individualmente em cada container
+}
+
+// ✅ Estilos específicos para cada container do pódio
+
+// Container do 1º lugar - centralizado
+.first-container-mobile {
+  // Coroa centralizada sobre o card
+  .podium-crown {
+    position: absolute;
+    top: -15px;
+    left: 50%; // Centralizada no container (que já centraliza o card)
+    transform: translateX(-50%);
+    font-size: 2rem;
+    z-index: 15;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    animation: crownGlow 2s ease-in-out infinite alternate;
+  }
+
+  // Banner "Campeão!" posicionado como overlay externo
+  .champion-banner {
+    position: absolute;
+    top: 25px; // Posicionado abaixo da coroa (que está em top: -15px)
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #333;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    z-index: 14; // Menor que a coroa para ficar atrás
+    white-space: nowrap;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    display: block;
+    visibility: visible;
+    pointer-events: none; // Não interfere com cliques no card
   }
 }
 
-// 2º lugar - Container independente à esquerda
-.podium-second-container {
-  position: absolute;
-  top: 200px; // Reduzido para diminuir espaço vazio
-  left: 15px; // Espaçamento adequado da borda
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 160px; // Largura fixa similar aos cards normais
-  z-index: 8;
-  transition: all 0.3s ease;
-
-  // Card do 2º lugar mantém tamanho padrão dos cards normais
-  .podium-card {
-    width: 100%;
-    min-height: 200px; // Exatamente igual aos cards normais
-    max-width: none; // Remove limitação de largura máxima
+// Container do 2º lugar - card à esquerda
+.second-container-mobile {
+  // Medalha posicionada sobre o card (que está à esquerda)
+  .podium-medal {
+    position: absolute;
+    top: -15px;
+    left: calc(15px + 105px); // padding (15px) + metade da largura do card (210px/2 = 105px)
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    z-index: 15;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    animation: float 2s ease-in-out infinite alternate;
   }
 }
 
-// 3º lugar - Container independente à direita
-.podium-third-container {
-  position: absolute;
-  top: 200px; // Reduzido para manter simetria com 2º lugar
-  right: 15px; // Espaçamento adequado da borda
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 160px; // Largura fixa similar aos cards normais
-  z-index: 6;
-  transition: all 0.3s ease;
-
-  // Card do 3º lugar mantém tamanho padrão dos cards normais
-  .podium-card {
-    width: 100%;
-    min-height: 200px; // Exatamente igual aos cards normais
-    max-width: none; // Remove limitação de largura máxima
+// Container do 3º lugar - card à direita
+.third-container-mobile {
+  // Medalha posicionada sobre o card (que está à direita)
+  .podium-medal {
+    position: absolute;
+    top: -15px;
+    right: calc(-30px + 105px); // padding (20px) + metade da largura do card (210px/2 = 105px)
+    transform: translateX(50%);
+    font-size: 1.8rem;
+    z-index: 15;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    animation: float 2s ease-in-out infinite alternate;
   }
 }
 
-// ✅ GARANTIA DE TAMANHO PADRÃO PARA CARDS DO PÓDIUM
+// ✅ ESTILOS BASE PARA CARDS DO PÓDIUM
 .podium-card {
   position: relative;
   border-radius: 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
 
-  // FORÇA o mesmo tamanho dos cards normais do ranking
-  width: 100% !important;
-  min-height: 200px !important;
-  max-width: none !important;
-  transform: none !important; // Remove qualquer transform que possa reduzir o tamanho
+  // Tamanho específico dos cards do pódio
+  width: 210px;
+  height: 342px;
+  max-width: 210px;
+  min-height: 342px;
 
   // Efeito de hover sutil (sem scale para manter consistência)
   &:hover {
@@ -315,12 +370,21 @@ ion-content {
     transition: transform 0.1s ease;
   }
 
-  // Garante que o componente pokemon-card interno também mantenha o tamanho
-  app-pokemon-card {
-    width: 100% !important;
-    min-height: 200px !important;
-    max-width: none !important;
-    transform: none !important;
+  // Garante que o componente pokemon-card interno mantenha o tamanho específico
+  &.podium-card {
+    width: 210px !important;
+    height: 342px !important;
+    max-width: 210px !important;
+    min-height: 342px !important;
+
+    // Força o tamanho no elemento interno do pokemon-card
+    .pokemon-card {
+      width: 210px !important;
+      height: 342px !important;
+      max-width: 210px !important;
+      min-height: 342px !important;
+      margin: 0 !important; // Remove margens para controle total do tamanho
+    }
   }
 }
 
@@ -435,61 +499,29 @@ ion-content {
   100% { opacity: 0.6; }
 }
 
-// ✅ NOVO: Estilos para elementos do pódio (medalhas, coroa, badges)
+// ✅ Estilos para elementos do pódio removidos
+// Medalhas, coroa e banner agora são renderizados internamente pelo pokemon-card
 
-// Medalhas e coroa - posicionadas acima do card
-.podium-medal,
-.podium-crown {
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.8rem;
-  z-index: 10;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  animation: float 2s ease-in-out infinite alternate;
+// Badge de contagem de capturas removido - agora é controlado pelo pokemon-card component
+
+// ===== ANIMAÇÕES PARA ELEMENTOS DECORATIVOS =====
+
+@keyframes crownGlow {
+  0% {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+  }
+  100% {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 16px rgba(255, 215, 0, 0.8));
+  }
 }
 
-.podium-crown {
-  font-size: 2rem;
-  animation: crownGlow 2s ease-in-out infinite alternate;
-}
-
-// Badge de contagem de capturas - posicionado acima do card
-.capture-count-badge {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--ion-color-danger);
-  background: rgba(255, 255, 255, 0.95);
-  padding: 4px 8px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-}
-
-// Banner de campeão - posicionado abaixo do card
-.champion-banner {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
-  color: #333;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
-  z-index: 10;
-  animation: championBannerGlow 2s ease-in-out infinite alternate;
+@keyframes float {
+  0% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  100% {
+    transform: translateX(-50%) translateY(-3px);
+  }
 }
 
 // Animações
@@ -525,27 +557,51 @@ ion-content {
     margin: 4px 2px;
   }
 
-  .podium-medal,
-  .podium-crown {
-    font-size: 1.4rem;
+  // Ajustes específicos para cada container em telas muito pequenas
+  .first-container-mobile {
+    .podium-crown {
+      font-size: 1.4rem;
+      top: -12px;
+    }
+
+    .champion-banner {
+      font-size: 0.6rem;
+      padding: 3px 10px;
+      top: 18px; // Posicionado abaixo da coroa para telas pequenas
+    }
+  }
+
+  .second-container-mobile .podium-medal,
+  .third-container-mobile .podium-medal {
+    font-size: 1.2rem;
     top: -12px;
   }
 
-  .capture-count-badge {
-    font-size: 0.65rem;
-    padding: 2px 6px;
-    top: -8px;
-    right: -8px;
+  // Posicionamento para cards ainda menores em telas muito pequenas (180px)
+  .second-container-mobile .podium-medal {
+    left: calc(20px + 90px); // Mantém o mesmo cálculo para 180px
   }
 
-  .champion-banner {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-    bottom: -16px;
+  .third-container-mobile .podium-medal {
+    right: calc(20px + 90px); // Mantém o mesmo cálculo para 180px
   }
 
   .podium-card {
+    width: 180px !important;
+    height: 290px !important;
+    max-width: 180px !important;
+    min-height: 290px !important;
     border-width: 2px;
+
+    &.podium-card {
+      .pokemon-card {
+        width: 180px !important;
+        height: 290px !important;
+        max-width: 180px !important;
+        min-height: 290px !important;
+        margin: 0 !important;
+      }
+    }
 
     &::before {
       top: -2px;
@@ -639,13 +695,13 @@ ion-content {
 
 // ===== GRID 2x2 DOS DEMAIS RANKINGS MOBILE =====
 
-// Grid 2x2 para rankings 4º em diante - posicionado após containers independentes do pódium
+// Grid 2x2 para rankings 4º ao 25º lugar - agora em container separado
 .mobile-ranking-grid-horizontal {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 0 12px;
-  margin-top: 400px; // Reduzido para acompanhar a redução do min-height
+  margin-top: 0; // Remove margin-top pois agora está em container separado
   max-width: 100%;
 }
 
@@ -676,22 +732,30 @@ ion-content {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.9);
 
-  // Cores baseadas na posição
+  // Cores baseadas na posição - expandido para top 25
   &.rank-4, &.rank-5 {
-    background: linear-gradient(145deg, #9c27b0, #7b1fa2);
+    background: linear-gradient(145deg, #9c27b0, #7b1fa2); // Roxo
   }
 
   &.rank-6, &.rank-7, &.rank-8 {
-    background: linear-gradient(145deg, #2196f3, #1976d2);
+    background: linear-gradient(145deg, #2196f3, #1976d2); // Azul
   }
 
-  &.rank-9, &.rank-10 {
-    background: linear-gradient(145deg, #4caf50, #388e3c);
+  &.rank-9, &.rank-10, &.rank-11, &.rank-12 {
+    background: linear-gradient(145deg, #4caf50, #388e3c); // Verde
   }
 
-  // Padrão para posições maiores
-  &:not(.rank-4):not(.rank-5):not(.rank-6):not(.rank-7):not(.rank-8):not(.rank-9):not(.rank-10) {
-    background: linear-gradient(145deg, #757575, #424242);
+  &.rank-13, &.rank-14, &.rank-15, &.rank-16, &.rank-17, &.rank-18 {
+    background: linear-gradient(145deg, #ff9800, #f57c00); // Laranja
+  }
+
+  &.rank-19, &.rank-20, &.rank-21, &.rank-22, &.rank-23, &.rank-24, &.rank-25 {
+    background: linear-gradient(145deg, #795548, #5d4037); // Marrom
+  }
+
+  // Padrão para posições maiores que 25
+  &.rank-default {
+    background: linear-gradient(145deg, #757575, #424242); // Cinza
   }
 }
 
@@ -732,7 +796,7 @@ ion-content {
   .mobile-ranking-grid-horizontal {
     gap: 8px;
     padding: 0 8px;
-    margin-top: 360px; // Ajustado para nova estrutura compacta
+    margin-top: 0; // Remove margin-top pois agora está em container separado
   }
 
   .ranking-item-horizontal {

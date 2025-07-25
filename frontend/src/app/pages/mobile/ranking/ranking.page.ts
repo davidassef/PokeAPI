@@ -342,7 +342,7 @@ export class RankingPage implements OnInit, OnDestroy {
 
         backendRanking = await this.retryWithBackoff(async () => {
           const data = await firstValueFrom(
-            this.pokeApiService.getGlobalRankingFromBackend(15, forceRefresh).pipe(timeout(30000))
+            this.pokeApiService.getGlobalRankingFromBackend(25, forceRefresh).pipe(timeout(30000))
           );
 
           // ✅ CORREÇÃO: Atualiza cache local apenas para otimização (TTL curto)
@@ -764,12 +764,14 @@ export class RankingPage implements OnInit, OnDestroy {
     console.log(`[MOBILE-RANKING] Processo de ${action} concluído para o Pokémon ${pokemon.name}`);
   }
 
-  // Classe CSS para badge de ranking - atualizado para as novas classes
+  // Classe CSS para badge de ranking - expandido para top 25
   getRankingBadgeClass(rank: number): string {
     if (rank === 4 || rank === 5) return 'rank-4';
     if (rank >= 6 && rank <= 8) return 'rank-6';
-    if (rank === 9 || rank === 10) return 'rank-9';
-    return 'rank-default'; // Para posições maiores que 10
+    if (rank >= 9 && rank <= 12) return 'rank-9';
+    if (rank >= 13 && rank <= 18) return 'rank-13';
+    if (rank >= 19 && rank <= 25) return 'rank-19';
+    return 'rank-default'; // Para posições maiores que 25
   }
 
   // Métodos de autenticação
