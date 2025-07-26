@@ -137,7 +137,7 @@ origins = [
     "http://127.0.0.1:8100",  # Ionic (alternativo)
     "http://localhost:5173",   # Vite/React
     # ✅ CORREÇÃO CRÍTICA: Adicionar domínio da Vercel
-    "https://poke-dexqogvyl-david-assefs-projects.vercel.app",  # Frontend Vercel
+    "https://poke-api-mauve.vercel.app",  # Frontend Vercel
     "https://your-production-domain.com",  # Placeholder para outros domínios
 ]
 
