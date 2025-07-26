@@ -78,6 +78,19 @@ export class AuthInterceptor implements HttpInterceptor {
         }
       }),
       catchError((error: HttpErrorResponse) => {
+        // ✅ CORREÇÃO CRÍTICA: Tratamento específico para erro 405 (CORS preflight)
+        if (error.status === 405 && request.method === 'POST' && request.url.includes('/api/v1/favorites/')) {
+          this.logger.warn('auth', `Erro 405 detectado - possível problema de CORS preflight. URL: ${request.url}`);
+
+          // Log detalhado para debug
+          console.warn('[AuthInterceptor] Erro 405 - Method Not Allowed detectado');
+          console.warn('[AuthInterceptor] Isso indica problema de CORS preflight no backend');
+          console.warn('[AuthInterceptor] Aguardando correção no backend ou redeploy');
+
+          // Retornar erro original para que o usuário veja a mensagem
+          return throwError(() => error);
+        }
+
         // ✅ OTIMIZAÇÃO: Logs de erro mantidos mas organizados
         this.logger.error('auth', `Erro na requisição ${request.method} ${request.url}`, {
           status: error.status,
