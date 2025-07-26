@@ -182,6 +182,50 @@ try:
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
     Base.metadata.create_all(bind=engine)
 
+    # Criar usuários de teste em produção
+    try:
+        from app.services.auth_service import auth_service
+        from app.schemas.auth_schemas import UserCreate
+        from app.core.database import SessionLocal
+
+        db = SessionLocal()
+
+        # Usuários de teste para demonstração
+        test_users = [
+            {
+                "name": "Usuário Teste Principal",
+                "email": "teste@teste.com",
+                "password": "Teste123",
+                "security_question": "Qual é o seu Pokémon favorito?",
+                "security_answer": "pikachu"
+            },
+            {
+                "name": "Usuário Teste Secundário",
+                "email": "teste2@teste.com",
+                "password": "Teste123",
+                "security_question": "Qual é o seu Pokémon favorito?",
+                "security_answer": "charizard"
+            }
+        ]
+
+        for user_info in test_users:
+            existing_user = auth_service.get_user_by_email(db, user_info['email'])
+            if not existing_user:
+                user_data = UserCreate(
+                    name=user_info['name'],
+                    email=user_info['email'],
+                    password=user_info['password'],
+                    security_question=user_info['security_question'],
+                    security_answer=user_info['security_answer']
+                )
+                auth_service.create_user(db, user_data)
+                print(f"✅ Usuário de teste criado: {user_info['email']}")
+
+        db.close()
+    except Exception as e:
+        print(f"⚠️ Erro ao criar usuários de teste: {e}")
+        # Não falhar a aplicação por causa dos usuários de teste
+
     # Incluir rotas
     app.include_router(auth.router, prefix="/api/v1/auth")
     app.include_router(favorites.router, prefix="/api/v1")
