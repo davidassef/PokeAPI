@@ -4,17 +4,7 @@
   "buildCommand": "cd frontend && npm run build:vercel",
   "outputDirectory": "frontend/www",
   "installCommand": "cd frontend && npm install",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./frontend/",
   "public": true,
-  "github": {
-    "enabled": true,
-    "autoAlias": false
-  },
-  "git": {
-    "deploymentEnabled": {
-      "main": true
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
@@ -32,18 +22,6 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
         }
       ]
     },
@@ -57,8 +35,5 @@
       ]
     }
   ],
-  "framework": "angular",
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "framework": "angular"
 }

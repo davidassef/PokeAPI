@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "name": "pokeapiapp-frontend",
+  "buildCommand": "cd frontend && npm run build:vercel",
+  "outputDirectory": "frontend/www",
+  "installCommand": "cd frontend && npm install",
+  "public": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
