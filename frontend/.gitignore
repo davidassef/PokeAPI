@@ -81,3 +81,8 @@ debug-*.html
 # Cache adicional
 .cache/
 .parcel-cache/
+
+# Test files que não devem estar no build de produção
+src/test-setup.ts
+src/test-setup/
+src/**/*test-setup*
