@@ -13,6 +13,13 @@ from app.services.favorite_service import FavoriteService
 router = APIRouter(prefix="/favorites", tags=["favorites"])
 
 
+# ✅ CORREÇÃO CRÍTICA: Handler explícito para OPTIONS (CORS preflight)
+@router.options("/")
+async def favorites_options():
+    """Handler para requisições OPTIONS (CORS preflight) no endpoint de favoritos."""
+    return {"message": "CORS preflight OK"}
+
+
 @router.post("/", response_model=FavoritePokemon,
              status_code=status.HTTP_201_CREATED)
 def add_favorite(favorite: FavoritePokemonCreate,
@@ -22,6 +29,12 @@ def add_favorite(favorite: FavoritePokemonCreate,
     # Usar o ID do usuário autenticado
     favorite.user_id = current_user.id
     return FavoriteService.add_favorite(db, favorite)
+
+
+@router.options("/clear-all")
+async def clear_all_favorites_options():
+    """Handler para requisições OPTIONS no endpoint clear-all."""
+    return {"message": "CORS preflight OK"}
 
 
 @router.delete("/clear-all", response_model=Message)
