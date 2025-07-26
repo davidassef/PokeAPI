@@ -182,13 +182,25 @@ try:
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
     Base.metadata.create_all(bind=engine)
 
-    # Criar usuários de teste em produção
+    # CORREÇÃO CRÍTICA: Garantir persistência de usuários de teste
     try:
         from app.services.auth_service import auth_service
         from app.schemas.auth_schemas import UserCreate
         from app.core.database import SessionLocal
+        from app.core.config import Settings
+
+        settings = Settings()
+        print(f"🔍 Database URL: {settings.database_url}")
+
+        # Verificar se é SQLite (temporário)
+        if "sqlite" in settings.database_url:
+            print("⚠️  AVISO: Usando SQLite - dados podem ser perdidos!")
 
         db = SessionLocal()
+
+        # Verificar usuários existentes
+        existing_users = db.query(User).all()
+        print(f"👥 Usuários existentes no banco: {len(existing_users)}")
 
         # Usuários de teste para demonstração
         test_users = [
@@ -218,12 +230,20 @@ try:
                     security_question=user_info['security_question'],
                     security_answer=user_info['security_answer']
                 )
-                auth_service.create_user(db, user_data)
-                print(f"✅ Usuário de teste criado: {user_info['email']}")
+                new_user = auth_service.create_user(db, user_data)
+                print(f"✅ Usuário de teste criado: {user_info['email']} (ID: {new_user.id})")
+            else:
+                print(f"✅ Usuário já existe: {user_info['email']} (ID: {existing_user.id})")
+
+        # Verificar novamente após criação
+        final_users = db.query(User).all()
+        print(f"👥 Total de usuários após inicialização: {len(final_users)}")
 
         db.close()
     except Exception as e:
-        print(f"⚠️ Erro ao criar usuários de teste: {e}")
+        print(f"❌ ERRO CRÍTICO ao criar usuários de teste: {e}")
+        import traceback
+        traceback.print_exc()
         # Não falhar a aplicação por causa dos usuários de teste
 
     # Incluir rotas

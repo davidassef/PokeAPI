@@ -14,8 +14,11 @@ class Settings(BaseSettings):
     app_version: str = "1.5"
     debug: bool = True
 
-    # Database
-    database_url: str = "sqlite:///./pokemon_app.db"
+    # Database - CORREÇÃO CRÍTICA: PostgreSQL persistente
+    database_url: str = Field(
+        default="sqlite:///./pokemon_app.db",
+        env="DATABASE_URL"
+    )
 
     # CORS
     cors_origins: list[str] = [
