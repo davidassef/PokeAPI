@@ -49,6 +49,9 @@
   "public": true,
   "framework": "angular",
   "installCommand": "npm install",
-  "buildCommand": "npm run build",
-  "outputDirectory": "www"
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "www",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
