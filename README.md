@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎮 PokeAPIApp v1.5.0 - PROJETO FUNCIONAL
+# 🎮 PokeAPIApp v1.5.4 - PROJETO FUNCIONAL
 ### Pokédex Responsiva Completa
 
 [![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)](https://github.com/davidassef/PokeAPI)
@@ -26,9 +26,9 @@
 
 <div align="center">
 
-### 🌐 **[ACESSAR APLICAÇÃO EM PRODUÇÃO](https://poke-dexqogvyl-david-assefs-projects.vercel.app)**
+### 🌐 **[ACESSAR APLICAÇÃO EM PRODUÇÃO](https://pokeapi-frontend.vercel.app)**
 
-[![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://poke-dexqogvyl-david-assefs-projects.vercel.app)
+[![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://pokeapi-frontend.vercel.app)
 [![Backend Status](https://img.shields.io/badge/Backend-Online-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
 
 ### 🔑 Credenciais de Teste
@@ -214,7 +214,7 @@ python -m uvicorn main:app --reload
 ```bash
 cd frontend
 npm install
-ng serve
+ionic serve
 ```
 
 <div align="center">
@@ -290,7 +290,7 @@ DATABASE_URL=sqlite:///./pokemon_app.db
 SECRET_KEY=your-secret-key
 JWT_SECRET_KEY=your-jwt-secret
 ACCESS_TOKEN_EXPIRE_MINUTES=30
-CORS_ORIGINS=http://localhost:4200
+CORS_ORIGINS=http://localhost:8100
 ```
 
 ### **Configuração de Proxy (Frontend)**
@@ -448,7 +448,14 @@ pytest tests/test_auth.py -v
 <details>
 <summary><strong>🗓️ Histórico de Versões</strong></summary>
 
-### **v1.5.2** (Atual)
+### **v1.5.4** (Atual)
+- ✅ URL de produção do frontend atualizado para novo domínio Vercel
+- ✅ Correção de portas localhost (4200 → 8100) para desenvolvimento
+- ✅ Comando de desenvolvimento atualizado (ng serve → ionic serve)
+- ✅ Correção de problemas de build no deploy (test-setup.ts removido)
+- ✅ Configurações de CORS atualizadas para porta correta
+
+### **v1.5.2**
 - ✅ Sistema de pódio mobile com bordas decorativas implementado
 - ✅ Bordas coloridas tradicionais: ouro (1º), prata (2º), bronze (3º)
 - ✅ Animações de brilho específicas para cada posição

@@ -438,8 +438,8 @@ ngOnChanges(changes: SimpleChanges) {
 #### **5.1 Diagnóstico Sistemático**
 1. **Teste Manual Básico**
    ```bash
-   ng serve --port 4200
-   # Abrir http://localhost:4200
+   ionic serve --port 8100
+   # Abrir http://localhost:8100
    # Clicar em um Pokemon
    # Verificar se modal abre
    # Verificar console para erros

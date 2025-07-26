@@ -35,7 +35,7 @@ JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
 
 # CORS
-CORS_ORIGINS=["http://localhost:4200", "https://yourdomain.com"]
+CORS_ORIGINS=["http://localhost:8100", "https://yourdomain.com"]
 
 # External APIs
 POKEAPI_BASE_URL=https://pokeapi.co/api/v2

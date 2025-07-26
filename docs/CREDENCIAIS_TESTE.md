@@ -84,8 +84,8 @@ Este documento contém as credenciais de teste disponíveis para a aplicação P
 ## 🌐 **ACESSO À APLICAÇÃO**
 
 ### **🚀 Produção**
-- **URL**: https://poke-dexqogvyl-david-assefs-projects.vercel.app
-- **Status**: [![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://poke-dexqogvyl-david-assefs-projects.vercel.app)
+- **URL**: https://pokeapi-frontend.vercel.app
+- **Status**: [![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://pokeapi-frontend.vercel.app)
 
 ### **💻 Desenvolvimento Local**
 - **Frontend**: http://localhost:8100
@@ -115,7 +115,7 @@ const TEST_USERS = {
     password: 'Teste123'
   },
   secondary: {
-    email: 'teste2@teste.com', 
+    email: 'teste2@teste.com',
     password: 'Teste123'
   }
 };
