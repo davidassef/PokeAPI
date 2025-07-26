@@ -28,7 +28,7 @@
 
 ### 🌐 **[ACESSAR APLICAÇÃO EM PRODUÇÃO](https://pokeapi-frontend.vercel.app)**
 
-[![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://pokeapi-frontend.vercel.app)
+[![Frontend Status](https://img.shields.io/badge/Frontend-Online-brightgreen.svg)](https://poke-api-mauve.vercel.app/)
 [![Backend Status](https://img.shields.io/badge/Backend-Online-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
 
 ### 🔑 Credenciais de Teste
