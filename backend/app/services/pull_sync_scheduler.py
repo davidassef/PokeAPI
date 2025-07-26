@@ -63,8 +63,12 @@ class PullSyncScheduler:
 
     async def _sync_clients(self):
         """Sincroniza todos os clientes registrados."""
+        db = None
         try:
-            db = next(get_db())
+            # ✅ CORREÇÃO: Usar context manager para garantir fechamento da sessão
+            db_generator = get_db()
+            db = next(db_generator)
+
             result = await pull_service.sync_with_storage_system(db)
 
             if result.get('total_captures', 0) > 0:
@@ -75,6 +79,13 @@ class PullSyncScheduler:
 
         except Exception as e:
             logger.error(f"❌ Erro na sincronização de clientes: {e}")
+        finally:
+            # ✅ CORREÇÃO: Garantir que a sessão seja sempre fechada
+            if db:
+                try:
+                    db.close()
+                except Exception as close_error:
+                    logger.error(f"❌ Erro ao fechar sessão do banco: {close_error}")
 
     async def _cleanup_if_needed(self):
         """Executa cleanup se necessário."""
