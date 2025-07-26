@@ -3,6 +3,7 @@ Configurações principais do backend PokeAPI App.
 """
 import os
 import secrets
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 

@@ -261,7 +261,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
         label: 'modal.official_artwork'
       }];
       this.currentCarouselIndex = 0;
-      this.currentCarouselImage = this.carouselImages[0].url;
+      this.updateCurrentCarouselImage();
       return;
     }
 
@@ -336,9 +336,9 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
 
     console.log('📱 Imagens do carrossel mobile:', this.carouselImages.length, 'imagens');
 
-    // Definir imagem atual
+    // Definir imagem atual usando o método centralizado
     this.currentCarouselIndex = 0;
-    this.currentCarouselImage = this.carouselImages[0]?.url || '';
+    this.updateCurrentCarouselImage();
   }
 
   public isValidImageUrl(url: string): boolean {
@@ -691,19 +691,37 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     this.currentCarouselIndex =
       (this.currentCarouselIndex - 1 + this.carouselImages.length) %
       this.carouselImages.length;
+    this.updateCurrentCarouselImage();
   }
 
   public nextCarouselImage(): void {
     this.currentCarouselIndex =
       (this.currentCarouselIndex + 1) % this.carouselImages.length;
+    this.updateCurrentCarouselImage();
   }
 
   public selectCarouselImage(index: number): void {
     this.currentCarouselIndex = index;
+    this.updateCurrentCarouselImage();
   }
 
   public getImageTypeName(index: number): string {
     return this.translate.instant(this.carouselImages[index]?.label || '');
+  }
+
+  /**
+   * 🔧 CORREÇÃO CRÍTICA: Atualiza a imagem atual do carrossel
+   * Corrige o problema onde a imagem não mudava apesar do índice ser atualizado
+   */
+  private updateCurrentCarouselImage(): void {
+    if (this.carouselImages && this.carouselImages.length > 0) {
+      const imageUrl = this.carouselImages[this.currentCarouselIndex]?.url || '';
+      this.currentCarouselImage = this.isValidImageUrl(imageUrl)
+        ? imageUrl
+        : 'assets/img/pokemon-placeholder.png';
+
+      console.log(`🖼️ [MOBILE] Imagem atualizada: índice ${this.currentCarouselIndex}, URL: ${this.currentCarouselImage}`);
+    }
   }
 
   public onImageLoad(): void {}

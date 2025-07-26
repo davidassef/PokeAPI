@@ -175,7 +175,7 @@ app.add_middleware(
 # Imports tardios para evitar problemas de inicialização
 try:
     from app.core.database import engine
-    from app.models.models import Base
+    from app.models.models import Base, User
     from app.routes import favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth, pokemon_management
 
     # Criar tabelas vazias (sem dados iniciais)
