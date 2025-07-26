@@ -357,8 +357,13 @@ export class HomePage implements OnInit, OnDestroy {
   // Atualiza capturados sempre que a página Home for exibida
   ionViewWillEnter() {
     document.body.classList.add('home-page-active');
-    // Força sincronização completa com o backend
-    this.capturedService.forceSyncWithBackend().subscribe();
+    // ✅ CORREÇÃO CRÍTICA: Só sincronizar se usuário estiver autenticado
+    if (this.authService.isAuthenticated()) {
+      console.log('[HomePage] Usuário autenticado, forçando sincronização');
+      this.capturedService.forceSyncWithBackend().subscribe();
+    } else {
+      console.log('[HomePage] Usuário não autenticado, pulando sincronização');
+    }
   }
 
   ionViewWillLeave() {

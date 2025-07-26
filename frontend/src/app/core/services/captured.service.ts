@@ -298,6 +298,22 @@ export class CapturedService {
   /** Força uma sincronização completa com o backend */
   forceSyncWithBackend(): Observable<FavoritePokemon[]> {
     console.log('[CapturedService] Forçando sincronização completa com o backend');
+
+    // ✅ CORREÇÃO CRÍTICA: Verificar autenticação antes de sincronizar
+    if (!this.authService.isAuthenticated()) {
+      console.warn('[CapturedService] Usuário não autenticado, cancelando sincronização forçada');
+      // Retorna estado atual ou cache se disponível
+      const currentState = this.capturedSubject.value;
+      if (currentState.length > 0) {
+        return of(currentState);
+      }
+      if (this.cachedCaptured.length > 0) {
+        this.capturedSubject.next(this.cachedCaptured);
+        return of(this.cachedCaptured);
+      }
+      return of([]);
+    }
+
     // ✅ CORREÇÃO CRÍTICA: Não limpar estado local para evitar perda de dados
     // Apenas recarrega do backend e mescla com estado local
     return this.fetchCaptured();
