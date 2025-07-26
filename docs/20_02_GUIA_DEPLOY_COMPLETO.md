@@ -11,7 +11,7 @@ Este guia abrange estratégias de deploy para ambientes de desenvolvimento e pro
 
 ## 🔧 Pré-requisitos
 
-- **Docker** e Docker Compose
+
 - **Node.js** 18+ e **Python** 3.9+
 - **Git** para controle de versão
 - Conta em provedor de nuvem (opcional)
@@ -68,58 +68,14 @@ export const environment = {
 
 ## Local Development Setup
 
-### Using Docker Compose
-
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=sqlite:///./data/pokemon_app.db
-      - SECRET_KEY=dev-secret-key
-    volumes:
-      - ./backend:/app
-      - ./backend/data:/app/data
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "4200:4200"
-    environment:
-      - API_URL=http://localhost:8000
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: ng serve --host 0.0.0.0 --port 4200
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - frontend
-      - backend
-```
-
-### Quick Start Commands
+### Manual Setup
 
 ```bash
 # Clone and setup
 git clone https://github.com/davidassef/PokeAPI.git
-cd PokeAPIApp
+cd PokeAPI
 
-# Start with Docker Compose
-docker-compose up -d
-
-# Or start manually
+# Setup manually
 # Backend
 cd backend
 pip install -r requirements.txt
@@ -230,142 +186,7 @@ server {
 }
 ```
 
-### Option 2: Docker Deployment
-
-#### Backend Dockerfile
-
-```dockerfile
-# backend/Dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY . .
-
-# Create data directory
-RUN mkdir -p data logs
-
-# Run database migration
-RUN python scripts/migrate_rbac_schema.py
-
-# Expose port
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-# Start application
-CMD ["gunicorn", "main:app", "-c", "gunicorn.conf.py"]
-```
-
-#### Frontend Dockerfile
-
-```dockerfile
-# frontend/Dockerfile
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-
-# Install dependencies
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Copy source code
-COPY . .
-
-# Build application
-RUN npm run build --prod
-
-# Production stage
-FROM nginx:alpine
-
-# Copy built application
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Expose port
-EXPOSE 80
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
-
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-#### Production Docker Compose
-
-```yaml
-# docker-compose.prod.yml
-version: '3.8'
-
-services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    environment:
-      - DATABASE_URL=sqlite:///./data/pokemon_app.db
-      - SECRET_KEY=${SECRET_KEY}
-      - CORS_ORIGINS=["https://yourdomain.com"]
-    volumes:
-      - backend_data:/app/data
-      - backend_logs:/app/logs
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - backend
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - backend
-      - frontend
-    restart: unless-stopped
-
-volumes:
-  backend_data:
-  backend_logs:
-```
-
-### Option 3: Cloud Platform Deployment
+### Option 2: Cloud Platform Deployment
 
 #### Railway Deployment
 

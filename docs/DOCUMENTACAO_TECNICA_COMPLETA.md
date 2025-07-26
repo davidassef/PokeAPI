@@ -438,9 +438,6 @@ ng build --configuration=production
 
 # Backend
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
-
-# Docker (se configurado)
-docker-compose up -d
 ```
 
 ### **Otimizações de Performance**

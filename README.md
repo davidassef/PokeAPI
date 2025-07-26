@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎮 PokeAPIApp v2.0.0 - PROJETO FUNCIONAL
+# 🎮 PokeAPIApp v1.5.0 - PROJETO FUNCIONAL
 ### Pokédex Responsiva Completa
 
 [![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)](https://github.com/davidassef/PokeAPI)
@@ -296,19 +296,7 @@ CORS_ORIGINS=http://localhost:4200
 ### **Configuração de Proxy (Frontend)**
 O frontend usa `proxy.conf.json` para redirecionar chamadas da API durante o desenvolvimento.
 
-### **Docker (Alternativo)**
-```bash
-# Clone o repositório
-git clone https://github.com/davidassef/PokeAPI.git
-cd PokeAPI_SYNC
 
-# Inicie com Docker Compose
-docker-compose up -d
-
-# Acesse a aplicação
-# Frontend: http://localhost:4200
-# Backend: http://localhost:8000
-```
 
 </details>
 
