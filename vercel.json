@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "pokeapiapp-frontend",
-  "buildCommand": "cd frontend && npm run build",
+  "buildCommand": "cd frontend && npm run build:vercel",
   "outputDirectory": "frontend/www",
   "installCommand": "cd frontend && npm install",
   "public": true,
@@ -47,5 +47,8 @@
       ]
     }
   ],
-  "framework": "angular"
+  "framework": "angular",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
