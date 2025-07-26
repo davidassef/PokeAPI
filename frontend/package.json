@@ -15,7 +15,7 @@
     "clean:cache": "node scripts/clean-dev-optimized.js",
     "build": "ng build --configuration production && echo '/*    /index.html   200' > www/_redirects && cp src/404.html www/404.html",
     "build:prod": "ng build --configuration production && echo '/*    /index.html   200' > www/_redirects && cp src/404.html www/404.html",
-    "build:vercel": "echo '🔧 Building for Vercel with production config...' && ng build --configuration production --verbose --output-hashing=all && echo '/*    /index.html   200' > www/_redirects && cp src/404.html www/404.html && echo '✅ Vercel build completed'",
+    "build:vercel": "ng build --configuration production && cp src/_redirects www/_redirects && cp src/404.html www/404.html",
     "deploy:vercel": "node scripts/vercel-deploy.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
