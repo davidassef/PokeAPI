@@ -1,9 +1,27 @@
-# Vercel ignore file
+# Vercel ignore file - Ignorar arquivos desnecessários para o deploy
 backend/
+client-server/
 scripts/
 docs/
 tests/
-node_modules/
-*.log
 *.md
 !README.md
+.git/
+.gitignore
+.env*
+node_modules/
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Manter apenas o frontend
+!frontend/
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/e2e/results/
+frontend/playwright-report/
+frontend/test-results/
