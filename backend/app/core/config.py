@@ -14,11 +14,32 @@ class Settings(BaseSettings):
     app_version: str = "1.5"
     debug: bool = True
 
-    # Database - CORREÇÃO CRÍTICA: PostgreSQL persistente
+    # Database - CORREÇÃO CRÍTICA: Múltiplas opções de persistência
     database_url: str = Field(
         default="sqlite:///./pokemon_app.db",
         env="DATABASE_URL"
     )
+
+    @property
+    def get_database_url(self) -> str:
+        """
+        Retorna URL do banco com lógica de fallback.
+        Prioridade: DATABASE_URL > Volume persistente > Local
+        """
+        import os
+
+        # 1. Usar DATABASE_URL se definida (PostgreSQL/MySQL externo)
+        if os.getenv("DATABASE_URL"):
+            return os.getenv("DATABASE_URL")
+
+        # 2. Usar volume persistente do Render se disponível
+        persistent_path = "/opt/render/project/data/pokemon_app.db"
+        if os.path.exists("/opt/render/project/data"):
+            os.makedirs("/opt/render/project/data", exist_ok=True)
+            return f"sqlite:///{persistent_path}"
+
+        # 3. Fallback para SQLite local (desenvolvimento)
+        return self.database_url
 
     # CORS
     cors_origins: list[str] = [

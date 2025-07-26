@@ -6,17 +6,34 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
 
-# Engine do SQLAlchemy com configurações de pool otimizadas
-engine = create_engine(
-    settings.database_url,
-    connect_args={"check_same_thread": False},  # Para SQLite
-    pool_size=20,  # Aumentar pool de conexões
-    max_overflow=30,  # Permitir mais conexões extras
-    pool_timeout=60,  # Timeout maior para obter conexão
-    pool_recycle=3600,  # Reciclar conexões a cada hora
-    pool_pre_ping=True,  # Verificar conexões antes de usar
-    echo=False  # Desabilitar logs SQL para performance
-)
+# Engine do SQLAlchemy com configurações otimizadas e persistência
+database_url = settings.get_database_url
+print(f"🔍 Usando banco de dados: {database_url}")
+
+# Configurações específicas por tipo de banco
+if "sqlite" in database_url:
+    # SQLite - configurações otimizadas
+    engine = create_engine(
+        database_url,
+        connect_args={"check_same_thread": False},
+        pool_size=20,
+        max_overflow=30,
+        pool_timeout=60,
+        pool_recycle=3600,
+        pool_pre_ping=True,
+        echo=False
+    )
+else:
+    # PostgreSQL/MySQL - configurações para bancos externos
+    engine = create_engine(
+        database_url,
+        pool_size=10,
+        max_overflow=20,
+        pool_timeout=30,
+        pool_recycle=1800,
+        pool_pre_ping=True,
+        echo=False
+    )
 
 # Session maker
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

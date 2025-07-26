@@ -2,9 +2,9 @@
 
 ## 📋 **RESUMO DO PROBLEMA**
 
-**Data**: 26/07/2025  
-**Severidade**: CRÍTICA  
-**Status**: EM CORREÇÃO URGENTE  
+**Data**: 26/07/2025
+**Severidade**: CRÍTICA
+**Status**: EM CORREÇÃO URGENTE
 
 ### **Descrição**
 Usuários criados na aplicação estão sendo perdidos entre sessões/deploys, indicando problema grave de persistência de dados.
@@ -31,28 +31,28 @@ database_url: str = "sqlite:///./pokemon_app.db"
 
 ## 🔧 **CORREÇÕES IMPLEMENTADAS**
 
-### **✅ Correção 1: Migração para PostgreSQL**
-```python
-# Nova configuração
-database_url: str = Field(
-    default="sqlite:///./pokemon_app.db",
-    env="DATABASE_URL"  # Usar PostgreSQL do Render
-)
-```
-
-### **✅ Correção 2: Dependências PostgreSQL**
-```txt
-# Adicionado ao requirements.txt
-psycopg2-binary>=2.9.9  # PostgreSQL driver para persistência
-```
-
-### **✅ Correção 3: Configuração Render**
+### **✅ Correção 1: SQLite com Volume Persistente (SUSTENTÁVEL)**
 ```yaml
-# render.yaml
-databases:
-  - name: pokeapi-db
-    databaseName: pokeapi
-    user: pokeapi_user
+# render.yaml - Solução gratuita permanente
+disk:
+  name: pokeapi-data
+  mountPath: /opt/render/project/data
+  sizeGB: 1
+```
+
+### **✅ Correção 2: Configuração Híbrida Inteligente**
+```python
+def get_database_url(self) -> str:
+    # 1. DATABASE_URL (banco externo se configurado)
+    # 2. Volume persistente (/opt/render/project/data/)
+    # 3. SQLite local (fallback desenvolvimento)
+```
+
+### **✅ Correção 3: Dependências Múltiplas**
+```txt
+# Suporte a múltiplos bancos
+psycopg2-binary>=2.9.9  # PostgreSQL
+pymysql>=1.0.0          # MySQL (futuro)
 ```
 
 ### **✅ Correção 4: Logs de Diagnóstico**
