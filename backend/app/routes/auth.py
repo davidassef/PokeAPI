@@ -21,6 +21,82 @@ router = APIRouter(tags=["auth"])
 security = HTTPBearer()
 
 
+@router.get("/debug/users")
+async def debug_users(db: Session = Depends(get_db)):
+    """🔍 ENDPOINT TEMPORÁRIO: Verificar usuários de teste"""
+    users = db.query(User).all()
+    user_data = []
+    for user in users:
+        user_data.append({
+            "id": user.id,
+            "email": user.email,
+            "name": user.name,
+            "is_active": user.is_active
+        })
+
+    return {
+        "total_users": len(users),
+        "users": user_data,
+        "test_users_exist": {
+            "teste@teste.com": any(u.email == "teste@teste.com" for u in users),
+            "teste2@teste.com": any(u.email == "teste2@teste.com" for u in users)
+        }
+    }
+
+
+@router.post("/debug/create-test-users")
+async def create_test_users(db: Session = Depends(get_db)):
+    """🔧 ENDPOINT TEMPORÁRIO: Criar usuários de teste manualmente"""
+    try:
+        test_users = [
+            {
+                "name": "Usuário Teste Principal",
+                "email": "teste@teste.com",
+                "password": "Teste123",
+                "security_question": "Qual é o seu Pokémon favorito?",
+                "security_answer": "pikachu"
+            },
+            {
+                "name": "Usuário Teste Secundário",
+                "email": "teste2@teste.com",
+                "password": "Teste123",
+                "security_question": "Qual é o seu Pokémon favorito?",
+                "security_answer": "charizard"
+            }
+        ]
+
+        created_users = []
+        for user_info in test_users:
+            # Verificar se usuário já existe
+            existing_user = auth_service.get_user_by_email(db, user_info['email'])
+            if existing_user:
+                created_users.append(f"❌ {user_info['email']} já existe")
+                continue
+
+            # Criar novo usuário
+            user_data = UserCreate(
+                name=user_info['name'],
+                email=user_info['email'],
+                password=user_info['password'],
+                security_question=user_info['security_question'],
+                security_answer=user_info['security_answer']
+            )
+
+            new_user = auth_service.create_user(db, user_data)
+            created_users.append(f"✅ {new_user.email} criado (ID: {new_user.id})")
+
+        return {
+            "message": "Processo de criação concluído",
+            "results": created_users
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao criar usuários de teste: {str(e)}"
+        )
+
+
 @router.post(
     "/register",
     response_model=UserResponse,
