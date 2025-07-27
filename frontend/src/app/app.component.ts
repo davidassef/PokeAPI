@@ -8,6 +8,7 @@ import { User } from 'src/app/models/user.model';
 import { AuthService } from './core/services/auth.service';
 import { filter } from 'rxjs/operators';
 import { CapturedMonitorService } from './core/services/captured-monitor.service';
+import { PostAuthRefreshService } from './core/services/post-auth-refresh.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -42,11 +43,13 @@ export class AppComponent implements OnInit {
     private router: Router,
     private settingsService: SettingsService, // injetar serviço de configurações
     private authService: AuthService, // injetar serviço de autenticação
-    private capturedMonitor: CapturedMonitorService // ✅ NOVO: Serviço de monitoramento
+    private capturedMonitor: CapturedMonitorService, // ✅ NOVO: Serviço de monitoramento
+    private postAuthRefresh: PostAuthRefreshService // ✅ NOVO: Serviço de atualização pós-login
   ) {
     this.initializeApp();
     this.setupRouteListener();
     this.initializeMonitoring(); // ✅ NOVO: Inicializar monitoramento
+    this.initializePostAuthRefresh(); // ✅ NOVO: Inicializar atualização pós-login
   }
 
   async ngOnInit() {
@@ -75,6 +78,24 @@ export class AppComponent implements OnInit {
     this.capturedMonitor.startPeriodicMonitoring();
 
     console.log('[AppComponent] ✅ Monitoramento inicializado com sucesso');
+  }
+
+  /**
+   * ✅ NOVO: Inicializa o sistema de atualização automática pós-login
+   */
+  private initializePostAuthRefresh(): void {
+    console.log('[AppComponent] 🔄 Inicializando sistema de atualização pós-login...');
+
+    // Inicializar o serviço de atualização pós-login
+    this.postAuthRefresh.initialize();
+
+    // Debug em desenvolvimento
+    if (!environment.production) {
+      console.log('[AppComponent] 🔧 Debug pós-login habilitado - use window.postAuthRefresh.getStatus()');
+      (window as any).postAuthRefresh = this.postAuthRefresh;
+    }
+
+    console.log('[AppComponent] ✅ Sistema de atualização pós-login inicializado');
   }
 
   async initializeApp() {

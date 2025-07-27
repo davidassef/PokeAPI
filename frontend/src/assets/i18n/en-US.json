@@ -421,6 +421,7 @@
   "auth": {
     "login": "Login",
     "logout": "Logout",
+    "login_success": "Login successful!",
     "profile": "Profile",
     "hello": "Hello",
     "welcome_back": "Welcome back!",

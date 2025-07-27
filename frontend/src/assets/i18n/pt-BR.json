@@ -321,6 +321,7 @@
   "auth": {
     "login": "Fazer Login",
     "logout": "Sair",
+    "login_success": "Login realizado com sucesso!",
     "profile": "Perfil",
     "hello": "Olá",
     "welcome_back": "Bem-vindo de volta!",

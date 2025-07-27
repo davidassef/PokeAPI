@@ -128,11 +128,7 @@ export class RankingPage implements OnInit, OnDestroy {
           this.user = this.authService.getCurrentUser();
           console.log('[MobileRanking] Usuário carregado:', this.user);
 
-          // ✅ NOVO: Refresh automático quando usuário faz login
-          if (!wasAuthenticated && isAuthenticated) {
-            console.log('[MobileRanking] 🔄 Login detectado - iniciando refresh automático...');
-            await this.refreshDataAfterLogin();
-          }
+          // ✅ REMOVIDO: Refresh automático agora é gerenciado globalmente pelo PostAuthRefreshService
         } else {
           this.user = null;
           console.log('[MobileRanking] Usuário deslogado');
@@ -680,57 +676,7 @@ export class RankingPage implements OnInit, OnDestroy {
     return this.globalRanking;
   }
 
-  /**
-   * ✅ NOVO: Refresh automático de dados após login do usuário
-   * Atualiza ranking e estados de captura para refletir dados do usuário logado
-   */
-  private async refreshDataAfterLogin(): Promise<void> {
-    try {
-      console.log('[MobileRanking] 🔄 Iniciando refresh automático após login...');
-
-      // Mostrar indicador de carregamento
-      const loading = await this.loadingController.create({
-        message: await firstValueFrom(this.translate.get('ranking_page.updating_data')),
-        duration: 10000,
-        spinner: 'crescent'
-      });
-      await loading.present();
-
-      // 1. Recarregar estados de captura do usuário
-      console.log('[MobileRanking] 📥 Atualizando estados de captura...');
-      await this.loadCapturedStates();
-
-      // 2. Forçar refresh do ranking com dados frescos
-      console.log('[MobileRanking] 🏆 Atualizando ranking...');
-      await this.loadRanking(true); // forceRefresh = true
-
-      // 3. Atualizar UI
-      this.cdr.detectChanges();
-
-      await loading.dismiss();
-
-      // Feedback de sucesso
-      await this.showToast('ranking_page.data_updated_after_login');
-
-      console.log('[MobileRanking] ✅ Refresh automático após login concluído');
-
-    } catch (error) {
-      console.error('[MobileRanking] ❌ Erro no refresh automático após login:', error);
-
-      // Tentar fechar loading se ainda estiver aberto
-      try {
-        const loading = await this.loadingController.getTop();
-        if (loading) {
-          await loading.dismiss();
-        }
-      } catch (dismissError) {
-        console.warn('[MobileRanking] Erro ao fechar loading:', dismissError);
-      }
-
-      // Mostrar erro para o usuário
-      await this.showToast('ranking_page.error_updating_data');
-    }
-  }
+  // ✅ REMOVIDO: refreshDataAfterLogin() - agora gerenciado globalmente pelo PostAuthRefreshService
 
   /**
    * Manipulador para alternar o estado de captura de um Pokémon
