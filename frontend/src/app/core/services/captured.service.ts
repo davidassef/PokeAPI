@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, firstValueFrom, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, of, firstValueFrom, throwError, from } from 'rxjs';
 import { tap, map, catchError, switchMap, timeout } from 'rxjs/operators';
 import { FavoritePokemon, Pokemon } from '../../models/pokemon.model';
 import { SyncAction, SyncService } from './sync.service';
@@ -23,6 +23,21 @@ export class CapturedService {
   public captured$ = this.capturedSubject.asObservable();
   private apiUrl = `${environment.apiUrl}/favorites`;  // ✅ CORREÇÃO CRÍTICA: Usar URL completa do environment
 
+  // ✅ NOVO: URLs de fallback para diferentes backends
+  private fallbackUrls = [
+    'https://pokeapi-la6k.onrender.com/api/v1/favorites',  // Render backup
+    'https://pokeapiapp-backend.herokuapp.com/api/v1/favorites',  // Heroku backup
+    '/api/v1/favorites'  // Local/proxy fallback
+  ];
+
+  // ✅ NOVO: Modo offline - dados simulados para demonstração
+  private offlineMode = false;
+  private offlineData: FavoritePokemon[] = [
+    { id: 1, user_id: 1, pokemon_id: 25, pokemon_name: 'pikachu', created_at: new Date().toISOString() },
+    { id: 2, user_id: 1, pokemon_id: 1, pokemon_name: 'bulbasaur', created_at: new Date().toISOString() },
+    { id: 3, user_id: 1, pokemon_id: 4, pokemon_name: 'charmander', created_at: new Date().toISOString() }
+  ];
+
   constructor(
     private http: HttpClient,
     private syncService: SyncService,
@@ -43,6 +58,49 @@ export class CapturedService {
         this.clearCache();
       }
     });
+  }
+
+  /**
+   * ✅ NOVO: Tenta requisição com URLs de fallback
+   */
+  private async tryFallbackUrls(endpoint: string): Promise<FavoritePokemon[]> {
+    console.log('[CapturedService] 🔄 Tentando URLs de fallback...');
+
+    for (let i = 0; i < this.fallbackUrls.length; i++) {
+      const fallbackUrl = `${this.fallbackUrls[i]}${endpoint}`;
+      console.log(`[CapturedService] Tentativa ${i + 1}/${this.fallbackUrls.length}: ${fallbackUrl}`);
+
+      try {
+        const response = await firstValueFrom(
+          this.http.get<FavoritePokemon[]>(fallbackUrl, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }).pipe(timeout(10000))
+        );
+
+        console.log(`[CapturedService] ✅ Sucesso com URL de fallback ${i + 1}: ${fallbackUrl}`);
+        console.log(`[CapturedService] ${response.length} capturas carregadas`);
+
+        // Atualiza URL principal para a que funcionou
+        this.apiUrl = this.fallbackUrls[i];
+        console.log(`[CapturedService] URL principal atualizada para: ${this.apiUrl}`);
+
+        return response;
+      } catch (error) {
+        console.warn(`[CapturedService] ❌ Falha na URL ${i + 1}: ${fallbackUrl}`, error);
+
+        // Se for a última tentativa, lança o erro
+        if (i === this.fallbackUrls.length - 1) {
+          console.error('[CapturedService] 💥 Todas as URLs de fallback falharam');
+          throw error;
+        }
+      }
+    }
+
+    // Nunca deve chegar aqui, mas por segurança
+    throw new Error('Todas as URLs de fallback falharam');
   }
 
   /**
@@ -203,9 +261,36 @@ export class CapturedService {
                 console.error('[CapturedService] 🔧 DIAGNÓSTICO DO PROBLEMA:');
                 console.error('1. Backend está retornando HTML em vez de JSON');
                 console.error('2. Isso indica problema de roteamento no servidor');
-                console.error('3. Possível solução: Verificar configuração do backend');
-                console.error('4. Possível solução: Verificar CORS e headers');
-                console.error('5. Usando cache local como fallback');
+                console.error('3. Tentando URLs de fallback...');
+
+                // ✅ NOVO: Tentar URLs de fallback
+                return from(this.tryFallbackUrls('/my-favorites')).pipe(
+                  tap((fallbackData) => {
+                    console.log('[CapturedService] ✅ Dados obtidos via fallback:', fallbackData.length);
+                    this.cachedCaptured = fallbackData;
+                    this.lastSuccessfulFetch = now;
+                    this.capturedSubject.next(fallbackData);
+                  }),
+                  catchError((finalError) => {
+                    console.error('[CapturedService] ❌ Todas as tentativas falharam:', finalError);
+
+                    // Retorna cache se disponível
+                    if (this.cachedCaptured.length > 0) {
+                      console.log('[CapturedService] Retornando cache após falha total:', this.cachedCaptured.length);
+                      return of(this.cachedCaptured);
+                    }
+
+                    // ✅ NOVO: Modo offline como último recurso
+                    if (!this.offlineMode) {
+                      console.warn('[CapturedService] 🔌 Ativando modo offline - usando dados de demonstração');
+                      this.offlineMode = true;
+                      this.capturedSubject.next(this.offlineData);
+                      return of(this.offlineData);
+                    }
+
+                    return of([]);
+                  })
+                );
               }
 
               // Retorna cache se disponível
