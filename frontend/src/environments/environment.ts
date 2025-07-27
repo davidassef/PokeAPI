@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8000',  // Backend local para desenvolvimento
+  apiUrl: 'http://localhost:8000/api/v1',  // ✅ CORREÇÃO: Incluir /api/v1 para consistência
   clientServerUrl: 'http://localhost:8000'  // Client-server local - fixed to match backend port
 };
 

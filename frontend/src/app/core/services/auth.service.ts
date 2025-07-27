@@ -204,7 +204,7 @@ export class AuthService {
     tokenKey: 'jwt_token',
     refreshTokenKey: 'refresh_token',
     enableLogging: !environment.production,
-    apiUrl: `${environment.apiUrl}/api/v1`,
+    apiUrl: environment.apiUrl,  // ✅ CORREÇÃO: Não duplicar /api/v1
     requestTimeout: 30000
   };
 
@@ -647,7 +647,7 @@ export class AuthService {
       return throwError(() => new Error('Nenhum refresh token disponível'));
     }
 
-    return this.http.post<AuthResponse>('/api/v1/auth/refresh', {
+    return this.http.post<AuthResponse>(`${this.config.apiUrl}/auth/refresh`, {
       refresh_token: refreshToken
     }).pipe(
       tap(response => {
@@ -713,7 +713,7 @@ export class AuthService {
    * @returns Observable com os dados do usuário e token
    */
   loginWithGoogle(): Observable<{ token: string; user: User }> {
-    return this.http.get<{ token: string }>('/api/v1/auth/google').pipe(
+    return this.http.get<{ token: string }>(`${this.config.apiUrl}/auth/google`).pipe(
       tap((res) => {
         if (res?.token) {
           this.tokenManager.setTokens(res.token);
@@ -742,7 +742,7 @@ export class AuthService {
    * @param email Email do usuário
    */
   requestPasswordReset(email: string): Observable<{ email: string; security_question: string }> {
-    return this.http.post<{ email: string; security_question: string }>('/api/v1/auth/password-reset/request', { email }).pipe(
+    return this.http.post<{ email: string; security_question: string }>(`${this.config.apiUrl}/auth/password-reset/request`, { email }).pipe(
       catchError(error => this.handleError('solicitação de recuperação de senha')(error))
     );
   }
@@ -753,7 +753,7 @@ export class AuthService {
    * @param securityAnswer Resposta da pergunta de segurança
    */
   verifySecurityAnswer(email: string, securityAnswer: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/v1/auth/password-reset/verify', {
+    return this.http.post<{ message: string }>(`${this.config.apiUrl}/auth/password-reset/verify`, {
       email,
       security_answer: securityAnswer
     }).pipe(
@@ -768,7 +768,7 @@ export class AuthService {
    * @param newPassword Nova senha
    */
   completePasswordReset(email: string, securityAnswer: string, newPassword: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/v1/auth/password-reset/complete', {
+    return this.http.post<{ message: string }>(`${this.config.apiUrl}/auth/password-reset/complete`, {
       email,
       security_answer: securityAnswer,
       new_password: newPassword
@@ -786,7 +786,7 @@ export class AuthService {
    * @returns Observable com os dados atualizados do usuário e token
    */
   updateProfile(dados: { nome: string; email: string }): Observable<{ token: string; user: User }> {
-    return this.http.put<{ token: string }>('/api/v1/auth/me', dados).pipe(
+    return this.http.put<{ token: string }>(`${this.config.apiUrl}/auth/me`, dados).pipe(
       tap((res) => {
         if (res?.token) {
           this.tokenManager.setTokens(res.token);

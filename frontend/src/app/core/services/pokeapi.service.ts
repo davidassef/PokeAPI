@@ -39,7 +39,7 @@ interface PokeApiConfig {
 export class PokeApiService {
   private config: PokeApiConfig = {
     baseUrl: 'https://pokeapi.co/api/v2',
-    backendUrl: `${environment.apiUrl}/api/v1`,
+    backendUrl: environment.apiUrl,  // ✅ CORREÇÃO: Não duplicar /api/v1
     cacheTTL: {
       pokemon: 2 * 60 * 60 * 1000,    // 2 horas
       species: 2 * 60 * 60 * 1000,    // 2 horas

@@ -203,7 +203,7 @@ export class ClientSyncService {
       };
 
       const response = await this.http.post(
-        `${environment.apiUrl}/api/v1/pull-sync/register-client`,
+        `${environment.apiUrl}/pull-sync/register-client`,  // ✅ CORREÇÃO: Não duplicar /api/v1
         registrationData
       ).toPromise();
 
