@@ -278,7 +278,7 @@
 .stat-label {
   display: block;
   font-size: 0.9rem;
-  color: white !important; // Força cor branca independente do tema
+  color: white; // Cor padrão (será sobrescrita por tema)
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -453,7 +453,7 @@
 
       .total-label {
         font-size: 1rem;
-        color: white !important; // Força cor branca independente do tema
+        color: white; // Cor padrão (será sobrescrita por tema)
       }
 
       .total-value {
@@ -925,7 +925,7 @@
         .bio-label {
           display: block;
           font-size: 0.85rem;
-          color: white !important; // Força cor branca independente do tema
+          color: white; // Cor padrão (será sobrescrita por tema)
           margin-bottom: 5px;
         }
 
@@ -970,7 +970,7 @@
         .capture-label {
           display: block;
           font-size: 0.85rem;
-          color: white !important; // Força cor branca independente do tema
+          color: white; // Cor padrão (será sobrescrita por tema)
           margin-bottom: 5px;
         }
 
@@ -1697,11 +1697,11 @@
     border: 1px solid rgba(0, 0, 0, 0.12);
 
     .bio-label {
-      color: white !important; // Força cor branca independente do tema
+      color: #000 !important; // ✅ CORREÇÃO: Labels pretos no tema claro
     }
 
     .bio-value {
-      color: white !important; // Força cor branca independente do tema
+      color: white !important; // ✅ MANTIDO: Valores sempre brancos
     }
   }
 
@@ -1711,11 +1711,36 @@
     border: 1px solid rgba(0, 0, 0, 0.12);
 
     .stat-label {
-      color: white !important; // Força cor branca independente do tema
+      color: #000 !important; // ✅ CORREÇÃO: Labels pretos no tema claro
     }
 
     .stat-value {
-      color: white !important; // Força cor branca independente do tema
+      color: white !important; // ✅ MANTIDO: Valores sempre brancos
+    }
+  }
+
+  // ✅ CORREÇÃO: Total stats labels no tema claro
+  .total-stats-card {
+    .total-label {
+      color: #000 !important; // Labels pretos no tema claro
+    }
+  }
+
+  // ✅ CORREÇÃO: Outros labels de atributos no tema claro
+  .combat-stats-detailed {
+    .stat-label {
+      color: #000 !important; // Labels pretos no tema claro
+    }
+  }
+
+  // ✅ CORREÇÃO: Labels de informações físicas (Altura, Peso, Experiência Base)
+  .info-item {
+    .info-label {
+      color: #000 !important; // Labels pretos no tema claro
+    }
+
+    .info-value {
+      color: white !important; // ✅ MANTIDO: Valores sempre brancos
     }
   }
 
@@ -1765,7 +1790,7 @@
     border: 1px solid rgba(0, 0, 0, 0.12);
 
     .capture-label {
-      color: white !important; // Força cor branca independente do tema
+      color: #000 !important; // ✅ CORREÇÃO: Labels pretos no tema claro
     }
 
     .capture-value {
@@ -1805,6 +1830,57 @@
       background: rgba(255, 255, 255, 0.15);
       border-bottom: 3px solid var(--pokemon-primary-color, #4f46e5);
       box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+  }
+
+  // ✅ CORREÇÃO: Labels brancos no tema escuro
+  .bio-item {
+    .bio-label {
+      color: white !important; // Labels brancos no tema escuro
+    }
+
+    .bio-value {
+      color: white !important; // Valores sempre brancos
+    }
+  }
+
+  .stat-card {
+    .stat-label {
+      color: white !important; // Labels brancos no tema escuro
+    }
+
+    .stat-value {
+      color: white !important; // Valores sempre brancos
+    }
+  }
+
+  .total-stats-card {
+    .total-label {
+      color: white !important; // Labels brancos no tema escuro
+    }
+  }
+
+  .combat-stats-detailed {
+    .stat-label {
+      color: white !important; // Labels brancos no tema escuro
+    }
+  }
+
+  // ✅ CORREÇÃO: Labels de informações físicas no tema escuro
+  .info-item {
+    .info-label {
+      color: white !important; // Labels brancos no tema escuro
+    }
+
+    .info-value {
+      color: white !important; // Valores sempre brancos
+    }
+  }
+
+  // ✅ CORREÇÃO: Labels de captura no tema escuro
+  .capture-item {
+    .capture-label {
+      color: white !important; // Labels brancos no tema escuro
     }
   }
 }
