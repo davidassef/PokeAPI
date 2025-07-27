@@ -260,6 +260,37 @@ try:
     from app.routes import data_integrity
     app.include_router(data_integrity.router, prefix="/api/v1/data-integrity")
 
+    # 🔍 ENDPOINT TEMPORÁRIO PARA DEBUG - Verificar usuários de teste
+    @app.get("/debug/users")
+    async def debug_users():
+        """Endpoint temporário para verificar se usuários de teste existem"""
+        from app.core.database import SessionLocal
+        from app.models.models import User
+
+        db = SessionLocal()
+        try:
+            users = db.query(User).all()
+            user_data = []
+            for user in users:
+                user_data.append({
+                    "id": user.id,
+                    "email": user.email,
+                    "name": user.name,
+                    "is_active": user.is_active,
+                    "created_at": getattr(user, 'created_at', 'N/A')
+                })
+
+            return {
+                "total_users": len(users),
+                "users": user_data,
+                "test_users_exist": {
+                    "teste@teste.com": any(u.email == "teste@teste.com" for u in users),
+                    "teste2@teste.com": any(u.email == "teste2@teste.com" for u in users)
+                }
+            }
+        finally:
+            db.close()
+
 except (ImportError, ModuleNotFoundError, AttributeError) as e:
     print(f"❌ ERRO CRÍTICO: Falha ao importar rotas: {e}")
     import traceback
