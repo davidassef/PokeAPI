@@ -497,7 +497,7 @@
         .stat-name {
           width: 120px;
           font-size: 0.9rem;
-          color: white !important; // Força cor branca independente do tema
+          color: white; // Cor padrão (será sobrescrita por tema)
         }
 
         .stat-progress {
@@ -1744,6 +1744,11 @@
     }
   }
 
+  // ✅ CORREÇÃO CRÍTICA: Nomes de stats (Ataque, Defesa, HP, etc.)
+  .stat-name {
+    color: #000 !important; // Labels pretos no tema claro
+  }
+
   // Info cards
   .info-card {
     background: rgba(0, 0, 0, 0.06) !important;
@@ -1882,5 +1887,10 @@
     .capture-label {
       color: white !important; // Labels brancos no tema escuro
     }
+  }
+
+  // ✅ CORREÇÃO CRÍTICA: Nomes de stats no tema escuro (Ataque, Defesa, HP, etc.)
+  .stat-name {
+    color: white !important; // Labels brancos no tema escuro
   }
 }
