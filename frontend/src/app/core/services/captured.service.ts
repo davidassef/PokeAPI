@@ -9,6 +9,7 @@ import { SyncConfigService } from './sync-config.service';
 import { ErrorHandlerService } from './error-handler.service';
 import { ConnectionService } from './connection.service';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 /**
  * Serviço para gerenciar Pokémons capturados
@@ -20,7 +21,7 @@ import { AuthService } from './auth.service';
 export class CapturedService {
   private capturedSubject = new BehaviorSubject<FavoritePokemon[]>([]);
   public captured$ = this.capturedSubject.asObservable();
-  private apiUrl = '/api/v1/favorites';
+  private apiUrl = `${environment.apiUrl}/favorites`;  // ✅ CORREÇÃO CRÍTICA: Usar URL completa do environment
 
   constructor(
     private http: HttpClient,
@@ -31,6 +32,10 @@ export class CapturedService {
     private connectionService: ConnectionService,
     private authService: AuthService
   ) {
+    // ✅ CORREÇÃO: Log da URL da API para debug
+    console.log('[CapturedService] Inicializado com URL da API:', this.apiUrl);
+    console.log('[CapturedService] Environment:', environment.production ? 'PRODUÇÃO' : 'DESENVOLVIMENTO');
+
     // ✅ NOVO: Limpar cache quando usuário faz logout
     this.authService.getAuthState().subscribe(isAuthenticated => {
       if (!isAuthenticated) {
@@ -87,6 +92,12 @@ export class CapturedService {
     const url = `${this.apiUrl}/my-favorites`;
     console.log(`[CapturedService] Fazendo requisição para: ${url}`);
 
+    // ✅ NOVO: Verificar se a URL está correta
+    if (!url.includes('/api/v1/favorites/my-favorites')) {
+      console.warn('[CapturedService] ⚠️ URL da API pode estar incorreta:', url);
+      console.warn('[CapturedService] URL esperada deve conter: /api/v1/favorites/my-favorites');
+    }
+
     return this.http.get<FavoritePokemon[]>(url, {
       headers: {
         'Accept': 'application/json',
@@ -117,6 +128,15 @@ export class CapturedService {
             console.error('- Possível problema: resposta não é JSON válido');
             console.error('- Headers de resposta:', error.headers);
             console.error('- Corpo da resposta (se disponível):', error.error);
+
+            // ✅ NOVO: Verificar se o erro contém HTML
+            const errorText = error.error?.toString() || '';
+            if (errorText.includes('<!DOCTYPE') || errorText.includes('<html')) {
+              console.error('[CapturedService] 🚨 CONFIRMADO: Backend retornando HTML');
+              console.error('- Isso indica problema de roteamento no servidor');
+              console.error('- A requisição está sendo redirecionada para a página inicial');
+              console.error('- Verifique configuração do backend e CORS');
+            }
           }
 
           // ✅ CORREÇÃO CRÍTICA: NÃO limpa dados em erro de autenticação
@@ -146,6 +166,19 @@ export class CapturedService {
             }
           }).pipe(
             map((textResponse: string) => {
+              // ✅ CORREÇÃO CRÍTICA: Detectar se resposta é HTML em vez de JSON
+              if (textResponse.trim().startsWith('<!DOCTYPE') || textResponse.trim().startsWith('<html')) {
+                console.error('[CapturedService] 🚨 PROBLEMA CRÍTICO DETECTADO:');
+                console.error('- API retornou HTML em vez de JSON');
+                console.error('- Possível causa: Redirecionamento para página inicial');
+                console.error('- Possível causa: Problema de CORS ou roteamento no backend');
+                console.error('- URL da requisição:', url);
+                console.error('- Resposta HTML recebida (primeiros 200 chars):', textResponse.substring(0, 200));
+
+                // Lançar erro específico para HTML
+                throw new Error('API_RETURNING_HTML: Backend está retornando HTML em vez de JSON. Possível problema de roteamento ou CORS.');
+              }
+
               try {
                 const parsed = JSON.parse(textResponse) as FavoritePokemon[];
                 console.log('[CapturedService] ✅ Parsing manual bem-sucedido:', parsed.length);
@@ -158,12 +191,23 @@ export class CapturedService {
                 return parsed;
               } catch (parseError) {
                 console.error('[CapturedService] ❌ Falha no parsing manual:', parseError);
-                console.error('[CapturedService] Resposta recebida:', textResponse);
+                console.error('[CapturedService] Resposta recebida (primeiros 500 chars):', textResponse.substring(0, 500));
                 throw parseError;
               }
             }),
             catchError(fallbackError => {
               console.error('[CapturedService] ❌ Falha na requisição alternativa:', fallbackError);
+
+              // ✅ CORREÇÃO: Tratamento específico para erro de HTML
+              if (fallbackError.message?.includes('API_RETURNING_HTML')) {
+                console.error('[CapturedService] 🔧 DIAGNÓSTICO DO PROBLEMA:');
+                console.error('1. Backend está retornando HTML em vez de JSON');
+                console.error('2. Isso indica problema de roteamento no servidor');
+                console.error('3. Possível solução: Verificar configuração do backend');
+                console.error('4. Possível solução: Verificar CORS e headers');
+                console.error('5. Usando cache local como fallback');
+              }
+
               // Retorna cache se disponível
               if (this.cachedCaptured.length > 0) {
                 console.log('[CapturedService] Retornando cache após falha total:', this.cachedCaptured.length);
