@@ -616,6 +616,7 @@
   },
   "captured": {
     "title": "My Captured",
+    "loading": "Loading captured...",
     "empty": "No captured Pokémon yet",
     "emptyMessage": "Explore the Pokédex and capture your Pokémon!",
     "clear_all": "Clear all",

@@ -633,6 +633,7 @@
   },
   "captured": {
     "title": "Meus Capturados",
+    "loading": "Carregando capturados...",
     "empty": "Nenhum Pokémon capturado ainda",
     "emptyMessage": "Explore a Pokédex e capture seus Pokémons!",
     "clear_all": "Limpar todos",

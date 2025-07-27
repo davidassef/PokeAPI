@@ -87,7 +87,12 @@ export class CapturedService {
     const url = `${this.apiUrl}/my-favorites`;
     console.log(`[CapturedService] Fazendo requisição para: ${url}`);
 
-    return this.http.get<FavoritePokemon[]>(url).pipe(
+    return this.http.get<FavoritePokemon[]>(url, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).pipe(
       tap({
         next: (captured) => {
           console.log(`[CapturedService] ${captured.length} capturas carregadas com sucesso`);
@@ -101,8 +106,18 @@ export class CapturedService {
             status: error.status,
             message: error.message,
             url: error.url,
-            error: error.error
+            error: error.error,
+            headers: error.headers?.keys?.() || 'N/A'
           });
+
+          // ✅ CORREÇÃO CRÍTICA: Debug adicional para erro de parsing
+          if (error.status === 200 && error.message?.includes('parsing')) {
+            console.error('[CapturedService] 🔍 ERRO DE PARSING DETECTADO:');
+            console.error('- Status: 200 (OK) mas falha no parsing JSON');
+            console.error('- Possível problema: resposta não é JSON válido');
+            console.error('- Headers de resposta:', error.headers);
+            console.error('- Corpo da resposta (se disponível):', error.error);
+          }
 
           // ✅ CORREÇÃO CRÍTICA: NÃO limpa dados em erro de autenticação
           if (error.status === 401 || error.status === 403) {
@@ -118,6 +133,47 @@ export class CapturedService {
       }),
       catchError(error => {
         console.error('[CapturedService] Erro capturado ao buscar capturas:', error);
+
+        // ✅ CORREÇÃO: Tentar parsing manual se for erro de parsing com status 200
+        if (error.status === 200 && error.message?.includes('parsing')) {
+          console.log('[CapturedService] 🔧 Tentando requisição alternativa com responseType text...');
+
+          return this.http.get(url, {
+            responseType: 'text',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }).pipe(
+            map((textResponse: string) => {
+              try {
+                const parsed = JSON.parse(textResponse) as FavoritePokemon[];
+                console.log('[CapturedService] ✅ Parsing manual bem-sucedido:', parsed.length);
+
+                // Atualiza cache e estado
+                this.cachedCaptured = parsed;
+                this.lastSuccessfulFetch = now;
+                this.capturedSubject.next(parsed);
+
+                return parsed;
+              } catch (parseError) {
+                console.error('[CapturedService] ❌ Falha no parsing manual:', parseError);
+                console.error('[CapturedService] Resposta recebida:', textResponse);
+                throw parseError;
+              }
+            }),
+            catchError(fallbackError => {
+              console.error('[CapturedService] ❌ Falha na requisição alternativa:', fallbackError);
+              // Retorna cache se disponível
+              if (this.cachedCaptured.length > 0) {
+                console.log('[CapturedService] Retornando cache após falha total:', this.cachedCaptured.length);
+                return of(this.cachedCaptured);
+              }
+              return of([]);
+            })
+          );
+        }
+
         // ✅ CORREÇÃO: Retorna cache em caso de erro
         if (this.cachedCaptured.length > 0) {
           console.log('[CapturedService] Retornando cache após erro:', this.cachedCaptured.length);
