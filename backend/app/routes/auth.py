@@ -53,14 +53,14 @@ async def create_test_users(db: Session = Depends(get_db)):
                 "name": "Usuário Teste Principal",
                 "email": "teste@teste.com",
                 "password": "Teste123",
-                "security_question": "Qual é o seu Pokémon favorito?",
+                "security_question": "pet",
                 "security_answer": "pikachu"
             },
             {
                 "name": "Usuário Teste Secundário",
                 "email": "teste2@teste.com",
                 "password": "Teste123",
-                "security_question": "Qual é o seu Pokémon favorito?",
+                "security_question": "pet",
                 "security_answer": "charizard"
             }
         ]
