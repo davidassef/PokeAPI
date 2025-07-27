@@ -42,6 +42,7 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private modalObserver?: MutationObserver;
   public isModalOpen = false;
+  private isUserVolumeChange = false; // Flag para evitar loops de sincronização
 
   constructor(
     private audioService: AudioService,
@@ -131,11 +132,11 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
         });
 
         // Atualizar apenas configurações de áudio, não o estado de reprodução
-        const newVolume = settings.musicEnabled ? (settings.musicVolume || 0.7) : 0;
+        const newVolume = settings.musicEnabled ? (settings.musicVolume || 0.5) : 0;
         const newMuted = !settings.musicEnabled;
 
-        // Só atualizar se realmente mudou para evitar re-renderizações desnecessárias
-        if (this.volume !== newVolume || this.isMuted !== newMuted) {
+        // Só atualizar se realmente mudou e não foi uma mudança do usuário
+        if (!this.isUserVolumeChange && (this.volume !== newVolume || this.isMuted !== newMuted)) {
           this.volume = newVolume;
           this.isMuted = newMuted;
 
@@ -147,6 +148,9 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
           // ✅ OTIMIZAÇÃO: Log apenas em debug
           this.logger.debug('musicPlayer', 'Volume/mute atualizados', { volume: newVolume, muted: newMuted });
         }
+
+        // Reset da flag após processamento
+        this.isUserVolumeChange = false;
       });
   }
 
@@ -260,28 +264,59 @@ export class MusicPlayerComponent implements OnInit, OnDestroy {
   }
 
   toggleMute() {
+    // Marcar como mudança do usuário para evitar loops
+    this.isUserVolumeChange = true;
+
     this.isMuted = !this.isMuted;
 
     // Usar AudioService para controlar volume
     const newVolume = this.isMuted ? 0 : this.volume;
     this.audioService.setVolume(newVolume);
 
-    // Salvar configuração
-    this.settingsService.saveSettings({ musicEnabled: !this.isMuted });
+    // Salvar configuração com debounce implícito
+    setTimeout(() => {
+      this.settingsService.saveSettings({
+        musicEnabled: !this.isMuted,
+        musicVolume: this.isMuted ? 0 : this.volume
+      });
+    }, 50);
 
     console.log('[MusicPlayer] Mute toggled:', { isMuted: this.isMuted, volume: newVolume });
   }
 
   setVolume(event: any) {
+    // Marcar como mudança do usuário para evitar loops
+    this.isUserVolumeChange = true;
+
     const newVolume = event.detail.value / 100;
     this.volume = newVolume;
 
-    // Usar AudioService para controlar volume
-    if (!this.isMuted) {
-      this.audioService.setVolume(newVolume);
+    // Sempre aplicar o volume ao AudioService
+    this.audioService.setVolume(newVolume);
+
+    // Atualizar estado de mute baseado no volume
+    if (newVolume > 0) {
+      // Se volume > 0, desmuta automaticamente
+      this.isMuted = false;
+      // Usar setTimeout para evitar conflitos de sincronização
+      setTimeout(() => {
+        this.settingsService.saveSettings({
+          musicEnabled: true,
+          musicVolume: newVolume
+        });
+      }, 50);
+    } else {
+      // Se volume = 0, muta automaticamente e MANTÉM em 0
+      this.isMuted = true;
+      setTimeout(() => {
+        this.settingsService.saveSettings({
+          musicEnabled: false,
+          musicVolume: 0 // Garantir que seja salvo como 0
+        });
+      }, 50);
     }
 
-    console.log('[MusicPlayer] Volume alterado:', newVolume);
+    console.log('[MusicPlayer] Volume alterado:', { volume: newVolume, isMuted: this.isMuted });
   }
 
   seek(event: any) {

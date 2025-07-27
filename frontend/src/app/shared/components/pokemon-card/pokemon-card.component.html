@@ -36,6 +36,7 @@
             [disabled]="isLoading"
             type="button"
             (click)="onCaptureClick($event)"
+            [attr.data-pokemon-id]="pokemon.id"
             [attr.aria-label]="isCaptured ? ('pokemon.release' | translate) : ('pokemon.capture' | translate)">
 
       <!-- Loading State -->

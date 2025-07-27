@@ -432,7 +432,20 @@ export class RankingPage implements OnInit, OnDestroy {
 
           // ✅ CORREÇÃO: Atualiza cache local apenas para otimização (TTL curto)
           if (!forceRefresh) {
-            localStorage.setItem(cacheKey, JSON.stringify(data));
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(data));
+            } catch (error: any) {
+              if (error.name === 'QuotaExceededError') {
+                console.warn('🗑️ Quota de storage excedida, limpando cache antigo...');
+                this.cleanOldCache();
+                // Tenta novamente após limpeza
+                try {
+                  localStorage.setItem(cacheKey, JSON.stringify(data));
+                } catch (retryError) {
+                  console.error('❌ Falha ao salvar no cache mesmo após limpeza:', retryError);
+                }
+              }
+            }
           }
 
           return data;
@@ -487,8 +500,21 @@ export class RankingPage implements OnInit, OnDestroy {
             console.log(`🔄 Usando Pokémon ${item.pokemonId} do cache`);
           } else {
             pokemon = await firstValueFrom(this.pokeApiService.getPokemon(item.pokemonId));
-            // Armazena no cache por 1 dia
-            localStorage.setItem(cacheKey, JSON.stringify(pokemon));
+            // Armazena no cache por 1 dia com tratamento de quota
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(pokemon));
+            } catch (error: any) {
+              if (error.name === 'QuotaExceededError') {
+                console.warn('🗑️ Quota excedida ao salvar Pokémon, limpando cache...');
+                this.cleanOldCache();
+                // Tenta novamente após limpeza
+                try {
+                  localStorage.setItem(cacheKey, JSON.stringify(pokemon));
+                } catch (retryError) {
+                  console.error('❌ Falha ao salvar Pokémon no cache:', retryError);
+                }
+              }
+            }
           }
 
           return {
@@ -777,6 +803,40 @@ export class RankingPage implements OnInit, OnDestroy {
    */
   isCaptured(pokemonId: number): boolean {
     return this.capturedStates.get(pokemonId) || false;
+  }
+
+  /**
+   * Limpa cache antigo para liberar espaço no localStorage
+   */
+  private cleanOldCache(): void {
+    try {
+      const keysToRemove: string[] = [];
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      // Identifica chaves antigas para remoção
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          // Remove cache de ranking antigo (mais de 1 dia)
+          if (key.startsWith('ranking_') && !key.includes(currentDate)) {
+            keysToRemove.push(key);
+          }
+          // Remove cache de Pokémon muito antigo (mais de 7 dias)
+          if (key.startsWith('pokemon_') && Math.random() < 0.1) { // Remove 10% aleatoriamente
+            keysToRemove.push(key);
+          }
+        }
+      }
+
+      // Remove as chaves identificadas
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+      });
+
+      console.log(`🗑️ Cache limpo: ${keysToRemove.length} itens removidos`);
+    } catch (error) {
+      console.error('❌ Erro ao limpar cache:', error);
+    }
   }
 
   /**

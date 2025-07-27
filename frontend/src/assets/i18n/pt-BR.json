@@ -275,6 +275,8 @@
     "avg_rating": "Avaliação Média",
     "explore_pokemon": "Explorar Pokémon"
   },
+  "pokemon_released": "Pokémon liberado!",
+  "pokemon_captured": "Pokémon capturado!",
   "settings_page": {
     "language_theme": "Idioma e Tema",
     "language": "Idioma",
@@ -822,7 +824,9 @@
     "added_to_captured": "Pokémon adicionado aos capturados!",
     "removed_from_captured": "Pokémon removido dos capturados!",
     "try_again": "TENTAR NOVAMENTE",
-    "try_again": "TENTAR NOVAMENTE"
+    "data_updated_after_login": "Dados atualizados após login!",
+    "updating_data": "Atualizando dados...",
+    "error_updating_data": "Erro ao atualizar dados após login"
   },
   "sync_with_server": "Sincronização com o servidor",
   "synced": "Sincronizado",

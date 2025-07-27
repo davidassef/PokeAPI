@@ -663,6 +663,8 @@
     "different_types": "Different Types",
     "average_stats": "Average Stats"
   },
+  "pokemon_released": "Pokémon released!",
+  "pokemon_captured": "Pokémon captured!",
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -790,7 +792,10 @@
     "error_loading_local_ranking": "Error loading local ranking",
     "error_toggle_capture": "Error toggling capture",
     "added_to_captured": "Pokémon added to captured!",
-    "removed_from_captured": "Pokémon removed from captured!"
+    "removed_from_captured": "Pokémon removed from captured!",
+    "data_updated_after_login": "Data updated after login!",
+    "updating_data": "Updating data...",
+    "error_updating_data": "Error updating data after login"
   },
   "sync_with_server": "Sync with server",
   "synced": "Synced",

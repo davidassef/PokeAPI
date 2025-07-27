@@ -104,7 +104,7 @@ export class MusicPlayerSidemenuComponent implements OnInit, OnDestroy {
         debounceTime(100)
       )
       .subscribe(settings => {
-        const newVolume = settings.musicEnabled ? (settings.musicVolume || 0.7) : 0;
+        const newVolume = settings.musicEnabled ? (settings.musicVolume || 0.5) : 0;
         const newMuted = !settings.musicEnabled;
 
         if (this.volume !== newVolume || this.isMuted !== newMuted) {
@@ -186,18 +186,37 @@ export class MusicPlayerSidemenuComponent implements OnInit, OnDestroy {
   }
 
   async toggleMute() {
-    // Se volume > 0, muta. Se mutado, volta para 0.7
+    // Se volume > 0, muta. Se mutado, volta para 0.5 (50%)
     if (this.isMuted || this.volume === 0) {
-      this.setVolume({ detail: { value: 70 } });
+      // Desmuta para 50%
+      this.volume = 0.5;
+      this.isMuted = false;
+      await this.audioService.setVolume(0.5);
     } else {
-      this.setVolume({ detail: { value: 0 } });
+      // Muta para 0
+      this.volume = 0;
+      this.isMuted = true;
+      await this.audioService.setVolume(0);
     }
   }
 
   async setVolume(event: any) {
-    const newVolume = event.detail.value / 100;
+    // O sidemenu usa escala 0-1, então não precisa dividir por 100
+    const newVolume = event.detail.value;
     try {
       await this.audioService.setVolume(newVolume);
+
+      // Atualizar estado local
+      this.volume = newVolume;
+
+      // Atualizar estado de mute baseado no volume
+      if (newVolume > 0) {
+        this.isMuted = false;
+      } else {
+        this.isMuted = true;
+      }
+
+      console.log('[MusicPlayerSidemenu] Volume alterado:', { volume: newVolume, isMuted: this.isMuted });
     } catch (error) {
       console.error('MusicPlayerSidemenu: Erro ao definir volume:', error);
     }
@@ -228,7 +247,7 @@ export class MusicPlayerSidemenuComponent implements OnInit, OnDestroy {
       return 'volume-mute-outline';
     } else if (this.volume < 0.3) {
       return 'volume-low-outline';
-    } else if (this.volume < 0.7) {
+    } else if (this.volume < 0.5) {
       return 'volume-medium-outline';
     } else {
       return 'volume-high-outline';
@@ -254,7 +273,7 @@ export class MusicPlayerSidemenuComponent implements OnInit, OnDestroy {
     // Colocar a faixa padrão primeiro
     const defaultTrack = this.defaultTrackForLanguage;
     const otherTracks = this.playlist.filter(track => track.id !== defaultTrack?.id);
-    
+
     return defaultTrack ? [defaultTrack, ...otherTracks] : this.playlist;
   }
-} 
+}

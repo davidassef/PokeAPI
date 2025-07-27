@@ -19,7 +19,7 @@ export class SettingsService {
     pokemonPerPage: 20,
     autoPlayMusic: false,
     favoriteType: 'all',
-    musicVolume: 0.7,
+    musicVolume: 0.5,
     soundVolume: 0.5
   });
 
@@ -109,7 +109,7 @@ export class SettingsService {
       pokemonPerPage: 20,
       autoPlayMusic: false,
       favoriteType: 'all',
-      musicVolume: 0.7,
+      musicVolume: 0.5,
       soundVolume: 0.5
     };
     await this.storage.remove(this.SETTINGS_KEY);

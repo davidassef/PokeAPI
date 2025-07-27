@@ -172,8 +172,31 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
         console.log(`[PokemonCard] Operação de ${this.isCaptured ? 'captura' : 'libertação'} concluída`);
         this.isLoading = false;
         this.isProcessing = false;
+
+        // Force reset do alinhamento do ícone após operação
+        this.forceIconReset();
       }
     });
+  }
+
+  /**
+   * Force reset do alinhamento do ícone da pokébola
+   * Corrige bug visual onde o ícone fica desalinhado após captura/liberação
+   */
+  private forceIconReset(): void {
+    // Usar setTimeout para garantir que o DOM foi atualizado
+    setTimeout(() => {
+      const captureBtn = document.querySelector(`[data-pokemon-id="${this.pokemon.id}"] .capture-btn`);
+      if (captureBtn) {
+        // Adicionar classe de reset temporariamente
+        captureBtn.classList.add('force-reset');
+
+        // Remover a classe após um breve delay para permitir a transição
+        setTimeout(() => {
+          captureBtn.classList.remove('force-reset');
+        }, 100);
+      }
+    }, 50);
   }
 
   /**

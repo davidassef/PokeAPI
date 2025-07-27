@@ -29,7 +29,7 @@ export class AudioService {
     currentTrack: null,
     currentTime: 0,
     duration: 0,
-    volume: 0.7,
+    volume: 0.5,
     isLoading: false
   });
 
@@ -52,11 +52,11 @@ export class AudioService {
       const currentState = this.audioStateSubject.value;
       this.audioStateSubject.next({
         ...currentState,
-        volume: settings.musicVolume || 0.7
+        volume: settings.musicVolume || 0.5
       });
 
       if (this.audio) {
-        this.audio.volume = settings.musicVolume || 0.7;
+        this.audio.volume = settings.musicVolume || 0.5;
       }
     });
   }
@@ -139,15 +139,17 @@ export class AudioService {
     }
   }
 
-  setVolume(volume: number): void {
+  setVolume(volume: number, saveToSettings: boolean = false): void {
     const clampedVolume = Math.max(0, Math.min(1, volume));
     if (this.audio) {
       this.audio.volume = clampedVolume;
     }
     this.updateState({ volume: clampedVolume });
 
-    // Salvar volume nas configurações
-    this.settingsService.saveSettings({ musicVolume: clampedVolume });
+    // Só salvar nas configurações se explicitamente solicitado
+    if (saveToSettings) {
+      this.settingsService.saveSettings({ musicVolume: clampedVolume });
+    }
   }
 
   seek(time: number): void {
@@ -177,7 +179,7 @@ export class AudioService {
 
       // Tentar carregar o arquivo específico
       const soundAudio = new Audio(fullPath);
-      soundAudio.volume = settings.musicVolume || 0.7;
+      soundAudio.volume = settings.musicVolume || 0.5;
 
       // Adicionar listener de erro para fallback
       soundAudio.addEventListener('error', async () => {

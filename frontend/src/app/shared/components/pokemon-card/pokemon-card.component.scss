@@ -129,6 +129,7 @@
           height: 28px;
           transition: all 0.3s ease;
           z-index: 1;
+          transform: rotate(0deg) scale(1); /* Estado base explícito */
         }
 
         .capture-hint {
@@ -167,6 +168,7 @@
           height: 28px;
           transition: all 0.3s ease;
           z-index: 1;
+          transform: rotate(0deg) scale(1); /* Estado base explícito */
         }
 
         .captured-indicator {
@@ -189,8 +191,8 @@
         }
       }
 
-      // Hover Effects
-      &:hover:not(:disabled) {
+      // Hover Effects - Só aplica se não estiver em loading
+      &:hover:not(:disabled):not(.capturing) {
         transform: scale(1.1);
         background: rgba(255, 255, 255, 1);
         border-color: var(--ion-color-primary);
@@ -202,8 +204,13 @@
         }
 
         .pokeball-icon {
-          transform: rotate(10deg);
+          transform: rotate(10deg) scale(1);
         }
+      }
+
+      // Reset explícito quando não está em hover
+      &:not(:hover) .pokeball-icon {
+        transform: rotate(0deg) scale(1) !important;
       }
 
       // Captured State Styling
@@ -211,10 +218,19 @@
         background: rgba(var(--ion-color-success-rgb), 0.1);
         border-color: var(--ion-color-success);
 
-        &:hover {
+        &:hover:not(:disabled):not(.capturing) {
           background: rgba(var(--ion-color-success-rgb), 0.2);
           border-color: var(--ion-color-success-shade);
           box-shadow: 0 6px 20px rgba(var(--ion-color-success-rgb), 0.3);
+
+          .pokeball-icon {
+            transform: rotate(10deg) scale(1);
+          }
+        }
+
+        // Reset explícito para estado captured quando não está em hover
+        &:not(:hover) .pokeball-icon {
+          transform: rotate(0deg) scale(1) !important;
         }
       }
 
@@ -223,6 +239,16 @@
         animation: captureAnimation 1s infinite;
         border-color: var(--ion-color-warning);
         background: rgba(var(--ion-color-warning-rgb), 0.1);
+
+        // Durante a captura, garantir que hover não interfira
+        &:hover .pokeball-icon {
+          transform: none; /* Deixa a animação controlar */
+        }
+
+        // Reset após animação
+        .pokeball-icon {
+          animation-fill-mode: forwards;
+        }
       }
 
       // Disabled State
@@ -234,6 +260,19 @@
         &:hover {
           transform: none;
           box-shadow: none;
+        }
+
+        // Reset completo do ícone quando disabled
+        .pokeball-icon {
+          transform: rotate(0deg) scale(1) !important;
+        }
+      }
+
+      // Classe de force reset para corrigir alinhamento após operações
+      &.force-reset {
+        .pokeball-icon {
+          transform: rotate(0deg) scale(1) !important;
+          transition: transform 0.1s ease !important;
         }
       }
     }
