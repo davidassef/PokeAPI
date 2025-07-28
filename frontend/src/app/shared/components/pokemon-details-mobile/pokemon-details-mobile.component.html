@@ -17,46 +17,44 @@
           <div class="header-info" *ngIf="pokemon">
             <div class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</div>
           </div>
+
+          <!-- ✅ CORREÇÃO: Botão movido para dentro do header-center para evitar desalinhamento -->
+          <button *ngIf="showCaptureButton && pokemon"
+                  class="mobile-capture-btn"
+                  [class.captured]="isCaptured"
+                  [class.capturing]="isCaptureLoading"
+                  [disabled]="isCaptureLoading"
+                  type="button"
+                  (click)="onCaptureClick($event)"
+                  [attr.data-pokemon-id]="pokemon.id"
+                  [attr.aria-label]="isCaptured ? ('pokemon.release' | translate) : ('pokemon.capture' | translate)">
+
+            <!-- Loading State -->
+            <div *ngIf="isCaptureLoading" class="loading-state">
+              <ion-spinner name="crescent" color="light"></ion-spinner>
+            </div>
+
+            <!-- Not Captured State -->
+            <div *ngIf="!isCaptured && !isCaptureLoading" class="capture-state">
+              <img src="assets/img/opened_pokeball.png"
+                   alt="Pokébola aberta"
+                   class="pokeball-icon">
+              <div class="capture-hint">
+                <ion-icon name="add-circle-outline"></ion-icon>
+              </div>
+            </div>
+
+            <!-- Captured State -->
+            <div *ngIf="isCaptured && !isCaptureLoading" class="captured-state">
+              <img src="assets/img/closed_pokeball.png"
+                   alt="Pokébola fechada"
+                   class="pokeball-icon">
+              <div class="captured-indicator">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              </div>
+            </div>
+          </button>
         </div>
-
-        <!-- ✅ NOVO: Botão de captura no header mobile -->
-        <button *ngIf="showCaptureButton && pokemon"
-                class="mobile-capture-btn"
-                [class.captured]="isCaptured"
-                [class.capturing]="isCaptureLoading"
-                [disabled]="isCaptureLoading"
-                type="button"
-                (click)="onCaptureClick($event)"
-                [attr.data-pokemon-id]="pokemon.id"
-                [attr.aria-label]="isCaptured ? ('pokemon.release' | translate) : ('pokemon.capture' | translate)">
-
-          <!-- Loading State -->
-          <div *ngIf="isCaptureLoading" class="loading-state">
-            <ion-spinner name="crescent" color="light"></ion-spinner>
-          </div>
-
-          <!-- Not Captured State -->
-          <div *ngIf="!isCaptured && !isCaptureLoading" class="capture-state">
-            <img src="assets/img/opened_pokeball.png"
-                 alt="Pokébola aberta"
-                 class="pokeball-icon">
-            <div class="capture-hint">
-              <ion-icon name="add-circle-outline"></ion-icon>
-            </div>
-          </div>
-
-          <!-- Captured State -->
-          <div *ngIf="isCaptured && !isCaptureLoading" class="captured-state">
-            <img src="assets/img/closed_pokeball.png"
-                 alt="Pokébola fechada"
-                 class="pokeball-icon">
-            <div class="captured-indicator">
-              <ion-icon name="checkmark-circle" color="success"></ion-icon>
-            </div>
-          </div>
-        </button>
-
-        <div class="header-info-continued" *ngIf="pokemon">
 
           <!-- Indicador de cache (apenas em desenvolvimento) -->
           <div class="cache-indicator" *ngIf="showCacheStats">

@@ -1272,8 +1272,7 @@
       .pokemon-name-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        justify-content: center; // ✅ CORREÇÃO: Centralizar o container
         width: 100%;
 
         .name-and-id-container {
@@ -1282,7 +1281,8 @@
           align-items: center;
           justify-content: center;
           gap: 8px;
-          flex: 1;
+          position: relative; // ✅ CORREÇÃO: Contexto para posicionamento absoluto
+          padding-right: 72px; // ✅ CORREÇÃO: Espaço para o botão (56px + 16px margin)
 
           h1 {
             margin: 0;
@@ -1303,7 +1303,7 @@
           }
         }
 
-        // ✅ NOVO: Estilos do botão de captura no modal
+        // ✅ CORREÇÃO: Estilos do botão de captura com posicionamento absoluto
         .modal-capture-btn {
           background: rgba(255, 255, 255, 0.15);
           border: 2px solid rgba(255, 255, 255, 0.3);
@@ -1316,12 +1316,15 @@
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
           backdrop-filter: blur(10px);
-          position: relative;
+          position: absolute; // ✅ CORREÇÃO: Posicionamento absoluto
+          top: 50%; // ✅ CORREÇÃO: Centralizar verticalmente
+          right: 0; // ✅ CORREÇÃO: Alinhar à direita
+          transform: translateY(-50%); // ✅ CORREÇÃO: Ajuste fino da centralização
           overflow: hidden;
 
           // Estados visuais
           &:hover:not(:disabled):not(.capturing) {
-            transform: scale(1.1);
+            transform: translateY(-50%) scale(1.1); // ✅ CORREÇÃO: Manter centralização + scale
             background: rgba(255, 255, 255, 0.25);
             border-color: rgba(255, 255, 255, 0.5);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -1621,9 +1624,9 @@
         gap: 8px;
 
         .pokemon-name-header {
-          gap: 12px;
-
           .name-and-id-container {
+            padding-right: 64px; // ✅ CORREÇÃO: Espaço menor para mobile (48px + 16px)
+
             h1 {
               font-size: 1.6rem;
             }
@@ -1645,6 +1648,10 @@
               ion-icon {
                 font-size: 10px;
               }
+            }
+
+            &:hover:not(:disabled):not(.capturing) {
+              transform: translateY(-50%) scale(1.1); // ✅ CORREÇÃO: Manter centralização no mobile
             }
           }
         }

@@ -118,6 +118,8 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    position: relative; // ✅ CORREÇÃO: Contexto para posicionamento absoluto
+    padding-right: 64px; // ✅ CORREÇÃO: Espaço para o botão (48px + 16px margin)
 
     h2 {
       margin: 0;
@@ -139,7 +141,7 @@
     }
   }
 
-  // ✅ NOVO: Estilos do botão de captura mobile
+  // ✅ CORREÇÃO: Estilos do botão de captura mobile com posicionamento absoluto
   .mobile-capture-btn {
     background: rgba(255, 255, 255, 0.15);
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -152,12 +154,15 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     backdrop-filter: blur(10px);
-    position: relative;
+    position: absolute; // ✅ CORREÇÃO: Posicionamento absoluto
+    top: 50%; // ✅ CORREÇÃO: Centralizar verticalmente
+    right: 0; // ✅ CORREÇÃO: Alinhar à direita
+    transform: translateY(-50%); // ✅ CORREÇÃO: Ajuste fino da centralização
     overflow: hidden;
 
     // Estados visuais
     &:hover:not(:disabled):not(.capturing) {
-      transform: scale(1.1);
+      transform: translateY(-50%) scale(1.1); // ✅ CORREÇÃO: Manter centralização + scale
       background: rgba(255, 255, 255, 0.25);
       border-color: rgba(255, 255, 255, 0.5);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -259,9 +264,7 @@
     }
   }
 
-  .header-info-continued {
-    width: 40px; // Espaço para balancear o layout
-  }
+
 }
 
 .loading-container {
