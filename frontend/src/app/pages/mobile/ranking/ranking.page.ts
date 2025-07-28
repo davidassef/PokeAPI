@@ -146,6 +146,9 @@ export class RankingPage implements OnInit, OnDestroy {
     this.loadRanking();
     this.loadCapturedStates();
 
+    // ✅ NOVO: Observar mudanças de captura em tempo real
+    this.setupCapturedSubscription();
+
     // ✅ NOVO: Inicia auto-refresh após carregamento inicial
     setTimeout(() => {
       this.startAutoRefresh();
@@ -584,6 +587,33 @@ export class RankingPage implements OnInit, OnDestroy {
     }));
 
     this.cdr.detectChanges();
+  }
+
+  /**
+   * ✅ NOVO: Configura subscription para sincronização automática de capturas
+   */
+  private setupCapturedSubscription(): void {
+    console.log('[MobileRanking] Configurando subscription para sincronização automática');
+
+    this.capturedService.captured$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(captured => {
+        console.log(`[MobileRanking] Estado de captura atualizado: ${captured.length} capturas`);
+
+        // Atualizar cache local com novos dados
+        this.capturedCache.clear();
+        this.capturedStates.clear();
+
+        captured.forEach(pokemon => {
+          this.capturedCache.set(pokemon.pokemon_id, true);
+          this.capturedStates.set(pokemon.pokemon_id, true);
+        });
+
+        // Atualizar ranking atual com novos estados
+        this.updateGlobalRankingWithCapturedStates();
+
+        console.log(`[MobileRanking] Cache atualizado: ${this.capturedCache.size} pokémons capturados`);
+      });
   }
 
   /**
