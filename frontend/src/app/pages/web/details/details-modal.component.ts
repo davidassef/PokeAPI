@@ -11,10 +11,7 @@ import { PokemonDetailsManager } from '../../../core/services/pokemon-details-ma
 import { PokemonThemeService } from '../../../core/services/pokemon-theme.service';
 import { PokemonNavigationService } from '../../../core/services/pokemon-navigation.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
-import { CapturedService } from '../../../core/services/captured.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { AudioService } from '../../../core/services/audio.service';
-import { ToastNotificationService } from '../../../core/services/toast-notification.service';
+
 
 @Component({
   selector: 'app-details-modal',
@@ -59,12 +56,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   flavorText: string = '';
   flavorTexts: string[] = [];
 
-  // ✅ NOVO: Propriedades do sistema de captura
-  showCaptureButton = true;
-  isCaptured = false;
-  isCaptureLoading = false; // ✅ CORREÇÃO: Renomeado para evitar conflito
-  isProcessing = false;
-  private capturedSubscription?: any;
+
   currentFlavorIndex: number = 0;
   showScrollIndicator: boolean = false;
 
@@ -245,11 +237,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     private pokemonThemeService: PokemonThemeService,
     private pokemonNavigationService: PokemonNavigationService,
     private pokeApiService: PokeApiService,
-    private cdr: ChangeDetectorRef, // ✅ PERFORMANCE: ChangeDetectorRef para OnPush
-    private capturedService: CapturedService, // ✅ NOVO: Serviço de captura
-    private authService: AuthService, // ✅ NOVO: Serviço de autenticação
-    private audioService: AudioService, // ✅ NOVO: Serviço de áudio
-    private toastNotification: ToastNotificationService // ✅ NOVO: Serviço de notificações
+    private cdr: ChangeDetectorRef // ✅ PERFORMANCE: ChangeDetectorRef para OnPush
   ) {}
 
   ngOnInit() {
@@ -281,8 +269,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.onLanguageChange();
       });
 
-    // ✅ NOVO: Inicializar estado de captura
-    this.initializeCaptureState();
+
   }
 
   private loadPokemonById(id: number) {
@@ -1449,10 +1436,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     // ✅ REMOÇÃO COMPLETA: Cache removido - sem necessidade de limpeza
 
-    // ✅ NOVO: Limpar subscription de captura
-    if (this.capturedSubscription) {
-      this.capturedSubscription.unsubscribe();
-    }
+
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -1659,176 +1643,6 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     if (this.canScrollThumbnailsRight()) {
       this.selectCarouselImage(Math.min(this.carouselImages.length - 1, this.currentCarouselIndex + 1));
     }
-  }
-
-  // ✅ NOVO: Métodos do sistema de captura
-
-  /**
-   * Inicializa o estado de captura do Pokémon
-   */
-  private initializeCaptureState(): void {
-    if (!this.pokemon?.id) return;
-
-    // Verificar se o Pokémon está capturado
-    this.capturedSubscription = this.capturedService.captured$.subscribe(captured => {
-      this.isCaptured = captured.some(c => c.pokemon_id === this.pokemon.id);
-      this.cdr.detectChanges();
-    });
-  }
-
-  /**
-   * Manipula o clique no botão de captura/liberação
-   * @param event Evento de clique
-   */
-  async onCaptureClick(event: Event) {
-    event.stopPropagation();
-
-    // Evita múltiplos cliques rápidos
-    if (this.isProcessing) {
-      console.log('[DetailsModal] Operação de captura já em andamento, ignorando clique');
-      return;
-    }
-
-    // Verifica autenticação
-    const isAuthenticated = this.authService.isAuthenticated();
-    const currentUser = this.authService.getCurrentUser();
-
-    console.log('[DetailsModal] Verificação de autenticação:', {
-      isAuthenticated,
-      hasUser: !!currentUser,
-      userId: currentUser?.id
-    });
-
-    if (!isAuthenticated || !currentUser) {
-      console.log('[DetailsModal] Usuário não autenticado, abrindo modal de login');
-      await this.openAuthModal();
-      return;
-    }
-
-    // Inicia o processo de captura/liberação
-    this.isProcessing = true;
-    this.isCaptureLoading = true; // ✅ CORREÇÃO: Usar propriedade renomeada
-    console.log(`[DetailsModal] Iniciando ${this.isCaptured ? 'libertação' : 'captura'} do Pokémon ${this.pokemon.id}`);
-
-    // Passa o estado atual para evitar verificação HTTP desnecessária
-    this.capturedService.toggleCaptured(this.pokemon, this.isCaptured).subscribe({
-      next: (isCaptured) => {
-        console.log(`[DetailsModal] Pokémon ${this.pokemon.id} ${isCaptured ? 'capturado' : 'liberado'} com sucesso`);
-        this.isCaptured = isCaptured;
-
-        // Toca o som de captura/libertação
-        this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release')
-          .catch(error => console.error('[DetailsModal] Erro ao reproduzir som:', error));
-
-        // Exibe mensagem de sucesso usando toast inteligente
-        if (isCaptured) {
-          this.toastNotification.showPokemonCaptured(this.pokemon.name);
-        } else {
-          this.toastNotification.showPokemonReleased(this.pokemon.name);
-        }
-
-        this.cdr.detectChanges();
-      },
-      error: async (error: any) => {
-        console.error('[DetailsModal] Erro ao alternar estado de captura:', {
-          pokemonId: this.pokemon.id,
-          error: error.error || error.message,
-          status: error.status
-        });
-
-        // Resetar estado de loading imediatamente em caso de erro
-        this.isCaptureLoading = false; // ✅ CORREÇÃO: Usar propriedade renomeada
-        this.isProcessing = false;
-
-        // Se for erro de autenticação, abrir modal de login novamente
-        if (error.status === 401 || error.status === 403) {
-          console.log('[DetailsModal] Erro de autenticação, abrindo modal de login');
-          await this.openAuthModal();
-          return;
-        }
-
-        // Mensagem de erro adequada com base no status HTTP
-        let messageKey = 'capture.error';
-        if (error.status === 0) {
-          messageKey = 'capture.network_error';
-        } else if (error.status === 408 || error.message?.includes('timeout')) {
-          messageKey = 'capture.timeout';
-        }
-
-        await this.toastNotification.showError(messageKey);
-        this.cdr.detectChanges();
-      },
-      complete: () => {
-        console.log(`[DetailsModal] Operação de ${this.isCaptured ? 'captura' : 'libertação'} concluída`);
-        this.isCaptureLoading = false; // ✅ CORREÇÃO: Usar propriedade renomeada
-        this.isProcessing = false;
-
-        // Force reset do alinhamento do ícone após operação
-        this.forceIconReset();
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  /**
-   * Abre modal de autenticação
-   */
-  private async openAuthModal(): Promise<void> {
-    const { AuthModalNewComponent } = await import('../../../shared/components/auth-modal-new/auth-modal-new.component');
-
-    const modal = await this.modalController.create({
-      component: AuthModalNewComponent,
-      cssClass: 'auth-modal-fixed', // ✅ CORREÇÃO: Usar auth-modal-fixed para hierarquia correta
-      backdropDismiss: true
-    });
-
-    modal.onDidDismiss().then(async (result) => {
-      if (result.data?.success) {
-        console.log('[DetailsModal] Login bem-sucedido');
-
-        // Aguardar um pouco para garantir que o estado foi atualizado
-        setTimeout(() => {
-          const isAuthenticated = this.authService.isAuthenticated();
-          const currentUser = this.authService.getCurrentUser();
-
-          console.log('[DetailsModal] Estado após login:', {
-            isAuthenticated,
-            hasUser: !!currentUser,
-            userId: currentUser?.id
-          });
-
-          if (isAuthenticated && currentUser) {
-            console.log('[DetailsModal] Usuário autenticado, tentando capturar novamente');
-            this.onCaptureClick(new Event('click'));
-          } else {
-            console.log('[DetailsModal] Usuário ainda não autenticado após login');
-          }
-        }, 1000);
-      } else {
-        console.log('[DetailsModal] Login cancelado ou falhou');
-      }
-    });
-
-    return await modal.present();
-  }
-
-  /**
-   * Force reset do alinhamento do ícone da pokébola
-   */
-  private forceIconReset(): void {
-    // Usar setTimeout para garantir que o DOM foi atualizado
-    setTimeout(() => {
-      const captureBtn = document.querySelector(`[data-pokemon-id="${this.pokemon.id}"] .modal-capture-btn`);
-      if (captureBtn) {
-        // Adicionar classe de reset temporariamente
-        captureBtn.classList.add('force-reset');
-
-        // Remover a classe após um breve delay para permitir a transição
-        setTimeout(() => {
-          captureBtn.classList.remove('force-reset');
-        }, 100);
-      }
-    }, 50);
   }
 
 }
