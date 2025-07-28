@@ -1283,7 +1283,7 @@
           gap: 8px;
           position: relative; // ✅ CORREÇÃO: Contexto para posicionamento absoluto
           padding-left: 72px; // ✅ NOVO: Espaço para o botão à esquerda (56px + 16px margin)
-          margin-right: 90px; // ✅ AJUSTE FINO: Move container só mais um tiquinho para esquerda
+          margin-right: 75px; // ✅ CORREÇÃO: Move container um pouco para direita
 
           h1 {
             margin: 0;
@@ -1627,7 +1627,7 @@
         .pokemon-name-header {
           .name-and-id-container {
             padding-left: 64px; // ✅ NOVO: Espaço à esquerda para mobile (48px + 16px)
-            margin-right: 55px; // ✅ AJUSTE FINO: Move container só mais um tiquinho no mobile
+            margin-right: 45px; // ✅ CORREÇÃO: Move container um pouco para direita no mobile
 
             h1 {
               font-size: 1.6rem;

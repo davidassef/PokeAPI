@@ -80,6 +80,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   // ✅ ESTADO DE LOADING ÚNICO E SIMPLES
   private isLoadingPokemonData: boolean = false;
+  private isLoadingCombatData: boolean = false;
 
   // Getter público para verificar estado de loading
   get isLoading(): boolean {
@@ -187,7 +188,28 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   isCombatDataReady(): boolean {
-    return !!this.pokemon;
+    // ✅ CORREÇÃO: Verificar se pokemon existe E se as habilidades foram carregadas
+    if (!this.pokemon) {
+      return false;
+    }
+
+    // Se está carregando dados de combate, não está pronto
+    if (this.isLoadingCombatData) {
+      return false;
+    }
+
+    // Se não há habilidades, considerar pronto
+    if (!this.pokemon.abilities || this.pokemon.abilities.length === 0) {
+      return true;
+    }
+
+    // Verificar se todas as habilidades têm descrições carregadas
+    const allAbilitiesLoaded = this.pokemon.abilities.every((ability: any) => {
+      const description = this.abilityDescriptions[ability.ability.name];
+      return description && description !== this.translate.instant('app.loading');
+    });
+
+    return allAbilitiesLoaded;
   }
 
   isEvolutionDataReady(): boolean {
@@ -473,6 +495,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.isTabTransitioning = false;
     this.isOverviewCombatTransition = false;
     this.disableTabAnimation = false;
+    this.isLoadingCombatData = false; // ✅ CORREÇÃO: Reset loading state
+    this.abilityDescriptions = {}; // ✅ CORREÇÃO: Clear ability descriptions for fresh data
 
     // ✅ OTIMIZAÇÃO HEADER: Configuração paralela de tema e carrossel
     this.generatePokemonTheme();
@@ -1168,6 +1192,11 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
       case 'combat':
       case 'evolution':
+        // ✅ CORREÇÃO: Definir estado de loading específico para combat
+        if (tab === 'combat') {
+          this.isLoadingCombatData = true;
+        }
+
         // Carregar dados específicos via PokemonDetailsManager
         this.pokemonDetailsManager.loadTabData(tab, this.pokemon, this.speciesData)
           .pipe(takeUntil(this.destroy$))
@@ -1175,10 +1204,20 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
             next: (tabData) => {
               console.log(`✅ Dados da aba ${tab} carregados:`, tabData);
               this.processTabData(tab, tabData);
+
+              // ✅ CORREÇÃO: Limpar estado de loading específico
+              if (tab === 'combat') {
+                this.isLoadingCombatData = false;
+              }
             },
             error: (error) => {
               console.error(`❌ Erro ao carregar dados da aba ${tab}:`, error);
               this.handleTabLoadingError(tab, error);
+
+              // ✅ CORREÇÃO: Limpar estado de loading em caso de erro
+              if (tab === 'combat') {
+                this.isLoadingCombatData = false;
+              }
             }
           });
         break;
