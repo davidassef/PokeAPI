@@ -1282,7 +1282,8 @@
           justify-content: center;
           gap: 8px;
           position: relative; // ✅ CORREÇÃO: Contexto para posicionamento absoluto
-          padding-right: 72px; // ✅ CORREÇÃO: Espaço para o botão (56px + 16px margin)
+          padding-left: 72px; // ✅ NOVO: Espaço para o botão à esquerda (56px + 16px margin)
+          margin-right: 20px; // ✅ NOVO: Move container um pouco para esquerda para alinhar
 
           h1 {
             margin: 0;
@@ -1303,7 +1304,7 @@
           }
         }
 
-        // ✅ CORREÇÃO: Estilos do botão de captura com posicionamento absoluto
+        // ✅ CORREÇÃO: Estilos do botão de captura com posicionamento absoluto à esquerda
         .modal-capture-btn {
           background: rgba(255, 255, 255, 0.15);
           border: 2px solid rgba(255, 255, 255, 0.3);
@@ -1318,7 +1319,7 @@
           backdrop-filter: blur(10px);
           position: absolute; // ✅ CORREÇÃO: Posicionamento absoluto
           top: 50%; // ✅ CORREÇÃO: Centralizar verticalmente
-          right: 0; // ✅ CORREÇÃO: Alinhar à direita
+          left: 0; // ✅ NOVO: Alinhar à esquerda em vez da direita
           transform: translateY(-50%); // ✅ CORREÇÃO: Ajuste fino da centralização
           overflow: hidden;
 
@@ -1625,7 +1626,8 @@
 
         .pokemon-name-header {
           .name-and-id-container {
-            padding-right: 64px; // ✅ CORREÇÃO: Espaço menor para mobile (48px + 16px)
+            padding-left: 64px; // ✅ NOVO: Espaço à esquerda para mobile (48px + 16px)
+            margin-right: 16px; // ✅ NOVO: Margem menor para mobile
 
             h1 {
               font-size: 1.6rem;
@@ -1635,6 +1637,7 @@
           .modal-capture-btn {
             width: 48px;
             height: 48px;
+            left: 0; // ✅ NOVO: Garantir posicionamento à esquerda no mobile
 
             .pokeball-icon {
               width: 28px;
