@@ -62,7 +62,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
   // ✅ NOVO: Propriedades do sistema de captura
   showCaptureButton = true;
   isCaptured = false;
-  isLoading = false;
+  isCaptureLoading = false; // ✅ CORREÇÃO: Renomeado para evitar conflito
   isProcessing = false;
   private capturedSubscription?: any;
   currentFlavorIndex: number = 0;
@@ -1668,7 +1668,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     // Inicia o processo de captura/liberação
     this.isProcessing = true;
-    this.isLoading = true;
+    this.isCaptureLoading = true; // ✅ CORREÇÃO: Usar propriedade renomeada
     console.log(`[DetailsModal] Iniciando ${this.isCaptured ? 'libertação' : 'captura'} do Pokémon ${this.pokemon.id}`);
 
     // Passa o estado atual para evitar verificação HTTP desnecessária
@@ -1698,7 +1698,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         });
 
         // Resetar estado de loading imediatamente em caso de erro
-        this.isLoading = false;
+        this.isCaptureLoading = false; // ✅ CORREÇÃO: Usar propriedade renomeada
         this.isProcessing = false;
 
         // Se for erro de autenticação, abrir modal de login novamente
@@ -1721,7 +1721,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
       },
       complete: () => {
         console.log(`[DetailsModal] Operação de ${this.isCaptured ? 'captura' : 'libertação'} concluída`);
-        this.isLoading = false;
+        this.isCaptureLoading = false; // ✅ CORREÇÃO: Usar propriedade renomeada
         this.isProcessing = false;
 
         // Force reset do alinhamento do ícone após operação
@@ -1735,10 +1735,10 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
    * Abre modal de autenticação
    */
   private async openAuthModal(): Promise<void> {
-    const { AuthModalComponent } = await import('../../../shared/components/auth-modal/auth-modal.component');
+    const { AuthModalNewComponent } = await import('../../../shared/components/auth-modal-new/auth-modal-new.component');
 
     const modal = await this.modalController.create({
-      component: AuthModalComponent,
+      component: AuthModalNewComponent,
       cssClass: 'auth-modal',
       backdropDismiss: true
     });
