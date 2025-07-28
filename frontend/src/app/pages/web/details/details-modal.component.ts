@@ -284,8 +284,8 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.onLanguageChange();
       });
 
-    // ✅ NOVO: Inicializar estado de captura
-    this.initializeCaptureState();
+    // ✅ CORREÇÃO: initializeCaptureState() movido para initializePokemonData()
+    // para garantir que seja chamado quando o Pokemon estiver disponível
   }
 
   private loadPokemonById(id: number) {
@@ -510,6 +510,9 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
     } else {
       this.updateCurrentCarouselImage();
     }
+
+    // ✅ CORREÇÃO: Inicializar estado de captura quando Pokemon está disponível
+    this.initializeCaptureState();
 
     console.log('✅ Inicialização completa:', {
       pokemon: !!this.pokemon,
@@ -1670,12 +1673,57 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
    * Inicializa o estado de captura do Pokémon
    */
   private initializeCaptureState(): void {
-    if (!this.pokemon?.id) return;
+    if (!this.pokemon?.id) {
+      console.log('[DetailsModal] initializeCaptureState: Pokemon não disponível');
+      return;
+    }
 
-    // Verificar se o Pokémon está capturado
-    this.capturedSubscription = this.capturedService.captured$.subscribe(captured => {
-      this.isCaptured = captured.some(c => c.pokemon_id === this.pokemon.id);
-      this.cdr.detectChanges();
+    // ✅ CORREÇÃO: Limpar subscription anterior se existir
+    if (this.capturedSubscription) {
+      this.capturedSubscription.unsubscribe();
+      this.capturedSubscription = undefined;
+    }
+
+    console.log(`[DetailsModal] Inicializando estado de captura para Pokemon ID: ${this.pokemon.id}`);
+
+    // ✅ CORREÇÃO: Primeiro carregar dados do serviço, depois observar mudanças
+    this.capturedService.fetchCaptured().subscribe({
+      next: (captured) => {
+        console.log(`[DetailsModal] Dados de captura carregados: ${captured.length} capturas`);
+        this.isCaptured = captured.some(c => c.pokemon_id === this.pokemon.id);
+        console.log(`[DetailsModal] Estado inicial do Pokemon ${this.pokemon.id}: ${this.isCaptured ? 'Capturado' : 'Não capturado'}`);
+        this.cdr.detectChanges();
+
+        // Agora observar mudanças futuras
+        this.capturedSubscription = this.capturedService.captured$.subscribe(updatedCaptured => {
+          const wasCaptured = this.isCaptured;
+          this.isCaptured = updatedCaptured.some(c => c.pokemon_id === this.pokemon.id);
+
+          console.log(`[DetailsModal] Estado de captura atualizado para Pokemon ${this.pokemon.id}:`, {
+            wasCaptured,
+            isCaptured: this.isCaptured,
+            capturedCount: updatedCaptured.length
+          });
+
+          this.cdr.detectChanges();
+        });
+      },
+      error: (error) => {
+        console.error('[DetailsModal] Erro ao carregar dados de captura:', error);
+        // Mesmo com erro, observar mudanças futuras
+        this.capturedSubscription = this.capturedService.captured$.subscribe(captured => {
+          const wasCaptured = this.isCaptured;
+          this.isCaptured = captured.some(c => c.pokemon_id === this.pokemon.id);
+
+          console.log(`[DetailsModal] Estado de captura atualizado (após erro) para Pokemon ${this.pokemon.id}:`, {
+            wasCaptured,
+            isCaptured: this.isCaptured,
+            capturedCount: captured.length
+          });
+
+          this.cdr.detectChanges();
+        });
+      }
     });
   }
 

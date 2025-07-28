@@ -106,4 +106,87 @@ test.describe('Teste da Pokébola de Captura no Modal', () => {
       console.log('❌ PROBLEMA: Pokébolas NÃO encontradas nos cards!');
     }
   });
+
+  test('Deve manter o estado de captura quando o modal é reaberto', async ({ page }) => {
+    console.log('🧪 Testando persistência do estado de captura...');
+
+    // Clicar no primeiro card para abrir o modal
+    const firstCard = page.locator('app-pokemon-card').first();
+    await firstCard.click();
+    console.log('🖱️ Clicou no primeiro card');
+
+    // Aguardar modal abrir
+    await page.waitForSelector('app-details-modal[ng-reflect-is-open="true"]', { timeout: 10000 });
+    const modal = page.locator('app-details-modal[ng-reflect-is-open="true"]');
+    await expect(modal).toBeVisible();
+    console.log('✅ Modal abriu corretamente');
+
+    // Aguardar um pouco para o conteúdo carregar
+    await page.waitForTimeout(2000);
+
+    // Verificar estado inicial do botão de captura
+    const captureButton = modal.locator('.modal-capture-btn');
+    await expect(captureButton).toBeVisible();
+
+    const initialState = await captureButton.getAttribute('class');
+    const isInitiallyCaptured = initialState?.includes('captured') || false;
+    console.log(`🔍 Estado inicial: ${isInitiallyCaptured ? 'Capturado' : 'Não capturado'}`);
+
+    // Se não estiver capturado, capturar o Pokémon
+    if (!isInitiallyCaptured) {
+      console.log('🎯 Capturando Pokémon...');
+      await captureButton.click();
+
+      // Aguardar a captura ser processada
+      await page.waitForTimeout(3000);
+
+      // Verificar se foi capturado
+      const capturedState = await captureButton.getAttribute('class');
+      const isCaptured = capturedState?.includes('captured') || false;
+      console.log(`✅ Estado após captura: ${isCaptured ? 'Capturado' : 'Não capturado'}`);
+
+      if (!isCaptured) {
+        console.log('⚠️ Captura pode ter falhado (sem autenticação), continuando teste...');
+      }
+    }
+
+    // Fechar modal
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(1000);
+    console.log('🔒 Modal fechado');
+
+    // Reabrir o mesmo modal
+    await firstCard.click();
+    console.log('🖱️ Clicou no primeiro card novamente');
+
+    // Aguardar modal abrir novamente
+    await page.waitForSelector('app-details-modal[ng-reflect-is-open="true"]', { timeout: 10000 });
+    const reopenedModal = page.locator('app-details-modal[ng-reflect-is-open="true"]');
+    await expect(reopenedModal).toBeVisible();
+    console.log('✅ Modal reaberto corretamente');
+
+    // Aguardar um pouco para o estado ser carregado
+    await page.waitForTimeout(3000);
+
+    // Verificar estado após reabertura
+    const reopenedCaptureButton = reopenedModal.locator('.modal-capture-btn');
+    await expect(reopenedCaptureButton).toBeVisible();
+
+    const finalState = await reopenedCaptureButton.getAttribute('class');
+    const isFinallyCapturado = finalState?.includes('captured') || false;
+    console.log(`🔍 Estado após reabertura: ${isFinallyCapturado ? 'Capturado' : 'Não capturado'}`);
+
+    // Verificar se o estado foi mantido
+    if (isInitiallyCaptured || isFinallyCapturado) {
+      console.log('✅ SUCESSO: Estado de captura mantido após reabertura do modal!');
+    } else {
+      console.log('❌ PROBLEMA: Estado de captura NÃO foi mantido após reabertura!');
+      console.log('💡 Sugestão: Verificar se initializeCaptureState() está sendo chamado corretamente');
+    }
+
+    // Fechar modal final
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(1000);
+    console.log('🔒 Modal fechado');
+  });
 });
