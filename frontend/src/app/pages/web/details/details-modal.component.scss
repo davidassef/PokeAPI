@@ -1271,27 +1271,156 @@
 
       .pokemon-name-header {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
 
-        h1 {
-          margin: 0;
-          font-size: 1.8rem;
-          font-weight: 700;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-          text-align: center;
-          white-space: nowrap;
+        .name-and-id-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          flex: 1;
+
+          h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            white-space: nowrap;
+          }
+
+          .pokemon-id-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+          }
         }
 
-        .pokemon-id-badge {
-          background: rgba(255, 255, 255, 0.2);
-          padding: 4px 10px;
-          border-radius: 16px;
-          font-weight: bold;
-          font-size: 0.9rem;
+        // ✅ NOVO: Estilos do botão de captura no modal
+        .modal-capture-btn {
+          background: rgba(255, 255, 255, 0.15);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          cursor: pointer;
           backdrop-filter: blur(10px);
+          position: relative;
+          overflow: hidden;
+
+          // Estados visuais
+          &:hover:not(:disabled):not(.capturing) {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+            .pokeball-icon {
+              transform: rotate(10deg) scale(1) !important;
+            }
+          }
+
+          &:not(:hover) .pokeball-icon {
+            transform: rotate(0deg) scale(1) !important;
+          }
+
+          &.captured {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.5);
+
+            &:hover:not(:disabled) {
+              background: rgba(76, 175, 80, 0.3);
+              border-color: rgba(76, 175, 80, 0.7);
+            }
+          }
+
+          &.capturing {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: rgba(255, 193, 7, 0.5);
+            animation: pulse 1.5s ease-in-out infinite;
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+
+          // Estados internos
+          .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+
+            ion-spinner {
+              --color: #ffffff;
+              width: 28px;
+              height: 28px;
+            }
+          }
+
+          .capture-state, .captured-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+
+            .pokeball-icon {
+              width: 32px;
+              height: 32px;
+              transition: all 0.3s ease;
+              z-index: 1;
+              transform: rotate(0deg) scale(1);
+            }
+
+            .capture-hint, .captured-indicator {
+              position: absolute;
+              bottom: -2px;
+              right: -2px;
+              background: rgba(255, 255, 255, 0.9);
+              border-radius: 50%;
+              width: 18px;
+              height: 18px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 2;
+
+              ion-icon {
+                font-size: 12px;
+              }
+            }
+
+            .capture-hint {
+              color: var(--ion-color-primary);
+            }
+
+            .captured-indicator {
+              color: var(--ion-color-success);
+            }
+          }
+
+          // Classe de force reset para corrigir alinhamento após operações
+          &.force-reset {
+            .pokeball-icon {
+              transform: rotate(0deg) scale(1) !important;
+              transition: transform 0.1s ease !important;
+            }
+          }
         }
       }
 
@@ -1492,8 +1621,31 @@
         gap: 8px;
 
         .pokemon-name-header {
-          h1 {
-            font-size: 1.6rem;
+          gap: 12px;
+
+          .name-and-id-container {
+            h1 {
+              font-size: 1.6rem;
+            }
+          }
+
+          .modal-capture-btn {
+            width: 48px;
+            height: 48px;
+
+            .pokeball-icon {
+              width: 28px;
+              height: 28px;
+            }
+
+            .capture-hint, .captured-indicator {
+              width: 16px;
+              height: 16px;
+
+              ion-icon {
+                font-size: 10px;
+              }
+            }
           }
         }
       }

@@ -7,6 +7,10 @@ import { takeUntil } from 'rxjs/operators';
 import { ViewedPokemonService } from '../../../core/services/viewed-pokemon.service';
 import { PokemonCacheHelper } from '../../../core/services/pokemon-cache-helper.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
+import { CapturedService } from '../../../core/services/captured.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AudioService } from '../../../core/services/audio.service';
+import { ToastNotificationService } from '../../../core/services/toast-notification.service';
 
 @Component({
   selector: 'app-pokemon-details-mobile',
@@ -108,6 +112,13 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   private langChangeSubscription: any; // Adicionar esta linha
   private modalRef: HTMLIonModalElement | null = null;
 
+  // ✅ NOVO: Propriedades do sistema de captura
+  showCaptureButton = true;
+  isCaptured = false;
+  isLoading = false;
+  isProcessing = false;
+  private capturedSubscription?: any;
+
   constructor(
     private modalController: ModalController,
     private translate: TranslateService,
@@ -115,7 +126,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     private viewedPokemonService: ViewedPokemonService,
     private pokemonCacheHelper: PokemonCacheHelper,
     private pokeApiService: PokeApiService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private capturedService: CapturedService, // ✅ NOVO: Serviço de captura
+    private authService: AuthService, // ✅ NOVO: Serviço de autenticação
+    private audioService: AudioService, // ✅ NOVO: Serviço de áudio
+    private toastNotification: ToastNotificationService // ✅ NOVO: Serviço de notificações
   ) {}
 
   ngOnInit() {
@@ -139,6 +154,9 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     } else {
       console.warn('⚠️ PokemonDetailsMobileComponent - pokemonId inválido:', this.pokemonId);
     }
+
+    // ✅ NOVO: Inicializar estado de captura
+    this.initializeCaptureState();
 
     // Subscrever a mudanças de idioma
     this.langChangeSubscription = this.translate.onLangChange.subscribe((event: any) => {
@@ -177,6 +195,11 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
 
     if (this.langChangeSubscription) {
       this.langChangeSubscription.unsubscribe(); // Cancelar a subscription
+    }
+
+    // ✅ NOVO: Limpar subscription de captura
+    if (this.capturedSubscription) {
+      this.capturedSubscription.unsubscribe();
     }
   }
 
@@ -861,5 +884,175 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   public refreshData() {
     this.closeModal();
     this.loadPokemonData();
+  }
+
+  // ✅ NOVO: Métodos do sistema de captura
+
+  /**
+   * Inicializa o estado de captura do Pokémon
+   */
+  private initializeCaptureState(): void {
+    if (!this.pokemon?.id) return;
+
+    // Verificar se o Pokémon está capturado
+    this.capturedSubscription = this.capturedService.captured$.subscribe(captured => {
+      this.isCaptured = captured.some(c => c.pokemon_id === this.pokemon.id);
+      this.changeDetectorRef.detectChanges();
+    });
+  }
+
+  /**
+   * Manipula o clique no botão de captura/liberação
+   * @param event Evento de clique
+   */
+  async onCaptureClick(event: Event) {
+    event.stopPropagation();
+
+    // Evita múltiplos cliques rápidos
+    if (this.isProcessing) {
+      console.log('[PokemonDetailsMobile] Operação de captura já em andamento, ignorando clique');
+      return;
+    }
+
+    // Verifica autenticação
+    const isAuthenticated = this.authService.isAuthenticated();
+    const currentUser = this.authService.getCurrentUser();
+
+    console.log('[PokemonDetailsMobile] Verificação de autenticação:', {
+      isAuthenticated,
+      hasUser: !!currentUser,
+      userId: currentUser?.id
+    });
+
+    if (!isAuthenticated || !currentUser) {
+      console.log('[PokemonDetailsMobile] Usuário não autenticado, abrindo modal de login');
+      await this.openAuthModal();
+      return;
+    }
+
+    // Inicia o processo de captura/liberação
+    this.isProcessing = true;
+    this.isLoading = true;
+    console.log(`[PokemonDetailsMobile] Iniciando ${this.isCaptured ? 'libertação' : 'captura'} do Pokémon ${this.pokemon.id}`);
+
+    // Passa o estado atual para evitar verificação HTTP desnecessária
+    this.capturedService.toggleCaptured(this.pokemon, this.isCaptured).subscribe({
+      next: (isCaptured) => {
+        console.log(`[PokemonDetailsMobile] Pokémon ${this.pokemon.id} ${isCaptured ? 'capturado' : 'liberado'} com sucesso`);
+        this.isCaptured = isCaptured;
+
+        // Toca o som de captura/libertação
+        this.audioService.playCaptureSound(isCaptured ? 'capture' : 'release')
+          .catch(error => console.error('[PokemonDetailsMobile] Erro ao reproduzir som:', error));
+
+        // Exibe mensagem de sucesso usando toast inteligente
+        if (isCaptured) {
+          this.toastNotification.showPokemonCaptured(this.pokemon.name);
+        } else {
+          this.toastNotification.showPokemonReleased(this.pokemon.name);
+        }
+
+        this.changeDetectorRef.detectChanges();
+      },
+      error: async (error: any) => {
+        console.error('[PokemonDetailsMobile] Erro ao alternar estado de captura:', {
+          pokemonId: this.pokemon.id,
+          error: error.error || error.message,
+          status: error.status
+        });
+
+        // Resetar estado de loading imediatamente em caso de erro
+        this.isLoading = false;
+        this.isProcessing = false;
+
+        // Se for erro de autenticação, abrir modal de login novamente
+        if (error.status === 401 || error.status === 403) {
+          console.log('[PokemonDetailsMobile] Erro de autenticação, abrindo modal de login');
+          await this.openAuthModal();
+          return;
+        }
+
+        // Mensagem de erro adequada com base no status HTTP
+        let messageKey = 'capture.error';
+        if (error.status === 0) {
+          messageKey = 'capture.network_error';
+        } else if (error.status === 408 || error.message?.includes('timeout')) {
+          messageKey = 'capture.timeout';
+        }
+
+        await this.toastNotification.showError(messageKey);
+        this.changeDetectorRef.detectChanges();
+      },
+      complete: () => {
+        console.log(`[PokemonDetailsMobile] Operação de ${this.isCaptured ? 'captura' : 'libertação'} concluída`);
+        this.isLoading = false;
+        this.isProcessing = false;
+
+        // Force reset do alinhamento do ícone após operação
+        this.forceIconReset();
+        this.changeDetectorRef.detectChanges();
+      }
+    });
+  }
+
+  /**
+   * Abre modal de autenticação
+   */
+  private async openAuthModal(): Promise<void> {
+    const { AuthModalComponent } = await import('../auth-modal/auth-modal.component');
+
+    const modal = await this.modalController.create({
+      component: AuthModalComponent,
+      cssClass: 'auth-modal',
+      backdropDismiss: true
+    });
+
+    modal.onDidDismiss().then(async (result) => {
+      if (result.data?.success) {
+        console.log('[PokemonDetailsMobile] Login bem-sucedido');
+
+        // Aguardar um pouco para garantir que o estado foi atualizado
+        setTimeout(() => {
+          const isAuthenticated = this.authService.isAuthenticated();
+          const currentUser = this.authService.getCurrentUser();
+
+          console.log('[PokemonDetailsMobile] Estado após login:', {
+            isAuthenticated,
+            hasUser: !!currentUser,
+            userId: currentUser?.id
+          });
+
+          if (isAuthenticated && currentUser) {
+            console.log('[PokemonDetailsMobile] Usuário autenticado, tentando capturar novamente');
+            this.onCaptureClick(new Event('click'));
+          } else {
+            console.log('[PokemonDetailsMobile] Usuário ainda não autenticado após login');
+          }
+        }, 1000);
+      } else {
+        console.log('[PokemonDetailsMobile] Login cancelado ou falhou');
+      }
+    });
+
+    return await modal.present();
+  }
+
+  /**
+   * Force reset do alinhamento do ícone da pokébola
+   */
+  private forceIconReset(): void {
+    // Usar setTimeout para garantir que o DOM foi atualizado
+    setTimeout(() => {
+      const captureBtn = document.querySelector(`[data-pokemon-id="${this.pokemon.id}"] .mobile-capture-btn`);
+      if (captureBtn) {
+        // Adicionar classe de reset temporariamente
+        captureBtn.classList.add('force-reset');
+
+        // Remover a classe após um breve delay para permitir a transição
+        setTimeout(() => {
+          captureBtn.classList.remove('force-reset');
+        }, 100);
+      }
+    }, 50);
   }
 }

@@ -100,8 +100,47 @@
         <!-- ✅ PERFORMANCE: Info Section 1 otimizada com getters memoizados -->
         <div class="pokemon-info-section-1">
           <div class="pokemon-name-header">
-            <h1>{{ pokemonDisplayName }}</h1>
-            <div class="pokemon-id-badge">{{ pokemonDisplayId }}</div>
+            <div class="name-and-id-container">
+              <h1>{{ pokemonDisplayName }}</h1>
+              <div class="pokemon-id-badge">{{ pokemonDisplayId }}</div>
+            </div>
+
+            <!-- ✅ NOVO: Botão de captura no header do modal -->
+            <button *ngIf="showCaptureButton"
+                    class="modal-capture-btn"
+                    [class.captured]="isCaptured"
+                    [class.capturing]="isLoading"
+                    [disabled]="isLoading"
+                    type="button"
+                    (click)="onCaptureClick($event)"
+                    [attr.data-pokemon-id]="pokemon?.id"
+                    [attr.aria-label]="isCaptured ? ('pokemon.release' | translate) : ('pokemon.capture' | translate)">
+
+              <!-- Loading State -->
+              <div *ngIf="isLoading" class="loading-state">
+                <ion-spinner name="crescent" color="light"></ion-spinner>
+              </div>
+
+              <!-- Not Captured State -->
+              <div *ngIf="!isCaptured && !isLoading" class="capture-state">
+                <img src="assets/img/opened_pokeball.png"
+                     alt="Pokébola aberta"
+                     class="pokeball-icon">
+                <div class="capture-hint">
+                  <ion-icon name="add-circle-outline"></ion-icon>
+                </div>
+              </div>
+
+              <!-- Captured State -->
+              <div *ngIf="isCaptured && !isLoading" class="captured-state">
+                <img src="assets/img/closed_pokeball.png"
+                     alt="Pokébola fechada"
+                     class="pokeball-icon">
+                <div class="captured-indicator">
+                  <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                </div>
+              </div>
+            </button>
           </div>
 
           <div class="pokemon-types-container">
