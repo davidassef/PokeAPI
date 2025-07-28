@@ -109,7 +109,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
     fixture = TestBed.createComponent(DetailsModalComponent);
     component = fixture.componentInstance;
-    
+
     mockCapturedService = TestBed.inject(CapturedService) as jasmine.SpyObj<CapturedService>;
     mockAuthService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     mockAudioService = TestBed.inject(AudioService) as jasmine.SpyObj<AudioService>;
@@ -126,7 +126,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should show capture button when showCaptureButton is true', () => {
       component.showCaptureButton = true;
       fixture.detectChanges();
-      
+
       const captureButton = fixture.debugElement.query(By.css('.modal-capture-btn'));
       expect(captureButton).toBeTruthy();
     });
@@ -134,7 +134,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should hide capture button when showCaptureButton is false', () => {
       component.showCaptureButton = false;
       fixture.detectChanges();
-      
+
       const captureButton = fixture.debugElement.query(By.css('.modal-capture-btn'));
       expect(captureButton).toBeFalsy();
     });
@@ -142,10 +142,10 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should position button correctly in name-and-id-container', () => {
       component.showCaptureButton = true;
       fixture.detectChanges();
-      
+
       const container = fixture.debugElement.query(By.css('.name-and-id-container'));
       const captureButton = container.query(By.css('.modal-capture-btn'));
-      
+
       expect(captureButton).toBeTruthy();
       expect(captureButton.nativeElement.style.position).toBe('absolute');
     });
@@ -153,7 +153,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should have correct data-pokemon-id attribute', () => {
       component.showCaptureButton = true;
       fixture.detectChanges();
-      
+
       const captureButton = fixture.debugElement.query(By.css('.modal-capture-btn'));
       expect(captureButton.nativeElement.getAttribute('data-pokemon-id')).toBe('25');
     });
@@ -163,9 +163,9 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should initialize capture state from CapturedService', () => {
       const capturedPokemon = [{ pokemon_id: 25, captured_at: new Date() }];
       mockCapturedService.captured$ = of(capturedPokemon);
-      
+
       component.initializeCaptureState();
-      
+
       expect(component.isCaptured).toBe(true);
     });
 
@@ -174,7 +174,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
       mockCapturedService.captured$ = of([]);
       component.initializeCaptureState();
       expect(component.isCaptured).toBe(false);
-      
+
       // Update to captured
       const capturedPokemon = [{ pokemon_id: 25, captured_at: new Date() }];
       mockCapturedService.captured$ = of(capturedPokemon);
@@ -184,9 +184,9 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
     it('should clean up subscription on destroy', () => {
       spyOn(component['capturedSubscription'], 'unsubscribe');
-      
+
       component.ngOnDestroy();
-      
+
       expect(component['capturedSubscription'].unsubscribe).toHaveBeenCalled();
     });
   });
@@ -195,7 +195,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should open auth modal when user is not authenticated', async () => {
       mockAuthService.isAuthenticated.and.returnValue(false);
       mockAuthService.getCurrentUser.and.returnValue(null);
-      
+
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present', 'onDidDismiss']);
       mockModal.onDidDismiss.and.returnValue(Promise.resolve({ data: null }));
       mockModalController.create.and.returnValue(Promise.resolve(mockModal));
@@ -204,7 +204,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
       expect(mockModalController.create).toHaveBeenCalledWith({
         component: jasmine.any(Function),
-        cssClass: 'auth-modal',
+        cssClass: 'auth-modal-fixed', // ✅ CORREÇÃO: Atualizar teste para usar auth-modal-fixed
         backdropDismiss: true
       });
     });
@@ -212,11 +212,11 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should retry capture after successful login', async () => {
       mockAuthService.isAuthenticated.and.returnValue(false);
       mockAuthService.getCurrentUser.and.returnValue(null);
-      
+
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present', 'onDidDismiss']);
       mockModal.onDidDismiss.and.returnValue(Promise.resolve({ data: { success: true } }));
       mockModalController.create.and.returnValue(Promise.resolve(mockModal));
-      
+
       spyOn(component, 'onCaptureClick').and.callThrough();
 
       await component.onCaptureClick(new Event('click'));
@@ -259,14 +259,14 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
     it('should handle loading states correctly', async () => {
       mockCapturedService.toggleCaptured.and.returnValue(of(true));
-      
+
       const capturePromise = component.onCaptureClick(new Event('click'));
-      
+
       expect(component.isCaptureLoading).toBe(true);
       expect(component.isProcessing).toBe(true);
-      
+
       await capturePromise;
-      
+
       expect(component.isCaptureLoading).toBe(false);
       expect(component.isProcessing).toBe(false);
     });
@@ -281,7 +281,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should apply captured class when pokemon is captured', () => {
       component.isCaptured = true;
       fixture.detectChanges();
-      
+
       const captureButton = fixture.debugElement.query(By.css('.modal-capture-btn'));
       expect(captureButton.nativeElement.classList.contains('captured')).toBeTruthy();
     });
@@ -289,7 +289,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should apply capturing class when loading', () => {
       component.isCaptureLoading = true;
       fixture.detectChanges();
-      
+
       const captureButton = fixture.debugElement.query(By.css('.modal-capture-btn'));
       expect(captureButton.nativeElement.classList.contains('capturing')).toBeTruthy();
     });
@@ -297,7 +297,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should disable button when loading', () => {
       component.isCaptureLoading = true;
       fixture.detectChanges();
-      
+
       const captureButton = fixture.debugElement.query(By.css('.modal-capture-btn'));
       expect(captureButton.nativeElement.disabled).toBeTruthy();
     });
@@ -305,7 +305,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should show loading spinner when capturing', () => {
       component.isCaptureLoading = true;
       fixture.detectChanges();
-      
+
       const loadingState = fixture.debugElement.query(By.css('.loading-state'));
       const spinner = loadingState.query(By.css('ion-spinner'));
       expect(spinner).toBeTruthy();
@@ -315,7 +315,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
       component.isCaptured = false;
       component.isCaptureLoading = false;
       fixture.detectChanges();
-      
+
       const captureState = fixture.debugElement.query(By.css('.capture-state'));
       const pokeballImg = captureState.query(By.css('img'));
       expect(pokeballImg.nativeElement.src).toContain('opened_pokeball.png');
@@ -325,7 +325,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
       component.isCaptured = true;
       component.isCaptureLoading = false;
       fixture.detectChanges();
-      
+
       const capturedState = fixture.debugElement.query(By.css('.captured-state'));
       const pokeballImg = capturedState.query(By.css('img'));
       expect(pokeballImg.nativeElement.src).toContain('closed_pokeball.png');
@@ -335,7 +335,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
       component.isCaptured = false;
       component.isCaptureLoading = false;
       fixture.detectChanges();
-      
+
       const captureHint = fixture.debugElement.query(By.css('.capture-hint ion-icon'));
       expect(captureHint.nativeElement.getAttribute('name')).toBe('add-circle-outline');
     });
@@ -344,7 +344,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
       component.isCaptured = true;
       component.isCaptureLoading = false;
       fixture.detectChanges();
-      
+
       const capturedIndicator = fixture.debugElement.query(By.css('.captured-indicator ion-icon'));
       expect(capturedIndicator.nativeElement.getAttribute('name')).toBe('checkmark-circle');
     });
@@ -370,7 +370,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should handle authentication errors by reopening auth modal', async () => {
       const authError = { status: 401, message: 'Unauthorized' };
       mockCapturedService.toggleCaptured.and.returnValue(throwError(authError));
-      
+
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present', 'onDidDismiss']);
       mockModal.onDidDismiss.and.returnValue(Promise.resolve({ data: null }));
       mockModalController.create.and.returnValue(Promise.resolve(mockModal));
@@ -408,7 +408,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
     it('should prevent multiple rapid clicks', async () => {
       mockCapturedService.toggleCaptured.and.returnValue(of(true));
-      
+
       // Simulate rapid clicks
       component.onCaptureClick(new Event('click'));
       component.onCaptureClick(new Event('click'));
@@ -431,7 +431,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
   describe('🔧 Force Icon Reset', () => {
     it('should apply force-reset class temporarily', (done) => {
       component.pokemon = mockPokemon;
-      
+
       // Mock DOM element
       const mockButton = jasmine.createSpyObj('HTMLElement', ['classList']);
       spyOn(document, 'querySelector').and.returnValue(mockButton);
@@ -440,7 +440,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
       setTimeout(() => {
         expect(mockButton.classList.add).toHaveBeenCalledWith('force-reset');
-        
+
         setTimeout(() => {
           expect(mockButton.classList.remove).toHaveBeenCalledWith('force-reset');
           done();
@@ -450,7 +450,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
 
     it('should handle missing DOM element gracefully', () => {
       spyOn(document, 'querySelector').and.returnValue(null);
-      
+
       expect(() => component.forceIconReset()).not.toThrow();
     });
   });
@@ -464,7 +464,7 @@ describe('DetailsModalComponent - Capture Button Tests', () => {
     it('should handle audio errors gracefully', async () => {
       mockCapturedService.toggleCaptured.and.returnValue(of(true));
       mockAudioService.playCaptureSound.and.returnValue(Promise.reject('Audio error'));
-      
+
       spyOn(console, 'error');
 
       await component.onCaptureClick(new Event('click'));

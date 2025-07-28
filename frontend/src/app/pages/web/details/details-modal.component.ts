@@ -1778,7 +1778,7 @@ export class DetailsModalComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     const modal = await this.modalController.create({
       component: AuthModalNewComponent,
-      cssClass: 'auth-modal',
+      cssClass: 'auth-modal-fixed', // ✅ CORREÇÃO: Usar auth-modal-fixed para hierarquia correta
       backdropDismiss: true
     });
 
