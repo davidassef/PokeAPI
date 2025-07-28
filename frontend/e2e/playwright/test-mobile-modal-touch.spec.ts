@@ -286,4 +286,132 @@ test.describe('Modal Mobile - Responsividade ao Toque', () => {
     await page.waitForTimeout(1000);
     console.log('🔒 Modal fechado');
   });
+
+  test('Deve diagnosticar problemas de scroll no modal mobile', async ({ page }) => {
+    console.log('🔍 Diagnosticando problemas de scroll no modal mobile...');
+
+    // Clicar no primeiro card para abrir o modal
+    const firstCard = page.locator('app-pokemon-card').first();
+    await firstCard.click();
+    console.log('🖱️ Clicou no primeiro card');
+
+    // Aguardar modal mobile abrir
+    await page.waitForSelector('app-pokemon-details-mobile .mobile-modal-overlay', { timeout: 10000 });
+    const mobileModal = page.locator('app-pokemon-details-mobile .mobile-modal-overlay');
+    await expect(mobileModal).toBeVisible();
+    console.log('✅ Modal mobile abriu corretamente');
+
+    // Aguardar conteúdo carregar
+    await page.waitForTimeout(3000);
+
+    // Verificar todos os elementos que podem estar interferindo
+    const elements = [
+      { name: 'overlay', selector: '.mobile-modal-overlay' },
+      { name: 'container', selector: '.mobile-modal-container' },
+      { name: 'scroll-container', selector: '.global-scroll-container' },
+      { name: 'mobile-content', selector: '.mobile-content' },
+      { name: 'image-carousel', selector: '.image-carousel' },
+      { name: 'tab-content', selector: '.tab-content' }
+    ];
+
+    for (const element of elements) {
+      const locator = page.locator(element.selector);
+      if (await locator.count() > 0) {
+        const styles = await locator.first().evaluate((el) => {
+          const computed = window.getComputedStyle(el);
+          return {
+            overflow: computed.overflow,
+            overflowY: computed.overflowY,
+            overflowX: computed.overflowX,
+            touchAction: computed.touchAction,
+            pointerEvents: computed.pointerEvents,
+            position: computed.position,
+            zIndex: computed.zIndex,
+            userSelect: computed.userSelect,
+            webkitUserSelect: computed.webkitUserSelect
+          };
+        });
+        console.log(`🔍 ${element.name}:`, styles);
+      }
+    }
+
+    // Verificar se há event listeners que podem estar interferindo
+    const scrollContainer = page.locator('.global-scroll-container');
+    if (await scrollContainer.count() > 0) {
+      const eventListeners = await scrollContainer.first().evaluate((el) => {
+        // Verificar se há listeners de eventos que podem interferir
+        const events = ['touchstart', 'touchmove', 'touchend', 'scroll', 'wheel', 'mousedown', 'mousemove', 'mouseup'];
+        const listeners = {};
+
+        events.forEach(eventType => {
+          // Não podemos acessar diretamente os listeners, mas podemos testar se eles existem
+          listeners[eventType] = 'unknown';
+        });
+
+        return {
+          scrollHeight: el.scrollHeight,
+          clientHeight: el.clientHeight,
+          scrollTop: el.scrollTop,
+          listeners: listeners
+        };
+      });
+      console.log('📊 Scroll container info:', eventListeners);
+    }
+
+    // Testar diferentes métodos de scroll
+    const testMethods = [
+      { name: 'scrollTo', method: async () => {
+        await scrollContainer.evaluate(el => el.scrollTo(0, 100));
+        await page.waitForTimeout(500);
+        return await scrollContainer.evaluate(el => el.scrollTop);
+      }},
+      { name: 'scrollBy', method: async () => {
+        await scrollContainer.evaluate(el => el.scrollBy(0, 50));
+        await page.waitForTimeout(500);
+        return await scrollContainer.evaluate(el => el.scrollTop);
+      }},
+      { name: 'wheel', method: async () => {
+        const bounds = await scrollContainer.boundingBox();
+        if (bounds) {
+          await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+          await page.mouse.wheel(0, 100);
+          await page.waitForTimeout(500);
+          return await scrollContainer.evaluate(el => el.scrollTop);
+        }
+        return 0;
+      }},
+      { name: 'drag', method: async () => {
+        const bounds = await scrollContainer.boundingBox();
+        if (bounds) {
+          const centerX = bounds.x + bounds.width / 2;
+          const centerY = bounds.y + bounds.height / 2;
+          await page.mouse.move(centerX, centerY);
+          await page.mouse.down();
+          await page.mouse.move(centerX, centerY - 50, { steps: 5 });
+          await page.mouse.up();
+          await page.waitForTimeout(500);
+          return await scrollContainer.evaluate(el => el.scrollTop);
+        }
+        return 0;
+      }}
+    ];
+
+    const initialScrollTop = await scrollContainer.evaluate(el => el.scrollTop);
+    console.log(`📏 Scroll inicial: ${initialScrollTop}px`);
+
+    for (const testMethod of testMethods) {
+      try {
+        const newScrollTop = await testMethod.method();
+        const worked = newScrollTop > initialScrollTop;
+        console.log(`${worked ? '✅' : '❌'} ${testMethod.name}: ${initialScrollTop}px → ${newScrollTop}px`);
+      } catch (error) {
+        console.log(`❌ ${testMethod.name}: Erro - ${error.message}`);
+      }
+    }
+
+    // Fechar modal
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(1000);
+    console.log('🔒 Modal fechado');
+  });
 });

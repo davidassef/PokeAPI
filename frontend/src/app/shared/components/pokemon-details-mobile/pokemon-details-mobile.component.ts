@@ -702,9 +702,8 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     return `${bmiValue} (${this.translate.instant('bmi_categories.very_heavy')})`;
   }
 
-  public onTouchStart(event: TouchEvent): void {}
-  public onTouchMove(event: TouchEvent): void {}
-  public onTouchEnd(event: TouchEvent): void {}
+  // ✅ CORREÇÃO: Métodos de toque removidos pois estavam interferindo com scroll
+  // Os eventos de toque vazios podem bloquear o comportamento padrão do scroll
 
   public previousCarouselImage(): void {
     this.currentCarouselIndex =

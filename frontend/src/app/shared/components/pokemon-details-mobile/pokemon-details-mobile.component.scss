@@ -21,6 +21,10 @@
   overflow: hidden;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
+
+  // ✅ NOVO: Garantir que não interfira com eventos de toque
+  touch-action: none; // Deixa o controle de toque para elementos filhos
+  pointer-events: auto;
 }
 
 // Container scrollável global que engloba header + conteúdo
@@ -33,15 +37,30 @@
   padding-bottom: 140px; // Aumentado de 80px para 140px
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; // Scroll suave no iOS
-  touch-action: pan-y pinch-zoom; // Permite scroll vertical e zoom, mas não horizontal
+  touch-action: pan-y; // ✅ CORREÇÃO: Simplificado para apenas pan-y (scroll vertical)
 
   // Otimizações de performance para mobile
   will-change: scroll-position; // Otimiza animações de scroll
   transform: translateZ(0); // Força aceleração de hardware
 
-  // Customizar scrollbar para melhor UX
+  // ✅ NOVO: Garantir que eventos de toque passem através
+  pointer-events: auto;
+  user-select: none; // Evita seleção de texto durante scroll
+
+  // ✅ NOVO: Configurações específicas para toque real em dispositivos móveis
+  -webkit-touch-callout: none; // Desabilita callout no iOS
+  -webkit-tap-highlight-color: transparent; // Remove highlight de toque
+  overscroll-behavior: contain; // Evita scroll em elementos pais
+
+  // ✅ NOVO: Força scroll em dispositivos móveis
   &::-webkit-scrollbar {
-    width: 4px;
+    width: 0px; // Esconde scrollbar mas mantém funcionalidade
+    background: transparent;
+  }
+
+  // Customizar scrollbar para melhor UX (fallback)
+  &::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   &::-webkit-scrollbar-track {
@@ -1345,7 +1364,7 @@
   position: relative;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: pan-x pan-y; // Permite gestos horizontais e verticais
+  touch-action: pan-x; // ✅ CORREÇÃO: Apenas pan-x para não conflitar com scroll global
 
   &.swiping {
     .main-image-container {
