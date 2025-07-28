@@ -1304,11 +1304,11 @@
           }
         }
 
-        // ✅ CORREÇÃO: Estilos do botão de captura com posicionamento absoluto à esquerda
+        // ✅ CORREÇÃO: Estilos do botão de captura apenas com a pokébola (sem fundo)
         .modal-capture-btn {
-          background: rgba(255, 255, 255, 0.15);
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
+          background: transparent; // ✅ NOVO: Fundo transparente
+          border: none; // ✅ NOVO: Sem borda
+          border-radius: 0; // ✅ NOVO: Sem border-radius
           width: 56px;
           height: 56px;
           display: flex;
@@ -1316,22 +1316,20 @@
           justify-content: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
-          backdrop-filter: blur(10px);
+          backdrop-filter: none; // ✅ NOVO: Sem blur
           position: absolute; // ✅ CORREÇÃO: Posicionamento absoluto
           top: 50%; // ✅ CORREÇÃO: Centralizar verticalmente
           left: 0; // ✅ NOVO: Alinhar à esquerda em vez da direita
           transform: translateY(-50%); // ✅ CORREÇÃO: Ajuste fino da centralização
-          overflow: hidden;
+          overflow: visible; // ✅ NOVO: Permitir overflow para efeitos
 
-          // Estados visuais
+          // Estados visuais - apenas efeitos na pokébola
           &:hover:not(:disabled):not(.capturing) {
             transform: translateY(-50%) scale(1.1); // ✅ CORREÇÃO: Manter centralização + scale
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 
             .pokeball-icon {
-              transform: rotate(10deg) scale(1) !important;
+              transform: rotate(10deg) scale(1.1) !important; // ✅ NOVO: Scale na pokébola
+              filter: brightness(1.2); // ✅ NOVO: Brilho na pokébola
             }
           }
 
@@ -1340,24 +1338,34 @@
           }
 
           &.captured {
-            background: rgba(76, 175, 80, 0.2);
-            border-color: rgba(76, 175, 80, 0.5);
-
-            &:hover:not(:disabled) {
-              background: rgba(76, 175, 80, 0.3);
-              border-color: rgba(76, 175, 80, 0.7);
+            // ✅ NOVO: Sem fundo, apenas efeito na pokébola
+            .pokeball-icon {
+              filter: brightness(1.1) saturate(1.2); // ✅ NOVO: Destaque na pokébola capturada
             }
           }
 
           &.capturing {
-            background: rgba(255, 193, 7, 0.2);
-            border-color: rgba(255, 193, 7, 0.5);
-            animation: pulse 1.5s ease-in-out infinite;
+            // ✅ NOVO: Sem fundo, apenas animação na pokébola
+            .pokeball-icon {
+              animation: pokeball-pulse 1.5s ease-in-out infinite; // ✅ NOVO: Animação na pokébola
+            }
           }
 
           &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+          }
+
+          // ✅ NOVO: Animação específica para a pokébola
+          @keyframes pokeball-pulse {
+            0%, 100% {
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              transform: scale(1.1);
+              filter: brightness(1.3);
+            }
           }
 
           // Estados internos
@@ -1655,6 +1663,11 @@
 
             &:hover:not(:disabled):not(.capturing) {
               transform: translateY(-50%) scale(1.1); // ✅ CORREÇÃO: Manter centralização no mobile
+
+              .pokeball-icon {
+                transform: rotate(10deg) scale(1.1) !important; // ✅ NOVO: Efeito na pokébola mobile
+                filter: brightness(1.2); // ✅ NOVO: Brilho na pokébola mobile
+              }
             }
           }
         }
