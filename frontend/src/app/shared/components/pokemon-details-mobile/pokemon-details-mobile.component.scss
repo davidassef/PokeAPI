@@ -1395,42 +1395,7 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
-// Indicador de cache
-.mobile-header {
-  .header-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
 
-    .cache-indicator {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-
-      ion-icon {
-        font-size: 0.9rem;
-        color: #ff6b6b; // Vermelho para API
-        transition: color 0.3s ease;
-
-        &.cached {
-          color: #51cf66; // Verde para cache
-        }
-      }
-
-      small {
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-    }
-  }
-}
 
 // Responsividade para diferentes tamanhos de tela
 @media (max-width: 480px) {
@@ -1459,15 +1424,5 @@
     }
   }
 
-  .mobile-header .header-info .cache-indicator {
-    padding: 2px 6px;
 
-    ion-icon {
-      font-size: 0.8rem;
-    }
-
-    small {
-      font-size: 0.6rem;
-    }
-  }
 }

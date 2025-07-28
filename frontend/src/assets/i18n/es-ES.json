@@ -129,10 +129,7 @@
       "pikachu_mascot": "¡Pikachu es la mascota oficial de la franquicia Pokémon!",
       "default": "¡Cada Pokémon es único en su propia manera especial!"
     },
-    "cache_indicator": {
-      "api": "API",
-      "cached": "Cache"
-    },
+
     "base_experience": "Experiencia Base",
     "stats_names": {
       "hp": "HP",

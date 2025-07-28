@@ -56,11 +56,7 @@
           </button>
         </div>
 
-          <!-- Indicador de cache (apenas em desenvolvimento) -->
-          <div class="cache-indicator" *ngIf="showCacheStats">
-            <ion-icon name="flash-outline" [class.cached]="isDataCached"></ion-icon>
-                        <small>{{ (isDataCached ? 'mobile.cache_indicator.cached' : 'mobile.cache_indicator.api') | translate }}</small>
-          </div>
+
         </div>
       </div>
 

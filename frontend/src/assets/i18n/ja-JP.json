@@ -99,10 +99,7 @@
       "habitat": "通常、{{habitat}}で見つかります。",
       "default": "すべてのポケモンには語るべき物語があります。"
     },
-    "cache_indicator": {
-      "api": "API",
-      "cached": "キャッシュ済み"
-    },
+
     "stats_names": {
       "hp": "HP",
       "attack": "こうげき",

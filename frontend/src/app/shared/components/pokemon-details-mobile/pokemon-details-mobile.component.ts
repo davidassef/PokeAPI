@@ -92,9 +92,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
   private readonly SWIPE_THRESHOLD = 50;
   private readonly SWIPE_TIME_THRESHOLD = 300;
 
-  // Controle de cache
-  showCacheStats: boolean = false; // Ativar apenas em desenvolvimento
-  isDataCached: boolean = false;
+
 
   // Dados das abas
   pokemonSpecies: any = null;
@@ -146,8 +144,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
       document.body.classList.add('modal-open');
     }
 
-    // Ativar indicador de cache apenas em desenvolvimento
-    this.showCacheStats = true; // Sempre ativo para demonstração
+
 
     if (this.pokemonId && this.pokemonId > 0) {
       this.loadPokemonData();
@@ -207,9 +204,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     this.loading = true;
     console.log('🔍 Carregando dados do Pokémon ID:', this.pokemonId);
 
-    // Verificar se dados estão em cache antes da requisição
-    const cacheKey = `https://pokeapi.co/api/v2/pokemon/${this.pokemonId}`;
-    const startTime = Date.now();
+
 
     // Usar PokeApiService refatorado para consistência
     console.log('📦 Buscando dados do Pokémon no PokeApiService...');
@@ -217,11 +212,7 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (pokemon: any) => {
-          const loadTime = Date.now() - startTime;
-          this.isDataCached = loadTime < 50; // Se carregou muito rápido, provavelmente veio do cache
-
-          console.log('✅ Dados do Pokémon carregados:', pokemon.name,
-                     `(${loadTime}ms, ${this.isDataCached ? 'CACHE' : 'API'})`);
+          console.log('✅ Dados do Pokémon carregados:', pokemon.name);
 
           this.pokemon = pokemon;
           this.initializePokemonData();
@@ -234,7 +225,6 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
           console.error('❌ Erro ao carregar Pokémon:', error);
           this.pokemon = this.createPlaceholderPokemon();
           this.loading = false;
-          this.isDataCached = false;
           console.log('🔄 Placeholder Pokémon criado devido ao erro');
         }
       });

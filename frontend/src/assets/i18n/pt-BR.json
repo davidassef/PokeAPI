@@ -99,10 +99,7 @@
       "pikachu_mascot": "Pikachu é o mascote oficial da franquia Pokémon!",
       "default": "Cada Pokémon é único em sua própria maneira especial!"
     },
-    "cache_indicator": {
-      "api": "API",
-      "cached": "Cache"
-    },
+
     "base_experience": "Experiência Base",
     "stats_names": {
       "hp": "HP",

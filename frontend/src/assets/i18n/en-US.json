@@ -129,10 +129,7 @@
       "pikachu_mascot": "Pikachu is the official mascot of the Pokémon franchise!",
       "default": "Every Pokémon is unique in its own special way!"
     },
-    "cache_indicator": {
-      "api": "API",
-      "cached": "Cache"
-    },
+
     "base_experience": "Base Experience",
     "stats_names": {
       "hp": "HP",
@@ -272,10 +269,7 @@
       "habitat": "Usually found in {{habitat}}.",
       "default": "Every Pokémon has its own story to tell."
     },
-    "cache_indicator": {
-      "api": "API",
-      "cached": "Cached"
-    },
+
     "stats_names": {
       "hp": "HP",
       "attack": "Attack",
