@@ -104,7 +104,42 @@
               <h1>{{ pokemonDisplayName }}</h1>
               <div class="pokemon-id-badge">{{ pokemonDisplayId }}</div>
 
+              <!-- ✅ CORREÇÃO: Botão movido para dentro do container para evitar desalinhamento -->
+              <button *ngIf="showCaptureButton"
+                      class="modal-capture-btn"
+                      [class.captured]="isCaptured"
+                      [class.capturing]="isCaptureLoading"
+                      [disabled]="isCaptureLoading"
+                      type="button"
+                      (click)="onCaptureClick($event)"
+                      [attr.data-pokemon-id]="pokemon?.id"
+                      [attr.aria-label]="isCaptured ? ('pokemon.release' | translate) : ('pokemon.capture' | translate)">
 
+                <!-- Loading State -->
+                <div *ngIf="isCaptureLoading" class="loading-state">
+                  <ion-spinner name="crescent" color="light"></ion-spinner>
+                </div>
+
+                <!-- Not Captured State -->
+                <div *ngIf="!isCaptured && !isCaptureLoading" class="capture-state">
+                  <img src="assets/img/opened_pokeball.png"
+                       alt="Pokébola aberta"
+                       class="pokeball-icon">
+                  <div class="capture-hint">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                  </div>
+                </div>
+
+                <!-- Captured State -->
+                <div *ngIf="isCaptured && !isCaptureLoading" class="captured-state">
+                  <img src="assets/img/closed_pokeball.png"
+                       alt="Pokébola fechada"
+                       class="pokeball-icon">
+                  <div class="captured-indicator">
+                    <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
 
