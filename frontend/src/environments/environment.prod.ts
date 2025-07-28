@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://poke-api-mauve.vercel.app/api/v1',  // ✅ CORREÇÃO: URL correta do backend Vercel
+  apiUrl: 'https://pokeapi-la6k.onrender.com/api/v1',  // ✅ CORREÇÃO CRÍTICA: Backend está no Render, não no Vercel!
   clientServerUrl: 'https://pokeapiapp-client-server.onrender.com',  // Client-server em produção
-  version: '1.5.5',  // ✅ CORREÇÃO: URL da API corrigida para Vercel
+  version: '1.5.6',  // ✅ CORREÇÃO: URL do backend corrigida para Render
   deployTimestamp: new Date().toISOString()  // Timestamp do deploy
 };

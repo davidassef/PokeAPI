@@ -23,9 +23,9 @@ export class CapturedService {
   public captured$ = this.capturedSubject.asObservable();
   private apiUrl = `${environment.apiUrl}/favorites`;  // ✅ CORREÇÃO CRÍTICA: Usar URL completa do environment
 
-  // ✅ NOVO: URLs de fallback para diferentes backends
+  // ✅ CORREÇÃO: URLs de fallback atualizadas - Render é o backend principal
   private fallbackUrls = [
-    'https://pokeapi-la6k.onrender.com/api/v1/favorites',  // Render backup
+    'https://poke-api-mauve.vercel.app/api/v1/favorites',  // Vercel (era configuração incorreta)
     'https://pokeapiapp-backend.herokuapp.com/api/v1/favorites',  // Heroku backup
     '/api/v1/favorites'  // Local/proxy fallback
   ];
