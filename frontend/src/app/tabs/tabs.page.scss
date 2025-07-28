@@ -3,7 +3,7 @@
 ion-tab-bar {
   --background: var(--card-bg);
   --color: var(--text-color);
-  --color-selected: #fff;
+  --color-selected: var(--primary); // ✅ CORREÇÃO: Usar cor primária em vez de branco
 
   // Mobile optimizations
   @media (max-width: 576px) {
@@ -15,7 +15,7 @@ ion-tab-bar {
 .dark-theme ion-tab-bar {
   --background: #23272f;
   --color: #fff;
-  --color-selected: #fff;
+  --color-selected: var(--primary); // ✅ CORREÇÃO: Usar cor primária em vez de branco
 }
 
 ion-tab-button {
@@ -49,5 +49,55 @@ ion-tab-button {
 
 ion-tab-bar ion-icon, ion-tab-bar ion-label {
   color: inherit !important;
+}
+
+// ✅ NOVO: Estilos para abas selecionadas com contorno em vez de preenchimento
+ion-tab-button {
+  position: relative;
+  transition: all 0.3s ease;
+
+  // Estado padrão - sem fundo
+  &:not(.tab-selected) {
+    background: transparent;
+  }
+
+  // Estado selecionado - contorno/borda em vez de preenchimento
+  &.tab-selected {
+    background: transparent !important; // Remove fundo branco
+    border: 2px solid var(--primary); // Adiciona borda colorida
+    border-radius: 12px; // Bordas arredondadas
+    margin: 4px; // Espaçamento para a borda
+
+    // Efeito de brilho sutil
+    box-shadow: 0 0 8px rgba(66, 165, 245, 0.3);
+
+    ion-icon, ion-label {
+      color: var(--primary) !important; // Ícone e texto na cor primária
+      font-weight: 600; // Texto mais bold quando selecionado
+    }
+  }
+
+  // Hover effect para abas não selecionadas
+  &:not(.tab-selected):hover {
+    background: rgba(66, 165, 245, 0.1);
+    border-radius: 12px;
+    margin: 4px;
+  }
+}
+
+// ✅ TEMA ESCURO: Ajustes específicos
+.dark-theme ion-tab-button {
+  &.tab-selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(66, 165, 245, 0.4);
+
+    ion-icon, ion-label {
+      color: var(--primary) !important;
+    }
+  }
+
+  &:not(.tab-selected):hover {
+    background: rgba(66, 165, 245, 0.15);
+  }
 }
 

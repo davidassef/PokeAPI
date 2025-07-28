@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Teste da Pokébola de Captura no Modal', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto('http://localhost:64334/');
+    await page.goto('http://localhost:4200/');
     await page.waitForSelector('app-pokemon-card', { timeout: 15000 });
     await page.waitForTimeout(3000);
   });
