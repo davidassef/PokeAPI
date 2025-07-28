@@ -1,7 +1,7 @@
 <!-- Modal Mobile Fullscreen -->
 <!-- DEBUG: Modal mobile sendo renderizado -->
-<div class="mobile-modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
-  <div class="mobile-modal-container">
+<div class="mobile-modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="mobile-modal-container" (click)="$event.stopPropagation()">
 
     <!-- Container scrollável global que engloba header + conteúdo -->
     <div class="global-scroll-container">

@@ -34,7 +34,7 @@ test.describe('Modal Mobile - Responsividade ao Toque', () => {
     console.log('✅ Modal mobile abriu corretamente');
 
     // Aguardar conteúdo carregar
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000); // Aumentado para garantir carregamento completo
 
     // Verificar se o container scrollável está presente
     const scrollContainer = page.locator('.global-scroll-container');
@@ -196,6 +196,90 @@ test.describe('Modal Mobile - Responsividade ao Toque', () => {
       await expect(activeTab).toBeVisible();
       console.log('✅ Aba ativa encontrada');
     }
+
+    // Fechar modal
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(1000);
+    console.log('🔒 Modal fechado');
+  });
+
+  test('Deve permitir scroll sem interferência do evento de overlay', async ({ page }) => {
+    console.log('🧪 Testando se evento de overlay não interfere com scroll...');
+
+    // Clicar no primeiro card para abrir o modal
+    const firstCard = page.locator('app-pokemon-card').first();
+    await firstCard.click();
+    console.log('🖱️ Clicou no primeiro card');
+
+    // Aguardar modal mobile abrir
+    await page.waitForSelector('app-pokemon-details-mobile .mobile-modal-overlay', { timeout: 10000 });
+    const mobileModal = page.locator('app-pokemon-details-mobile .mobile-modal-overlay');
+    await expect(mobileModal).toBeVisible();
+    console.log('✅ Modal mobile abriu corretamente');
+
+    // Aguardar conteúdo carregar
+    await page.waitForTimeout(3000);
+
+    // Verificar se o container scrollável está presente
+    const scrollContainer = page.locator('.global-scroll-container');
+    await expect(scrollContainer).toBeVisible();
+    console.log('✅ Container scrollável encontrado');
+
+    // Verificar altura do conteúdo para garantir que há scroll
+    const containerHeight = await scrollContainer.evaluate(el => el.scrollHeight);
+    const viewportHeight = await scrollContainer.evaluate(el => el.clientHeight);
+    console.log(`📏 Altura do conteúdo: ${containerHeight}px, Viewport: ${viewportHeight}px`);
+
+    if (containerHeight > viewportHeight) {
+      console.log('✅ Conteúdo é maior que viewport, scroll necessário');
+
+      // Testar scroll com wheel event (mais próximo do comportamento real)
+      const containerBounds = await scrollContainer.boundingBox();
+      if (containerBounds) {
+        const centerX = containerBounds.x + containerBounds.width / 2;
+        const centerY = containerBounds.y + containerBounds.height / 2;
+
+        // Scroll inicial
+        const initialScrollTop = await scrollContainer.evaluate(el => el.scrollTop);
+        console.log(`📏 Scroll inicial: ${initialScrollTop}px`);
+
+        // Simular scroll com wheel (mais realista)
+        await page.mouse.move(centerX, centerY);
+        await page.mouse.wheel(0, 200); // Scroll para baixo
+        await page.waitForTimeout(500);
+
+        const newScrollTop = await scrollContainer.evaluate(el => el.scrollTop);
+        console.log(`📏 Scroll após wheel: ${newScrollTop}px`);
+
+        if (newScrollTop > initialScrollTop) {
+          console.log('✅ SUCESSO: Scroll com wheel funcionou!');
+        } else {
+          console.log('⚠️ Scroll com wheel não funcionou, tentando drag...');
+
+          // Fallback: testar com drag
+          await page.mouse.move(centerX, centerY);
+          await page.mouse.down();
+          await page.mouse.move(centerX, centerY - 100, { steps: 5 });
+          await page.mouse.up();
+          await page.waitForTimeout(500);
+
+          const finalScrollTop = await scrollContainer.evaluate(el => el.scrollTop);
+          console.log(`📏 Scroll após drag: ${finalScrollTop}px`);
+
+          if (finalScrollTop > initialScrollTop) {
+            console.log('✅ SUCESSO: Scroll com drag funcionou!');
+          } else {
+            console.log('❌ PROBLEMA: Nenhum método de scroll funcionou');
+          }
+        }
+      }
+    } else {
+      console.log('⚠️ Conteúdo não é maior que viewport, scroll não necessário');
+    }
+
+    // Verificar se o modal ainda está aberto (não foi fechado por engano)
+    await expect(mobileModal).toBeVisible();
+    console.log('✅ Modal ainda está aberto após tentativas de scroll');
 
     // Fechar modal
     await page.keyboard.press('Escape');

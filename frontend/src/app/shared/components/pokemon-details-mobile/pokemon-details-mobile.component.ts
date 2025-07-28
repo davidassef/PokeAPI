@@ -631,8 +631,14 @@ export class PokemonDetailsMobileComponent implements OnInit, OnChanges, OnDestr
     this.modalClosed.emit();
   }
 
-  onBackdropClick(event: Event): void {
+  /**
+   * ✅ CORREÇÃO: Método renomeado e otimizado para não interferir com scroll
+   * Só fecha o modal se clicar diretamente no overlay (fora do container)
+   */
+  onOverlayClick(event: Event): void {
+    // Só fecha se o clique foi diretamente no overlay, não em elementos filhos
     if (event.target === event.currentTarget) {
+      console.log('[PokemonDetailsMobile] Clique no overlay detectado, fechando modal');
       this.closeModal();
     }
   }
