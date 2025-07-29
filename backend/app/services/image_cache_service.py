@@ -103,7 +103,7 @@ class ImageCacheService:
         try:
             logger.info(f"🔍 Solicitação de imagem: Pokémon {pokemon_id}, tipo {image_type}")
 
-            # Verifica se já existe no cache e se o arquivo está íntegro
+            # PRIORIDADE MÁXIMA: Verifica se já existe no cache local
             cache_entry = db.query(PokemonImageCache).filter(
                 PokemonImageCache.pokemon_id == pokemon_id,
                 PokemonImageCache.image_type == image_type,
@@ -113,18 +113,28 @@ class ImageCacheService:
             if cache_entry and os.path.exists(cache_entry.local_path):
                 # Verifica integridade do arquivo
                 if self._verify_image_integrity(cache_entry.local_path, cache_entry.file_size):
-                    logger.info(f"✅ Imagem encontrada no cache: {cache_entry.local_path}")
+                    logger.info(f"✅ CACHE HIT: Servindo do cache local: {cache_entry.local_path}")
+                    logger.info(f"📁 Arquivo: {cache_entry.file_size} bytes, criado em {cache_entry.created_at}")
                     return cache_entry.local_path
                 else:
                     logger.warning(f"⚠️ Arquivo corrompido detectado, removendo: {cache_entry.local_path}")
                     # Remove arquivo corrompido
                     try:
                         os.remove(cache_entry.local_path)
-                    except:
-                        pass
+                        logger.info(f"🗑️ Arquivo corrompido removido: {cache_entry.local_path}")
+                    except Exception as e:
+                        logger.error(f"❌ Erro ao remover arquivo corrompido: {e}")
                     # Marca como não baixado para forçar novo download
                     cache_entry.is_downloaded = False
+                    cache_entry.updated_at = datetime.utcnow()
                     db.commit()
+                    logger.info(f"🔄 Cache marcado para re-download: {pokemon_id}/{image_type}")
+            elif cache_entry:
+                logger.warning(f"⚠️ Entrada no cache existe mas arquivo não encontrado: {cache_entry.local_path}")
+                # Marca como não baixado para forçar novo download
+                cache_entry.is_downloaded = False
+                cache_entry.updated_at = datetime.utcnow()
+                db.commit()
 
             # Tenta baixar a imagem
             logger.info(f"📥 Iniciando download: Pokémon {pokemon_id}, tipo {image_type}")
@@ -181,30 +191,51 @@ class ImageCacheService:
             success = await self._download_image(original_url, local_path)
 
             if success:
-                # Atualiza ou cria entrada no cache
+                # GARANTIA CRÍTICA: Salva no cache local
+                file_size = os.path.getsize(local_path)
+
                 if existing_entry:
+                    # Atualiza entrada existente
                     existing_entry.local_path = str(local_path)
                     existing_entry.is_downloaded = True
                     existing_entry.download_attempts += 1
                     existing_entry.last_attempt = datetime.utcnow()
-                    existing_entry.file_size = os.path.getsize(local_path)
+                    existing_entry.file_size = file_size
                     existing_entry.updated_at = datetime.utcnow()
+                    logger.info(f"📝 Atualizando entrada existente no cache")
                 else:
+                    # Cria nova entrada no cache
                     cache_entry = PokemonImageCache(
                         pokemon_id=pokemon_id,
                         image_type=image_type,
                         original_url=original_url,
                         local_path=str(local_path),
-                        file_size=os.path.getsize(local_path),
+                        file_size=file_size,
                         is_downloaded=True,
                         download_attempts=1,
                         last_attempt=datetime.utcnow()
                     )
                     db.add(cache_entry)
+                    logger.info(f"📝 Criando nova entrada no cache")
 
+                # COMMIT CRÍTICO: Garante persistência no banco
                 db.commit()
-                logger.info(f"Imagem baixada com sucesso: {pokemon_id}/{image_type}")
-                return str(local_path)
+
+                # VERIFICAÇÃO FINAL: Confirma que tudo foi salvo
+                verification_entry = db.query(PokemonImageCache).filter(
+                    PokemonImageCache.pokemon_id == pokemon_id,
+                    PokemonImageCache.image_type == image_type,
+                    PokemonImageCache.is_downloaded == True
+                ).first()
+
+                if verification_entry and os.path.exists(verification_entry.local_path):
+                    logger.info(f"✅ SUCESSO TOTAL: Imagem salva e verificada")
+                    logger.info(f"📁 Arquivo: {verification_entry.local_path} ({file_size} bytes)")
+                    logger.info(f"💾 Banco: ID={verification_entry.id}, downloaded={verification_entry.is_downloaded}")
+                    return str(local_path)
+                else:
+                    logger.error(f"❌ ERRO CRÍTICO: Falha na verificação pós-salvamento")
+                    return None
             else:
                 # Registra tentativa falhada
                 if existing_entry:

@@ -264,6 +264,86 @@ async def force_download_pokemon_image(
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 
+@router.get("/cache/verify/{pokemon_id}")
+async def verify_pokemon_cache(
+    pokemon_id: int,
+    image_type: str = "official-artwork",
+    db: Session = Depends(get_db)
+):
+    """
+    Verifica se um Pokémon específico está no cache local.
+
+    Args:
+        pokemon_id: ID do Pokémon
+        image_type: Tipo de imagem
+        db: Sessão do banco de dados
+
+    Returns:
+        Status detalhado do cache para este Pokémon
+    """
+    try:
+        from app.services.image_cache_service import PokemonImageCache
+
+        # Busca entrada no banco
+        cache_entry = db.query(PokemonImageCache).filter(
+            PokemonImageCache.pokemon_id == pokemon_id,
+            PokemonImageCache.image_type == image_type
+        ).first()
+
+        if not cache_entry:
+            return {
+                "pokemon_id": pokemon_id,
+                "image_type": image_type,
+                "status": "not_cached",
+                "message": "Pokémon não está no cache",
+                "file_exists": False,
+                "database_entry": False
+            }
+
+        # Verifica se arquivo existe
+        file_exists = os.path.exists(cache_entry.local_path)
+        file_size = os.path.getsize(cache_entry.local_path) if file_exists else 0
+
+        # Verifica integridade se arquivo existe
+        integrity_ok = False
+        if file_exists:
+            integrity_ok = image_cache_service._verify_image_integrity(
+                cache_entry.local_path,
+                cache_entry.file_size
+            )
+
+        status = "unknown"
+        if cache_entry.is_downloaded and file_exists and integrity_ok:
+            status = "cached_and_ready"
+        elif cache_entry.is_downloaded and file_exists:
+            status = "cached_but_corrupted"
+        elif cache_entry.is_downloaded:
+            status = "database_only"
+        else:
+            status = "download_failed"
+
+        return {
+            "pokemon_id": pokemon_id,
+            "image_type": image_type,
+            "status": status,
+            "database_entry": True,
+            "is_downloaded": cache_entry.is_downloaded,
+            "file_exists": file_exists,
+            "file_size": file_size,
+            "expected_size": cache_entry.file_size,
+            "integrity_ok": integrity_ok,
+            "download_attempts": cache_entry.download_attempts,
+            "last_attempt": cache_entry.last_attempt.isoformat() if cache_entry.last_attempt else None,
+            "created_at": cache_entry.created_at.isoformat(),
+            "local_path": cache_entry.local_path,
+            "message": f"Status: {status}"
+        }
+
+    except Exception as e:
+        logger.error(f"Erro ao verificar cache do Pokémon {pokemon_id}: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+
 @router.get("/cache/stats")
 async def get_cache_stats(db: Session = Depends(get_db)):
     """
@@ -277,8 +357,18 @@ async def get_cache_stats(db: Session = Depends(get_db)):
     """
     try:
         stats = image_cache_service.get_cache_stats(db)
+
+        # Adiciona informações extras sobre arquivos físicos
+        cache_dir = image_cache_service.cache_dir
+        physical_files = list(cache_dir.glob("*.png")) if cache_dir.exists() else []
+
         return {
             "cache_stats": stats,
+            "physical_files": {
+                "count": len(physical_files),
+                "total_size_mb": sum(f.stat().st_size for f in physical_files) / (1024 * 1024),
+                "directory": str(cache_dir.absolute())
+            },
             "service_info": {
                 "max_download_attempts": image_cache_service.max_download_attempts,
                 "retry_delay_hours": image_cache_service.retry_delay_hours,
