@@ -3,7 +3,7 @@
 # 🎮 PokeAPIApp v1.5.4 - PROJETO FUNCIONAL
 ### Pokédex Responsiva Completa
 
-[![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)](https://github.com/davidassef/PokeAPI)
+[![Version](https://img.shields.io/badge/Version-1.5.4-blue.svg)](https://github.com/davidassef/PokeAPI)
 [![Status](https://img.shields.io/badge/Status-100%25%20FUNCIONAL-brightgreen.svg)](https://github.com/davidassef/PokeAPI)
 [![Development](https://img.shields.io/badge/Development-ATIVO-green.svg)](https://github.com/davidassef/PokeAPI)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://pokeapi-la6k.onrender.com/health)
