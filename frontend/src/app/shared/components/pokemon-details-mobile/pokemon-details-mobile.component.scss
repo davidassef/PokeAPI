@@ -40,8 +40,8 @@
   display: flex;
   flex-direction: column;
 
-  // ✅ CORREÇÃO: Espaçamento reduzido já que scroll funciona corretamente
-  padding-bottom: 20px; // ✅ CORREÇÃO: Reduzido de 140px para 20px
+  // ✅ CORREÇÃO: Espaçamento ajustado para evitar corte de conteúdo
+  padding-bottom: 60px; // ✅ CORREÇÃO: Aumentado para 60px para garantir visibilidade completa
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; // Scroll suave no iOS
   touch-action: pan-y; // ✅ CORREÇÃO: Simplificado para apenas pan-y (scroll vertical)
