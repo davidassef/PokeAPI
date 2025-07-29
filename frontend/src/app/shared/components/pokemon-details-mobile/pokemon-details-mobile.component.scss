@@ -13,7 +13,7 @@
 
 .mobile-modal-container {
   width: 100%;
-  height: 90vh;
+  flex: 1; // ✅ CORREÇÃO: Ocupa espaço disponível sem criar espaço extra
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   border-radius: 20px 20px 0 0;
   display: flex;
@@ -31,18 +31,17 @@
   pointer-events: auto;
 }
 
-// Container scrollável global que engloba header + conteúdo
+// ✅ CORREÇÃO CRÍTICA: Container scrollável agora é o elemento pai
 .global-scroll-container {
-  flex: 1;
+  width: 100%;
+  height: 90vh; // ✅ CORREÇÃO: Altura total movida do modal-container para aqui
   overflow-y: auto;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 
-  // ✅ CORREÇÃO CRÍTICA: Garantir altura mínima para scroll funcionar
-  min-height: 0; // Permite que flex: 1 funcione corretamente
-  height: 100%; // Força altura total disponível
-
-  // Espaçamento inferior aumentado para melhor visualização
-  padding-bottom: 140px; // Aumentado de 80px para 140px
+  // ✅ CORREÇÃO: Espaçamento reduzido já que scroll funciona corretamente
+  padding-bottom: 20px; // ✅ CORREÇÃO: Reduzido de 140px para 20px
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; // Scroll suave no iOS
   touch-action: pan-y; // ✅ CORREÇÃO: Simplificado para apenas pan-y (scroll vertical)

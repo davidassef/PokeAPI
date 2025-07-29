@@ -1,10 +1,10 @@
 <!-- Modal Mobile Fullscreen -->
 <!-- DEBUG: Modal mobile sendo renderizado -->
 <div class="mobile-modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
-  <div class="mobile-modal-container" (click)="$event.stopPropagation()">
 
-    <!-- Container scrollável global que engloba header + conteúdo -->
-    <div class="global-scroll-container">
+  <!-- ✅ CORREÇÃO CRÍTICA: Container scrollável FORA do modal container -->
+  <div class="global-scroll-container" (click)="$event.stopPropagation()">
+    <div class="mobile-modal-container">
 
       <!-- Header com botão fechar -->
       <div class="mobile-header">
@@ -466,6 +466,6 @@
 
       </div>
 
-    </div> <!-- Fim do global-scroll-container -->
-  </div>
+    </div> <!-- Fim do mobile-modal-container -->
+  </div> <!-- Fim do global-scroll-container -->
 </div>
