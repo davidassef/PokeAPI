@@ -22,6 +22,10 @@
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
 
+  // ✅ CORREÇÃO: Não criar contexto de empilhamento que interfira com scroll
+  position: relative; // Necessário para elementos filhos posicionados
+  z-index: auto; // ✅ CORREÇÃO: Não força contexto de empilhamento
+
   // ✅ NOVO: Garantir que não interfira com eventos de toque
   touch-action: none; // Deixa o controle de toque para elementos filhos
   pointer-events: auto;
@@ -51,9 +55,9 @@
   pointer-events: auto;
   user-select: none; // Evita seleção de texto durante scroll
 
-  // ✅ CORREÇÃO CRÍTICA: Z-index alto para ficar acima do botão de captura
+  // ✅ CORREÇÃO CRÍTICA: Z-index alto para garantir scroll funcional
   position: relative; // Necessário para z-index funcionar
-  z-index: 2; // Maior que o botão de captura (z-index: 1)
+  z-index: 100; // ✅ CORREÇÃO: Z-index muito mais alto para garantir que scroll funcione
 
   // ✅ CORREÇÃO: Configurações simplificadas para evitar conflitos
   -webkit-overflow-scrolling: touch; // Scroll nativo no iOS
@@ -189,7 +193,7 @@
     right: 0; // ✅ CORREÇÃO: Alinhar à direita
     transform: translateY(-50%); // ✅ CORREÇÃO: Ajuste fino da centralização
     overflow: hidden;
-    z-index: 1; // ✅ CORREÇÃO CRÍTICA: Z-index baixo para não interferir com scroll
+    z-index: 50; // ✅ CORREÇÃO: Z-index médio - acima de elementos normais, abaixo do scroll
 
     // Estados visuais
     &:hover:not(:disabled):not(.capturing) {
