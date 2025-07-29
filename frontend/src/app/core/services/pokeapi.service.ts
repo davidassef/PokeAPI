@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, from, of, forkJoin } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
@@ -53,7 +53,8 @@ export class PokeApiService {
     private http: HttpClient,
     private cacheService: CacheService,
     private imagePreloadService: ImagePreloadService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private injector: Injector
   ) {
     // ✅ OTIMIZAÇÃO: Log apenas em debug
     this.logger.debug('pokeapi', `Backend URL configurada: ${this.config.backendUrl}`);
@@ -73,15 +74,26 @@ export class PokeApiService {
   }
 
   /**
-   * Preload de imagem do Pokémon (responsabilidade separada)
+   * Preload de imagem do Pokémon usando sistema de cache do backend.
+   *
+   * MIGRADO: Não usa mais URLs diretas do GitHub para evitar erros 429.
    */
   private preloadPokemonImage(pokemon: Pokemon): void {
-    if (pokemon.sprites?.other?.['official-artwork']?.front_default) {
-      this.imagePreloadService.preload(
-        pokemon.sprites.other['official-artwork'].front_default,
-        'high'
-      ).subscribe();
-    }
+    // Usa o sistema de cache do backend em vez de URLs diretas
+    import('../services/pokemon-image.service').then(module => {
+      const pokemonImageService = this.injector.get(module.PokemonImageService);
+
+      pokemonImageService.getPokemonImageUrl(pokemon.id, 'official-artwork').subscribe({
+        next: (url) => {
+          this.logger.debug('pokeapi', `Preload individual via backend: Pokémon ${pokemon.id}`);
+        },
+        error: (error) => {
+          this.logger.warn('pokeapi', `Erro no preload individual: ${error.message}`);
+        }
+      });
+    }).catch(error => {
+      this.logger.error('pokeapi', `Erro ao importar PokemonImageService para preload: ${error.message}`);
+    });
   }
 
   /**
@@ -113,21 +125,39 @@ export class PokeApiService {
   }
 
   /**
-   * Precarrega imagens de uma lista de Pokémon
+   * Precarrega imagens de uma lista de Pokémon usando o sistema de cache do backend.
+   *
+   * MIGRADO: Agora usa PokemonImageService em vez de URLs diretas do GitHub
+   * para evitar erros 429 (Too Many Requests) da API externa.
    */
   preloadPokemonImages(pokemonList: PokemonListItem[], priority: 'high' | 'medium' | 'low' = 'medium'): void {
-    const imageUrls = pokemonList.map(pokemon => {
+    const pokemonIds = pokemonList.map(pokemon => {
       const id = this.extractIdFromUrl(pokemon.url);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-    });
+      return parseInt(id, 10);
+    }).filter(id => !isNaN(id) && id > 0 && id <= 1010);
 
-    this.imagePreloadService.preloadBatch(imageUrls, priority).subscribe(
-      results => {
-        const successCount = results.filter(success => success).length;
-        // ✅ OTIMIZAÇÃO: Log apenas em debug
-        this.logger.debug('pokeapi', `Preload de imagens: ${successCount}/${imageUrls.length} Pokémon`);
-      }
-    );
+    if (pokemonIds.length === 0) {
+      this.logger.debug('pokeapi', 'Nenhum ID válido para preload de imagens');
+      return;
+    }
+
+    // Usa o sistema de cache do backend em vez de URLs diretas
+    import('../services/pokemon-image.service').then(module => {
+      const pokemonImageService = this.injector.get(module.PokemonImageService);
+
+      pokemonImageService.preloadPokemonImages(pokemonIds, ['official-artwork']).subscribe({
+        next: (response) => {
+          this.logger.debug('pokeapi', `Preload agendado via backend: ${pokemonIds.length} Pokémons`);
+          console.log(`✅ [PokeApiService] Preload via backend agendado:`, response);
+        },
+        error: (error) => {
+          this.logger.warn('pokeapi', `Erro no preload via backend: ${error.message}`);
+          console.warn(`⚠️ [PokeApiService] Fallback: preload via backend falhou`, error);
+        }
+      });
+    }).catch(error => {
+      this.logger.error('pokeapi', `Erro ao importar PokemonImageService: ${error.message}`);
+    });
   }
 
   /**
@@ -447,13 +477,28 @@ export class PokeApiService {
   }
 
   /**
-   * Obtém a URL da imagem oficial do Pokémon
+   * Obtém a URL da imagem oficial do Pokémon via sistema de cache do backend.
+   *
+   * MIGRADO: Usa endpoint do backend em vez de URLs diretas do GitHub
+   * para evitar erros 429 (Too Many Requests).
+   *
    * @param identifier ID ou nome do Pokémon
-   * @returns URL da imagem oficial
+   * @returns Observable com URL da imagem oficial
    */
   getPokemonOfficialArtworkUrl(identifier: string | number): Observable<string> {
     return this.getPokemon(identifier).pipe(
-      map(pokemon => pokemon.sprites?.other?.['official-artwork']?.front_default || '')
+      switchMap(pokemon => {
+        // Usa o sistema de cache do backend
+        return import('../services/pokemon-image.service').then(module => {
+          const pokemonImageService = this.injector.get(module.PokemonImageService);
+          return pokemonImageService.getPokemonImageUrl(pokemon.id, 'official-artwork').toPromise();
+        }).catch(error => {
+          this.logger.error('pokeapi', `Erro ao importar PokemonImageService: ${error.message}`);
+          // Fallback para URL da PokeAPI se houver erro
+          return pokemon.sprites?.other?.['official-artwork']?.front_default || '';
+        });
+      }),
+      map(url => url || '') // Garante que sempre retorna string
     );
   }
 

@@ -272,8 +272,9 @@ export class PokemonDetailsManager {
       chain.push({
         id: pokemonId,
         name: node.species.name,
-        // ✅ CORREÇÃO: Adicionar URL da imagem para cada Pokémon da cadeia evolutiva
-        imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`,
+        // ✅ MIGRADO: Usar endpoint do backend em vez de URL direta do GitHub
+        // Evita erros 429 (Too Many Requests) da API externa
+        imageUrl: `${environment.apiUrl}/images/pokemon/${pokemonId}?image_type=official-artwork`,
         level: node.evolution_details[0]?.min_level || null,
         method: node.evolution_details[0]?.trigger?.name || 'level',
         trigger: node.evolution_details[0]?.trigger?.name || null,
