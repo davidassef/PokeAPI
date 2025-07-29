@@ -20,7 +20,7 @@
   flex-direction: column;
   overflow: visible; // ✅ CORREÇÃO CRÍTICA: Permite scroll interno
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s ease-out;
+  animation: fadeInModal 0.4s ease-out; // ✅ CORREÇÃO: Animação suave de fade-in
 
   // ✅ CORREÇÃO: Não criar contexto de empilhamento que interfira com scroll
   position: relative; // Necessário para elementos filhos posicionados
@@ -92,11 +92,38 @@
   }
 }
 
-@keyframes slideUp {
+// ✅ NOVA: Animação suave de fade-in para o modal completo
+@keyframes fadeInModal {
   from {
-    transform: translateY(100%);
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
   }
   to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ✅ NOVA: Animação suave de fade-in para o header
+@keyframes fadeInHeader {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ✅ NOVA: Animação suave de fade-in para o conteúdo
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -125,6 +152,9 @@
   border-bottom: 1px solid rgba(255,255,255,0.1);
   // Removido position: sticky para permitir scroll completo
   flex-shrink: 0; // Evita que o header seja comprimido
+
+  // ✅ NOVA: Animação suave de entrada para o header
+  animation: fadeInHeader 0.5s ease-out 0.1s both; // Delay de 0.1s para sequência suave
 
   .close-btn {
     background: rgba(255, 255, 255, 0.2);
@@ -512,6 +542,9 @@
 }
 
 .tab-content {
+  // ✅ NOVA: Animação suave de entrada para o conteúdo
+  animation: fadeInContent 0.6s ease-out 0.2s both; // Delay de 0.2s para sequência suave
+
   .tab-panel {
     h3 {
       margin: 0 0 16px 0;
@@ -523,6 +556,8 @@
   }
 
   .overview-content {
+    padding-bottom: 80px; // ✅ CORREÇÃO: Espaçamento aumentado para garantir visibilidade completa
+
     .stats-grid {
       display: flex;
       flex-direction: column;
@@ -683,6 +718,8 @@
 
 // Estilos para as novas abas
 .combat-content {
+  padding-bottom: 80px; // ✅ CORREÇÃO: Espaçamento aumentado para garantir visibilidade completa
+
   .combat-stats-detailed {
     h3 {
       color: white;
@@ -876,6 +913,8 @@
 }
 
 .evolution-content {
+  padding-bottom: 80px; // ✅ CORREÇÃO: Espaçamento aumentado para garantir visibilidade completa
+
   h3 {
     color: white;
     margin-bottom: 20px;
@@ -981,6 +1020,8 @@
 }
 
 .curiosities-content {
+  padding-bottom: 80px; // ✅ CORREÇÃO: Espaçamento aumentado para garantir visibilidade completa
+
   h3 {
     color: white;
     margin-bottom: 20px;
