@@ -4,6 +4,7 @@ import { Pokemon } from '../../../models/pokemon.model';
 import { CapturedService } from '../../../core/services/captured.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { PokeApiService } from '../../../core/services/pokeapi.service';
+import { PokemonImageService } from '../../../core/services/pokemon-image.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { RbacService, Permission } from '../../../core/services/rbac.service';
@@ -48,6 +49,7 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     private router: Router,
     private audioService: AudioService,
     private pokeApiService: PokeApiService,
+    private pokemonImageService: PokemonImageService,
     private capturedService: CapturedService,
     private authService: AuthService,
     private rbacService: RbacService,
@@ -75,11 +77,24 @@ export class PokemonCardComponent implements OnInit, OnDestroy {
     this.rbacSub?.unsubscribe();
   }
 
+  /**
+   * Carrega a imagem do Pokémon usando o novo serviço de cache do backend.
+   *
+   * Substitui a dependência direta de URLs externas por um sistema robusto
+   * que utiliza cache no backend e fallback para placeholders.
+   */
   private loadPokemonImage() {
-    this.pokeApiService.getPokemonOfficialArtworkUrl(this.pokemon.id).subscribe(
-      url => this.imageUrl = url,
-      error => console.error('Error loading Pokemon image:', error)
-    );
+    this.pokemonImageService.getPokemonImageUrl(this.pokemon.id, 'official-artwork').subscribe({
+      next: (url) => {
+        this.imageUrl = url;
+        console.debug(`[PokemonCard] Imagem carregada para ${this.pokemon.name}: ${url.substring(0, 50)}...`);
+      },
+      error: (error) => {
+        console.error(`[PokemonCard] Erro ao carregar imagem do ${this.pokemon.name}:`, error);
+        // O serviço já retorna placeholder em caso de erro, mas garantimos aqui também
+        this.imageUrl = this.pokemonImageService['getPlaceholderUrl'](this.pokemon.id, 'official-artwork');
+      }
+    });
   }
 
   onCardClick(event?: Event) {
