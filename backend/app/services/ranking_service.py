@@ -1,6 +1,9 @@
 """
 Serviço de ranking baseado no armazenamento consolidado dos clientes.
-Gera ranking dinâmico baseado nas contagens reais de capturas.
+
+Este módulo implementa a lógica de negócio para geração e atualização
+do ranking global de Pokémons mais capturados, baseado nos dados
+consolidados de todos os clientes conectados ao sistema.
 """
 
 import logging
@@ -15,41 +18,69 @@ logger = logging.getLogger(__name__)
 
 
 class RankingService:
-    """Serviço para gerenciar ranking de pokémons baseado nas capturas dos clientes."""
+    """
+    Serviço para gerenciamento do ranking global de Pokémons.
+
+    Responsável por calcular e manter atualizado o ranking dos Pokémons
+    mais capturados baseado nos dados consolidados de todos os clientes
+    conectados ao sistema pull-based.
+
+    Attributes:
+        storage_service: Serviço de armazenamento de dados dos clientes
+    """
 
     def __init__(self, storage_service: ClientStorageService):
+        """
+        Inicializa o serviço de ranking.
+
+        Args:
+            storage_service: Instância do serviço de armazenamento de clientes
+        """
         self.storage_service = storage_service
 
     def update_ranking_from_storage(self, db: Session, force_update: bool = False) -> Dict[str, int]:
         """
-        Atualiza a tabela de ranking baseado nos dados do storage.
+        Atualiza a tabela de ranking baseado nos dados consolidados do storage.
+
+        Este método reconstrói completamente o ranking global removendo
+        todas as entradas existentes e inserindo novos dados baseados
+        nas capturas consolidadas de todos os clientes.
 
         Args:
             db: Sessão do banco de dados
             force_update: Se True, força atualização mesmo se não houver mudanças
 
         Returns:
-            Dict com estatísticas da atualização
+            Dict[str, int]: Estatísticas da atualização contendo:
+                - deleted_count: Número de entradas removidas
+                - inserted_count: Número de entradas inseridas
+                - errors_count: Número de erros durante inserção
+
+        Note:
+            Esta operação é custosa pois reconstrói todo o ranking.
+            Use com moderação em sistemas com muitos dados.
         """
-        logger.info("🏆 Atualizando ranking baseado no storage")
+        logger.info("🏆 Iniciando atualização do ranking baseado no storage")
 
-        # Obter dados do ranking do storage
-        ranking_data = self.storage_service.get_ranking_data(limit=100)  # Pegar mais para ter flexibilidade
-
+        # Obtém dados consolidados do ranking de todos os clientes
+        ranking_data = self.storage_service.get_ranking_data(limit=100)
         logger.info(f"📊 Dados do ranking obtidos: {len(ranking_data)} entradas")
 
-        # Limpar ranking atual
+        # Remove todas as entradas existentes do ranking
         deleted_count = db.query(PokemonRanking).count()
         db.query(PokemonRanking).delete()
         logger.info(f"🗑️ Removidas {deleted_count} entradas antigas do ranking")
 
-        # Inserir novo ranking
+        # Insere novas entradas baseadas nos dados consolidados
         inserted_count = 0
+        errors_count = 0
+
         for pokemon_id, capture_count in ranking_data:
             try:
-                # Buscar nome do pokémon (pode ser melhorado com cache)
+                # Obtém nome do Pokémon (pode ser otimizado com cache futuro)
                 pokemon_name = self._get_pokemon_name(pokemon_id)
 
+                # Cria nova entrada de ranking
                 ranking_entry = PokemonRanking(
                     pokemon_id=pokemon_id,
                     pokemon_name=pokemon_name,
@@ -63,63 +94,84 @@ class RankingService:
                 logger.info(f"➕ Adicionado ao ranking: {pokemon_name} (ID: {pokemon_id}) - {capture_count} capturas")
 
             except Exception as e:
-                logger.error(f"Erro ao inserir ranking para pokémon {pokemon_id}: {e}")
+                errors_count += 1
+                logger.error(f"❌ Erro ao inserir ranking para pokémon {pokemon_id}: {e}")
 
-        # Commit das mudanças
+        # Persiste todas as mudanças no banco
         try:
             db.commit()
-            logger.info(f"✅ Commit realizado com sucesso: {inserted_count} entradas")
+            logger.info(f"✅ Commit realizado com sucesso: {inserted_count} entradas inseridas")
         except Exception as e:
             logger.error(f"❌ Erro no commit: {e}")
             db.rollback()
             raise
 
+        # Compila estatísticas da operação
         stats = {
+            "deleted_count": deleted_count,
             "inserted_count": inserted_count,
+            "errors_count": errors_count,
             "total_unique_pokemons": len(ranking_data),
             "top_pokemon_id": ranking_data[0][0] if ranking_data else None,
             "top_pokemon_count": ranking_data[0][1] if ranking_data else 0
         }
 
-        logger.info(f"🎯 Ranking atualizado: {inserted_count} entradas inseridas")
+        logger.info(f"🎯 Ranking atualizado com sucesso: {inserted_count} entradas inseridas")
         return stats
 
     def get_ranking(self, db: Session, limit: int = 10) -> List[PokemonRanking]:
         """
-        Retorna ranking atual dos pokémons.
+        Retorna o ranking atual dos Pokémons mais capturados.
+
+        Busca as entradas do ranking ordenadas por número de capturas
+        em ordem decrescente, com desempate por ID do Pokémon.
 
         Args:
             db: Sessão do banco de dados
-            limit: Número máximo de pokémons no ranking
+            limit: Número máximo de Pokémons no ranking (padrão: 10)
 
         Returns:
-            Lista de entradas do ranking ordenada por posição
+            List[PokemonRanking]: Lista ordenada das entradas do ranking
         """
         return (
             db.query(PokemonRanking)
-            .order_by(PokemonRanking.favorite_count.desc(), PokemonRanking.pokemon_id.asc())
+            .order_by(
+                PokemonRanking.favorite_count.desc(),
+                PokemonRanking.pokemon_id.asc()  # Desempate por ID
+            )
             .limit(limit)
             .all()
         )
 
     def get_ranking_with_storage_comparison(self, db: Session, limit: int = 10) -> Dict:
         """
-        Retorna ranking atual e compara com dados do storage.
-        Útil para debug e verificação de consistência.
+        Retorna ranking atual e compara com dados do storage para verificação.
+
+        Método útil para debug e verificação de consistência entre
+        os dados persistidos no banco e os dados consolidados no storage.
+
+        Args:
+            db: Sessão do banco de dados
+            limit: Número máximo de itens para comparação
+
+        Returns:
+            Dict: Dicionário contendo ranking do banco, storage e análise de consistência
         """
-        # Ranking do banco
+        # Obtém ranking atual do banco de dados
         db_ranking = self.get_ranking(db, limit)
 
-        # Ranking do storage
+        # Obtém ranking consolidado do storage
         storage_ranking = self.storage_service.get_ranking_data(limit)
 
-        # Comparar consistência
+        # Analisa consistência entre as duas fontes
         is_consistent = True
         differences = []
 
+        # Compara posição por posição entre banco e storage
         for i, (storage_id, storage_count) in enumerate(storage_ranking):
             if i < len(db_ranking):
                 db_entry = db_ranking[i]
+                # Verifica se ID e contagem coincidem
                 if db_entry.pokemon_id != storage_id or db_entry.favorite_count != storage_count:
                     is_consistent = False
                     differences.append({
@@ -128,6 +180,7 @@ class RankingService:
                         "database": {"id": db_entry.pokemon_id, "count": db_entry.favorite_count}
                     })
             else:
+                # Storage tem mais entradas que o banco
                 is_consistent = False
                 differences.append({
                     "position": i + 1,
@@ -162,10 +215,22 @@ class RankingService:
 
     def _get_pokemon_name(self, pokemon_id: int) -> str:
         """
-        Obtém nome do pokémon por ID.
-        TODO: Implementar cache ou busca na API/database.
+        Obtém o nome do Pokémon baseado no seu ID.
+
+        Implementação temporária usando mapeamento estático dos Pokémons
+        mais comuns. Em produção, deveria usar cache ou busca na API/database.
+
+        Args:
+            pokemon_id: ID do Pokémon na PokeAPI
+
+        Returns:
+            str: Nome do Pokémon ou fallback "pokemon_{id}"
+
+        TODO:
+            Implementar cache persistente ou integração com PokeAPI
+            para obter nomes de todos os Pokémons dinamicamente.
         """
-        # Mapeamento simples para os pokémons mais comuns
+        # Mapeamento estático dos Pokémons mais populares
         pokemon_names = {
             1: "bulbasaur", 2: "ivysaur", 3: "venusaur", 4: "charmander",
             5: "charmeleon", 6: "charizard", 7: "squirtle", 8: "wartortle",
@@ -183,18 +248,33 @@ class RankingService:
 
     def force_ranking_rebuild(self, db: Session) -> Dict[str, int]:
         """
-        Força reconstrução completa do ranking.
-        Remove todos os dados antigos e reconstrói baseado no storage.
-        """
-        logger.info("🔄 Forçando reconstrução completa do ranking")
+        Força a reconstrução completa do ranking do zero.
 
-        # Limpar tabela de ranking
+        Remove todos os dados existentes do ranking e reconstrói
+        completamente baseado nos dados consolidados do storage.
+
+        Args:
+            db: Sessão do banco de dados
+
+        Returns:
+            Dict[str, int]: Estatísticas da reconstrução incluindo:
+                - deleted_count: Entradas removidas
+                - inserted_count: Entradas inseridas
+                - errors_count: Erros durante inserção
+
+        Warning:
+            Operação custosa que reconstrói todo o ranking.
+            Use apenas quando necessário para correção de inconsistências.
+        """
+        logger.info("🔄 Iniciando reconstrução completa forçada do ranking")
+
+        # Remove todas as entradas existentes
         deleted_count = db.query(PokemonRanking).count()
         db.query(PokemonRanking).delete()
 
-        # Reconstruir ranking
+        # Reconstrói ranking baseado no storage atual
         stats = self.update_ranking_from_storage(db, force_update=True)
         stats["deleted_count"] = deleted_count
 
-        logger.info(f"🎯 Ranking reconstruído: {deleted_count} removidos, {stats['inserted_count']} inseridos")
+        logger.info(f"🎯 Ranking reconstruído com sucesso: {deleted_count} removidos, {stats['inserted_count']} inseridos")
         return stats
