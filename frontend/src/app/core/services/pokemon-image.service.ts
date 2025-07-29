@@ -1,10 +1,10 @@
 /**
  * Serviço para gerenciamento de imagens dos Pokémons através do backend.
- * 
+ *
  * Este serviço substitui a dependência direta de URLs externas (GitHub, PokeAPI)
  * por um sistema robusto que utiliza o cache de imagens do backend, melhorando
  * a confiabilidade e performance do carregamento de imagens.
- * 
+ *
  * Funcionalidades:
  * - Carregamento de imagens através do backend
  * - Cache local no browser
@@ -61,21 +61,21 @@ export interface ImageCacheStats {
   providedIn: 'root'
 })
 export class PokemonImageService {
-  
+
   // ===== CONFIGURAÇÃO =====
-  
+
   /** URL base da API de imagens */
   private readonly apiUrl = `${environment.apiUrl}/images`;
-  
+
   /** Tipos de imagem suportados */
   private readonly supportedTypes = [
     'official-artwork',
-    'sprite', 
+    'sprite',
     'sprite-shiny',
     'home',
     'home-shiny'
   ];
-  
+
   /** Configurações de timeout e retry */
   private readonly config = {
     timeout: 15000,        // 15 segundos
@@ -84,16 +84,16 @@ export class PokemonImageService {
   };
 
   // ===== CACHE LOCAL =====
-  
+
   /** Cache de URLs de imagens no browser */
   private imageUrlCache = new Map<string, string>();
-  
+
   /** Cache de timestamps para controle de expiração */
   private cacheTimestamps = new Map<string, number>();
-  
+
   /** Subject para estatísticas do cache */
   private cacheStatsSubject = new BehaviorSubject<ImageCacheStats | null>(null);
-  
+
   /** Observable público para estatísticas */
   public cacheStats$ = this.cacheStatsSubject.asObservable();
 
@@ -103,16 +103,17 @@ export class PokemonImageService {
   }
 
   /**
-   * Obtém a URL de uma imagem de Pokémon.
-   * 
+   * Obtém a URL de uma imagem de Pokémon com sistema robusto de fallback.
+   *
    * Utiliza o cache local primeiro, depois faz requisição ao backend.
    * O backend serve imagens cacheadas ou faz download em background.
-   * 
+   *
    * @param pokemonId - ID do Pokémon (1-1010+)
    * @param imageType - Tipo de imagem desejada
+   * @param forceRefresh - Força atualização ignorando cache local
    * @returns Observable com a URL da imagem
    */
-  getPokemonImageUrl(pokemonId: number, imageType: string = 'official-artwork'): Observable<string> {
+  getPokemonImageUrl(pokemonId: number, imageType: string = 'official-artwork', forceRefresh: boolean = false): Observable<string> {
     // Validação básica
     if (pokemonId < 1 || pokemonId > 1010) {
       console.warn(`[PokemonImageService] ID inválido: ${pokemonId}`);
@@ -125,45 +126,75 @@ export class PokemonImageService {
     }
 
     const cacheKey = `${pokemonId}_${imageType}`;
-    
-    // Verifica cache local primeiro
-    if (this.isInCache(cacheKey)) {
+
+    // Verifica cache local primeiro (se não forçar refresh)
+    if (!forceRefresh && this.isInCache(cacheKey)) {
       const cachedUrl = this.imageUrlCache.get(cacheKey)!;
-      console.debug(`[PokemonImageService] Cache hit: ${cacheKey}`);
+      console.debug(`[PokemonImageService] ✅ Cache hit: ${cacheKey}`);
       return of(cachedUrl);
     }
 
+    console.info(`[PokemonImageService] 🔄 Carregando imagem: ${cacheKey}`);
+
     // Faz requisição ao backend
     const backendUrl = `${this.apiUrl}/pokemon/${pokemonId}?image_type=${imageType}`;
-    
-    return this.http.get(backendUrl, { 
+
+    return this.http.get(backendUrl, {
       responseType: 'blob',
       observe: 'response'
     }).pipe(
       timeout(this.config.timeout),
-      retry(this.config.retryAttempts),
+      retry({
+        count: this.config.retryAttempts,
+        delay: (error, retryCount) => {
+          console.warn(`[PokemonImageService] 🔄 Retry ${retryCount}/${this.config.retryAttempts} para ${cacheKey}`);
+          // Delay exponencial: 1s, 2s, 4s...
+          const delay = Math.pow(2, retryCount - 1) * 1000;
+          return new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }),
       map(response => {
         // Verifica se é placeholder
         const isPlaceholder = response.headers.get('X-Placeholder') === 'true';
-        
+
         if (isPlaceholder) {
-          console.debug(`[PokemonImageService] Placeholder recebido: ${cacheKey}`);
+          console.debug(`[PokemonImageService] 📋 Placeholder recebido: ${cacheKey}`);
+          // Agenda tentativa de download em background
+          this.scheduleBackgroundDownload(pokemonId, imageType);
+          return this.getPlaceholderUrl(pokemonId, imageType);
+        }
+
+        // Verifica se o blob é válido
+        const blob = response.body!;
+        if (!blob || blob.size < 500) {
+          console.warn(`[PokemonImageService] ⚠️ Blob inválido ou muito pequeno: ${cacheKey}`);
           return this.getPlaceholderUrl(pokemonId, imageType);
         }
 
         // Cria URL do blob para a imagem
-        const blob = response.body!;
         const imageUrl = URL.createObjectURL(blob);
-        
+
         // Armazena no cache
         this.cacheImageUrl(cacheKey, imageUrl);
-        
-        console.debug(`[PokemonImageService] Imagem carregada: ${cacheKey}`);
+
+        console.info(`[PokemonImageService] ✅ Imagem carregada: ${cacheKey} (${blob.size} bytes)`);
         return imageUrl;
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error(`[PokemonImageService] Erro ao carregar ${cacheKey}:`, error);
-        
+        console.error(`[PokemonImageService] ❌ Erro ao carregar ${cacheKey}:`, error);
+
+        // Log detalhado do erro
+        if (error.status === 0) {
+          console.error(`[PokemonImageService] Erro de rede ou CORS para ${cacheKey}`);
+        } else if (error.status >= 500) {
+          console.error(`[PokemonImageService] Erro do servidor (${error.status}) para ${cacheKey}`);
+        } else if (error.status === 404) {
+          console.error(`[PokemonImageService] Imagem não encontrada (404) para ${cacheKey}`);
+        }
+
+        // Agenda tentativa de download em background para próxima vez
+        this.scheduleBackgroundDownload(pokemonId, imageType);
+
         // Retorna placeholder em caso de erro
         const placeholderUrl = this.getPlaceholderUrl(pokemonId, imageType);
         return of(placeholderUrl);
@@ -173,13 +204,13 @@ export class PokemonImageService {
 
   /**
    * Obtém informações detalhadas sobre as imagens de um Pokémon.
-   * 
+   *
    * @param pokemonId - ID do Pokémon
    * @returns Observable com informações das imagens
    */
   getPokemonImageInfo(pokemonId: number): Observable<PokemonImageInfo> {
     const url = `${this.apiUrl}/pokemon/${pokemonId}/info`;
-    
+
     return this.http.get<PokemonImageInfo>(url).pipe(
       timeout(this.config.timeout),
       catchError((error: HttpErrorResponse) => {
@@ -191,7 +222,7 @@ export class PokemonImageService {
 
   /**
    * Solicita preload de imagens de múltiplos Pokémons.
-   * 
+   *
    * @param pokemonIds - Lista de IDs dos Pokémons
    * @param imageTypes - Tipos de imagem a precarregar (opcional)
    * @returns Observable com confirmação do preload
@@ -202,7 +233,7 @@ export class PokemonImageService {
       pokemon_ids: pokemonIds,
       image_types: imageTypes || ['official-artwork']
     };
-    
+
     return this.http.post(url, body).pipe(
       timeout(this.config.timeout),
       tap(response => {
@@ -217,12 +248,12 @@ export class PokemonImageService {
 
   /**
    * Carrega estatísticas do cache de imagens.
-   * 
+   *
    * @returns Observable com estatísticas do cache
    */
   loadCacheStats(): Observable<ImageCacheStats> {
     const url = `${this.apiUrl}/cache/stats`;
-    
+
     return this.http.get<ImageCacheStats>(url).pipe(
       timeout(this.config.timeout),
       tap(stats => {
@@ -261,21 +292,21 @@ export class PokemonImageService {
         URL.revokeObjectURL(url);
       }
     }
-    
+
     this.imageUrlCache.clear();
     this.cacheTimestamps.clear();
-    
+
     console.log(`[PokemonImageService] Cache local limpo`);
   }
 
   /**
    * Obtém estatísticas do cache local.
-   * 
+   *
    * @returns Estatísticas do cache local
    */
   getLocalCacheStats(): { size: number; oldestEntry: Date | null; newestEntry: Date | null } {
     const timestamps = Array.from(this.cacheTimestamps.values());
-    
+
     return {
       size: this.imageUrlCache.size,
       oldestEntry: timestamps.length > 0 ? new Date(Math.min(...timestamps)) : null,
@@ -301,7 +332,7 @@ export class PokemonImageService {
     // Verifica se não expirou
     const now = Date.now();
     const age = now - timestamp;
-    
+
     if (age > this.config.cacheMaxAge) {
       // Remove entrada expirada
       const url = this.imageUrlCache.get(cacheKey);
@@ -325,6 +356,74 @@ export class PokemonImageService {
   }
 
   /**
+   * Agenda download em background para uma imagem específica.
+   *
+   * @param pokemonId - ID do Pokémon
+   * @param imageType - Tipo de imagem
+   */
+  private scheduleBackgroundDownload(pokemonId: number, imageType: string): void {
+    // Evita múltiplas tentativas simultâneas
+    const scheduleKey = `${pokemonId}_${imageType}`;
+    if (this.pendingDownloads.has(scheduleKey)) {
+      return;
+    }
+
+    this.pendingDownloads.add(scheduleKey);
+
+    // Agenda para 5 segundos no futuro para não sobrecarregar
+    setTimeout(() => {
+      console.info(`[PokemonImageService] 🔄 Tentando download em background: ${scheduleKey}`);
+
+      // Faz uma tentativa silenciosa de preload
+      this.preloadPokemonImages([pokemonId], [imageType]).subscribe({
+        next: (response) => {
+          console.debug(`[PokemonImageService] ✅ Download em background agendado: ${scheduleKey}`);
+        },
+        error: (error) => {
+          console.warn(`[PokemonImageService] ⚠️ Falha no agendamento de download: ${scheduleKey}`, error);
+        },
+        complete: () => {
+          this.pendingDownloads.delete(scheduleKey);
+        }
+      });
+    }, 5000);
+  }
+
+  /**
+   * Força o download de uma imagem específica.
+   *
+   * @param pokemonId - ID do Pokémon
+   * @param imageType - Tipo de imagem
+   * @returns Observable com confirmação
+   */
+  forceDownloadImage(pokemonId: number, imageType: string = 'official-artwork'): Observable<any> {
+    const url = `${this.apiUrl}/pokemon/${pokemonId}/force-download`;
+    const body = { image_type: imageType };
+
+    return this.http.post(url, body).pipe(
+      timeout(this.config.timeout),
+      tap(response => {
+        console.log(`[PokemonImageService] 🔄 Download forçado solicitado:`, response);
+
+        // Remove do cache local para forçar reload
+        const cacheKey = `${pokemonId}_${imageType}`;
+        if (this.imageUrlCache.has(cacheKey)) {
+          const url = this.imageUrlCache.get(cacheKey)!;
+          if (url.startsWith('blob:')) {
+            URL.revokeObjectURL(url);
+          }
+          this.imageUrlCache.delete(cacheKey);
+          this.cacheTimestamps.delete(cacheKey);
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error(`[PokemonImageService] ❌ Erro no download forçado:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Gera URL de placeholder para um Pokémon.
    */
   private getPlaceholderUrl(pokemonId: number, imageType: string): string {
@@ -343,7 +442,12 @@ export class PokemonImageService {
         </text>
       </svg>
     `)}`;
-    
+
     return svg;
   }
+
+  // ===== PROPRIEDADES PRIVADAS ADICIONAIS =====
+
+  /** Set para controlar downloads pendentes */
+  private pendingDownloads = new Set<string>();
 }
