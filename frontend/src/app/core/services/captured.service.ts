@@ -1,3 +1,18 @@
+/**
+ * Serviço para gerenciamento de Pokémons capturados/favoritos.
+ *
+ * Responsável por todas as operações relacionadas aos Pokémons favoritos
+ * dos usuários, incluindo persistência local, sincronização com backend,
+ * modo offline e gerenciamento de estado reativo.
+ *
+ * Funcionalidades principais:
+ * - Captura e remoção de Pokémons favoritos
+ * - Sincronização automática com backend
+ * - Modo offline com dados simulados
+ * - Cache local para performance
+ * - Sistema de fallback para múltiplos endpoints
+ */
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, firstValueFrom, throwError, from } from 'rxjs';
@@ -11,33 +26,55 @@ import { ConnectionService } from './connection.service';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
-/**
- * Serviço para gerenciar Pokémons capturados
- * Utiliza Ionic Storage para persistência local
- */
 @Injectable({
   providedIn: 'root'
 })
 export class CapturedService {
-  private capturedSubject = new BehaviorSubject<FavoritePokemon[]>([]);
-  public captured$ = this.capturedSubject.asObservable();
-  private apiUrl = `${environment.apiUrl}/favorites`;  // ✅ CORREÇÃO CRÍTICA: Usar URL completa do environment
 
-  // ✅ CORREÇÃO: URLs de fallback atualizadas - Render é o backend principal
+  // ===== ESTADO REATIVO =====
+
+  /** Subject para gerenciar estado dos Pokémons capturados */
+  private capturedSubject = new BehaviorSubject<FavoritePokemon[]>([]);
+
+  /** Observable público para componentes se inscreverem nas mudanças */
+  public captured$ = this.capturedSubject.asObservable();
+
+  // ===== CONFIGURAÇÃO DE ENDPOINTS =====
+
+  /** URL principal da API de favoritos baseada no environment */
+  private apiUrl = `${environment.apiUrl}/favorites`;
+
+  /**
+   * URLs de fallback para resiliência em caso de falha do endpoint principal.
+   * Ordem de prioridade: Vercel -> Heroku -> Local/Proxy
+   */
   private fallbackUrls = [
-    'https://poke-api-mauve.vercel.app/api/v1/favorites',  // Vercel (era configuração incorreta)
-    'https://pokeapiapp-backend.herokuapp.com/api/v1/favorites',  // Heroku backup
-    '/api/v1/favorites'  // Local/proxy fallback
+    'https://poke-api-mauve.vercel.app/api/v1/favorites',
+    'https://pokeapiapp-backend.herokuapp.com/api/v1/favorites',
+    '/api/v1/favorites'
   ];
 
-  // ✅ NOVO: Modo offline - dados simulados para demonstração
+  // ===== MODO OFFLINE =====
+
+  /** Flag para ativar modo offline com dados simulados */
   private offlineMode = false;
+
+  /**
+   * Dados simulados para demonstração em modo offline.
+   * Contém Pokémons populares para testes sem conexão.
+   */
   private offlineData: FavoritePokemon[] = [
     { id: 1, user_id: 1, pokemon_id: 25, pokemon_name: 'pikachu', created_at: new Date().toISOString() },
     { id: 2, user_id: 1, pokemon_id: 1, pokemon_name: 'bulbasaur', created_at: new Date().toISOString() },
     { id: 3, user_id: 1, pokemon_id: 4, pokemon_name: 'charmander', created_at: new Date().toISOString() }
   ];
 
+  /**
+   * Construtor do serviço de captura.
+   *
+   * Inicializa todas as dependências necessárias e configura
+   * observadores para limpeza automática de cache em logout.
+   */
   constructor(
     private http: HttpClient,
     private syncService: SyncService,
@@ -47,11 +84,11 @@ export class CapturedService {
     private connectionService: ConnectionService,
     private authService: AuthService
   ) {
-    // ✅ CORREÇÃO: Log da URL da API para debug
+    // Log de inicialização para debug
     console.log('[CapturedService] Inicializado com URL da API:', this.apiUrl);
     console.log('[CapturedService] Environment:', environment.production ? 'PRODUÇÃO' : 'DESENVOLVIMENTO');
 
-    // ✅ NOVO: Limpar cache quando usuário faz logout
+    // Configura limpeza automática de cache no logout
     this.authService.getAuthState().subscribe(isAuthenticated => {
       if (!isAuthenticated) {
         console.log('[CapturedService] Usuário deslogado, limpando cache');
@@ -61,10 +98,18 @@ export class CapturedService {
   }
 
   /**
-   * ✅ NOVO: Tenta requisição com URLs de fallback
+   * Tenta requisição usando URLs de fallback em caso de falha.
+   *
+   * Implementa sistema de resiliência tentando múltiplos endpoints
+   * em ordem de prioridade até encontrar um que funcione.
+   *
+   * @param endpoint - Endpoint específico a ser tentado
+   * @returns Promise com dados dos favoritos ou erro se todos falharem
+   *
+   * @private
    */
   private async tryFallbackUrls(endpoint: string): Promise<FavoritePokemon[]> {
-    console.log('[CapturedService] 🔄 Tentando URLs de fallback...');
+    console.log('[CapturedService] 🔄 Iniciando tentativas com URLs de fallback...');
 
     for (let i = 0; i < this.fallbackUrls.length; i++) {
       const fallbackUrl = `${this.fallbackUrls[i]}${endpoint}`;
@@ -77,13 +122,13 @@ export class CapturedService {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             }
-          }).pipe(timeout(10000))
+          }).pipe(timeout(10000)) // Timeout de 10 segundos
         );
 
         console.log(`[CapturedService] ✅ Sucesso com URL de fallback ${i + 1}: ${fallbackUrl}`);
         console.log(`[CapturedService] ${response.length} capturas carregadas`);
 
-        // Atualiza URL principal para a que funcionou
+        // Atualiza URL principal para a que funcionou (otimização futura)
         this.apiUrl = this.fallbackUrls[i];
         console.log(`[CapturedService] URL principal atualizada para: ${this.apiUrl}`);
 
