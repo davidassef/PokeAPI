@@ -291,6 +291,14 @@ ion-content {
     animation: crownGlow 2s ease-in-out infinite alternate;
   }
 
+  // ✅ CORREÇÃO: Badge de favoritos posicionado no canto superior direito do card
+  .ranking-favorite-badge {
+    position: absolute;
+    top: 8px;
+    left: calc(50% + 105px - 8px); // Centro + metade do card - ajuste do badge
+    z-index: 20;
+  }
+
   // Banner "Campeão!" posicionado como overlay externo
   .champion-banner {
     position: absolute;
@@ -328,6 +336,14 @@ ion-content {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     animation: float 2s ease-in-out infinite alternate;
   }
+
+  // ✅ CORREÇÃO: Badge de favoritos posicionado no canto superior direito do card
+  .ranking-favorite-badge {
+    position: absolute;
+    top: 8px;
+    left: calc(12px + 210px - 8px); // padding + largura do card - ajuste do badge
+    z-index: 20;
+  }
 }
 
 // Container do 3º lugar - card à direita
@@ -343,6 +359,14 @@ ion-content {
     pointer-events: none;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     animation: float 2s ease-in-out infinite alternate;
+  }
+
+  // ✅ CORREÇÃO: Badge de favoritos posicionado no canto superior direito do card
+  .ranking-favorite-badge {
+    position: absolute;
+    top: 8px;
+    right: 20px; // padding do container + ajuste do badge
+    z-index: 20;
   }
 }
 

@@ -94,10 +94,14 @@
           <div class="ranking-badge" [ngClass]="getRankingBadgeClass(i + 4)">
             {{ i + 4 }}
           </div>
+          <!-- ✅ CORREÇÃO: Padronizar badge de favoritos igual aos 3 primeiros -->
+          <span class="capture-count-badge">
+            <ion-icon name="heart" color="danger"></ion-icon>
+            {{ item.favoriteCount }}
+          </span>
           <app-pokemon-card
             [pokemon]="item.pokemon"
             [isCaptured]="isCaptured(item.pokemon.id)"
-            [favoriteCount]="item.favoriteCount"
             (cardClick)="openDetailsModal(item.pokemon.id)"
             (captureToggle)="onCaptureToggle($event)">
           </app-pokemon-card>
