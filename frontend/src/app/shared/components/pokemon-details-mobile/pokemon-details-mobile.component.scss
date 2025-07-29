@@ -47,6 +47,10 @@
   pointer-events: auto;
   user-select: none; // Evita seleção de texto durante scroll
 
+  // ✅ CORREÇÃO CRÍTICA: Z-index alto para ficar acima do botão de captura
+  position: relative; // Necessário para z-index funcionar
+  z-index: 2; // Maior que o botão de captura (z-index: 1)
+
   // ✅ NOVO: Configurações específicas para toque real em dispositivos móveis
   -webkit-touch-callout: none; // Desabilita callout no iOS
   -webkit-tap-highlight-color: transparent; // Remove highlight de toque
@@ -178,6 +182,7 @@
     right: 0; // ✅ CORREÇÃO: Alinhar à direita
     transform: translateY(-50%); // ✅ CORREÇÃO: Ajuste fino da centralização
     overflow: hidden;
+    z-index: 1; // ✅ CORREÇÃO CRÍTICA: Z-index baixo para não interferir com scroll
 
     // Estados visuais
     &:hover:not(:disabled):not(.capturing) {
