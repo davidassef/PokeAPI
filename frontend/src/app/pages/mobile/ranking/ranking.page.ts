@@ -1,3 +1,11 @@
+/**
+ * Componente da página de ranking mobile do PokeAPI_SYNC.
+ *
+ * Exibe o ranking global dos Pokémons mais favoritados pelos usuários
+ * em formato otimizado para dispositivos móveis, incluindo pódio especial
+ * para os 3 primeiros colocados e grid responsivo para os demais.
+ */
+
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AlertController, LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,18 +20,27 @@ import { AuthService } from '../../../core/services/auth.service';
 import { User } from 'src/app/models/user.model';
 import { AuthModalNewComponent } from '../../../shared/components/auth-modal-new/auth-modal-new.component';
 
+/**
+ * Interface para item do ranking com dados completos do Pokémon.
+ * Representa um Pokémon no ranking com todas as informações necessárias
+ * para exibição na interface mobile.
+ */
 interface PokemonRanking {
-  pokemon: Pokemon;
-  favoriteCount: number;
-  rank: number;
-  trend: 'up' | 'down' | 'stable';
-  updatedAt?: string;
+  pokemon: Pokemon;           // Dados completos do Pokémon da PokeAPI
+  favoriteCount: number;      // Número de vezes que foi favoritado
+  rank: number;              // Posição no ranking (1-25)
+  trend: 'up' | 'down' | 'stable';  // Tendência de mudança de posição
+  updatedAt?: string;        // Data da última atualização (opcional)
 }
 
+/**
+ * Interface para dados brutos do ranking vindos do backend.
+ * Representa a estrutura de dados recebida da API antes do processamento.
+ */
 interface BackendRankingItem {
-  pokemon_id: number;
-  favorite_count: number;
-  trend?: 'up' | 'down' | 'stable';
+  pokemon_id: number;        // ID do Pokémon na PokeAPI
+  favorite_count: number;    // Contagem de favoritos no backend
+  trend?: 'up' | 'down' | 'stable';  // Tendência opcional
 }
 
 
@@ -34,27 +51,63 @@ interface BackendRankingItem {
   styleUrls: ['./ranking.page.scss'],
 })
 export class RankingPage implements OnInit, OnDestroy {
+
+  // ===== PROPRIEDADES PRINCIPAIS =====
+
+  /** Ranking global completo dos Pokémons mais favoritados */
   globalRanking: PokemonRanking[] = [];
+
+  /** Flag de carregamento para exibir indicadores visuais */
   loading = false;
+
+  /** Timer para debounce de operações frequentes */
   debounceTimer: any = null;
+
+  /** Timers individuais para debounce de toggle por Pokémon */
   toggleDebounceTimer: { [key: number]: any } = {};
 
-  // Cache para evitar chamadas repetidas
+  // ===== SISTEMA DE CACHE =====
+
+  /** Cache de estados de captura para evitar consultas repetidas */
   private capturedCache = new Map<number, boolean>();
+
+  /** Cache de URLs de imagens dos Pokémons */
   private pokemonImageCache = new Map<number, string>();
+
+  /** Estados atuais de captura dos Pokémons exibidos */
   capturedStates = new Map<number, boolean>();
 
-  // Mobile specific properties
+  // ===== CONFIGURAÇÕES MOBILE =====
+
+  /** Flag indicando que está em modo mobile (sempre true neste componente) */
   isMobile = true;
+
+  /** Flag para exibição compacta dos cards */
   showCompactView = true;
 
-  // ✅ NOVO: Sistema de refresh automático
+  // ===== SISTEMA DE REFRESH AUTOMÁTICO =====
+
+  /** Flag para habilitar/desabilitar refresh automático do ranking */
   private autoRefreshEnabled = true;
-  private autoRefreshInterval = 60 * 1000; // 1 minuto
+
+  /** Intervalo de refresh automático em milissegundos (1 minuto) */
+  private autoRefreshInterval = 60 * 1000;
+
+  /** Timer do refresh automático */
   private autoRefreshTimer: any = null;
+
+  /** Subject para controle de destruição de observables */
   private destroy$ = new Subject<void>();
 
-  // Objeto placeholder estático para evitar loop infinito
+  // ===== OBJETO PLACEHOLDER =====
+
+  /**
+   * Pokémon placeholder estático usado para evitar loops infinitos
+   * e fornecer dados padrão quando um Pokémon não pode ser carregado.
+   *
+   * Contém estrutura completa com valores seguros para todas as propriedades
+   * necessárias pela interface.
+   */
   private static readonly PLACEHOLDER_POKEMON: Pokemon = {
     id: 0,
     name: 'Unknown',
@@ -87,23 +140,55 @@ export class RankingPage implements OnInit, OnDestroy {
     moves: [],
   };
 
+  // ===== CONTROLE DE MODAIS =====
+
+  /** Flag para controle de exibição do modal de detalhes */
   showDetailsModal = false;
+
+  /** ID do Pokémon selecionado para exibir detalhes */
   selectedPokemonId: number | null = null;
 
+  // ===== AUTENTICAÇÃO =====
+
+  /** Status de autenticação do usuário atual */
   isAuthenticated = false;
+  /** Dados do usuário autenticado atual */
   user: User | null = null;
+
+  /** Flag para controle de exibição do menu de usuário */
   showUserMenu = false;
 
-  showSearch = false; // Controle do sistema de busca
+  // ===== SISTEMA DE BUSCA E FILTROS =====
+
+  /** Flag para controle de exibição do sistema de busca */
+  showSearch = false;
+
+  /** Opções de filtro atualmente aplicadas */
   currentFilterOptions: any = {};
 
-  // ✅ NOVO: Propriedades para lazy loading e scroll infinito
-  displayedRanking: PokemonRanking[] = []; // Rankings atualmente exibidos
-  initialLoadSize = 10; // Carregar primeiros 10 (pódio + 7 do grid)
-  loadMoreSize = 5; // Carregar 5 por vez no scroll infinito
-  isLoadingMore = false; // Flag para evitar carregamentos duplicados
-  hasMoreData = true; // Se há mais dados para carregar
+  // ===== SISTEMA DE LAZY LOADING =====
 
+  /** Rankings atualmente exibidos na interface (subset do globalRanking) */
+  displayedRanking: PokemonRanking[] = [];
+
+  /** Número de itens a carregar inicialmente (pódio + primeiros do grid) */
+  initialLoadSize = 10;
+
+  /** Número de itens a carregar por vez no scroll infinito */
+  loadMoreSize = 5;
+
+  /** Flag para evitar carregamentos duplicados durante scroll infinito */
+  isLoadingMore = false;
+
+  /** Indica se há mais dados disponíveis para carregamento */
+  hasMoreData = true;
+
+  /**
+   * Construtor do componente de ranking mobile.
+   *
+   * Injeta todas as dependências necessárias para funcionamento do ranking,
+   * incluindo serviços de API, captura, sincronização, áudio e autenticação.
+   */
   constructor(
     private pokeApiService: PokeApiService,
     private capturedService: CapturedService,
