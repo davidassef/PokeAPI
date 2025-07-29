@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-07-29T19:40:28.855932",
+  "critical_coverage": 43.0,
+  "total_downloaded": 65,
+  "status": "CRITICAL",
+  "next_actions": [
+    "Execute preload_critical_images.py com retry programado",
+    "Configure retry autom\u00e1tico com backoff exponencial"
+  ]
+}

@@ -1,0 +1,539 @@
+{
+  "timestamp": "2025-07-29T16:53:29.354455",
+  "total_attempted": 106,
+  "successful_downloads": 0,
+  "failed_downloads": 106,
+  "success_rate": 0.0,
+  "details": [
+    {
+      "pokemon_id": 12,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 150,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 25,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 13,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 15,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 16,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 17,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 18,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 19,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 20,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 21,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 22,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 23,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 26,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 27,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 28,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 30,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 31,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 33,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 34,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 35,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 36,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 37,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 39,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 41,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 42,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 43,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 45,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 46,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 48,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 49,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 50,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 51,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 52,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 53,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 54,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 55,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 57,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 58,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 60,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 61,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 62,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 65,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 66,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 67,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 69,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 70,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 71,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 72,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 73,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 75,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 76,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 77,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 78,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 79,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 80,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 82,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 84,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 85,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 86,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 87,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 88,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 89,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 90,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 91,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 92,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 93,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 94,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 95,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 97,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 99,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 100,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 101,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 102,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 103,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 104,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 106,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 107,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 109,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 111,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 112,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 114,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 115,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 116,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 117,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 119,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 121,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 123,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 125,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 126,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 127,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 129,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 130,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 133,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 135,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 136,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 137,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 138,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 139,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 140,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 142,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 145,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 147,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 148,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 149,
+      "image_type": "official-artwork",
+      "success": false
+    },
+    {
+      "pokemon_id": 151,
+      "image_type": "official-artwork",
+      "success": false
+    }
+  ]
+}

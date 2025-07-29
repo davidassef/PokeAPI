@@ -580,3 +580,23 @@ class ImageCacheService:
         except Exception as e:
             logger.error(f"Erro ao forçar download {pokemon_id}/{image_type}: {e}")
             return None
+
+    async def download_image_async(self, pokemon_id: int, image_type: str = 'official-artwork') -> bool:
+        """
+        Método assíncrono para download de imagem, usado pelo retry script.
+
+        Args:
+            pokemon_id: ID do Pokémon
+            image_type: Tipo de imagem
+
+        Returns:
+            True se o download foi bem-sucedido, False caso contrário
+        """
+        from app.core.database import SessionLocal
+        
+        db = SessionLocal()
+        try:
+            result = await self._download_pokemon_image(db, pokemon_id, image_type)
+            return result is not None
+        finally:
+            db.close()

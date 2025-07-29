@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-07-29T19:40:05.812527",
+  "processed": 10,
+  "successful": 4,
+  "failed": 6,
+  "stats": {
+    "downloaded": 65,
+    "total": 151,
+    "coverage": 43.05,
+    "pending": 86,
+    "timestamp": "2025-07-29T19:40:05.812515"
+  }
+}

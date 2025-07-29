@@ -1,0 +1,505 @@
+{
+  "timestamp": "2025-07-29T19:40:28.855932",
+  "summary": {
+    "total_entries": 151,
+    "downloaded": 65,
+    "failed": 86,
+    "pending": 0,
+    "success_rate": 43.0
+  },
+  "critical_analysis": {
+    "total": 151,
+    "downloaded": 65,
+    "failed": 86,
+    "missing": 0,
+    "coverage_rate": 43.0,
+    "missing_pokemon": [],
+    "failed_pokemon": [
+      {
+        "id": 20,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:07.819954"
+      },
+      {
+        "id": 22,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:10.460566"
+      },
+      {
+        "id": 26,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:11.517095"
+      },
+      {
+        "id": 28,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:12.158757"
+      },
+      {
+        "id": 30,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:12.663474"
+      },
+      {
+        "id": 34,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:15.964448"
+      },
+      {
+        "id": 35,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:16.299917"
+      },
+      {
+        "id": 37,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:16.959249"
+      },
+      {
+        "id": 39,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:17.637719"
+      },
+      {
+        "id": 41,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:18.343283"
+      },
+      {
+        "id": 42,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:20.669627"
+      },
+      {
+        "id": 43,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:20.993747"
+      },
+      {
+        "id": 45,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:21.717748"
+      },
+      {
+        "id": 49,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:23.080416"
+      },
+      {
+        "id": 50,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:23.399784"
+      },
+      {
+        "id": 51,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:23.703695"
+      },
+      {
+        "id": 52,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:26.002803"
+      },
+      {
+        "id": 53,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:26.314369"
+      },
+      {
+        "id": 54,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:26.665165"
+      },
+      {
+        "id": 55,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:26.995338"
+      },
+      {
+        "id": 57,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:27.670854"
+      },
+      {
+        "id": 58,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:27.980802"
+      },
+      {
+        "id": 60,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:28.683249"
+      },
+      {
+        "id": 61,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:29.049429"
+      },
+      {
+        "id": 62,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:31.375135"
+      },
+      {
+        "id": 66,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:32.776141"
+      },
+      {
+        "id": 69,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:33.782696"
+      },
+      {
+        "id": 70,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:34.097132"
+      },
+      {
+        "id": 71,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:34.432910"
+      },
+      {
+        "id": 72,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:36.769029"
+      },
+      {
+        "id": 73,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:37.055076"
+      },
+      {
+        "id": 75,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:37.740086"
+      },
+      {
+        "id": 76,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:38.084202"
+      },
+      {
+        "id": 77,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:38.408301"
+      },
+      {
+        "id": 78,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:38.710547"
+      },
+      {
+        "id": 79,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:39.021130"
+      },
+      {
+        "id": 80,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:39.308596"
+      },
+      {
+        "id": 82,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:42.000528"
+      },
+      {
+        "id": 84,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:42.655175"
+      },
+      {
+        "id": 85,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:43.028957"
+      },
+      {
+        "id": 86,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:43.350333"
+      },
+      {
+        "id": 87,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:43.677702"
+      },
+      {
+        "id": 88,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:43.998041"
+      },
+      {
+        "id": 89,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:44.305897"
+      },
+      {
+        "id": 90,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:44.617354"
+      },
+      {
+        "id": 91,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:44.942914"
+      },
+      {
+        "id": 92,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:47.274344"
+      },
+      {
+        "id": 93,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:47.605712"
+      },
+      {
+        "id": 94,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:47.952292"
+      },
+      {
+        "id": 95,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:48.272847"
+      },
+      {
+        "id": 97,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:49.027356"
+      },
+      {
+        "id": 99,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:49.663030"
+      },
+      {
+        "id": 100,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:49.980308"
+      },
+      {
+        "id": 101,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:50.279902"
+      },
+      {
+        "id": 102,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:52.575960"
+      },
+      {
+        "id": 103,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:52.887952"
+      },
+      {
+        "id": 106,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:53.872489"
+      },
+      {
+        "id": 107,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:54.231716"
+      },
+      {
+        "id": 109,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:54.931981"
+      },
+      {
+        "id": 111,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:55.600286"
+      },
+      {
+        "id": 112,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:57.917048"
+      },
+      {
+        "id": 114,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:58.716462"
+      },
+      {
+        "id": 115,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:59.034627"
+      },
+      {
+        "id": 116,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:44:59.382618"
+      },
+      {
+        "id": 119,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:00.388195"
+      },
+      {
+        "id": 121,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:01.051843"
+      },
+      {
+        "id": 123,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:03.690534"
+      },
+      {
+        "id": 125,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:04.362604"
+      },
+      {
+        "id": 126,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:04.779149"
+      },
+      {
+        "id": 127,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:05.085983"
+      },
+      {
+        "id": 129,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:05.796327"
+      },
+      {
+        "id": 130,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:06.134218"
+      },
+      {
+        "id": 133,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:09.151054"
+      },
+      {
+        "id": 135,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:09.931817"
+      },
+      {
+        "id": 136,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:10.256789"
+      },
+      {
+        "id": 137,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:10.567137"
+      },
+      {
+        "id": 138,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:10.849904"
+      },
+      {
+        "id": 139,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:11.164439"
+      },
+      {
+        "id": 140,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:11.450243"
+      },
+      {
+        "id": 142,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:14.122618"
+      },
+      {
+        "id": 145,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:15.113239"
+      },
+      {
+        "id": 147,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:15.840586"
+      },
+      {
+        "id": 148,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:16.157046"
+      },
+      {
+        "id": 149,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:16.467774"
+      },
+      {
+        "id": 150,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:39:27.293539"
+      },
+      {
+        "id": 151,
+        "attempts": 1,
+        "last_attempt": "2025-07-29T19:45:16.780189"
+      }
+    ]
+  },
+  "gaps": {
+    "by_type": {
+      "official-artwork": 86,
+      "sprite": 0,
+      "sprite-shiny": 0,
+      "home": 0,
+      "home-shiny": 0
+    },
+    "by_range": {
+      "1-151": 86,
+      "152-251": 0,
+      "252-386": 0,
+      "387-493": 0,
+      "494-649": 0
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "type": "CRITICAL_COVERAGE",
+      "description": "Cobertura crítica baixa (43.0%). Pré-carregar imagens Gen 1.",
+      "action": "Execute preload_critical_images.py com retry programado"
+    },
+    {
+      "priority": "HIGH",
+      "type": "FAILED_DOWNLOADS",
+      "description": "Muitos downloads falharam (86). Implementar retry inteligente.",
+      "action": "Configure retry automático com backoff exponencial"
+    },
+    {
+      "priority": "MEDIUM",
+      "type": "FALLBACK_STRATEGY",
+      "description": "Implementar estratégia de fallback para quando API externa falhar",
+      "action": "Garantir que imagens locais sejam servidas mesmo sem internet"
+    },
+    {
+      "priority": "LOW",
+      "type": "MONITORING",
+      "description": "Implementar monitoramento contínuo do cache",
+      "action": "Crie jobs agendados para verificar e preencher lacunas"
+    }
+  ],
+  "technical_details": {
+    "total_cache_size_mb": 6.39,
+    "cache_directory": "pokemon_images",
+    "supported_image_types": [
+      "official-artwork",
+      "sprite",
+      "sprite-shiny",
+      "home",
+      "home-shiny"
+    ],
+    "max_download_attempts": 3,
+    "retry_delay_hours": 24
+  }
+}
