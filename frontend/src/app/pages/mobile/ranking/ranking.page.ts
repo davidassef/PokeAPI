@@ -97,6 +97,13 @@ export class RankingPage implements OnInit, OnDestroy {
   showSearch = false; // Controle do sistema de busca
   currentFilterOptions: any = {};
 
+  // ✅ NOVO: Propriedades para lazy loading e scroll infinito
+  displayedRanking: PokemonRanking[] = []; // Rankings atualmente exibidos
+  initialLoadSize = 10; // Carregar primeiros 10 (pódio + 7 do grid)
+  loadMoreSize = 5; // Carregar 5 por vez no scroll infinito
+  isLoadingMore = false; // Flag para evitar carregamentos duplicados
+  hasMoreData = true; // Se há mais dados para carregar
+
   constructor(
     private pokeApiService: PokeApiService,
     private capturedService: CapturedService,
@@ -496,6 +503,9 @@ export class RankingPage implements OnInit, OnDestroy {
       // Atualiza as propriedades reativas
       this.globalRanking = updatedRanking.filter(item => item.pokemon && item.pokemon.id > 0);
 
+      // ✅ NOVO: Implementa lazy loading - carrega apenas os primeiros itens inicialmente
+      this.initializeLazyLoading();
+
       console.log(`🎯 [MOBILE-RANKING] Ranking atualizado: ${this.globalRanking.length} Pokémons carregados`);
     } catch (error) {
       console.error('🚨 [MOBILE-RANKING] Erro detalhado ao carregar ranking:', error);
@@ -529,7 +539,83 @@ export class RankingPage implements OnInit, OnDestroy {
     }
   }
 
+  // ✅ NOVO: Métodos para lazy loading e scroll infinito
 
+  /**
+   * Inicializa o lazy loading carregando apenas os primeiros itens
+   */
+  private initializeLazyLoading() {
+    if (this.globalRanking.length === 0) {
+      this.displayedRanking = [];
+      this.hasMoreData = false;
+      return;
+    }
+
+    // Carrega os primeiros itens (pódio + alguns do grid)
+    const initialItems = Math.min(this.initialLoadSize, this.globalRanking.length);
+    this.displayedRanking = this.globalRanking.slice(0, initialItems);
+    this.hasMoreData = this.globalRanking.length > initialItems;
+
+    console.log(`📱 [LAZY-LOADING] Inicializado: ${this.displayedRanking.length}/${this.globalRanking.length} itens carregados`);
+  }
+
+  /**
+   * Carrega mais itens quando o usuário faz scroll
+   */
+  async loadMoreItems(event?: any) {
+    if (this.isLoadingMore || !this.hasMoreData) {
+      if (event) event.target.complete();
+      return;
+    }
+
+    this.isLoadingMore = true;
+    console.log(`📱 [LAZY-LOADING] Carregando mais itens...`);
+
+    try {
+      // Simula um pequeno delay para melhor UX
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const currentLength = this.displayedRanking.length;
+      const nextBatch = this.globalRanking.slice(
+        currentLength,
+        currentLength + this.loadMoreSize
+      );
+
+      if (nextBatch.length > 0) {
+        this.displayedRanking = [...this.displayedRanking, ...nextBatch];
+        console.log(`📱 [LAZY-LOADING] +${nextBatch.length} itens carregados. Total: ${this.displayedRanking.length}/${this.globalRanking.length}`);
+      }
+
+      // Verifica se há mais dados para carregar
+      this.hasMoreData = this.displayedRanking.length < this.globalRanking.length;
+
+      if (!this.hasMoreData) {
+        console.log(`📱 [LAZY-LOADING] Todos os itens foram carregados!`);
+      }
+
+    } catch (error) {
+      console.error('❌ [LAZY-LOADING] Erro ao carregar mais itens:', error);
+    } finally {
+      this.isLoadingMore = false;
+      if (event) {
+        event.target.complete();
+      }
+    }
+  }
+
+  /**
+   * Retorna apenas os itens do pódio (primeiros 3)
+   */
+  get podiumRanking(): PokemonRanking[] {
+    return this.displayedRanking.slice(0, 3);
+  }
+
+  /**
+   * Retorna apenas os itens do grid (4º em diante)
+   */
+  get gridRanking(): PokemonRanking[] {
+    return this.displayedRanking.slice(3);
+  }
 
   /**
    * Atualiza o estado de captura dos Pokémons no ranking

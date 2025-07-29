@@ -2,6 +2,15 @@
 
 ion-content {
   --background: var(--ranking-bg);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+
+  // ✅ NOVO: Garantir scroll suave e sem limitações
+  --overflow: auto;
+  height: 100%;
+  overflow-y: auto;
 }
 
 // ===== CABEÇALHO DO RANKING MOBILE =====
@@ -186,11 +195,33 @@ ion-content {
     .third-container-mobile .podium-medal {
       right: calc(20px + 90px); // padding (20px) + metade da largura do card pequeno (180px/2 = 90px)
     }
+
+    // Badges de favoritos ajustados para telas pequenas
+    .capture-count-badge {
+      font-size: 0.7rem;
+      padding: 3px 7px;
+      top: 7px;
+      left: 7px;
+
+      ion-icon {
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  // Ajustes das badges de ranking no grid para telas pequenas
+  .ranking-badge-horizontal {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .first-container-mobile {
     margin-top: 25px; // Espaçamento específico do header para telas pequenas
-    justify-content: center; // Mantém centralizado em telas pequenas
+    justify-content: center !important; // Mantém centralizado em telas pequenas - FORÇADO
 
     .champion-banner {
       font-size: 0.65rem;
@@ -201,11 +232,11 @@ ion-content {
   }
 
   .second-container-mobile {
-    justify-content: flex-start; // Mantém à esquerda em telas pequenas
+    justify-content: flex-start !important; // Mantém à esquerda em telas pequenas - FORÇADO
   }
 
   .third-container-mobile {
-    justify-content: flex-end; // Mantém à direita em telas pequenas
+    justify-content: flex-end !important; // Mantém à direita em telas pequenas - FORÇADO
   }
 }
 
@@ -218,9 +249,14 @@ ion-content {
   padding: 20px 12px; // Padding interno para espaçamento
   margin-top: 30px; // Maior espaçamento do header
   margin-bottom: 30px; // Espaçamento do próximo container
-  display: flex;
-  justify-content: center; // 1º lugar mantém centralizado
+  display: flex !important;
+  justify-content: center !important; // 1º lugar mantém centralizado - FORÇADO
   align-items: center;
+  box-sizing: border-box;
+
+  // DEBUG: Adicionar borda temporária para visualizar o container
+  // border: 2px dashed #ffd700 !important;
+  // background: rgba(255, 215, 0, 0.1) !important;
 }
 
 // Container individual para 2º lugar - posicionado à esquerda
@@ -240,9 +276,14 @@ ion-content {
   width: 100%;
   padding: 20px 12px; // Padding interno para espaçamento
   margin-bottom: 30px; // Espaçamento do grid 2x2
-  display: flex;
-  justify-content: flex-end; // 3º lugar posicionado à direita
+  display: flex !important;
+  justify-content: flex-end !important; // 3º lugar posicionado à direita - FORÇADO
   align-items: center;
+  box-sizing: border-box;
+
+  // DEBUG: Adicionar borda temporária para visualizar o container
+  // border: 2px dashed #cd7f32 !important;
+  // background: rgba(205, 127, 50, 0.1) !important;
 }
 
 // Container do grid 2x2 - separado dos containers individuais
@@ -258,6 +299,8 @@ ion-content {
 .first-container-mobile,
 .second-container-mobile,
 .third-container-mobile {
+  // Garantir que o flexbox funcione corretamente
+  box-sizing: border-box;
 
   // Card do pódio com tamanho específico solicitado
   .podium-card {
@@ -266,8 +309,22 @@ ion-content {
     max-width: 210px; // Garante que não ultrapasse o tamanho definido
     min-height: 342px; // Garante altura mínima
     position: relative; // Para posicionamento dos elementos decorativos
-    margin: 0; // Remove margin auto pois agora usamos justify-content nos containers
+    margin: 0 !important; // Remove margin auto pois agora usamos justify-content nos containers - FORÇADO
     overflow: visible; // Permite que elementos decorativos saiam do card
+    flex-shrink: 0; // Impede que o card encolha
+
+    // Sobrescrever estilos do componente pokemon-card que podem interferir
+    .pokemon-card {
+      margin: 0 !important; // Remove margin do componente
+      width: 100% !important; // Garante que ocupe toda a largura do container
+      max-width: 100% !important; // Remove limitação de largura
+    }
+
+    // Garantir que o app-pokemon-card seja tratado corretamente pelo flexbox
+    app-pokemon-card {
+      display: block !important; // Força display block
+      margin: 0 !important; // Remove qualquer margin
+    }
   }
 
   // ✅ Elementos decorativos removidos do escopo comum
@@ -291,13 +348,38 @@ ion-content {
     animation: crownGlow 2s ease-in-out infinite alternate;
   }
 
-  // ✅ CORREÇÃO: Badge de favoritos posicionado no canto superior direito do card
-  .ranking-favorite-badge {
+  // Container para posicionar o badge dentro do card
+  .pokemon-card-container {
+    position: relative;
+    display: block; // Mudado de inline-block para block
+    width: auto; // Mudado de 100% para auto para permitir centralização
+    flex-shrink: 0; // Impede que encolha no flexbox
+  }
+
+  // Badge de favoritos no canto superior esquerdo do card
+  .capture-count-badge {
     position: absolute;
     top: 8px;
-    left: calc(50% + 105px - 8px); // Centro + metade do card - ajuste do badge
-    z-index: 20;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ion-color-danger);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
   }
+
+
 
   // Banner "Campeão!" posicionado como overlay externo
   .champion-banner {
@@ -337,12 +419,35 @@ ion-content {
     animation: float 2s ease-in-out infinite alternate;
   }
 
-  // ✅ CORREÇÃO: Badge de favoritos posicionado no canto superior direito do card
-  .ranking-favorite-badge {
+  // Container para posicionar o badge dentro do card
+  .pokemon-card-container {
+    position: relative;
+    display: block; // Mudado de inline-block para block
+    width: auto; // Mudado de 100% para auto para permitir posicionamento correto
+    flex-shrink: 0; // Impede que encolha no flexbox
+  }
+
+  // Badge de favoritos no canto superior esquerdo do card
+  .capture-count-badge {
     position: absolute;
     top: 8px;
-    left: calc(12px + 210px - 8px); // padding + largura do card - ajuste do badge
-    z-index: 20;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ion-color-danger);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
   }
 }
 
@@ -361,12 +466,35 @@ ion-content {
     animation: float 2s ease-in-out infinite alternate;
   }
 
-  // ✅ CORREÇÃO: Badge de favoritos posicionado no canto superior direito do card
-  .ranking-favorite-badge {
+  // Container para posicionar o badge dentro do card
+  .pokemon-card-container {
+    position: relative;
+    display: block; // Mudado de inline-block para block
+    width: auto; // Mudado de 100% para auto para permitir posicionamento correto
+    flex-shrink: 0; // Impede que encolha no flexbox
+  }
+
+  // Badge de favoritos no canto superior esquerdo do card
+  .capture-count-badge {
     position: absolute;
     top: 8px;
-    right: 20px; // padding do container + ajuste do badge
-    z-index: 20;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ion-color-danger);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
   }
 }
 
@@ -593,6 +721,18 @@ ion-content {
       padding: 3px 10px;
       top: 18px; // Posicionado abaixo da coroa para telas pequenas
     }
+
+    // Badge de favoritos ajustado para telas pequenas
+    .capture-count-badge {
+      font-size: 0.65rem;
+      padding: 3px 6px;
+      top: 6px;
+      left: 6px;
+
+      ion-icon {
+        font-size: 0.8rem;
+      }
+    }
   }
 
   .second-container-mobile .podium-medal,
@@ -608,6 +748,19 @@ ion-content {
 
   .third-container-mobile .podium-medal {
     right: calc(20px + 90px); // Mantém o mesmo cálculo para 180px
+  }
+
+  // Badges de favoritos ajustados para telas pequenas
+  .second-container-mobile .capture-count-badge,
+  .third-container-mobile .capture-count-badge {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    top: 6px;
+    left: 6px;
+
+    ion-icon {
+      font-size: 0.8rem;
+    }
   }
 
   .podium-card {
@@ -736,13 +889,44 @@ ion-content {
   align-items: center;
   width: 100%;
   min-height: 200px; // Altura mínima para consistência
+
+  // Container para posicionar o badge dentro do card
+  .pokemon-card-container {
+    position: relative;
+    display: block; // Mudado de inline-block para block
+    width: 100%; // Mantém 100% no grid para ocupar toda a largura disponível
+  }
+
+  // Badge de favoritos no canto superior esquerdo do card
+  .capture-count-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ion-color-danger);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+  }
 }
 
-// Badge de ranking posicionado no canto superior esquerdo
+// Badge de ranking posicionado acima do card (similar à versão web)
 .ranking-badge-horizontal {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -752,7 +936,7 @@ ion-content {
   font-weight: 700;
   font-size: 0.8rem;
   color: white;
-  z-index: 5;
+  z-index: 15; // Z-index alto para ficar acima do card
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.9);
 
@@ -792,28 +976,7 @@ ion-content {
   flex-direction: column;
 }
 
-// Badge de favoritos no canto superior direito
-.ranking-favorite-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 4px 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--ion-color-danger);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 5;
-  border: 1px solid rgba(255, 255, 255, 0.8);
 
-  ion-icon {
-    font-size: 0.9rem;
-  }
-}
 
 // Responsividade para grid 2x2
 @media (max-width: 360px) {
@@ -825,20 +988,110 @@ ion-content {
 
   .ranking-item-horizontal {
     min-height: 180px;
+
+    // Badge de favoritos ajustado para telas pequenas no grid
+    .capture-count-badge {
+      font-size: 0.65rem;
+      padding: 3px 6px;
+      top: 6px;
+      left: 6px;
+
+      ion-icon {
+        font-size: 0.8rem;
+      }
+    }
   }
 
   .ranking-badge-horizontal {
     width: 24px;
     height: 24px;
     font-size: 0.7rem;
-    top: 6px;
-    left: 6px;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+// ✅ NOVO: Estilos para scroll infinito e lazy loading
+
+// Indicador de fim da lista
+.end-of-list-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  margin-top: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-bottom: 20px;
+
+  ion-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
   }
 
-  .ranking-favorite-badge {
-    top: 6px;
-    right: 6px;
-    padding: 2px 6px;
-    font-size: 0.7rem;
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+}
+
+// Customização do infinite scroll
+ion-infinite-scroll {
+  margin-top: 20px;
+
+  ion-infinite-scroll-content {
+    padding: 20px;
+    text-align: center;
+
+    .infinite-loading-text {
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      margin-top: 10px;
+    }
+  }
+}
+
+// Garantir que o scroll funcione corretamente
+.ranking-grid-container-mobile {
+  padding-bottom: 20px; // Espaço extra para o infinite scroll
+}
+
+// Media queries para o indicador de fim da lista
+@media (max-width: 480px) {
+  .end-of-list-indicator {
+    padding: 25px 15px;
+    margin-left: 8px;
+    margin-right: 8px;
+
+    ion-icon {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .end-of-list-indicator {
+    padding: 20px 12px;
+    margin-left: 6px;
+    margin-right: 6px;
+
+    ion-icon {
+      font-size: 1.8rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
   }
 }
