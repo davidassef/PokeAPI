@@ -18,7 +18,7 @@
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible; // ✅ CORREÇÃO CRÍTICA: Permite scroll interno
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease-out;
 
@@ -32,6 +32,10 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+
+  // ✅ CORREÇÃO CRÍTICA: Garantir altura mínima para scroll funcionar
+  min-height: 0; // Permite que flex: 1 funcione corretamente
+  height: 100%; // Força altura total disponível
 
   // Espaçamento inferior aumentado para melhor visualização
   padding-bottom: 140px; // Aumentado de 80px para 140px
@@ -51,18 +55,21 @@
   position: relative; // Necessário para z-index funcionar
   z-index: 2; // Maior que o botão de captura (z-index: 1)
 
-  // ✅ NOVO: Configurações específicas para toque real em dispositivos móveis
-  -webkit-touch-callout: none; // Desabilita callout no iOS
-  -webkit-tap-highlight-color: transparent; // Remove highlight de toque
-  overscroll-behavior: contain; // Evita scroll em elementos pais
+  // ✅ CORREÇÃO: Configurações simplificadas para evitar conflitos
+  -webkit-overflow-scrolling: touch; // Scroll nativo no iOS
+  overscroll-behavior-y: contain; // Evita scroll em elementos pais apenas no eixo Y
 
-  // ✅ NOVO: Força scroll em dispositivos móveis
+  // ✅ CORREÇÃO: Scrollbar visível para debug (pode ser removida depois)
   &::-webkit-scrollbar {
-    width: 0px; // Esconde scrollbar mas mantém funcionalidade
-    background: transparent;
+    width: 4px; // Scrollbar fina mas visível
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  // Customizar scrollbar para melhor UX (fallback)
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }

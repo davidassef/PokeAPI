@@ -414,4 +414,165 @@ test.describe('Modal Mobile - Responsividade ao Toque', () => {
     await page.waitForTimeout(1000);
     console.log('🔒 Modal fechado');
   });
+
+  test('Deve diagnosticar problema crítico de scroll no modal mobile', async ({ page }) => {
+    console.log('🚨 DIAGNÓSTICO CRÍTICO: Investigando perda total de scroll...');
+
+    // Clicar no primeiro card para abrir o modal
+    const firstCard = page.locator('app-pokemon-card').first();
+    await firstCard.click();
+    console.log('🖱️ Clicou no primeiro card');
+
+    // Aguardar modal mobile abrir
+    await page.waitForSelector('app-pokemon-details-mobile .mobile-modal-overlay', { timeout: 10000 });
+    const mobileModal = page.locator('app-pokemon-details-mobile .mobile-modal-overlay');
+    await expect(mobileModal).toBeVisible();
+    console.log('✅ Modal mobile abriu corretamente');
+
+    // Aguardar conteúdo carregar
+    await page.waitForTimeout(3000);
+
+    // DIAGNÓSTICO 1: Verificar estrutura de containers
+    const containers = [
+      { name: 'modal-overlay', selector: '.mobile-modal-overlay' },
+      { name: 'modal-container', selector: '.mobile-modal-container' },
+      { name: 'scroll-container', selector: '.global-scroll-container' },
+      { name: 'mobile-content', selector: '.mobile-content' }
+    ];
+
+    console.log('🔍 DIAGNÓSTICO 1: Estrutura de containers');
+    for (const container of containers) {
+      const element = page.locator(container.selector);
+      const count = await element.count();
+      if (count > 0) {
+        const styles = await element.first().evaluate((el) => {
+          const computed = window.getComputedStyle(el);
+          const rect = el.getBoundingClientRect();
+          return {
+            display: computed.display,
+            overflow: computed.overflow,
+            overflowY: computed.overflowY,
+            height: computed.height,
+            maxHeight: computed.maxHeight,
+            position: computed.position,
+            zIndex: computed.zIndex,
+            touchAction: computed.touchAction,
+            pointerEvents: computed.pointerEvents,
+            // Dimensões reais
+            clientHeight: el.clientHeight,
+            scrollHeight: el.scrollHeight,
+            offsetHeight: el.offsetHeight,
+            rectHeight: rect.height
+          };
+        });
+        console.log(`📦 ${container.name}:`, styles);
+      } else {
+        console.log(`❌ ${container.name}: NÃO ENCONTRADO`);
+      }
+    }
+
+    // DIAGNÓSTICO 2: Verificar se há conteúdo suficiente para scroll
+    const scrollContainer = page.locator('.global-scroll-container');
+    if (await scrollContainer.count() > 0) {
+      const scrollInfo = await scrollContainer.first().evaluate((el) => {
+        return {
+          scrollHeight: el.scrollHeight,
+          clientHeight: el.clientHeight,
+          scrollTop: el.scrollTop,
+          canScroll: el.scrollHeight > el.clientHeight,
+          hasOverflow: el.scrollHeight > el.offsetHeight
+        };
+      });
+      console.log('📏 DIAGNÓSTICO 2: Informações de scroll:', scrollInfo);
+
+      if (!scrollInfo.canScroll) {
+        console.log('⚠️ PROBLEMA: Conteúdo não é maior que container - scroll desnecessário');
+      } else {
+        console.log('✅ Conteúdo é maior que container - scroll deveria funcionar');
+      }
+    }
+
+    // DIAGNÓSTICO 3: Testar diferentes métodos de scroll
+    console.log('🧪 DIAGNÓSTICO 3: Testando métodos de scroll');
+    const testMethods = [
+      {
+        name: 'scrollTo(0, 100)',
+        test: async () => {
+          await scrollContainer.evaluate(el => el.scrollTo(0, 100));
+          await page.waitForTimeout(500);
+          return await scrollContainer.evaluate(el => el.scrollTop);
+        }
+      },
+      {
+        name: 'scrollBy(0, 50)',
+        test: async () => {
+          const initial = await scrollContainer.evaluate(el => el.scrollTop);
+          await scrollContainer.evaluate(el => el.scrollBy(0, 50));
+          await page.waitForTimeout(500);
+          const final = await scrollContainer.evaluate(el => el.scrollTop);
+          return { initial, final, changed: final > initial };
+        }
+      },
+      {
+        name: 'wheel event',
+        test: async () => {
+          const bounds = await scrollContainer.boundingBox();
+          if (bounds) {
+            const initial = await scrollContainer.evaluate(el => el.scrollTop);
+            await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+            await page.mouse.wheel(0, 100);
+            await page.waitForTimeout(500);
+            const final = await scrollContainer.evaluate(el => el.scrollTop);
+            return { initial, final, changed: final > initial };
+          }
+          return { error: 'No bounds' };
+        }
+      }
+    ];
+
+    for (const method of testMethods) {
+      try {
+        const result = await method.test();
+        console.log(`${typeof result === 'object' && result.changed ? '✅' : '❌'} ${method.name}:`, result);
+      } catch (error) {
+        console.log(`❌ ${method.name}: ERRO -`, error.message);
+      }
+    }
+
+    // DIAGNÓSTICO 4: Verificar elementos que podem estar bloqueando
+    console.log('🚫 DIAGNÓSTICO 4: Elementos que podem estar bloqueando');
+    const blockingElements = await page.evaluate(() => {
+      const elements = document.querySelectorAll('*');
+      const blocking = [];
+
+      elements.forEach(el => {
+        const style = window.getComputedStyle(el);
+        if (
+          style.pointerEvents === 'none' ||
+          style.overflow === 'hidden' ||
+          style.touchAction === 'none' ||
+          (style.position === 'fixed' && parseInt(style.zIndex) > 10)
+        ) {
+          blocking.push({
+            tagName: el.tagName,
+            className: el.className,
+            pointerEvents: style.pointerEvents,
+            overflow: style.overflow,
+            touchAction: style.touchAction,
+            position: style.position,
+            zIndex: style.zIndex
+          });
+        }
+      });
+
+      return blocking.slice(0, 10); // Limitar a 10 elementos
+    });
+
+    console.log('🚫 Elementos potencialmente bloqueadores:', blockingElements);
+
+    // Fechar modal
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(1000);
+    console.log('🔒 Modal fechado - Diagnóstico concluído');
+  });
 });
