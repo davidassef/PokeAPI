@@ -29,6 +29,7 @@ python-dotenv>=1.0.0
 # HTTP Client for external APIs
 httpx>=0.25.0
 requests>=2.31.0
+aiohttp>=3.9.0  # Para download assíncrono de imagens
 
 # Translation Service
 # googletrans==4.0.0-rc1  # Removido devido a conflito com httpx

@@ -176,7 +176,8 @@ app.add_middleware(
 try:
     from app.core.database import engine
     from app.models.models import Base, User
-    from app.routes import favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth, pokemon_management
+    from app.services.image_cache_service import PokemonImageCache
+    from app.routes import favorites, ranking, pokemon, sync_capture, admin, pull_sync, auth, pokemon_management, images
 
     # Criar tabelas vazias (sem dados iniciais)
     # Em produção, o banco é criado vazio e alimentado apenas pelo frontend
@@ -259,6 +260,9 @@ try:
     # ✅ NOVO: Rotas de monitoramento de integridade de dados
     from app.routes import data_integrity
     app.include_router(data_integrity.router, prefix="/api/v1/data-integrity")
+
+    # ✅ NOVO: Rotas para servir imagens dos Pokémons
+    app.include_router(images.router, prefix="/api/v1")
 
 
 
