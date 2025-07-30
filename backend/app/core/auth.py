@@ -1,5 +1,37 @@
 """
-Dependências para autenticação JWT.
+Módulo de autenticação JWT para o sistema PokeAPI_SYNC.
+
+Este módulo fornece dependências FastAPI para autenticação baseada em JWT,
+incluindo validação de tokens, verificação de usuários ativos e
+controle de acesso baseado em roles.
+
+Funcionalidades:
+- Validação de tokens JWT via Bearer authentication
+- Recuperação do usuário atual autenticado
+- Verificação de status ativo do usuário
+- Controle de acesso para administradores
+- Logging detalhado de eventos de autenticação
+
+Exemplo de uso:
+    ```python
+    from fastapi import Depends, APIRouter
+    from app.core.auth import get_current_user, get_current_admin_user
+    
+    router = APIRouter()
+    
+    @router.get("/profile")
+    async def get_profile(current_user: User = Depends(get_current_user)):
+        return {"email": current_user.email}
+    
+    @router.get("/admin/users")
+    async def list_users(admin_user: User = Depends(get_current_admin_user)):
+        return {"users": []}
+    ```
+
+Dependências:
+    - FastAPI: Framework web para APIs
+    - SQLAlchemy: ORM para interação com banco de dados
+    - python-jose: Biblioteca para JWT
 """
 import logging
 from datetime import datetime
@@ -14,12 +46,16 @@ from app.models.models import User
 from app.services.auth_service import auth_service
 
 # Security scheme para JWT
+# Instância global do esquema de segurança HTTP Bearer para validação de tokens JWT
+# Usada automaticamente pelo FastAPI para extrair o token do header Authorization
 security = HTTPBearer()
 
 # Configuração de logging
 logger = logging.getLogger(__name__)
 
 # Exceção padrão para credenciais inválidas
+# HTTPException pré-configurada para ser usada em casos de autenticação falha
+# Inclui headers apropriados para autenticação Bearer conforme RFC 6750
 CREDENTIALS_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
@@ -149,14 +185,36 @@ def get_current_active_user(
 ) -> User:
     """Dependência para obter o usuário atual ativo.
 
+    Esta função serve como um middleware adicional para garantir que o usuário
+    autenticado esteja com o status 'ativo' no sistema. É útil para endpoints
+    que requerem autenticação mas não necessariamente privilégios administrativos.
+
     Args:
         current_user: Usuário autenticado (obtido via get_current_user)
 
     Returns:
-        User: O usuário ativo
+        User: O usuário ativo e validado
 
     Raises:
-        HTTPException: Se o usuário estiver inativo
+        HTTPException: Se o usuário estiver inativo (status code 403)
+
+    Example:
+        ```python
+        from fastapi import APIRouter, Depends
+        from app.core.auth import get_current_active_user
+        
+        router = APIRouter()
+        
+        @router.get("/user/profile")
+        async def get_user_profile(
+            current_user: User = Depends(get_current_active_user)
+        ):
+            return {
+                "email": current_user.email,
+                "name": current_user.name,
+                "is_active": current_user.is_active
+            }
+        ```
     """
     if not current_user.is_active:
         logger.warning(
@@ -180,14 +238,36 @@ def get_current_admin_user(
 ) -> User:
     """Dependência para obter o usuário atual se for administrador.
 
+    Esta função verifica se o usuário autenticado possui privilégios de
+    administrador através do campo is_admin do modelo User. Também garante
+    que o usuário esteja ativo antes de conceder acesso.
+
     Args:
         current_user: Usuário autenticado (obtido via get_current_user)
 
     Returns:
-        User: O usuário administrador
+        User: O usuário administrador com privilégios de admin
 
     Raises:
         HTTPException: Se o usuário não for administrador ou estiver inativo
+                      - 403 Forbidden para usuários inativos
+                      - 403 Forbidden para usuários não administradores
+
+    Example:
+        ```python
+        from fastapi import APIRouter, Depends
+        from app.core.auth import get_current_admin_user
+        
+        router = APIRouter()
+        
+        @router.delete("/users/{user_id}")
+        async def delete_user(
+            user_id: int,
+            admin_user: User = Depends(get_current_admin_user)
+        ):
+            # Apenas administradores podem executar esta operação
+            return {"message": f"User {user_id} deleted by {admin_user.email}"}
+        ```
     """
     if not current_user.is_active:
         logger.warning(
@@ -221,12 +301,40 @@ def optional_authentication(
 ) -> Optional[User]:
     """Dependência opcional para autenticação.
 
+    Esta função permite endpoints que funcionam tanto para usuários autenticados
+    quanto não autenticados, retornando None em caso de falha de autenticação
+    ao invés de levantar exceções. Ideal para funcionalidades que podem ser
+    personalizadas baseadas no usuário logado.
+
     Args:
         credentials: Credenciais de autenticação (opcional)
         db: Sessão do banco de dados
 
     Returns:
-        User: O usuário autenticado ou None se não estiver autenticado
+        User: O usuário autenticado e validado, ou None se:
+              - Nenhuma credencial for fornecida
+              - Token for inválido ou expirado
+              - Usuário não for encontrado
+              - Usuário estiver inativo
+
+    Example:
+        ```python
+        from fastapi import APIRouter, Depends
+        from app.core.auth import optional_authentication
+        
+        router = APIRouter()
+        
+        @router.get("/pokemon")
+        async def list_pokemon(
+            current_user: Optional[User] = Depends(optional_authentication)
+        ):
+            if current_user:
+                # Usuário autenticado - pode ver Pokémon capturados
+                return {"pokemon": [], "user": current_user.email}
+            else:
+                # Usuário não autenticado - lista pública
+                return {"pokemon": [], "message": "Faça login para ver seus Pokémon"}
+        ```
     """
     if not credentials or not credentials.credentials:
         logger.debug("Nenhuma credencial fornecida para autenticação opcional")

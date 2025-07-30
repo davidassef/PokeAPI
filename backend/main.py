@@ -1,5 +1,11 @@
 """
 Aplicação principal FastAPI - PokeAPI Backend.
+
+Este módulo configura e inicializa a aplicação FastAPI para o backend da Pokédex,
+incluindo configuração de logging, middleware, CORS e inicialização do banco de dados.
+
+Exemplo:
+    >>> uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 """
 import logging
 import os
@@ -37,8 +43,25 @@ logger.info("Iniciando aplicação FastAPI")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Gerencia o ciclo de vida da aplicação."""
-    # Startup
+    """
+    Gerenciador do ciclo de vida da aplicação FastAPI.
+    
+    Executa tarefas de inicialização quando a aplicação inicia e tarefas de limpeza
+    quando a aplicação encerra.
+    
+    Args:
+        app (FastAPI): Instância da aplicação FastAPI.
+        
+    Yields:
+        None: Controla o ciclo de vida da aplicação.
+        
+    Raises:
+        Exception: Se houver erro ao iniciar ou parar o scheduler de pull sync.
+        
+    Example:
+        >>> app = FastAPI(lifespan=lifespan)
+    """
+    # Startup - executado quando a aplicação inicia
     try:
         from app.services.pull_sync_scheduler import pull_scheduler
         await pull_scheduler.start()
@@ -48,7 +71,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    # Shutdown
+    # Shutdown - executado quando a aplicação encerra
     try:
         from app.services.pull_sync_scheduler import pull_scheduler
         await pull_scheduler.stop()
@@ -70,11 +93,30 @@ app = FastAPI(
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Middleware para log detalhado de requisições e respostas."""
+    """
+    Middleware para log detalhado de requisições HTTP e respostas.
+    
+    Registra informações completas sobre cada requisição recebida e resposta enviada,
+    incluindo tempo de processamento, status HTTP e headers relevantes.
+    
+    Args:
+        request (Request): Objeto da requisição HTTP recebida.
+        call_next (Callable): Função que processa a requisição e retorna a resposta.
+        
+    Returns:
+        Response: Resposta HTTP processada com logging completo.
+        
+    Raises:
+        Exception: Se houver erro ao processar a requisição, o erro é logado e re-raised.
+        
+    Example:
+        >>> # O middleware é aplicado automaticamente a todas as requisições
+        >>> # Não requer chamada manual
+    """
     request_id = f"{time.time():.0f}-{os.urandom(4).hex()}"
     start_time = time.time()
 
-    # Log da requisição
+    # Log da requisição recebida
     logger.info(
         "[%s] %s %s\nHeaders: %s\nQuery Params: %s",
         request_id,

@@ -13,10 +13,33 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """
-    Classe de configurações da aplicação usando Pydantic Settings.
-
-    Centraliza todas as configurações necessárias para o funcionamento
-    do backend, com suporte a variáveis de ambiente e valores padrão.
+    Configurações centralizadas da aplicação PokeAPI_SYNC.
+    
+    Esta classe gerencia todas as configurações da aplicação usando Pydantic Settings,
+    permitindo configuração via variáveis de ambiente com valores padrão seguros.
+    
+    As configurações são organizadas por categorias: API, banco de dados, CORS,
+    APIs externas, JWT, segurança e deployment.
+    
+    Attributes:
+        app_name (str): Nome da aplicação exibido na documentação.
+        app_version (str): Versão atual da API.
+        debug (bool): Flag de debug para ambiente de desenvolvimento.
+        database_url (str): URL padrão do banco de dados.
+        cors_origins (list[str]): Lista de origens permitidas para CORS.
+        pokeapi_base_url (str): URL base da PokeAPI oficial.
+        secret_key (str): Chave secreta para assinatura JWT.
+        algorithm (str): Algoritmo de assinatura JWT.
+        access_token_expire_minutes (int): Tempo de expiração do access token em minutos.
+        refresh_token_expire_days (int): Tempo de expiração do refresh token em dias.
+        bcrypt_rounds (int): Número de rounds para hash bcrypt.
+        password_min_length (int): Comprimento mínimo de senha.
+        password_max_length (int): Comprimento máximo de senha.
+        
+    Example:
+        >>> from app.core.config import settings
+        >>> print(settings.app_name)
+        'PokeAPI Backend'
     """
 
     # ===== CONFIGURAÇÕES DA API =====
@@ -42,19 +65,29 @@ class Settings(BaseSettings):
     @property
     def get_database_url(self) -> str:
         """
-        Retorna URL do banco de dados com lógica de fallback inteligente.
-
-        Implementa sistema de prioridades para diferentes ambientes:
-        1. DATABASE_URL (PostgreSQL/MySQL externo para produção)
+        Retorna URL de conexão do banco de dados com lógica inteligente de fallback.
+        
+        Implementa sistema de prioridades para diferentes ambientes de deployment:
+        1. DATABASE_URL (PostgreSQL/MySQL externo para produção via variável de ambiente)
         2. Volume persistente do Render (SQLite em produção)
         3. SQLite local (desenvolvimento)
-
+        
+        A lógica garante persistência de dados independentemente do ambiente,
+        adaptando-se automaticamente entre desenvolvimento local e produção.
+        
         Returns:
-            str: URL de conexão com o banco de dados
-
+            str: URL de conexão com o banco de dados pronta para uso.
+            
+        Examples:
+            >>> settings = Settings()
+            >>> url = settings.get_database_url
+            >>> print(url)
+            'sqlite:///./pokemon_app.db'
+            
         Note:
-            A lógica garante persistência de dados em diferentes ambientes
-            de deployment (Render, Heroku, local).
+            Em produção no Render, a função automaticamente detecta o ambiente
+            e usa o diretório persistente /opt/render/project/data/ para SQLite,
+            garantindo que os dados não sejam perdidos entre deploys.
         """
         import os
 
@@ -115,9 +148,34 @@ class Settings(BaseSettings):
     password_max_length: int = 100
 
     class Config:
-        """Configuração do Pydantic Settings para carregar variáveis de ambiente."""
+        """
+        Configuração do Pydantic Settings para carregamento de variáveis de ambiente.
+        
+        Define o comportamento de carregamento de variáveis de ambiente,
+        incluindo suporte para arquivo .env local.
+        
+        Attributes:
+            env_file (str): Nome do arquivo de variáveis de ambiente a ser carregado.
+            
+        Example:
+            >>> # Criar arquivo .env na raiz do projeto
+            >>> # SECRET_KEY=your-secret-key-here
+            >>> settings = Settings()
+            >>> # As variáveis do .env serão automaticamente carregadas
+        """
         env_file = ".env"
 
 
 # Instância global das configurações para uso em toda a aplicação
+"""
+Instância global das configurações da aplicação.
+
+Esta instância é usada em todo o projeto para acessar configurações
+centralizadas de forma consistente e eficiente.
+
+Example:
+    >>> from app.core.config import settings
+    >>> database_url = settings.get_database_url
+    >>> secret_key = settings.secret_key
+"""
 settings = Settings()
