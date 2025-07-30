@@ -1,5 +1,40 @@
 """
-Rotas de autenticação JWT.
+Rotas de autenticação JWT para o sistema PokeAPI_SYNC.
+
+Este módulo gerencia todas as operações de autenticação e autorização, incluindo:
+- Registro de novos usuários
+- Login com JWT tokens
+- Atualização de perfil de usuário
+- Troca de senha
+- Recuperação de senha via pergunta de segurança
+- Refresh tokens para sessões prolongadas
+- Debug endpoints para desenvolvimento
+
+Todos os endpoints utilizam o serviço AuthService para validações de segurança,
+hashing de senhas, e geração de tokens JWT com expiração configurável.
+
+Exemplo de fluxo de autenticação:
+    ```python
+    # 1. Registrar novo usuário
+    POST /api/v1/auth/register
+    {
+        "name": "Ash Ketchum",
+        "email": "ash@pokemon.com",
+        "password": "Pikachu123",
+        "security_question": "pet",
+        "security_answer": "pikachu"
+    }
+    
+    # 2. Fazer login
+    POST /api/v1/auth/login
+    {
+        "email": "ash@pokemon.com",
+        "password": "Pikachu123"
+    }
+    
+    # 3. Usar token nas requisições autenticadas
+    Authorization: Bearer <token>
+    ```
 """
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -23,7 +58,32 @@ security = HTTPBearer()
 
 @router.get("/debug/users")
 async def debug_users(db: Session = Depends(get_db)):
-    """🔍 ENDPOINT TEMPORÁRIO: Verificar usuários de teste"""
+    """
+    🔍 ENDPOINT TEMPORÁRIO: Verificar todos os usuários cadastrados no sistema.
+    
+    **Atenção**: Este endpoint é apenas para desenvolvimento/debug e deve ser
+    removido em produção por questões de segurança.
+    
+    Args:
+        db: Sessão do banco de dados injetada pelo FastAPI
+    
+    Returns:
+        Dict: Informações sobre usuários do sistema:
+            - total_users: Número total de usuários
+            - users: Lista com dados básicos de cada usuário (id, email, nome, status)
+            - test_users_exist: Verificação se usuários de teste específicos existem
+    
+    Example:
+        ```json
+        {
+            "total_users": 5,
+            "users": [
+                {"id": 1, "email": "ash@pokemon.com", "name": "Ash", "is_active": true}
+            ],
+            "test_users_exist": {"teste@teste.com": true}
+        }
+        ```
+    """
     users = db.query(User).all()
     user_data = []
     for user in users:
@@ -46,7 +106,34 @@ async def debug_users(db: Session = Depends(get_db)):
 
 @router.post("/debug/create-test-users")
 async def create_test_users(db: Session = Depends(get_db)):
-    """🔧 ENDPOINT TEMPORÁRIO: Criar usuários de teste manualmente"""
+    """
+    🔧 ENDPOINT TEMPORÁRIO: Criar usuários de teste manualmente.
+    
+    **Atenção**: Este endpoint é apenas para desenvolvimento/debug e deve ser
+    removido em produção. Cria usuários de teste padrão para facilitar testes.
+    
+    Args:
+        db: Sessão do banco de dados injetada pelo FastAPI
+    
+    Returns:
+        Dict: Status do processo de criação:
+            - message: Mensagem de conclusão
+            - results: Lista de resultados para cada usuário de teste
+    
+    Raises:
+        HTTPException: 500 se houver erro durante a criação
+    
+    Example:
+        ```json
+        {
+            "message": "Processo de criação concluído",
+            "results": [
+                "✅ teste@teste.com criado (ID: 1)",
+                "❌ teste2@teste.com já existe"
+            ]
+        }
+        ```
+    """
     try:
         test_users = [
             {
@@ -104,7 +191,58 @@ async def create_test_users(db: Session = Depends(get_db)):
 )
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """
-    Registra um novo usuário.
+    Registra um novo usuário no sistema.
+    
+    Realiza validações completas dos dados fornecidos:
+    - Verifica se email já está cadastrado
+    - Valida formato e força da senha
+    - Hash da senha com bcrypt
+    - Cria usuário com role padrão 'user'
+    
+    Args:
+        user_data: Dados do usuário via schema UserCreate:
+            - name: Nome completo (mínimo 3 caracteres)
+            - email: Email válido e único no sistema
+            - password: Senha com mínimo 8 caracteres
+            - security_question: Pergunta de segurança para recuperação
+            - security_answer: Resposta à pergunta de segurança
+        db: Sessão do banco de dados injetada pelo FastAPI
+    
+    Returns:
+        UserResponse: Dados do usuário criado (sem senha):
+            - id: ID único do usuário
+            - name: Nome completo
+            - email: Email cadastrado
+            - is_active: Status ativo (sempre true no registro)
+            - role: Papel do usuário
+            - created_at: Data de criação
+    
+    Raises:
+        HTTPException: 400 para dados inválidos ou email duplicado
+        HTTPException: 500 para erros internos do servidor
+    
+    Example:
+        ```json
+        # Request
+        POST /api/v1/auth/register
+        {
+            "name": "Ash Ketchum",
+            "email": "ash@pokemon.com",
+            "password": "Pikachu123",
+            "security_question": "pet",
+            "security_answer": "pikachu"
+        }
+        
+        # Response
+        {
+            "id": 1,
+            "name": "Ash Ketchum",
+            "email": "ash@pokemon.com",
+            "is_active": true,
+            "role": "user",
+            "created_at": "2024-01-15T10:30:00"
+        }
+        ```
     """
     import logging
     import time
@@ -160,7 +298,49 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     """
-    Autentica um usuário e retorna o token JWT.
+    Autentica um usuário e retorna tokens JWT para acesso à API.
+    
+    Valida credenciais e gera:
+    - Access token (JWT) com expiração configurável (padrão: 30 minutos)
+    - Refresh token para renovação de sessão
+    - Atualiza último login do usuário
+    
+    Args:
+        user_credentials: Credenciais via schema UserLogin:
+            - email: Email cadastrado no sistema
+            - password: Senha do usuário
+        db: Sessão do banco de dados injetada pelo FastAPI
+    
+    Returns:
+        TokenResponse: Objeto contendo tokens e informações do usuário:
+            - access_token: JWT para autenticação
+            - refresh_token: Token para renovação
+            - token_type: Tipo do token ("bearer")
+            - expires_in: Tempo de expiração em segundos
+            - user: Dados básicos do usuário
+    
+    Raises:
+        HTTPException: 401 para credenciais inválidas
+        HTTPException: 401 para usuário inativo
+    
+    Example:
+        ```json
+        # Request
+        POST /api/v1/auth/login
+        {
+            "email": "ash@pokemon.com",
+            "password": "Pikachu123"
+        }
+        
+        # Response
+        {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "token_type": "bearer",
+            "expires_in": 1800,
+            "user": {"id": 1, "name": "Ash", "email": "ash@pokemon.com"}
+        }
+        ```
     """
     user = auth_service.authenticate_user(
         db, user_credentials.email, user_credentials.password
