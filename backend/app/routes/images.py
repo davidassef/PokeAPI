@@ -16,6 +16,7 @@ import logging
 
 from app.core.database import get_db
 from app.services.image_cache_service import ImageCacheService
+from app.services.image_optimization_service import ImageOptimizationService
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -150,6 +151,65 @@ async def get_pokemon_image_info(
     except Exception as e:
         logger.error(f"Erro ao obter info das imagens do Pokémon {pokemon_id}: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+
+@router.get("/optimized/{pokemon_id}")
+async def get_optimized_pokemon_image(
+    pokemon_id: int,
+    image_type: str = "official-artwork",
+    size: str = "original",
+    quality: int = 85,
+    format: str = "webp",
+    db: Session = Depends(get_db)
+):
+    """
+    Retorna uma imagem otimizada do Pokémon com as configurações especificadas.
+    
+    - **pokemon_id**: ID do Pokémon
+    - **image_type**: Tipo de imagem (official-artwork, sprite, etc.)
+    - **size**: Tamanho da imagem (original, medium, small, thumbnail)
+    - **quality**: Qualidade (1-100)
+    - **format**: Formato de saída (webp, jpg, png)
+    """
+    if pokemon_id < 1 or pokemon_id > 1010:
+        raise HTTPException(status_code=400, detail="ID do Pokémon deve estar entre 1 e 1010")
+    
+    supported_types = ['official-artwork', 'sprite', 'sprite-shiny', 'home', 'home-shiny']
+    if image_type not in supported_types:
+        raise HTTPException(status_code=400, detail=f"Tipo de imagem inválido. Use: {', '.join(supported_types)}")
+    
+    optimization_service = ImageOptimizationService(db)
+    
+    try:
+        optimized_path = optimization_service.get_optimized_image(
+            pokemon_id=pokemon_id,
+            image_type=image_type,
+            size=size,
+            quality=quality,
+            format=format
+        )
+        
+        if not optimized_path or not os.path.exists(optimized_path):
+            raise HTTPException(status_code=404, detail="Imagem não encontrada")
+        
+        mime_types = {
+            'webp': 'image/webp',
+            'jpg': 'image/jpeg',
+            'png': 'image/png'
+        }
+        media_type = mime_types.get(format, 'image/webp')
+        
+        return FileResponse(
+            optimized_path,
+            media_type=media_type,
+            headers={
+                "Cache-Control": "public, max-age=31536000",
+                "ETag": f"{pokemon_id}-{image_type}-{size}-{quality}-{format}"
+            }
+        )
+    except Exception as e:
+        logger.error(f"Erro ao servir imagem otimizada: {str(e)}")
+        raise HTTPException(status_code=500, detail="Erro ao processar imagem")
 
 
 @router.post("/preload")

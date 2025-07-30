@@ -47,5 +47,8 @@ flake8>=6.0.0
 # Production Dependencies
 gunicorn>=21.2.0
 
+# Image Processing for optimization
+Pillow>=10.1.0
+
 # Optional: For enhanced logging
 structlog>=23.1.0
