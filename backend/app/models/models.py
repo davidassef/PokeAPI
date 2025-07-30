@@ -71,7 +71,7 @@ class User(Base):
     last_login = Column(DateTime(timezone=True), nullable=True)
 
     # Relacionamentos ORM
-    favorites = relationship("FavoritePokemon", back_populates="user")
+    favorites = relationship("FavoritePokemon", back_populates="user", cascade="all, delete-orphan")
 
 
 class FavoritePokemon(Base):
@@ -164,3 +164,47 @@ class PokemonFlavorTranslation(Base):
     __table_args__ = (
         UniqueConstraint('pokemon_id', 'flavor_en', 'lang', name='_pokemon_flavor_lang_uc'),
     )
+
+
+# Exemplos de uso dos modelos:
+"""
+Exemplos práticos de uso dos modelos SQLAlchemy:
+
+# Criar um novo usuário
+new_user = User(
+    email="ash@pokemon.com",
+    password_hash="$2b$12$hashed_password_here",
+    name="Ash Ketchum",
+    role=UserRole.USER
+)
+
+# Adicionar Pokémon aos favoritos
+favorite = FavoritePokemon(
+    user_id=new_user.id,
+    pokemon_id=25,  # Pikachu
+    pokemon_name="Pikachu"
+)
+
+# Atualizar ranking de um Pokémon
+ranking = PokemonRanking(
+    pokemon_id=25,
+    pokemon_name="Pikachu",
+    favorite_count=1500
+)
+
+# Adicionar tradução de descrição
+translation = PokemonFlavorTranslation(
+    pokemon_id=25,
+    flavor_en="When several of these POKéMON gather, their electricity could build and cause lightning storms.",
+    flavor_translated="Quando vários desses POKéMON se reúnem, sua eletricidade pode se acumular e causar tempestades de raios.",
+    lang="pt-BR"
+)
+
+# Consultar favoritos de um usuário
+user_favorites = session.query(FavoritePokemon).filter_by(user_id=1).all()
+
+# Buscar ranking global
+top_pokemons = session.query(PokemonRanking).order_by(
+    PokemonRanking.favorite_count.desc()
+).limit(10).all()
+"""
