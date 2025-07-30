@@ -1,12 +1,23 @@
 """
-Serviço de autenticação JWT para gerenciamento de usuários e tokens.
+Serviço de autenticação JWT para gerenciamento completo de usuários e segurança.
 
-Este módulo fornece funcionalidades completas de autenticação incluindo:
-- Criação e verificação de tokens JWT (access e refresh)
-- Hash e verificação de senhas com bcrypt
-- Gerenciamento de usuários (criar, buscar, atualizar)
-- Recuperação de senha via pergunta de segurança
-- Ativação/desativação de usuários
+Este módulo fornece funcionalidades completas de autenticação e autorização,
+implementando as melhores práticas de segurança incluindo:
+- Criação e verificação de tokens JWT (access e refresh tokens)
+- Hash e verificação de senhas com bcrypt (configurável)
+- Gerenciamento completo de usuários (CRUD operations)
+- Sistema de recuperação de senha via pergunta de segurança
+- Ativação/desativação de contas de usuário
+- Configuração segura de expiração de tokens
+
+O serviço utiliza Pydantic para validação de dados, SQLAlchemy para persistência
+e implementa logs detalhados para auditoria de segurança.
+
+Example:
+    >>> from app.services.auth_service import auth_service
+    >>> user = auth_service.authenticate_user(db, "user@example.com", "password123")
+    >>> if user:
+    ...     access_token = auth_service.create_access_token({"sub": str(user.id)})
 """
 import os
 import secrets
@@ -334,5 +345,18 @@ class AuthService:
         return True
 
 
-# Instância singleton do serviço de autenticação
+# Instância singleton do serviço de autenticação para uso global na aplicação
+# 
+# Esta instância pré-configurada pode ser importada e utilizada diretamente
+# em rotas, middlewares e outros serviços sem necessidade de criar novas instâncias.
+# 
+# A instância mantém configurações de segurança carregadas do ambiente e
+# está pronta para uso imediato.
+# 
+# Example:
+#     from app.services.auth_service import auth_service
+#     user = auth_service.authenticate_user(db, email, password)
+# 
+# Nota: Para testes unitários, considere criar instâncias separadas
+# para evitar efeitos colaterais.
 auth_service = AuthService()
