@@ -54,7 +54,7 @@ async def get_pokemon_image(
     """
     try:
         # Validação básica
-        if pokemon_id < 1 or pokemon_id > 1010:
+        if pokemon_id < 1 or (pokemon_id > 1025 and pokemon_id < 10001) or pokemon_id > 10300:
             raise HTTPException(status_code=400, detail="ID do Pokémon inválido")
 
         # Tipos de imagem suportados
@@ -171,8 +171,8 @@ async def get_optimized_pokemon_image(
     - **quality**: Qualidade (1-100)
     - **format**: Formato de saída (webp, jpg, png)
     """
-    if pokemon_id < 1 or pokemon_id > 1010:
-        raise HTTPException(status_code=400, detail="ID do Pokémon deve estar entre 1 e 1010")
+    if pokemon_id < 1 or (pokemon_id > 1025 and pokemon_id < 10001) or pokemon_id > 10300:
+        raise HTTPException(status_code=400, detail="ID do Pokémon deve estar entre 1 e 1025")
     
     supported_types = ['official-artwork', 'sprite', 'sprite-shiny', 'home', 'home-shiny']
     if image_type not in supported_types:
@@ -240,7 +240,7 @@ async def preload_pokemon_images(
             raise HTTPException(status_code=400, detail="Máximo de 100 Pokémons por vez")
 
         # Filtra IDs válidos
-        valid_ids = [pid for pid in pokemon_ids if 1 <= pid <= 1010]
+        valid_ids = [pid for pid in pokemon_ids if (1 <= pid <= 1025) or (10001 <= pid <= 10300)]
         if not valid_ids:
             raise HTTPException(status_code=400, detail="Nenhum ID válido fornecido")
 
@@ -292,7 +292,7 @@ async def force_download_pokemon_image(
     """
     try:
         # Validação básica
-        if pokemon_id < 1 or pokemon_id > 1010:
+        if pokemon_id < 1 or (pokemon_id > 1025 and pokemon_id < 10001) or pokemon_id > 10300:
             raise HTTPException(status_code=400, detail="ID do Pokémon inválido")
 
         supported_types = ['official-artwork', 'sprite', 'sprite-shiny', 'home', 'home-shiny']

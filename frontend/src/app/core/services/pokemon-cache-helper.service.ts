@@ -501,7 +501,7 @@ export class PokemonCacheHelper implements OnDestroy {
    */
   private getAdjacentIds(currentId: number, range: number): number[] {
     const ids: number[] = [];
-    const maxId = 1010; // Limite atual da PokeAPI
+    const maxId = 1025; // Limite atual da PokeAPI (atualizado em 2024)
 
     for (let i = -range; i <= range; i++) {
       if (i === 0) continue; // Pular o ID atual

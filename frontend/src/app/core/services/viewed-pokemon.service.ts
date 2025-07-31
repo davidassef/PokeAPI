@@ -14,7 +14,7 @@ export interface ViewedPokemonData {
 })
 export class ViewedPokemonService {
   private readonly STORAGE_KEY = 'viewed_pokemon_data';
-  private readonly TOTAL_POKEMON_COUNT = 1010; // Current total Pokemon count in PokeAPI
+  private readonly TOTAL_POKEMON_COUNT = 1025; // Current total Pokemon count in PokeAPI (updated 2024)
 
   private viewedPokemonSubject = new BehaviorSubject<ViewedPokemonData>({
     viewedPokemonIds: new Set<number>(),

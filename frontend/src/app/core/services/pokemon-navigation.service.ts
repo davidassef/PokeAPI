@@ -25,7 +25,7 @@ export interface NavigationInfo {
 export class PokemonNavigationService {
   private config = {
     enableLogging: !environment.production,
-    maxPokemonId: 1010, // Limite atual da PokeAPI
+    maxPokemonId: 1025, // Limite atual da PokeAPI (atualizado em 2024)
     minPokemonId: 1,
     circularNavigation: true // Permite navegação circular (do último para o primeiro)
   };
@@ -194,8 +194,8 @@ export class PokemonNavigationService {
    */
   isValidPokemonId(pokemonId: number): boolean {
     return Number.isInteger(pokemonId) &&
-           pokemonId >= this.config.minPokemonId &&
-           pokemonId <= this.config.maxPokemonId;
+           ((pokemonId >= this.config.minPokemonId && pokemonId <= this.config.maxPokemonId) ||
+            (pokemonId >= 10001 && pokemonId <= 10300));
   }
 
   /**

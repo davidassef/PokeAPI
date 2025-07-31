@@ -108,14 +108,14 @@ export class PokemonImageService {
    * Prioriza URLs diretas da PokéAPI para evitar carregamento infinito,
    * usando cache local apenas quando disponível.
    *
-   * @param pokemonId - ID do Pokémon (1-1010+)
+   * @param pokemonId - ID do Pokémon (1-1025+)
    * @param imageType - Tipo de imagem desejada
    * @param forceRefresh - Força atualização ignorando cache local
    * @returns Observable com a URL da imagem
    */
   getPokemonImageUrl(pokemonId: number, imageType: string = 'official-artwork', forceRefresh: boolean = false): Observable<string> {
     // Validação básica
-    if (pokemonId < 1 || pokemonId > 1010) {
+    if (pokemonId < 1 || (pokemonId > 1025 && pokemonId < 10001) || pokemonId > 10300) {
       console.warn(`[PokemonImageService] ID inválido: ${pokemonId}`);
       return of(this.getPlaceholderUrl(pokemonId, imageType));
     }

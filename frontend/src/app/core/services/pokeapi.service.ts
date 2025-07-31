@@ -134,7 +134,7 @@ export class PokeApiService {
     const pokemonIds = pokemonList.map(pokemon => {
       const id = this.extractIdFromUrl(pokemon.url);
       return parseInt(id, 10);
-    }).filter(id => !isNaN(id) && id > 0 && id <= 1010);
+    }).filter(id => !isNaN(id) && id > 0 && id <= 1025);
 
     if (pokemonIds.length === 0) {
       this.logger.debug('pokeapi', 'Nenhum ID válido para preload de imagens');
@@ -805,7 +805,7 @@ export class PokeApiService {
 
     // Para ordenação por ID, podemos usar a API diretamente com offset calculado
     if (!filters.orderBy || filters.orderBy === 'id') {
-      const total = 1010; // Total conhecido de Pokémon na API
+      const total = 1025; // Total conhecido de Pokémon na API (atualizado 2024)
       const totalPages = Math.ceil(total / pageSize);
 
       let offset: number;
@@ -901,7 +901,7 @@ export class PokeApiService {
       return of(this.allPokemonListCache);
     }
 
-    return this.getPokemonList(1010, 0).pipe(
+    return this.getPokemonList(1025, 0).pipe(
       map(response => {
         this.allPokemonListCache = response.results;
         return this.allPokemonListCache;
