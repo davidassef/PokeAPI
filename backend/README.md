@@ -171,13 +171,55 @@ O backend está configurado para aceitar requisições CORS dos seguintes origin
 - ✅ **Documentação automática** com Swagger
 - ✅ **CORS configurado** para frontend
 - ✅ **Tratamento de erros** consistente
+- ✅ **Docstrings Google-style** implementadas
+- ✅ **Documentação de schemas** completa
+- ✅ **Utilitários documentados** com exemplos
+
+## 📚 Documentação de Código
+
+### Docstrings
+Todas as funções, classes e métodos estão documentados com **Google-style docstrings**, incluindo:
+- Descrição clara da funcionalidade
+- Parâmetros com tipos e descrições
+- Valores de retorno com tipos
+- Exceções levantadas
+- Exemplos de uso quando aplicável
+
+### Schemas Documentados
+Todos os schemas Pydantic possuem:
+- Descrição detalhada da finalidade
+- Exemplos de valores válidos
+- Validações customizadas documentadas
+- Relacionamentos entre schemas explicados
+
+### Exemplos de Docstring
+```python
+def create_user(user: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
+    """Cria um novo usuário no sistema.
+    
+    Args:
+        user: Dados do usuário a ser criado
+        db: Sessão do banco de dados
+        
+    Returns:
+        UserResponse: Dados do usuário criado com ID gerado
+        
+    Raises:
+        HTTPException: Se o email já estiver cadastrado
+        
+    Example:
+        >>> user_data = {"name": "Ash", "email": "ash@pokemon.com"}
+        >>> response = create_user(user_data)
+        >>> print(response.id)  # 1
+    """
+```
 
 ## 🔮 Próximas Implementações
 
-- [ ] Autenticação JWT
-- [ ] Cache Redis
 - [ ] Testes unitários e integração
 - [ ] Deploy com Docker
 - [ ] Logs estruturados
 - [ ] Rate limiting
 - [ ] WebSockets para atualizações em tempo real
+- [ ] Cache Redis
+- [ ] Autenticação JWT

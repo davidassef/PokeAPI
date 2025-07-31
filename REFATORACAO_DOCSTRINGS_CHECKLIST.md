@@ -25,12 +25,13 @@ Melhorar a qualidade da documentação do código através de:
 - [x] `backend/app/routes/pokemon.py` - Rotas de Pokémon ✅
 - [x] `backend/app/routes/auth.py` - Rotas autenticação ✅
 - [x] `backend/app/schemas/__init__.py` - Schemas inicialização
-- [ ] `backend/app/schemas/pokemon.py` - Schemas Pokémon
-- [ ] `backend/app/schemas/user.py` - Schemas usuário
+- [x] `backend/app/schemas/pokemon_management_schemas.py` - Schemas Pokémon ✅ Refatorado
+- [x] `backend/app/schemas/auth.py` - Schemas autenticação ✅ Refatorado
 - [x] `backend/app/services/__init__.py` - Services inicialização
 - [x] `backend/app/services/pokeapi_service.py` - Serviço Pokémon ✅
 - [x] `backend/app/services/auth_service.py` - Serviço autenticação ✅ Refatorado e verificado
-- [ ] `backend/app/utils/__init__.py` - Utils inicialização
+- [x] `backend/app/utils/__init__.py` - Utils inicialização ✅ Refatorado
+- [x] `backend/app/utils/rate_limiter.py` - Limitador de taxa ✅ Refatorado
 - [ ] `backend/app/utils/cache_utils.py` - Utilitários de cache
 - [ ] `backend/app/utils/image_utils.py` - Utilitários de imagem
 - [ ] `backend/app/utils/validators.py` - Validadores
@@ -110,9 +111,9 @@ def exemplo_funcao(parametro1: str, parametro2: int) -> bool:
 ## 📊 Progresso
 
 - **Total de arquivos**: 47
-- **Concluídos**: 0
-- **Pendentes**: 47
-- **Progresso**: 0%
+- **Concluídos**: 5
+- **Pendentes**: 42
+- **Progresso**: 11%
 
 ## 🔄 Status por Módulo
 
